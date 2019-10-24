@@ -1,29 +1,9 @@
-/* Add a black background color to the top navigation */
-.topnav {
-  background-color: white;
-  overflow: hidden;
-}
-
-/* Style the links inside the navigation bar */
-.topnav a {
-  float: left;
-  color: black;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  font-size: 17px;
-}
-
-/* Change the color of links on hover */
-.topnav a:hover {
-  background-color: grey;
-  color: black;
-}
-
-/* Add a color to the active/current link */
-.topnav a.active {
-  background-color: 333333;
-  color: white;
+/* On screens that are 600px wide or less */
+@media screen and (max-width: 707px) {
+	.topnav a {
+		float: none;
+		width: 100%;
+	}
 }
 
 /* center the logo and add spacing ig */
@@ -31,8 +11,19 @@
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
-	padding-top: 10px;
-	padding-bottom: 10px;
+	padding: 10px;
+	width: 75px;
+	height: 75px;
+}
+
+/* center the logo and add spacing ig */
+.big-logo {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+	width: 150px;
+	height: 150px;
 }
 
 /* format the images so they um aren't shitty? */
@@ -40,4 +31,37 @@
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
+	width: 90%;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+	float: left;
+	color: black;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+	font-size: 17px;
+}
+
+
+
+/* Add a black background color to the top navigation */
+.topnav {
+	background-color: white;
+	overflow: hidden;
+}
+
+/* Add a color to the active/current link */
+.topnav a.active {
+	background-color: #333333;
+	color: white;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+	background-color: grey;
+	color: white;
 }

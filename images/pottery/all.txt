@@ -1,0 +1,17 @@
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P1177989.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P1178164.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244357.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244362.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244382.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244406.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244430.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244433.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244460.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244482.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244524.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244527.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244542.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244564.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/P7244579.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/PB266823.JPG"/>
+<img class="display-img" alt="Pottery Pics" src="images/pottery/PC191991.JPG"/>

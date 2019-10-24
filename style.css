@@ -26,11 +26,18 @@
   color: white;
 }
 
-/* center the logo ig */
+/* center the logo and add spacing ig */
 .logo {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
 	padding-top: 10px;
 	padding-bottom: 10px;
+}
+
+/* format the images so they um aren't shitty? */
+.display-img {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
 }

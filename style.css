@@ -22,6 +22,15 @@
 
 /* Add a color to the active/current link */
 .topnav a.active {
-  background-color: FF0FFF;
-  color: green;
+  background-color: 333333;
+  color: white;
+}
+
+/* center the logo ig */
+.logo {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }

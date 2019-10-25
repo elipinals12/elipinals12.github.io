@@ -1,7 +1,21 @@
+<a href="images/drawing/P1178175.JPG">
 <img class="display-img" alt="Drawing Pics" src="images/drawing/P1178175.JPG"/>
+</a>
+<a href="images/drawing/P1178201.JPG">
 <img class="display-img" alt="Drawing Pics" src="images/drawing/P1178201.JPG"/>
+</a>
+<a href="images/drawing/P1178205.JPG">
 <img class="display-img" alt="Drawing Pics" src="images/drawing/P1178205.JPG"/>
+</a>
+<a href="images/drawing/P2018298.JPG">
 <img class="display-img" alt="Drawing Pics" src="images/drawing/P2018298.JPG"/>
+</a>
+<a href="images/drawing/P2018329.JPG">
 <img class="display-img" alt="Drawing Pics" src="images/drawing/P2018329.JPG"/>
+</a>
+<a href="images/drawing/P2018332.JPG">
 <img class="display-img" alt="Drawing Pics" src="images/drawing/P2018332.JPG"/>
+</a>
+<a href="images/drawing/P2158635.JPG">
 <img class="display-img" alt="Drawing Pics" src="images/drawing/P2158635.JPG"/>
+</a>

@@ -1,5 +1,10 @@
+/* makes is so like width includes padding */
+* {
+  box-sizing: border-box;
+}
+
 /* On screens that are 600px wide or less */
-@media only screen and (max-display-width: 600px) {
+@media only screen and (max-width: 900px) {
 	.topnav a {
 		float: none;
 		width: 100%;
@@ -7,9 +12,15 @@
 	
 	.display-img {
 		display: block;
-		width: 40%;
-		padding-top: 5px;
-		padding-bottom: 5px;
+		width: 50%;
+		float: left;
+		padding: 5px;
+	}
+	
+	.display-img::after {
+		content: "";
+		clear: both;
+		display: table;
 	}
 	
 	/* center the logo and add spacing ig */
@@ -18,8 +29,25 @@
 		margin-left: auto;
 		margin-right: auto;
 		padding: 10px;
-		width: 50px;
-		height: 50px;
+		width: 70px;
+		height: 70px;
+	}
+	/* center the logo and add spacing ig */
+	.big-logo {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 10px;
+		width: 25%;
+	}
+
+	/* center the logo and add spacing ig */
+	.super-big-logo {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 10px;
+		width: 100%;
 	}
 }
 
@@ -48,20 +76,20 @@
 
 /* Change the color of links on hover */
 .topnav a:hover {
-	background-color: grey;
+	background-color: gray;
 	color: white;
 }
 
 
-@media not screen and (max-width: 600px) {
+@media only screen and (min-width: 900px) {
 	/* center the logo and add spacing ig */
 	.logo {
 		display: block;
 		margin-left: auto;
 		margin-right: auto;
 		padding: 10px;
-		width: 75px;
-		height: 75px;
+		width: 95px;
+		height: 95px;
 	}
 
 	/* center the logo and add spacing ig */
@@ -70,8 +98,8 @@
 		margin-left: auto;
 		margin-right: auto;
 		padding: 10px;
-		width: 150px;
-		height: 150px;
+		width: 170px;
+		height: 170px;
 	}
 
 	/* center the logo and add spacing ig */
@@ -80,7 +108,7 @@
 		margin-left: auto;
 		margin-right: auto;
 		padding: 10px;
-		height: 90%;
+		height: 100%;
 	}
 
 	/* format the images so they um aren't shitty? */
@@ -88,7 +116,7 @@
 		display: block;
 		margin-left: auto;
 		margin-right: auto;
-		width: 85%;
+		width: 95%;
 		padding-top: 5px;
 		padding-bottom: 5px;
 	}

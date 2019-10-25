@@ -1,49 +1,28 @@
 /* On screens that are 600px wide or less */
-@media screen and (max-device-width: 600px) {
+@media only screen and (max-display-width: 600px) {
 	.topnav a {
 		float: none;
 		width: 100%;
 	}
+	
+	.display-img {
+		display: block;
+		width: 40%;
+		padding-top: 5px;
+		padding-bottom: 5px;
+	}
+	
+	/* center the logo and add spacing ig */
+	.logo {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 10px;
+		width: 50px;
+		height: 50px;
+	}
 }
 
-/* center the logo and add spacing ig */
-.logo {
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
-	padding: 10px;
-	width: 75px;
-	height: 75px;
-}
-
-/* center the logo and add spacing ig */
-.big-logo {
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
-	padding: 10px;
-	width: 150px;
-	height: 150px;
-}
-
-/* center the logo and add spacing ig */
-.super-big-logo {
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
-	padding: 10px;
-	height: 90%;
-}
-
-/* format the images so they um aren't shitty? */
-.display-img {
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
-	width: 90%;
-	padding-top: 5px;
-	padding-bottom: 5px;
-}
 
 /* Style the links inside the navigation bar */
 .topnav a {
@@ -54,8 +33,6 @@
 	text-decoration: none;
 	font-size: 17px;
 }
-
-
 
 /* Add a black background color to the top navigation */
 .topnav {
@@ -73,4 +50,46 @@
 .topnav a:hover {
 	background-color: grey;
 	color: white;
+}
+
+
+@media not screen and (max-width: 600px) {
+	/* center the logo and add spacing ig */
+	.logo {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 10px;
+		width: 75px;
+		height: 75px;
+	}
+
+	/* center the logo and add spacing ig */
+	.big-logo {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 10px;
+		width: 150px;
+		height: 150px;
+	}
+
+	/* center the logo and add spacing ig */
+	.super-big-logo {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 10px;
+		height: 90%;
+	}
+
+	/* format the images so they um aren't shitty? */
+	.display-img {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		width: 85%;
+		padding-top: 5px;
+		padding-bottom: 5px;
+	}
 }

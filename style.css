@@ -1,5 +1,5 @@
 /* On screens that are 600px wide or less */
-@media screen and (max-width: 707px) {
+@media screen and (max-device-width: 600px) {
 	.topnav a {
 		float: none;
 		width: 100%;
@@ -24,6 +24,15 @@
 	padding: 10px;
 	width: 150px;
 	height: 150px;
+}
+
+/* center the logo and add spacing ig */
+.super-big-logo {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+	height: 90%;
 }
 
 /* format the images so they um aren't shitty? */

@@ -1,26 +1,27 @@
 /* makes is so like width includes padding */
 * {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
-/* On screens that are 600px wide or less */
+/* On screens that are 900px wide or less */
 @media only screen and (max-width: 900px) {
 	.topnav a {
 		float: none;
 		width: 100%;
 	}
 	
-	.display-img {
-		display: block;
-		width: 50%;
-		float: left;
-		padding: 5px;
+	.images {
+		column-count: 2;
+		column-gap: 10px;
 	}
 	
-	.display-img::after {
-		content: "";
-		clear: both;
-		display: table;
+	.display-img {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		width: 100%;
+		padding-top: 5px;
+		padding-bottom: 5px;
 	}
 	
 	/* center the logo and add spacing ig */
@@ -29,8 +30,8 @@
 		margin-left: auto;
 		margin-right: auto;
 		padding: 10px;
-		width: 70px;
-		height: 70px;
+		width: 80px;
+		height: 80px;
 	}
 	/* center the logo and add spacing ig */
 	.big-logo {
@@ -111,12 +112,17 @@
 		height: 100%;
 	}
 
+	.images {
+		column-count: 4;
+		column-gap: 10px;
+	}
+	
 	/* format the images so they um aren't shitty? */
 	.display-img {
 		display: block;
 		margin-left: auto;
 		margin-right: auto;
-		width: 95%;
+		width: 100%;
 		padding-top: 5px;
 		padding-bottom: 5px;
 	}

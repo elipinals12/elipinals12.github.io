@@ -1,3 +1,11 @@
+/* The universal settings applied to any device */
+
+/* make there a grey hover over images */
+.display-img:hover {
+		opacity: 65%;
+		transition: .1s ease-in-out;
+	}
+
 /* makes is so like width includes padding */
 * {
 	box-sizing: border-box;
@@ -71,14 +79,14 @@
 
 /* Add a color to the active/current link */
 .topnav a.active {
-	background-color: #32a8a8;
-	color: white;
+	background-color: #c9c9c9;
+	color: black;
 }
 
 /* Change the color of links on hover */
 .topnav a:hover {
-	background-color: #43dede;
-	color: white;
+	background-color: white;
+	color: black;
 }
 
 

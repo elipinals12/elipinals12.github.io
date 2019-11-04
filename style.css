@@ -67,6 +67,25 @@ footer {
 	    width: 85%;
 	    margin: auto;
 	}
+	
+	/* For the back button on the large image page */
+	.back-btn {
+        color: white;
+        padding: 3px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 12px;
+        background-color: black;
+        border: 2px solid white;
+        cursor: pointer;
+        font-weight: bold;
+        position: absolute;
+        margin-left: 20px;
+        top: 37%;
+        -ms-transform: translateY(-37%);
+        transform: translateY(-37%);
+	}
 }
 
 

@@ -118,7 +118,7 @@ footer {
 }
 
 
-@media only screen and (min-width: 900px) {
+@media only screen and (min-width: 901px) {
 	/* center the logo and add spacing ig */
 	.logo {
 		display: block;

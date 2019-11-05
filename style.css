@@ -27,6 +27,7 @@
 	text-align: center;
  }
  
+ 
 /* On screens that are 900px wide or less */
 @media only screen and (max-width: 900px) {
 	.topnav a {

@@ -36,12 +36,15 @@ for %%i in (*.JPG) do (
     echo 		^<button class="back-btn" onclick="window.history.back()"^>^&#10094^&#10094 Go Back^</button^>
     echo 	^</body^>
     echo 	^<footer^>
-    echo 		^<small^>Copyright ^&copy^;
-    echo 			^<script^>
-    echo 				document.write^(new Date^(^).getFullYear^(^)^)
-	echo 		    ^</script^>
-	echo 	    	Golda Pinals. All Rights Reserved
-	echo     	^</small^>
+    echo 		^<small class="right-align"^>Copyright &copy;
+	echo			^<script^>
+	echo				document.write^(new Date^(^).getFullYear^(^)^)
+	echo			^</script^>
+	echo			Golda Pinals. All Rights Reserved
+	echo		^</small^>
+	echo		^<small class="left-align"^>
+	echo			Any problems or recomendations for the site? Email me at elipinals12@gmail.com
+	echo		^</small^>
     echo 	^</footer^>
     echo ^</html^>
 ) >> ../pages/%%~ni.html
@@ -85,12 +88,15 @@ for %%i in (*.JPG) do (
     echo 		^<button class="back-btn" onclick="window.history.back()"^>^&#10094^&#10094 Go Back^</button^>
     echo 	^</body^>
     echo 	^<footer^>
-    echo 		^<small^>Copyright ^&copy^;
-    echo 			^<script^>
-    echo 				document.write^(new Date^(^).getFullYear^(^)^)
-	echo 		    ^</script^>
-	echo 	    	Golda Pinals. All Rights Reserved
-	echo     	^</small^>
+    echo 		^<small class="right-align"^>Copyright &copy;
+	echo			^<script^>
+	echo				document.write^(new Date^(^).getFullYear^(^)^)
+	echo			^</script^>
+	echo			Golda Pinals. All Rights Reserved
+	echo		^</small^>
+	echo		^<small class="left-align"^>
+	echo			Any problems or recomendations for the site? Email me at elipinals12@gmail.com
+	echo		^</small^>
     echo 	^</footer^>
     echo ^</html^>
 ) >> ../pages/%%~ni.html
@@ -134,12 +140,15 @@ for %%i in (*.JPG) do (
     echo 		^<button class="back-btn" onclick="window.history.back()"^>^&#10094^&#10094 Go Back^</button^>
     echo 	^</body^>
     echo 	^<footer^>
-    echo 		^<small^>Copyright ^&copy^;
-    echo 			^<script^>
-    echo 				document.write^(new Date^(^).getFullYear^(^)^)
-	echo 		    ^</script^>
-	echo 	    	Golda Pinals. All Rights Reserved
-	echo     	^</small^>
+    echo 		^<small class="right-align"^>Copyright &copy;
+	echo			^<script^>
+	echo				document.write^(new Date^(^).getFullYear^(^)^)
+	echo			^</script^>
+	echo			Golda Pinals. All Rights Reserved
+	echo		^</small^>
+	echo		^<small class="left-align"^>
+	echo			Any problems or recomendations for the site? Email me at elipinals12@gmail.com
+	echo		^</small^>
     echo 	^</footer^>
     echo ^</html^>
 ) >> ../pages/%%~ni.html
@@ -183,16 +192,19 @@ for %%i in (*.JPG) do (
     echo 		^<button class="back-btn" onclick="window.history.back()"^>^&#10094^&#10094 Go Back^</button^>
     echo 	^</body^>
     echo 	^<footer^>
-    echo 		^<small^>Copyright ^&copy^;
-    echo 			^<script^>
-    echo 				document.write^(new Date^(^).getFullYear^(^)^)
-	echo 		    ^</script^>
-	echo 	    	Golda Pinals. All Rights Reserved
-	echo     	^</small^>
+    echo 		^<small class="right-align"^>Copyright &copy;
+	echo			^<script^>
+	echo				document.write^(new Date^(^).getFullYear^(^)^)
+	echo			^</script^>
+	echo			Golda Pinals. All Rights Reserved
+	echo		^</small^>
+	echo		^<small class="left-align"^>
+	echo			Any problems or recomendations for the site? Email me at elipinals12@gmail.com
+	echo		^</small^>
     echo 	^</footer^>
     echo ^</html^>
 ) >> ../pages/%%~ni.html
 
 cd ../..
 
-pause
+exit

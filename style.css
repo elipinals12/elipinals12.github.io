@@ -12,11 +12,21 @@
 	color: white;
 }
 
-footer {
+/* for shifting the copyright right and my email left */
+.right-align {
     float: right;
     margin-right: 3px;
 }
 
+.left-align {
+    float: left;
+    margin-left: 3px;
+}
+
+ .center {
+	text-align: center;
+ }
+ 
 /* On screens that are 900px wide or less */
 @media only screen and (max-width: 900px) {
 	.topnav a {
@@ -143,8 +153,10 @@ footer {
 	/* for the page that opens an individual image */
 	.big-img {
 	    display: block;
-	    height: 89.88%;
+	    height: 90%;
 	    margin: auto;
+		padding-top: 10px;
+		padding-bottom: 10px;
 	}
 	
 	/* For the back button on the large image page */

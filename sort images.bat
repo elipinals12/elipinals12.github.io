@@ -36,7 +36,7 @@ for %%i in (*.JPG) do (
     echo 		^<button class="back-btn" onclick="window.history.back()"^>^&#10094^&#10094 Go Back^</button^>
     echo 	^</body^>
     echo 	^<footer^>
-    echo 		^<small class="right-align"^>Copyright &copy;
+    echo 		^<small class="right-align"^>Copyright ^&copy;
 	echo			^<script^>
 	echo				document.write^(new Date^(^).getFullYear^(^)^)
 	echo			^</script^>
@@ -88,7 +88,7 @@ for %%i in (*.JPG) do (
     echo 		^<button class="back-btn" onclick="window.history.back()"^>^&#10094^&#10094 Go Back^</button^>
     echo 	^</body^>
     echo 	^<footer^>
-    echo 		^<small class="right-align"^>Copyright &copy;
+    echo 		^<small class="right-align"^>Copyright ^&copy;
 	echo			^<script^>
 	echo				document.write^(new Date^(^).getFullYear^(^)^)
 	echo			^</script^>
@@ -140,7 +140,7 @@ for %%i in (*.JPG) do (
     echo 		^<button class="back-btn" onclick="window.history.back()"^>^&#10094^&#10094 Go Back^</button^>
     echo 	^</body^>
     echo 	^<footer^>
-    echo 		^<small class="right-align"^>Copyright &copy;
+    echo 		^<small class="right-align"^>Copyright ^&copy;
 	echo			^<script^>
 	echo				document.write^(new Date^(^).getFullYear^(^)^)
 	echo			^</script^>
@@ -192,7 +192,7 @@ for %%i in (*.JPG) do (
     echo 		^<button class="back-btn" onclick="window.history.back()"^>^&#10094^&#10094 Go Back^</button^>
     echo 	^</body^>
     echo 	^<footer^>
-    echo 		^<small class="right-align"^>Copyright &copy;
+    echo 		^<small class="right-align"^>Copyright ^&copy;
 	echo			^<script^>
 	echo				document.write^(new Date^(^).getFullYear^(^)^)
 	echo			^</script^>

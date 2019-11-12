@@ -29,10 +29,9 @@
  
  
 /* On screens that are 900px wide or less */
-@media only screen and (max-width: 900px) {
-	.topnav a {
-		float: none;
-		width: 100%;
+@media only screen and (max-width: 900px) {	
+	#mobilehide {
+		display: none;
 	}
 	
 	.images {
@@ -77,19 +76,42 @@
 	    display: block;
 	    width: 85%;
 	    margin: auto;
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+	
+	/* For the back button on the large image page */
+	.back-btn {
+        color: white;
+        padding: 4px 11px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 13px;
+        background-color: black;
+        border: 1.5px solid white;
+        cursor: pointer;
+        font-weight: bold;
+        position: absolute;
+        margin-left: 15px;
+        top: 45%;
+        -ms-transform: translateY(-45%);
+        transform: translateY(-45%);
+	}
+	
+		.topnav a {
+		float: left;
+		color: white;
+		width: 100%;
+		text-align: center;
+		padding: 12px 13px;
+		text-decoration: none;
+		font-size: 19px;
 	}
 }
 
 
-/* Style the links inside the navigation bar */
-.topnav a {
-	float: left;
-	color: white;
-	text-align: center;
-	padding: 14px 16px;
-	text-decoration: none;
-	font-size: 19px;
-}
+
 
 /* Add a black background color to the top navigation */
 .topnav {
@@ -111,6 +133,16 @@
 
 
 @media only screen and (min-width: 900px) {
+	/* Style the links inside the navigation bar */
+	.topnav a {
+		float: left;
+		color: white;
+		text-align: center;
+		padding: 14px 16px;
+		text-decoration: none;
+		font-size: 19px;
+	}
+	
 	/* center the logo and add spacing ig */
 	.logo {
 		display: block;

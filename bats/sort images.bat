@@ -44,9 +44,6 @@ for %%i in (*.JPG) do (
 	echo			^</script^>
 	echo			Golda Pinals. All Rights Reserved
 	echo		^</small^>
-	echo		^<small class="left-align" id="mobilehide"^>
-	echo			Any problems or recomendations for the site? Email me at elipinals12@gmail.com
-	echo		^</small^>
     echo 	^</footer^>
     echo ^</html^>
 ) >> ../pages/%%~ni.html
@@ -97,9 +94,6 @@ for %%i in (*.JPG) do (
 	echo				document.write^(new Date^(^).getFullYear^(^)^)
 	echo			^</script^>
 	echo			Golda Pinals. All Rights Reserved
-	echo		^</small^>
-	echo		^<small class="left-align" id="mobilehide"^>
-	echo			Any problems or recomendations for the site? Email me at elipinals12@gmail.com
 	echo		^</small^>
     echo 	^</footer^>
     echo ^</html^>
@@ -152,9 +146,6 @@ for %%i in (*.JPG) do (
 	echo			^</script^>
 	echo			Golda Pinals. All Rights Reserved
 	echo		^</small^>
-	echo		^<small class="left-align" id="mobilehide"^>
-	echo			Any problems or recomendations for the site? Email me at elipinals12@gmail.com
-	echo		^</small^>
     echo 	^</footer^>
     echo ^</html^>
 ) >> ../pages/%%~ni.html
@@ -205,9 +196,6 @@ for %%i in (*.JPG) do (
 	echo				document.write^(new Date^(^).getFullYear^(^)^)
 	echo			^</script^>
 	echo			Golda Pinals. All Rights Reserved
-	echo		^</small^>
-	echo		^<small class="left-align" id="mobilehide"^>
-	echo			Any problems or recomendations for the site? Email me at elipinals12@gmail.com
 	echo		^</small^>
     echo 	^</footer^>
     echo ^</html^>
@@ -260,9 +248,6 @@ for %%i in (*.JPG) do (
 	echo			^</script^>
 	echo			Golda Pinals. All Rights Reserved
 	echo		^</small^>
-	echo		^<small class="left-align" id="mobilehide"^>
-	echo			Any problems or recomendations for the site? Email me at elipinals12@gmail.com
-	echo		^</small^>
     echo 	^</footer^>
     echo ^</html^>
 ) >> ../pages/%%~ni.html
@@ -313,9 +298,6 @@ for %%i in (*.JPG) do (
 	echo				document.write^(new Date^(^).getFullYear^(^)^)
 	echo			^</script^>
 	echo			Golda Pinals. All Rights Reserved
-	echo		^</small^>
-	echo		^<small class="left-align" id="mobilehide"^>
-	echo			Any problems or recomendations for the site? Email me at elipinals12@gmail.com
 	echo		^</small^>
     echo 	^</footer^>
     echo ^</html^>

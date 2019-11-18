@@ -190,6 +190,7 @@
 	    margin: auto;
 		padding-top: 10px;
 		padding-bottom: 10px;
+		z-index: -1;
 	}
 	
 	/* For the back button on the large image page */
@@ -210,20 +211,46 @@
         -ms-transform: translateY(-10%);
         transform: translateY(-10%);
 	}
+	
+	
+	/* left button for hand-made image carousel */
+	.left-btn {
+		background-color: black;
+		border: none;
+		color: white;
+		text-align: center;
+		position: absolute;
+		font-size: 70px;
+		float: left;
+		margin-left: 15px;
+		top: 50%;
+		cursor: pointer;
+		line-height: 0;
+		padding: 0;
+	}
+	
+	/* right button for hand-made image carousel */
+	.right-btn {
+		background-color: black;
+		border: none;
+		line-height: 0;
+		padding: 0;
+		color: white;
+		text-align: center;
+		position: absolute;
+		font-size: 70px;
+		right: 0;
+		float: right;
+		margin-right: 15px;
+		top: 50%;
+		cursor: pointer;
+	}
+	
+	/* greyed out button on end */
+	#greyed {
+		cursor: not-allowed;
+		color: grey;
+		//pointer-events: none;
+	}
 }
 
-/* left button for hand-made image carousel
-.left-btn {
-    background-color: black;
-    border: none;
-    color: white;
-    text-align: center;
-    position: absolute;
-    font-size: 56px;
-    float: left;
-    margin-left: 50px;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-    cursor: pointer;
-}*/

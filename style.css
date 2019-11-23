@@ -32,11 +32,6 @@
 	color: white;
 }
 
-.down {
-	position: absolute;
-	bottom: 0;
-}
-
 /* for shifting the copyright right and my email left */
 .right-align {
 	float: right;
@@ -313,6 +308,11 @@
 		cursor: not-allowed;
 		color: grey;
 		//pointer-events: none;
+	}
+
+	.down {
+		position: absolute;
+		bottom: 0;
 	}
 }
 

@@ -42,8 +42,16 @@ function draw() {
     cangles.push(map(times[0], 0, 60, 0.01, 360)); // seconds
     cangles.push(map(times[1], 0, 60, 0.01, 360)); // minutes
     cangles.push(map(times[2], 0, 24, 0.01, 360)); // hours
-    cangles.push(map(times[3], 1, 31, 0.01, 360)); // days
-    cangles.push(map(times[4], 1, 12, 0.01, 360)); // months
+
+    if (times[4] == 2) {
+        cangles.push(map(times[3], 1, 29, 0.01, 360)); // days feb
+    } else if (times[4] == 1 || times[4] == 3 || times[4] == 5 || times[4] == 7 || times[4] == 8 || times[4] == 10 || times[4] == 12) {
+        cangles.push(map(times[3], 1, 32, 0.01, 360)); // days high
+    } else {
+        cangles.push(map(times[3], 1, 31, 0.01, 360)); // days low
+    }
+
+    cangles.push(map(times[4], 1, 13, 0.01, 360)); // months
 
     push();
     rotate(90);

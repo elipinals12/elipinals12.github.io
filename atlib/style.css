@@ -5,6 +5,11 @@
     //margin: 0;
 }
 
+.center {
+	top: auto;
+	left: auto;
+}
+
 img {
     display: block;
 	margin: auto;

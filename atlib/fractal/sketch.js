@@ -27,11 +27,18 @@ function draw() {
 }
 
 function mousePressed() {
-    if (h > 3) {
-        h = h * .67;
-        count++;
+    if (mouseButton == RIGHT) {
+        if (h < 180) {
+            h = h / .67;
+            count--;
+        }
+    } else {
+        if (h > 3) {
+            h = h * .67;
+            count++;
+        }
+        print(count);
     }
-    print(count);
 }
 
 function keyPressed() {

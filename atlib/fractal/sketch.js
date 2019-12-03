@@ -26,12 +26,17 @@ function draw() {
     branch(176);
 }
 
-function keyPressed() {
-    if (h > 4) {
+function mousePressed() {
+    if (h > 3) {
         h = h * .67;
         count++;
     }
     print(count);
+}
+
+function keyPressed() {
+    count = 0;
+    h = 180;
 }
 
 function branch(len) {

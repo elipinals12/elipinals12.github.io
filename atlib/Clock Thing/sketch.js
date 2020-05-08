@@ -14,7 +14,10 @@ var times = [];
 var cangles = [];
 
 function setup() {
-    createCanvas(800, 800);
+    var cnv = createCanvas(800, 800);
+    var x = (windowWidth - width) / 2;
+    var y = (windowHeight - height) / 2;
+    cnv.position(x, y);
     angleMode(DEGREES);
     for (var i = 0; i < 6; i++) {
         csizes.push(210 + ((2 * cthic + gap) * (i + 1)));

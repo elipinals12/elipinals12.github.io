@@ -3,7 +3,10 @@ var ang;
 var count = 0;
 
 function setup() {
-    createCanvas(600, 600);
+    var cnv = createCanvas(600, 600);
+    var x = (windowWidth - width) / 2;
+    var y = ((windowHeight - height) / 2) - 50;
+    cnv.position(x, y);
 }
 
 function draw() {

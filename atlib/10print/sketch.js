@@ -6,10 +6,11 @@ let slider;
 let prob = 50;
 
 function setup() {
+
     slider = createSlider(2, 200, 50);
     slider.position(10,10);
     slider.style('width', '100px');
-
+    
     createCanvas(window.innerWidth-20, window.innerHeight-20);
     background(0);
 }

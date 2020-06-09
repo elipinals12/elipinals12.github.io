@@ -2,6 +2,10 @@ var wid, num, blank;
 var pos = [];
 var winstring = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0";
 var fader = 255;
+var timefader = 255;
+var winfadeint = 5;
+var posstring;
+var time = 0;
 
 function setup() {
     var cnv = createCanvas(1200, 800);
@@ -20,21 +24,11 @@ function setup() {
 function draw() {
     background(0);
     noStroke();
-    textSize(70);
-    fill(255);
-    textAlign(CENTER, TOP);
-    text("Instructions:", (width - 800) / 2 + 800, 50);
-    textSize(40);
-    text("The goals is to", (width - 800) / 2 + 800, 200);
-    text("arrange the numbers", (width - 800) / 2 + 800, 250);
-    text("in a consecutive order", (width - 800) / 2 + 800, 300);
-
-    text("Arrows: Move Piece", (width - 800) / 2 + 800, 450);
-    text("to Open Space", (width - 800) / 2 + 800, 500);
-
-    text("Space Bar: Reset", (width - 800) / 2 + 800, 650);
-
+    instructions()
+    timer();
     textAlign(CENTER, CENTER);
+
+    posstring = pos.toString();
 
     for (var row = 0; row < 4; row++) {
         for (var col = 0; col < 4; col++) {
@@ -85,6 +79,7 @@ function draw() {
         } else if (keyCode == RIGHT_ARROW && blank % 4 != 0) {
             b = blank - 1;
         } else if (keyCode == 32) {
+            time = 0;
             mixit();
         }
 
@@ -95,21 +90,22 @@ function draw() {
         keyIsPressed = false;
     }
 
-    var posstring = pos.toString();
     textSize(180);
-    stroke(255, fader);
+    noStroke();
     if (posstring == winstring) {
-        fill(205, 150, 30, fader);
-        text("WINNER!", (width - 400) / 2, .6 * height / 4)
-        fill(160, 200, 140, fader);
-        text("WINNER!", (width - 400) / 2, 1.6 * height / 4)
-        fill(80, 60, 230, fader);
-        text("WINNER!", (width - 400) / 2, 2.6 * height / 4)
+        fill(255, 150, 0, fader);
+        text("WINNER!", (width - 400) / 2, .55 * height / 4)
+        fill(160, 255, 140, fader);
+        text("WINNER!", (width - 400) / 2, 1.55 * height / 4)
+        fill(80, 60, 255, fader);
+        text("WINNER!", (width - 400) / 2, 2.55 * height / 4)
         fill(100, 160, 200, fader);
-        text("WINNER!", (width - 400) / 2, 3.6 * height / 4)
-        fader--;
-        if (fader < -70) {
-            fader = 255;
+        text("WINNER!", (width - 400) / 2, 3.55 * height / 4)
+        fader -= winfadeint;
+        if (fader < 0) {
+            winfadeint = -5;
+        } else if (fader > 260) {
+            winfadeint = 5;
         }
     } else {
         fader = 255;
@@ -140,4 +136,47 @@ function mixit() {
             swap(pos, blank, b);
         }
     }
+}
+
+function instructions() {
+    textSize(70);
+    fill(255);
+    textAlign(CENTER, TOP);
+    text("Instructions:", (width - 800) / 2 + 800, 215);
+    textSize(40);
+    text("The goals is to", (width - 800) / 2 + 800, 325);
+    text("arrange the numbers", (width - 800) / 2 + 800, 375);
+    text("in a consecutive order", (width - 800) / 2 + 800, 425);
+    text("as fast as you can", (width - 800) / 2 + 800, 475);
+
+    text("Arrows: Move Piece", (width - 800) / 2 + 800, 575);
+    text("to Open Space", (width - 800) / 2 + 800, 625);
+
+    text("Space Bar: Reset", (width - 800) / 2 + 800, 725);
+}
+
+function timer() {
+    textSize(100);
+    fill(0, 255, 0, timefader);
+    textAlign(CENTER, TOP);
+    noStroke();
+    if (floor(time) < 10) {
+        text("0:" + "0" + floor(time), (width - 800) / 2 + 800, 50);
+    } else if (floor(time) < 60) {
+        text("0:" + floor(time), (width - 800) / 2 + 800, 50);
+    } else if (floor(time) % 60 < 10) {
+        text(floor(time / 60) + ":" + "0" + floor(time) % 60, (width - 800) / 2 + 800, 50);
+    } else {
+        text(floor(time / 60) + ":" + floor(time) % 60, (width - 800) / 2 + 800, 50);
+    }
+
+    if (posstring != winstring) {
+        time = time + (1 / 60);
+    } else {
+        timefader -= 10;
+    }
+    if (timefader < -70) {
+        timefader = 255;
+    }
+
 }

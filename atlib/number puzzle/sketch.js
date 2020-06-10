@@ -80,6 +80,7 @@ function draw() {
             b = blank - 1;
         } else if (keyCode == 32) {
             time = 0;
+            timefader = 255;
             mixit();
         }
 

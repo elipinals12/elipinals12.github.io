@@ -1,7 +1,7 @@
 // TODO
 
 var lostsound, munchsound;
-var startdotcount;
+var dotcount;
 var density = 20;
 var playersize = 20;
 var score = 0;
@@ -28,16 +28,17 @@ function setup() {
     munchsound = loadSound("munch.mp3");
 
     print(width);
-    startdotcount = floor(width / density);
-    print(startdotcount);
-    for (let i = 0; i < startdotcount; i++) {
+    dotcount = floor(width / density);
+    print(dotcount);
+    for (let i = 0; i < dotcount; i++) {
         newDot();
     }
 }
 
 function draw() {
     background(8, 0, 28);
-
+    dotcount = floor(width / density);
+    
     minsize = startminsize + score;
     maxsize = startmaxsize + score;
 
@@ -176,7 +177,7 @@ function reset() {
     began = true;
     lost = false;
     paused = false;
-    for (let i = 0; i < startdotcount; i++) {
+    for (let i = 0; i < dotcount; i++) {
         newDot();
     }
 }

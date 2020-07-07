@@ -2,7 +2,9 @@
 
 var lostsound, munchsound;
 var dotcount;
-var density = 20;
+var density = 6;
+var frozedensity;
+var densitydivider;
 var playersize = 20;
 var score = 0;
 var began = false;
@@ -27,8 +29,9 @@ function setup() {
     lostsound = loadSound("lost.mp3");
     munchsound = loadSound("munch.mp3");
 
+    densitydivider = map(density, 1, 10, 120, 5);
     print(width);
-    dotcount = floor(width / density);
+    dotcount = floor(width / densitydivider);
     print(dotcount);
     for (let i = 0; i < dotcount; i++) {
         newDot();
@@ -37,21 +40,29 @@ function setup() {
 
 function draw() {
     background(8, 0, 28);
-    dotcount = floor(width / density);
-    
+    densitydivider = map(density, 1, 10, 100, 8);
+    dotcount = floor(width / densitydivider);
+
     minsize = startminsize + score;
     maxsize = startmaxsize + score;
 
     if (began) {
         if (lost) {
             fill(255, 0, 0);
-            textSize(150);
+            textSize(180);
             textAlign(CENTER, CENTER);
             text("GAME OVER", width / 2, (height / 2) - 100);
+            textSize(40);
+            text("Density: " + frozedensity, width / 2, (height / 2) + 190);
             fill(255);
+            textSize(150);
             text("Score: " + score, width / 2, (height / 2) + 100);
             textSize(50);
             text("Click to Restart", width / 2, (height / 2));
+            fill(255, 0, 0);
+            textSize(50);
+            textAlign(RIGHT, CENTER);
+            text(density, width - 15, height - 35);
             for (let i = 0; i < dots.length; i++) {
                 dots[i].show();
                 dots[i].move();
@@ -69,6 +80,11 @@ function draw() {
                 textSize(100);
                 textAlign(LEFT, TOP);
                 text(score, 35, 35);
+
+                fill(255, 0, 0);
+                textSize(50);
+                textAlign(RIGHT, CENTER);
+                text(density, width - 15, height - 35);
             } else {
                 for (let i = 0; i < dots.length; i++) {
                     prox = dist(mouseX, mouseY, dots[i].x, dots[i].y);
@@ -103,6 +119,11 @@ function draw() {
                 textSize(100);
                 textAlign(LEFT, TOP);
                 text(score, 35, 35);
+
+                fill(255, 0, 0);
+                textSize(50);
+                textAlign(RIGHT, CENTER);
+                text(density, width - 15, height - 35);
             }
         }
     } else {
@@ -110,11 +131,16 @@ function draw() {
         textSize(100);
         textAlign(CENTER, CENTER);
         text("Eat smaller dots to grow", width / 2, (height / 2) - 150);
-        text("Space to pause", width / 2, (height / 2) + 150);
+        text("Space to pause", width / 2, (height / 2) + 140);
         //textSize(150);
         text("Click to start", width / 2, (height / 2));
         fill(255);
         circle(mouseX, mouseY, score + playersize);
+
+        fill(255, 0, 0);
+        textSize(50);
+        textAlign(RIGHT, CENTER);
+        text("Choose the density (1-10) with the Up and Down arrows: " + density, width - 15, height - 35);
     }
 }
 
@@ -177,17 +203,27 @@ function reset() {
     began = true;
     lost = false;
     paused = false;
+    frozedensity = density;
     for (let i = 0; i < dotcount; i++) {
         newDot();
     }
 }
 
 function mousePressed() {
-    reset();
+    if (lost || !began) {
+        reset();
+    }
 }
 
 function keyPressed() {
     if (keyCode == 32) {
         paused = !paused;
+    }
+    if (!began || lost) {
+        if (keyCode == 38 && density < 10) {
+            density++;
+        } else if (keyCode == 40 && density > 1) {
+            density--;
+        }
     }
 }

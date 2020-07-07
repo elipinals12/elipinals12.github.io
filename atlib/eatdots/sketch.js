@@ -50,7 +50,7 @@ function draw() {
             fill(255);
             text("Score: " + score, width / 2, (height / 2) + 100);
             textSize(50);
-            text("Click to Restart", width / 2, (height / 2) + 160);
+            text("Click to Restart", width / 2, (height / 2));
             for (let i = 0; i < dots.length; i++) {
                 dots[i].show();
                 dots[i].move();

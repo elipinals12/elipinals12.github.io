@@ -108,10 +108,12 @@ function draw() {
         fill(255);
         textSize(100);
         textAlign(CENTER, CENTER);
-        text("Eat smaller dots to grow", width / 2, (height / 2) - 200);
-        text("Space to pause", width / 2, (height / 2) - 50);
+        text("Eat smaller dots to grow", width / 2, (height / 2) - 150);
+        text("Space to pause", width / 2, (height / 2) + 150);
         //textSize(150);
-        text("Click to start", width / 2, (height / 2) + 50);
+        text("Click to start", width / 2, (height / 2));
+        fill(255);
+        circle(mouseX, mouseY, score + playersize);
     }
 }
 

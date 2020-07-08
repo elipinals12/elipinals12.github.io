@@ -1,28 +1,33 @@
 // TODO
 
-var lostsound, munchsound;
-var dotcount;
+var startminsize = 2;
+var startmaxsize = 100;
 var density = 6;
-var frozedensity;
-var densitydivider;
 var playersize = 20;
-var score = 0;
-var began = false;
-var dots = [];
-var farout = 400;
-var out = 100;
 var fastspeed = 4;
 var slowspeed = 1;
-var startminsize = 3;
-var startmaxsize = 100;
+
+var farout = 400;
+var out = 100;
 var minsize = startminsize;
 var maxsize = startmaxsize;
 var prox, touching;
 var paused = false;
 var lost = false;
+var lostsound, munchsound;
+var dotcount;
+var frozedensity;
+var densitydivider;
+var dots = [];
+var began = false;
+var score = 0;
 
 function setup() {
-    createCanvas(window.innerWidth - 20, window.innerHeight - 20);
+    var cnv = createCanvas(window.innerWidth - 22, window.innerHeight - 22);
+    var cnvx = (windowWidth - width) / 2;
+    var cnvy = (windowHeight - height) / 2;
+    cnv.position(cnvx, cnvy);
+
     noStroke();
     //frameRate(1);
 
@@ -149,9 +154,9 @@ class Dot {
         this.x = x;
         this.y = y;
         this.size = random(minsize, maxsize);
-        this.r = random(0, 255);
-        this.g = random(0, 255);
-        this.b = random(0, 255);
+        this.r = random(30, 255);
+        this.g = random(30, 255);
+        this.b = random(30, 255);
         this.xspeed = xspeed;
         this.yspeed = yspeed;
     }
@@ -216,8 +221,10 @@ function mousePressed() {
 }
 
 function keyPressed() {
-    if (keyCode == 32) {
+    if (keyCode == 32 && !lost) {
         paused = !paused;
+    } else if (keyCode == 32) {
+        reset();
     }
     if (!began || lost) {
         if (keyCode == 38 && density < 10) {

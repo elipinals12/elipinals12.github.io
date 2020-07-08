@@ -21,6 +21,7 @@ var densitydivider;
 var dots = [];
 var began = false;
 var score = 0;
+var cheat = false;
 
 function setup() {
     var cnv = createCanvas(window.innerWidth - 22, window.innerHeight - 22);
@@ -95,7 +96,7 @@ function draw() {
                     prox = dist(mouseX, mouseY, dots[i].x, dots[i].y);
                     touching = (dots[i].size / 2) + ((score + playersize) / 2);
                     if (prox <= touching) {
-                        if (dots[i].size > score + playersize) {
+                        if ((dots[i].size > score + playersize) && !cheat) {
                             lostsound.play();
                             lost = true;
                         } else if (dots[i].size < score + playersize) {
@@ -103,7 +104,7 @@ function draw() {
                             munchsound.play();
                             dots.splice(i, 1);
                             newDot();
-                        } else {
+                        } else if (dots[i].size == score + playersize) {
                             print("A RARE SAME-SIZE DOT!!");
                         }
 
@@ -232,5 +233,10 @@ function keyPressed() {
         } else if (keyCode == 40 && density > 1) {
             density--;
         }
+    }
+
+    if (keyIsDown(17) && keyIsDown(67)) {
+        cheat = !cheat;
+        print(cheat);
     }
 }

@@ -181,3 +181,10 @@ function timer() {
     }
 
 }
+
+function keyPressed() {
+    if (keyIsDown(17) && keyIsDown(67)) {
+        print("true");
+        pos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 12, 13, 14, 11, 15];
+    }
+}

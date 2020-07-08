@@ -6,6 +6,7 @@ var density = 6;
 var playersize = 20;
 var fastspeed = 4;
 var slowspeed = 1;
+var brokevalue = 5.38;
 
 var farout = 400;
 var out = 100;
@@ -21,6 +22,7 @@ var densitydivider;
 var dots = [];
 var began = false;
 var score = 0;
+var blinker = 0;
 var cheat = false;
 
 function setup() {
@@ -54,6 +56,10 @@ function draw() {
 
     if (began) {
         if (lost) {
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].show();
+                dots[i].move();
+            }
             fill(255, 0, 0);
             textSize(180);
             textAlign(CENTER, CENTER);
@@ -69,10 +75,6 @@ function draw() {
             textSize(50);
             textAlign(RIGHT, CENTER);
             text(density, width - 15, height - 35);
-            for (let i = 0; i < dots.length; i++) {
-                dots[i].show();
-                dots[i].move();
-            }
         } else {
             if (paused) {
                 for (let i = 0; i < dots.length; i++) {
@@ -132,6 +134,7 @@ function draw() {
                 text(density, width - 15, height - 35);
             }
         }
+
     } else {
         fill(255);
         textSize(100);
@@ -147,6 +150,23 @@ function draw() {
         textSize(50);
         textAlign(RIGHT, CENTER);
         text("Choose the density (1-10) with the Up and Down arrows: " + density, width - 15, height - 35);
+    }
+    if (minsize / width > brokevalue) {
+    lost = true;
+    if (blinker < 10) {
+        stroke(1);
+        strokeWeight(2);
+        fill(255, 255, 0);
+        textSize(200);
+        textAlign(CENTER, CENTER);
+        text("You broke it!", (width / 2), (height / 2) )
+        noStroke();
+        blinker++;
+    } else if (blinker < 20) {
+        blinker++;
+    } else if (blinker >= 20) {
+        blinker = 0;
+    }
     }
 }
 

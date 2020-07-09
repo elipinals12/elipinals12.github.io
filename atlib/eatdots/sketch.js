@@ -24,6 +24,7 @@ var began = false;
 var score = 0;
 var blinker = 0;
 var cheat = false;
+var colorcheat = false;
 
 function setup() {
     var cnv = createCanvas(window.innerWidth - 22, window.innerHeight - 22);
@@ -175,7 +176,7 @@ class Dot {
         this.x = x;
         this.y = y;
         this.size = random(minsize, maxsize);
-        if (cheat) {
+        if (colorcheat) {
             if (this.size > score + playersize) {
                 this.r = 255;
                 this.g = 0;

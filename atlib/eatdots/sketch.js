@@ -152,21 +152,21 @@ function draw() {
         text("Choose the density (1-10) with the Up and Down arrows: " + density, width - 15, height - 35);
     }
     if (minsize / width > brokevalue) {
-    lost = true;
-    if (blinker < 10) {
-        stroke(1);
-        strokeWeight(2);
-        fill(255, 255, 0);
-        textSize(200);
-        textAlign(CENTER, CENTER);
-        text("You broke it!", (width / 2), (height / 2) )
-        noStroke();
-        blinker++;
-    } else if (blinker < 20) {
-        blinker++;
-    } else if (blinker >= 20) {
-        blinker = 0;
-    }
+        lost = true;
+        if (blinker < 10) {
+            stroke(1);
+            strokeWeight(2);
+            fill(255, 255, 0);
+            textSize(200);
+            textAlign(CENTER, CENTER);
+            text("You broke it!", (width / 2), (height / 2))
+            noStroke();
+            blinker++;
+        } else if (blinker < 20) {
+            blinker++;
+        } else if (blinker >= 20) {
+            blinker = 0;
+        }
     }
 }
 
@@ -175,9 +175,21 @@ class Dot {
         this.x = x;
         this.y = y;
         this.size = random(minsize, maxsize);
-        this.r = random(30, 255);
-        this.g = random(30, 255);
-        this.b = random(30, 255);
+        if (cheat) {
+            if (this.size > score + playersize) {
+                this.r = 255;
+                this.g = 0;
+                this.b = 0;
+            } else {
+                this.r = 0;
+                this.g = 255;
+                this.b = 0;
+            }
+        } else {
+            this.r = random(30, 255);
+            this.g = random(30, 255);
+            this.b = random(30, 255);
+        }
         this.xspeed = xspeed;
         this.yspeed = yspeed;
     }

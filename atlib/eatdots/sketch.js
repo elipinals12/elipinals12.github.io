@@ -24,7 +24,7 @@ var began = false;
 var score = 0;
 var blinker = 0;
 var cheat = false;
-var colorcheat = false;
+var colorcheat;
 
 function setup() {
     var cnv = createCanvas(window.innerWidth - 22, window.innerHeight - 22);
@@ -48,6 +48,8 @@ function setup() {
 }
 
 function draw() {
+    colorcheat = false;
+
     background(8, 0, 28);
     densitydivider = map(density, 1, 10, 100, 8);
     dotcount = floor(width / densitydivider);

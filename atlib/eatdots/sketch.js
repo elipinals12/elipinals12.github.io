@@ -24,7 +24,7 @@ var began = false;
 var score = 0;
 var blinker = 0;
 var cheat = false;
-var colorcheat;
+var colorcheat = false;
 
 function setup() {
     var cnv = createCanvas(window.innerWidth - 22, window.innerHeight - 22);
@@ -48,8 +48,6 @@ function setup() {
 }
 
 function draw() {
-    colorcheat = false;
-
     background(8, 0, 28);
     densitydivider = map(density, 1, 10, 100, 8);
     dotcount = floor(width / densitydivider);
@@ -273,5 +271,9 @@ function keyPressed() {
     if (keyIsDown(17) && keyIsDown(67)) {
         cheat = !cheat;
         print(cheat);
+    }
+    if (keyIsDown(17) && keyIsDown(86)) {
+        colorcheat = !colorcheat;
+        print(colorcheat);
     }
 }

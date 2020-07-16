@@ -2,7 +2,7 @@
 
 * {
     box-sizing: border-box;
-    //margin: 0;
+    margin: 0;
 }
 
 .center {
@@ -21,4 +21,13 @@ img {
 .images {
     column-count: 3;
 	column-gap: 10px;
+}
+
+h2 {
+	color:#ffffff;
+	font-family:Arial;
+	text-align: center;
+	font-size:75px;
+	margin-top:30px;
+	margin-bottom:30px;
 }

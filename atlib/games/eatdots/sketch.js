@@ -6,7 +6,7 @@ var density = 6;
 var playersize = 20;
 var fastspeed = 4;
 var slowspeed = 1;
-var brokevalue = 2;
+var brokevalue = 2.5;
 
 var farout = 400;
 var out = 100;
@@ -152,7 +152,7 @@ function draw() {
         textAlign(RIGHT, CENTER);
         text("Choose the density (1-10) with the Up and Down arrows: " + density, width - 15, height - 35);
     }
-    if (minsize / width > brokevalue) {
+    if (minsize / height > brokevalue) {
         lost = true;
         if (blinker < 10) {
             stroke(1);

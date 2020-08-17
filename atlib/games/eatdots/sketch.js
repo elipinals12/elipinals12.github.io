@@ -6,7 +6,7 @@ var density = 6;
 var playersize = 20;
 var fastspeed = 4;
 var slowspeed = 1;
-var brokevalue = 5.38;
+var brokevalue = 2;
 
 var farout = 400;
 var out = 100;

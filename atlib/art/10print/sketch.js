@@ -7,7 +7,7 @@ let prob = 50;
 
 function setup() {
 
-    slider = createSlider(5, 200, 50);
+    slider = createSlider(2, 200, 50);
     slider.position(10,10);
     slider.style('width', '100px');
     

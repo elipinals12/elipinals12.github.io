@@ -272,8 +272,4 @@ function keyPressed() {
         cheat = !cheat;
         print(cheat);
     }
-    if (keyIsDown(17) && keyIsDown(86)) {
-        colorcheat = !colorcheat;
-        print(colorcheat);
-    }
 }

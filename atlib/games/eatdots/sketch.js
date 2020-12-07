@@ -174,13 +174,13 @@ function draw() {
         fill(31, 102, 255);
         textSize(50);
         textAlign(RIGHT, TOP);
-        text("Imortal Mode", width - 35, 80);
+        text("Immortal Mode", width - 35, 30);
     }
     if (colorcheat) {
         fill(69, 230, 74);
         textSize(50);
         textAlign(RIGHT, TOP);
-        text("Christmas Mode", width - 35, 30);
+        text("Christmas Mode", width - 35, 80);
     }
 }
 

@@ -169,6 +169,19 @@ function draw() {
             blinker = 0;
         }
     }
+
+    if (cheat) {
+        fill(31, 102, 255);
+        textSize(50);
+        textAlign(RIGHT, TOP);
+        text("Imortal Mode", width - 35, 80);
+    }
+    if (colorcheat) {
+        fill(69, 230, 74);
+        textSize(50);
+        textAlign(RIGHT, TOP);
+        text("Christmas Mode", width - 35, 30);
+    }
 }
 
 class Dot {

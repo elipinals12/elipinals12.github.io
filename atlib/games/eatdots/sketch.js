@@ -100,10 +100,12 @@ function draw() {
                     touching = (dots[i].size / 2) + ((score + playersize) / 2);
                     if (prox <= touching) {
                         if ((dots[i].size > score + playersize) && !cheat) {
+                            lostsound.setVolume(.3);
                             lostsound.play();
                             lost = true;
                         } else if (dots[i].size < score + playersize) {
                             score++;
+                            munchsound.setVolume(.5);
                             munchsound.play();
                             dots.splice(i, 1);
                             newDot();

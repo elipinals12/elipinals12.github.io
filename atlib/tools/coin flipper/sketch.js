@@ -105,6 +105,8 @@ function draw() {
         textSize(40);
         textAlign(CENTER, CENTER);
         text("PRESS ANYWHERE TO GO", width / 2, height / 2);
+        textSize(20);
+        text("Use the slider in the top left to adjust speed", width / 2, height / 2 + 50);
     }
 }
 

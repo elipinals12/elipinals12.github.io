@@ -1,6 +1,6 @@
 var heads = 0;
 var flipcount = 0;
-let slider, currentflip, winration;
+let slider, currentflip, winration, linewidth;
 var go = false;
 var currentflip2;
 var redcornerY, bluecornerY;
@@ -73,11 +73,27 @@ function draw() {
 
         // pink totals
         fill(255, 0, 255);
-        strokeWeight(10);
-        stroke(255, 0, 255);
         noStroke();
         text(heads, width / 2 - 120, 290);
         text(flipcount, width / 2 - 120, 350);
+
+        // little fraction line
+        stroke(255, 0, 255);
+        strokeWeight(3);
+        if (flipcount < 10) {
+            linewidth = 24;
+        } else if (flipcount < 100) {
+            linewidth = 44;
+        } else if (flipcount < 1000) {
+            linewidth = 60;
+        } else if (flipcount < 10000) {
+            linewidth = 72;
+        } else if (flipcount < 100000) {
+            linewidth = 84;
+        } else if (flipcount < 1000000) {
+            linewidth = 94;
+        }
+        line(180 - linewidth, 318, 180 + linewidth, 318)
 
         // win percent
         fill(255, 0, 0);
@@ -89,17 +105,21 @@ function draw() {
         // bar graph
         redcornerY = map((heads / flipcount), 0, 1, 500, 100);
 
+        stroke(255);
+        strokeWeight(1);
+        line(390, 300, 590, 300);
+        textSize(14);
+        fill(255);
+        text("50%", 360, 300);
+
         noStroke();
+        fill(255, 0, 0);
         rectMode(CORNERS);
         rect(400, 500, 485, redcornerY);
 
         bluecornerY = map((heads / flipcount), 0, 1, 100, 500);
         fill(0, 0, 255);
         rect(495, bluecornerY, 580, 500);
-
-        stroke(255);
-        strokeWeight(1);
-        line(400, 300, 580, 300);
     } else {
         fill(255);
         textSize(40);

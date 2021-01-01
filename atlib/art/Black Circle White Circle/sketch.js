@@ -1,4 +1,5 @@
 var outline = false;
+var instructions = true;
 
 function setup() {
 	createCanvas(window.innerWidth - 20, window.innerHeight - 20);
@@ -6,11 +7,21 @@ function setup() {
 	setbackground();
 
 	// Get rid of that circle in corner
-	mouseX = -1000
-	mouseY = -1000
+	mouseX = -1000;
+	mouseY = -1000;
 }
 
 function draw() {
+	if (instructions) {
+		textSize(width / 15);
+		textAlign(CENTER, CENTER);
+		text("MOVE MOUSE to draw", width / 2, 1 * height / 5);
+		text("CLICK to Invert", width / 2, 2 * height / 5);
+		text("SPACE to toggle borders", width / 2, 3 * height / 5);
+		text("ANY KEY to reset", width / 2, 4 * height / 5);
+		instructions = false;
+	}
+
 	// White vs Black circles
 	if (mouseIsPressed) {
 		fill(0);

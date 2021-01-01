@@ -1,6 +1,7 @@
 var h = 180;
 var ang;
 var count = 0;
+var instructions = true;
 
 function setup() {
     var cnv = createCanvas(600, 600);
@@ -11,6 +12,16 @@ function setup() {
 
 function draw() {
     background(0);
+
+    if (instructions) {
+        textSize(width / 17);
+        fill(255);
+		textAlign(CENTER, CENTER);
+		text("CLICK to add branches", width / 2, 2 * height / 6);
+		text("RIGHT CLICK to remove branches", width / 2, 3 * height / 6);
+		text("MOVE MOUSE to bend branches", width / 2, 4 * height / 6);
+	}
+    
     translate(width/2, height);
 
     stroke(255);
@@ -30,6 +41,7 @@ function draw() {
 }
 
 function mousePressed() {
+    instructions = false;
     if (mouseButton == RIGHT) {
         if (h < 180) {
             h = h / .67;

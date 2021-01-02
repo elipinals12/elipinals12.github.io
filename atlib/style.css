@@ -29,10 +29,9 @@ img:hover {
 }
 
 
-@import url('https://fonts.googleapis.com/css?family=Montserrat');
 
 #title {
-  font-family: "Montserrat";
+  font-family: "impact";
   display: flex;
   color: transparent;
   flex-direction: column;

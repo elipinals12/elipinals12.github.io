@@ -19,16 +19,34 @@ img {
 	padding-bottom: 5px;
 }
 
+img:hover {
+	transform: scale(.9);
+}
+
 .images {
     column-count: 3;
 	column-gap: 10px;
 }
 
+
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+#title {
+  font-family: "Montserrat";
+  display: flex;
+  color: transparent;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 1px;
+}
+
 h2 {
-	color:#ffffff;
-	font-family: Arial;
-	text-align: center;
-	font-size:75px;
-	margin-top:30px;
-	margin-bottom:30px;
+  background-image: url(https://media4.giphy.com/media/l3vRbTrGdpZrjjco8/giphy.gif);
+  color: white;
+  -moz-background-clip: text;
+  -webkit-background-clip: text;
+  font-size: 120px;
+  line-height: .75;
+  margin: 10px 0;
 }

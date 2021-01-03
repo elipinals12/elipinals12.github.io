@@ -143,16 +143,16 @@ function draw() {
         textSize(100);
         textAlign(CENTER, CENTER);
         text("Eat smaller dots to grow", width / 2, (height / 2) - 150);
-        text("Space to pause", width / 2, (height / 2) + 140);
+        text("Click to start", width / 2, (height / 2) + 145);
         //textSize(150);
-        text("Click to start", width / 2, (height / 2));
+        text("Space to pause", width / 2, (height / 2));
         fill(255);
         circle(mouseX, mouseY, score + playersize);
 
         fill(255, 0, 0);
         textSize(50);
         textAlign(RIGHT, CENTER);
-        text("Choose the density (1-10) with the Up and Down arrows: " + density, width - 15, height - 35);
+        text("Up and Down arrows to change difficulty: " + density, width - 15, height - 35);
     }
     if (minsize / height > brokevalue) {
         lost = true;

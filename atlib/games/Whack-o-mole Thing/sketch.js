@@ -7,7 +7,6 @@ var xposs = [];
 var yposs = [];
 var step;
 var level = {
-    displaynum: 1,
     lvlnum: 0,
     time: 85
 };
@@ -28,7 +27,7 @@ function draw() {
     background(0);
     image(backFill, 0, 0);
 
-    points = (level.displaynum * 100) + (score * 10);
+    points = (level.lvlnum * 100) + (score * 10);
 
     if (level.lvlnum >= times.length) {
         keyPressed();
@@ -55,7 +54,6 @@ function draw() {
 
     if (score == 10) {
         score = 0
-        level.displaynum++
         level.lvlnum++
         print(times[level.lvlnum]);
     }
@@ -67,7 +65,7 @@ function draw() {
     text("Score: " + points, 50, 80)
 
     textSize(38)
-    text("Level: " + level.displaynum, 50, 130);
+    text("Level: " + level.lvlnum, 50, 130);
 
     fill(255, 0, 0);
     textAlign(RIGHT);
@@ -130,7 +128,6 @@ function reset() {
     xposs = [];
     yposs = [];
     level = {
-        displaynum: 1,
         lvlnum: 0,
         time: 150
     };

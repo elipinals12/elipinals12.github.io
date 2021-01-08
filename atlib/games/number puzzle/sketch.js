@@ -8,7 +8,7 @@ var posstring;
 var time = 0;
 
 function setup() {
-    var cnv = createCanvas(1200, 800);
+    var cnv = createCanvas((window.innerHeight - 22) / 8 * 12, window.innerHeight - 22);
     var x = (windowWidth - width) / 2;
     var y = ((windowHeight - height) / 2);
     cnv.position(x, y);
@@ -91,17 +91,18 @@ function draw() {
         keyIsPressed = false;
     }
 
-    textSize(180);
+    textSize(height / 4.4);
+    textAlign(LEFT);
     noStroke();
     if (posstring == winstring) {
         fill(255, 150, 0, fader);
-        text("WINNER!", (width - 400) / 2, .55 * height / 4)
+        text("WINNER!", 0, .55 * height / 4)
         fill(160, 255, 140, fader);
-        text("WINNER!", (width - 400) / 2, 1.55 * height / 4)
+        text("WINNER!", 0, 1.55 * height / 4)
         fill(80, 60, 255, fader);
-        text("WINNER!", (width - 400) / 2, 2.55 * height / 4)
+        text("WINNER!", 0, 2.55 * height / 4)
         fill(100, 160, 200, fader);
-        text("WINNER!", (width - 400) / 2, 3.55 * height / 4)
+        text("WINNER!", 0, 3.55 * height / 4)
         fader -= winfadeint;
         if (fader < 0) {
             winfadeint = -5;
@@ -140,20 +141,20 @@ function mixit() {
 }
 
 function instructions() {
-    textSize(70);
+    textSize(60);
     fill(255);
     textAlign(CENTER, TOP);
-    text("Instructions:", (width - 800) / 2 + 800, 215);
+    text("Instructions:", width - (width - 4 * wid) / 2, height / 4);
     textSize(40);
-    text("The goals is to", (width - 800) / 2 + 800, 325);
-    text("arrange the numbers", (width - 800) / 2 + 800, 375);
-    text("in a consecutive order", (width - 800) / 2 + 800, 425);
-    text("as fast as you can", (width - 800) / 2 + 800, 475);
+    text("The goals is to", width - (width - 4 * wid) / 2, 1.8 * height / 5);
+    text("arrange the", width - (width - 4 * wid) / 2, 1.8 * height / 5 + 50);
+    text("numbers in order", width - (width - 4 * wid) / 2, 1.8 * height / 5 + 100);
+    text("as fast as you can", width - (width - 4 * wid) / 2, 1.8 * height / 5 + 150);
 
-    text("Arrows: Move Piece", (width - 800) / 2 + 800, 575);
-    text("to Open Space", (width - 800) / 2 + 800, 625);
+    text("Arrows:", width - (width - 4 * wid) / 2, 3.2 * height / 5);
+    text("Move Piece", width - (width - 4 * wid) / 2, 3.2 * height / 5 + 50);
 
-    text("Space Bar: Reset", (width - 800) / 2 + 800, 725);
+    text("Space Bar: Reset", width - (width - 4 * wid) / 2, 4 * height / 5);
 }
 
 function timer() {
@@ -162,13 +163,13 @@ function timer() {
     textAlign(CENTER, TOP);
     noStroke();
     if (floor(time) < 10) {
-        text("0:" + "0" + floor(time), (width - 800) / 2 + 800, 50);
+        text("0:" + "0" + floor(time), width - (width - 4 * wid) / 2, 50);
     } else if (floor(time) < 60) {
-        text("0:" + floor(time), (width - 800) / 2 + 800, 50);
+        text("0:" + floor(time), width - (width - 4 * wid) / 2, 50);
     } else if (floor(time) % 60 < 10) {
-        text(floor(time / 60) + ":" + "0" + floor(time) % 60, (width - 800) / 2 + 800, 50);
+        text(floor(time / 60) + ":" + "0" + floor(time) % 60, width - (width - 4 * wid) / 2, 50);
     } else {
-        text(floor(time / 60) + ":" + floor(time) % 60, (width - 800) / 2 + 800, 50);
+        text(floor(time / 60) + ":" + floor(time) % 60, width - (width - 4 * wid) / 2, 50);
     }
 
     if (posstring != winstring) {

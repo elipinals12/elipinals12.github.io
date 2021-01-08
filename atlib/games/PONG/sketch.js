@@ -1,3 +1,8 @@
+// TODO: 
+// add sound
+// make ball 3d
+// make 1player mode
+
 var posx = 400;
 var xspeed = 0;
 var posy = 400;
@@ -25,9 +30,9 @@ function setup() {
 
 function draw() {
     background(0);
-    
+
     movement();
-    
+
     if (first) {
         fill(255);
         textSize(70);
@@ -38,47 +43,47 @@ function draw() {
         line(400, 690, 400, 650);
         line(400, 650, 390, 660);
         line(400, 650, 410, 660);
-        
+
         strokeWeight(1);
         textSize(30);
         text("Up", 730, 350);
         text("Down", 730, 450);
         text("W", 70, 350);
-        text("A", 70, 450);
+        text("S", 70, 450);
     }
-    
+
     // SCORE COUNTER
     fill(255, 255, 100, 50);
     textAlign(RIGHT, CENTER);
     noStroke();
     textSize(300);
     text(p1score, 350, 412);
-    
+
     textAlign(LEFT, CENTER);
     text(p2score, 450, 412);
-    
+
     // SPEED
     textAlign(CENTER, CENTER);
     fill(80, 80, 255, 80);
     textSize(100);
-    text(int(1+bounces/4), 400, 600);
-    
+    text(int(1 + bounces / 4), 400, 600);
+
     // BALL
     fill(255);
     noStroke();
     ellipse(posx, posy, 18, 18);
-    
-    
-    
-    
+
+
+
+
     // CHECKS FOR COLLISIONS
-    if ((posx <= 8+9) && ((posy >= p1y) && (posy <= p1y + 220))) {
+    if ((posx <= 8 + 9) && ((posy >= p1y) && (posy <= p1y + 220))) {
         xspeed = -xspeed;
-        posx = 8+9;
+        posx = 8 + 9;
         bounces++;
-    } else if ((posx >= 792-9) && ((posy >= p2y) && (posy <= p2y + 220))) {
+    } else if ((posx >= 792 - 9) && ((posy >= p2y) && (posy <= p2y + 220))) {
         xspeed = -xspeed;
-        posx = 792-9;
+        posx = 792 - 9;
         bounces++;
     }
     if (posx >= 809) {
@@ -88,12 +93,12 @@ function draw() {
         reset();
         p2score++;
     }
-   
+
     if (posy >= 791 || posy <= 9) {
         yspeed = -yspeed;
     }
-    
-    
+
+
     // MOUSE RESET
     if ((keyIsDown(32)) && (stopped)) {
         setSpeeds();
@@ -106,15 +111,15 @@ function draw() {
         textSize(65);
         text("Press Space to Start", 400, 200)
     }
-    
-    
+
+
     // MAKE PADDLE
     fill(255);
     noStroke();
     rect(0, p1y, 8, 220);
     rect(792, p2y, 8, 220);
-    
-    
+
+
     // FIXING MISSING PADDLE
     if (p1y <= -220) {
         p1y = 799;
@@ -125,28 +130,28 @@ function draw() {
     } else if (p2y >= 800) {
         p2y = -221;
     }
-    
-    
-  /* SWITCHED TO keyIsDown, can take multiple inputs
-  // IF SAME TIME INPUT
-    if ((keyCode === 83) && (keyCode === DOWN_ARROW) && (keyIsPressed)) {
-        p1y = p1y + 2;
-        p2y = p2y + 2;
-    } else if ((keyCode === 87) && (keyCode === UP_ARROW) && (keyIsPressed)) {
-        p1y = p1y - 2;
-        p2y = p2y - 2;
-    } else if ((keyCode === 83) && (keyCode === UP_ARROW) && (keyIsPressed)) {
-        p2y = p2y - 2;
-        p1y = p1y + 2;
-    } else if ((keyCode === 87) && (keyCode === DOWN_ARROW) && (keyIsPressed)) {
-        p2y = p2y + 2;
-        p1y = p1y - 2;
-    }*/
-    
-    
-    
+
+
+    /* SWITCHED TO keyIsDown, can take multiple inputs
+    // IF SAME TIME INPUT
+      if ((keyCode === 83) && (keyCode === DOWN_ARROW) && (keyIsPressed)) {
+          p1y = p1y + 2;
+          p2y = p2y + 2;
+      } else if ((keyCode === 87) && (keyCode === UP_ARROW) && (keyIsPressed)) {
+          p1y = p1y - 2;
+          p2y = p2y - 2;
+      } else if ((keyCode === 83) && (keyCode === UP_ARROW) && (keyIsPressed)) {
+          p2y = p2y - 2;
+          p1y = p1y + 2;
+      } else if ((keyCode === 87) && (keyCode === DOWN_ARROW) && (keyIsPressed)) {
+          p2y = p2y + 2;
+          p1y = p1y - 2;
+      }*/
+
+
+
     //timer = 5;
-    
+
     // if (frameCount % 60 == 0 && timer > 0) { // if the frameCount is divisible by 60, then a second has passed. it will stop at 0
     //     timer --;
     // }
@@ -163,13 +168,13 @@ function draw() {
 
 function setSpeeds() {
     stopped = false;
-    
+
     xspeed = random(3, 4);
     yspeed = random(.5, 4);
-    
+
     xdir = random(-1, 1);
     ydir = random(-1, 1);
-    
+
     if (xdir === 0) {
         xdir = random(-1, 1);
     }
@@ -195,24 +200,24 @@ function reset() {
 }
 
 function keyPressed() {
-    
+
 }
 
 function movement() {
     // MOVE PADDLE
     if (keyIsDown(DOWN_ARROW)) {
-        p2y = p2y + 2*speed;
+        p2y = p2y + 2 * speed;
     } else if (keyIsDown(UP_ARROW)) {
-        p2y = p2y - 2*speed;
+        p2y = p2y - 2 * speed;
     }
-    
+
     if (keyIsDown(83)) {
-        p1y = p1y + 2*speed;
+        p1y = p1y + 2 * speed;
     } else if (keyIsDown(87)) {
-        p1y = p1y - 2*speed;
+        p1y = p1y - 2 * speed;
     }
-    for (let i=0; i<=bounces; i+=4) {
-    posx = posx + xspeed;
-    posy = posy + yspeed;
+    for (let i = 0; i <= bounces; i += 4) {
+        posx = posx + xspeed;
+        posy = posy + yspeed;
     }
 }

@@ -141,11 +141,11 @@ function mixit() {
 }
 
 function instructions() {
-    textSize(60);
+    textSize(height / 15.616);
     fill(255);
     textAlign(CENTER, TOP);
     text("Instructions:", width - (width - 4 * wid) / 2, height / 4);
-    textSize(40);
+    textSize(height / 23.425);
     text("The goals is to", width - (width - 4 * wid) / 2, 1.8 * height / 5);
     text("arrange the", width - (width - 4 * wid) / 2, 1.8 * height / 5 + 50);
     text("numbers in order", width - (width - 4 * wid) / 2, 1.8 * height / 5 + 100);

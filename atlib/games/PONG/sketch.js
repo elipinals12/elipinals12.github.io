@@ -1,7 +1,6 @@
 // TODO: 
 // add sound
 // make ball 3d
-// make 1player mode
 
 var posx, posy;
 var xspeed = 0;
@@ -18,9 +17,20 @@ var f = 100;
 var bounces = 0;
 var first = true;
 var playerselect = true;
-var p1alph, p2alph;
+var p1alph = 145;
+var p2alph = 145;
 var leftx1, lefty1, rightx1, righty1, leftx2, lexty2, rightx2, righty2;
 var pcount;
+var backr = 0;
+var backg = 0;
+var backb = 0;
+var backa = 255;
+var level = 1;
+var templevel = 1;
+var lossflash = false;
+var lvlflash = false;
+var flashcount = 0;
+var frac;
 
 function setup() {
     var cnv = createCanvas(window.innerHeight - 22, window.innerHeight - 22)
@@ -38,25 +48,47 @@ function setup() {
 }
 
 function draw() {
-    background(0);
+    if (lossflash) {
+        backr = 45;
+        flashcount++;
+    } else if (lvlflash) {
+        backg = 25;
+        backb = 40;
+        flashcount++;
+    }
+    if (flashcount > 20) {
+        flashcount = 0;
+        lossflash = false;
+        lvlflash = false;
+    }
+
+    background(backr, backg, backb);
+    backr = 0;
+    backg = 0;
+    backb = 0;
 
     if (playerselect) {
+        // mouse
+        fill(255);
+        noStroke();
+        triangle(mouseX - 10, mouseY + 18, mouseX + 10, mouseY + 18, mouseX, mouseY);
+
         // 1 or 2 player selection
-        p1alph = 145;
-        p2alph = 145;
         textAlign(CENTER, CENTER);
         noStroke();
         textSize(height / 5);
-        fill(100, 5, 155);
+        fill(100, 5, 255);
         text("Players", width / 2, 2.5 * height / 9);
 
         textSize(height / 3);
-        fill(0, 0, 255, p1alph);
+        fill(0, 0, 255, p1alph - 50);
         text("1", 1 * width / 4, height / 1.8);
 
-        fill(0, 0, 255, p2alph);
+        fill(0, 0, 255, p2alph - 50);
         text("2", 3 * width / 4, height / 1.8);
 
+        p1alph = 145;
+        p2alph = 145;
 
         leftx1 = height / 6.5;
         lefty1 = height / 2.62;
@@ -96,18 +128,28 @@ function draw() {
         movement();
 
         if (first) {
-            fill(255);
-            textSize(70);
-            textAlign(CENTER, CENTER);
-            text("Speed", width / 2, 8 * height / 9);
-
             // arrow
-            stroke(255);
-            strokeWeight(4);
-            line(width / 2, height / 1.25, width / 2 + 12, height / 1.22)
-            line(width / 2, height / 1.25, width / 2 - 12, height / 1.22)
-            line(width / 2, height / 1.25, width / 2, height / 1.168)
+            stroke(191, 0, 188);
+            fill(191, 0, 188);
+            if (pcount == 2) {
+                textSize(70);
+                textAlign(CENTER, CENTER);
+                text("Speed", width / 2, 8 * height / 9);
 
+                strokeWeight(4);
+                line(width / 2, height / 1.25, width / 2 + 12, height / 1.22);
+                line(width / 2, height / 1.25, width / 2 - 12, height / 1.22);
+                line(width / 2, height / 1.25, width / 2, height / 1.168);
+            } else {
+                textSize(70);
+                textAlign(CENTER, CENTER);
+                text("Level", width / 2, 8 * height / 9);
+
+                strokeWeight(4);
+                line(width / 2, height / 1.6, width / 2 + 38, height / 1.42);
+                line(width / 2, height / 1.6, width / 2 - 38, height / 1.42);
+                line(width / 2, height / 1.6, width / 2, height / 1.168);
+            }
             strokeWeight(1);
             textSize(width / 26.66);
             if (pcount == 2) {
@@ -125,35 +167,51 @@ function draw() {
         }
 
         // SCORE COUNTER
-        fill(255, 255, 100, 50);
         textAlign(RIGHT, CENTER);
         noStroke();
         if (pcount == 2) {
+            fill(255, 255, 100, 50);
             textSize(height / 2.666);
             text(p1score, width / 2 - 50, height / 2);
 
             textAlign(LEFT, CENTER);
             text(p2score, width / 2 + 50, height / 2);
         } else {
+            fill(80, 80, 255, 80);
             textAlign(CENTER, CENTER);
             textSize(height / 2.666);
-            text(p1score + p2score, width / 2, height / 2);
+            text(level, width / 2, height / 2);
         }
 
         // SPEED
-        noStroke();
+        templevel = level;
+        level = int(1 + bounces / 4);
+        if (level != templevel) {
+            lvlflash = true;
+        }
+
+        if (pcount == 2) {
+            noStroke();
+            textAlign(CENTER, CENTER);
+            fill(80, 80, 255, 80);
+            textSize(height / 8);
+            text(level, width / 2, height / 1.333);
+        }
+
+
+
+        // speed fraction
+        frac = (bounces % 4);
+        fill(100, 30, 65);
         textAlign(CENTER, CENTER);
-        fill(80, 80, 255, 80);
-        textSize(height / 8);
-        text(int(1 + bounces / 4), width / 2, height / 1.333);
+        textSize(height / 10);
+        text(frac + "/4", height * .8, height * .8);
+
 
         // BALL
         fill(255);
         noStroke();
         ellipse(posx, posy, 18, 18);
-
-
-
 
         // CHECKS FOR COLLISIONS
         if ((posx <= 8 + 9) && ((posy >= p1y) && (posy <= p1y + 220))) {
@@ -168,9 +226,11 @@ function draw() {
         if (posx >= width + 9) {
             reset();
             p1score++;
+            lossflash = true;
         } else if (posx <= -9) {
             reset();
             p2score++;
+            lossflash = true;
         }
 
         if (posy >= width - 9 || posy <= 9) {
@@ -181,6 +241,7 @@ function draw() {
         // MOUSE RESET
         if ((keyIsDown(32)) && (stopped)) {
             setSpeeds();
+            bounces = 0;
             mouseIsPressed = false;
             first = false;
         }
@@ -188,7 +249,7 @@ function draw() {
             fill(255, 0, 0);
             textAlign(CENTER, CENTER);
             textSize(height / 12.3);
-            text("Press Space to Start", width / 2, height / 4)
+            text("Press Space to Start", width / 2, height / 4);
         }
 
 
@@ -250,7 +311,7 @@ function draw() {
 function setSpeeds() {
     stopped = false;
 
-    xspeed = random(4, 5);
+    xspeed = random(3.5, 4.5);
     yspeed = random(.5, 5);
 
     xdir = random(-1, 1);
@@ -276,7 +337,6 @@ function reset() {
     posy = 400;
     xspeed = 0;
     yspeed = 0;
-    bounces = 0;
     //tiimer();
 }
 

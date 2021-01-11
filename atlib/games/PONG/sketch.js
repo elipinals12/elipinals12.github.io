@@ -19,7 +19,9 @@ var first = true;
 var playerselect = true;
 var p1alph = 145;
 var p2alph = 145;
+var pracalph = 145;
 var leftx1, lefty1, rightx1, righty1, leftx2, lexty2, rightx2, righty2;
+var pracx1, pracy1, pracx1, pracy1;
 var pcount;
 var backr = 0;
 var backg = 0;
@@ -68,11 +70,6 @@ function draw() {
     backb = 0;
 
     if (playerselect) {
-        // mouse
-        fill(255);
-        noStroke();
-        triangle(mouseX - 10, mouseY + 18, mouseX + 10, mouseY + 18, mouseX, mouseY);
-
         // 1 or 2 player selection
         textAlign(CENTER, CENTER);
         noStroke();
@@ -87,8 +84,19 @@ function draw() {
         fill(0, 0, 255, p2alph - 50);
         text("2", 3 * width / 4, height / 1.8);
 
+        textSize(height / 6);
+        fill(0, 0, 255, pracalph - 50);
+        text("Practice", width / 2, (height / 1.09 + height / 1.35) / 2);
+
         p1alph = 145;
         p2alph = 145;
+        pracalph = 145;
+
+
+        pracx1 = height / 6.5;
+        pracy1 = height / 1.35;
+        pracx2 = height - height / 6.5;
+        pracy2 = height / 1.12;
 
         leftx1 = height / 6.5;
         lefty1 = height / 2.62;
@@ -112,6 +120,12 @@ function draw() {
                 pcount = 2;
                 playerselect = false;
             }
+        } else if (mouseX > pracx1 && mouseX < pracx2 && mouseY > pracy1 && mouseY < pracy2) {
+            pracalph = 255;
+            if (mouseIsPressed) {
+                pcount = 0;
+                playerselect = false;
+            }
         }
 
         strokeWeight(4);
@@ -123,7 +137,13 @@ function draw() {
         stroke(0, 0, 255, p2alph);
         rect(rightx1, righty1, rightx2, righty2, 4);
 
+        stroke(0, 0, 255, pracalph);
+        rect(pracx1, pracy1, pracx2, pracy2, 4);
 
+        // mouse
+        fill(255);
+        noStroke();
+        triangle(mouseX - 10, mouseY + 23, mouseX + 10, mouseY + 23, mouseX, mouseY);
     } else {
         movement();
 
@@ -131,7 +151,7 @@ function draw() {
             // arrow
             stroke(191, 0, 188);
             fill(191, 0, 188);
-            if (pcount == 2) {
+            if (pcount == 2 || pcount == 1) {
                 textSize(70);
                 textAlign(CENTER, CENTER);
                 text("Speed", width / 2, 8 * height / 9);
@@ -140,7 +160,7 @@ function draw() {
                 line(width / 2, height / 1.25, width / 2 + 12, height / 1.22);
                 line(width / 2, height / 1.25, width / 2 - 12, height / 1.22);
                 line(width / 2, height / 1.25, width / 2, height / 1.168);
-            } else {
+            } else if (pcount == 0) {
                 textSize(70);
                 textAlign(CENTER, CENTER);
                 text("Level", width / 2, 8 * height / 9);
@@ -157,26 +177,28 @@ function draw() {
                 text("Down", width - width / 8.5, height / 2 + 50);
                 text("W", width / 8.5, height / 2 - 50);
                 text("S", width / 8.5, height / 2 + 50);
-            } else {
+            } else if (pcount == 0) {
                 text("Up", width - width / 8.5, height / 2 - 50);
                 text("Down", width - width / 8.5, height / 2 + 50);
                 text("Up", width / 8.5, height / 2 - 50);
                 text("Down", width / 8.5, height / 2 + 50);
-
+            } else if (pcount == 1) {
+                text("Up", width - width / 8.5, height / 2 - 50);
+                text("Down", width - width / 8.5, height / 2 + 50);
             }
         }
 
         // SCORE COUNTER
         textAlign(RIGHT, CENTER);
         noStroke();
-        if (pcount == 2) {
+        if (pcount == 2 || pcount == 1) {
             fill(255, 255, 100, 50);
             textSize(height / 2.666);
             text(p1score, width / 2 - 50, height / 2);
 
             textAlign(LEFT, CENTER);
             text(p2score, width / 2 + 50, height / 2);
-        } else {
+        } else if (pcount == 0) {
             fill(80, 80, 255, 80);
             textAlign(CENTER, CENTER);
             textSize(height / 2.666);
@@ -190,12 +212,14 @@ function draw() {
             lvlflash = true;
         }
 
-        if (pcount == 2) {
+        if (pcount == 2 || pcount == 1) {
             noStroke();
             textAlign(CENTER, CENTER);
             fill(80, 80, 255, 80);
             textSize(height / 8);
             text(level, width / 2, height / 1.333);
+        } else if (pcount == 0) {
+            // NOTHING
         }
 
 
@@ -273,24 +297,6 @@ function draw() {
         }
 
 
-        /* SWITCHED TO keyIsDown, can take multiple inputs
-        // IF SAME TIME INPUT
-          if ((keyCode === 83) && (keyCode === DOWN_ARROW) && (keyIsPressed)) {
-              p1y = p1y + 2;
-              p2y = p2y + 2;
-          } else if ((keyCode === 87) && (keyCode === UP_ARROW) && (keyIsPressed)) {
-              p1y = p1y - 2;
-              p2y = p2y - 2;
-          } else if ((keyCode === 83) && (keyCode === UP_ARROW) && (keyIsPressed)) {
-              p2y = p2y - 2;
-              p1y = p1y + 2;
-          } else if ((keyCode === 87) && (keyCode === DOWN_ARROW) && (keyIsPressed)) {
-              p2y = p2y + 2;
-              p1y = p1y - 2;
-          }*/
-
-
-
         //timer = 5;
 
         // if (frameCount % 60 == 0 && timer > 0) { // if the frameCount is divisible by 60, then a second has passed. it will stop at 0
@@ -359,7 +365,20 @@ function movement() {
         } else if (keyIsDown(UP_ARROW)) {
             p2y = p2y - 2 * speed;
         }
-    } else {
+    } else if (pcount == 1) {
+        if (keyIsDown(DOWN_ARROW)) {
+            p2y = p2y + 2 * speed;
+        } else if (keyIsDown(UP_ARROW)) {
+            p2y = p2y - 2 * speed;
+        }
+
+        // BOT
+        if (posy > (p1y + height / 8)) {
+            p1y = p1y + 2 * speed;
+        } else if (posy < (p1y + height / 8)) {
+            p1y = p1y - 2 * speed;
+        }
+    } else if (pcount == 0) {
         if (keyIsDown(DOWN_ARROW)) {
             p2y = p2y + 2 * speed;
             p1y = p1y + 2 * speed;

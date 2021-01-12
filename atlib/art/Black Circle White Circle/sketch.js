@@ -14,15 +14,11 @@ function setup() {
 
 function draw() {
 	if (instructions) {
-		textSize(width / 15);
+		textSize(width / 5);
 		textAlign(CENTER, CENTER);
-		text("ARROWS to change size", width / 2, 1 * height / 5);
-		text("CLICK to Invert", width / 2, 2 * height / 5);
-		text("SPACE to toggle borders", width / 2, 3 * height / 5);
-		text("R KEY to reset", width / 2, 4 * height / 5);
+		text("H for help", width / 2, height / 2);
 		instructions = false;
 	}
-
 	// White vs Black circles
 	if (mouseIsPressed) {
 		fill(0);
@@ -63,6 +59,20 @@ function draw() {
 	}
 	if (diam < 1) {
 		diam = 1;
+	}
+
+	if (keyIsDown(72)) {
+		textSize(width / 15);
+		textAlign(CENTER, CENTER);
+		fill(0);
+		rectMode(CORNERS);
+		rect(width / 15, height / 11, width - width / 15, 10 * height / 11);
+		fill(255);
+		text("H to get help", width / 2, 1 * height / 6);
+		text("ARROWS to change size", width / 2, 2 * height / 6);
+		text("CLICK to Invert", width / 2, 3 * height / 6);
+		text("SPACE to toggle borders", width / 2, 4 * height / 6);
+		text("R to reset", width / 2, 5 * height / 6);
 	}
 }
 

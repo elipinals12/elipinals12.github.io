@@ -1,5 +1,6 @@
 var outline = false;
 var instructions = true;
+var diam = 80;
 
 function setup() {
 	createCanvas(window.innerWidth - 20, window.innerHeight - 20);
@@ -15,10 +16,10 @@ function draw() {
 	if (instructions) {
 		textSize(width / 15);
 		textAlign(CENTER, CENTER);
-		text("MOVE MOUSE to draw", width / 2, 1 * height / 5);
+		text("ARROWS to change size", width / 2, 1 * height / 5);
 		text("CLICK to Invert", width / 2, 2 * height / 5);
 		text("SPACE to toggle borders", width / 2, 3 * height / 5);
-		text("ANY KEY to reset", width / 2, 4 * height / 5);
+		text("R KEY to reset", width / 2, 4 * height / 5);
 		instructions = false;
 	}
 
@@ -41,18 +42,27 @@ function draw() {
 	}
 
 	// Actually make the circles
-	ellipse(mouseX, mouseY, 80, 80);
+	ellipse(mouseX, mouseY, diam, diam);
 
+	var diamchange = 2;
 	// Clear Screen
+	if (keyIsDown(DOWN_ARROW)) {
+		diam -= diamchange;
+	} else if (keyIsDown(UP_ARROW)) {
+		diam += diamchange;
+	}
 	if (keyIsPressed) {
 		if (keyCode == 32) {
 			outline = !outline;
-		} else {
+		} else if (keyCode == 82) {
 			clear();
 			//background(random(0, 256), random(0, 256), random(0, 256));
 			setbackground();
 		}
 		keyIsPressed = false;
+	}
+	if (diam < 1) {
+		diam = 1;
 	}
 }
 

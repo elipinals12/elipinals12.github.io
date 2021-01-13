@@ -339,8 +339,8 @@ function setSpeeds() {
 
 function reset() {
     stopped = true;
-    posx = 400;
-    posy = 400;
+    posx = width / 2;
+    posy = height / 2;
     xspeed = 0;
     yspeed = 0;
     //tiimer();

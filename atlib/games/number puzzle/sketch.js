@@ -180,7 +180,6 @@ function timer() {
     if (timefader < -70) {
         timefader = 255;
     }
-
 }
 
 function keyPressed() {

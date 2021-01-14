@@ -24,8 +24,6 @@ function setup() {
 function draw() {
 	background(0);
 
-
-
 	noStroke();
 	for (var i = 0; i < rxs.length; i++) {
 		fill(255);

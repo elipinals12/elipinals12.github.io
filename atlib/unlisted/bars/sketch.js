@@ -3,7 +3,7 @@ var lxs = [];
 var barwid;
 
 var time = 20;
-var speed = 6;
+var speed = 4;
 
 function setup() {
 	var cnv = createCanvas(window.innerWidth - 22, window.innerHeight - 22);

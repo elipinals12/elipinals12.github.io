@@ -13,7 +13,7 @@ var snakes = [];
 var rows, cols;
 var xdir = 0;
 var ydir = 0;
-var fr = 60;
+var fr = 10;
 
 var xoff, yoff;
 

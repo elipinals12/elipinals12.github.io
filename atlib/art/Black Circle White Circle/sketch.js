@@ -14,9 +14,9 @@ function setup() {
 
 function draw() {
 	if (instructions) {
-		textSize(width / 5);
+		textSize(width / 8);
 		textAlign(CENTER, CENTER);
-		text("H for help", width / 2, height / 2);
+		text("Hold H for help", width / 2, height / 2);
 		instructions = false;
 	}
 	// White vs Black circles

@@ -31,6 +31,7 @@ function setup() {
 }
 
 function draw() {
+
     strokeCap(SQUARE);
 
     strokeWeight(1);
@@ -50,15 +51,22 @@ function draw() {
         moveGuy();
     }
 
+
+    //clear
+    if (keyIsPressed && keyCode == 82) {
+        mx = [];
+        my = [];
+    }
+
     // you
-    if (mouseIsPressed) {
-        noStroke();
-        fill(255, 0, 0);
+    //if (mouseIsPressed) {
         append(mx, mouseX);
         append(my, mouseY);
-        for (var k = 0; k < mx.length; k++) {
-            ellipse(mouseX, mouseY, 4, 4);
-        }
+    //}
+    noStroke();
+    fill(255, 0, 0);
+    for (var k = 0; k < mx.length; k++) {
+        ellipse(mx[k], my[k], 6, 6);
     }
 }
 

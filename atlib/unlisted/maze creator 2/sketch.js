@@ -28,9 +28,13 @@ function setup() {
 
     current = grid[0];
     background(35, 5, 255);
+    pixelDensity(1);
 }
 
 function draw() {
+    loadPixels();
+
+    updatePixels();
 
     strokeCap(SQUARE);
 
@@ -60,8 +64,8 @@ function draw() {
 
     // you
     //if (mouseIsPressed) {
-        append(mx, mouseX);
-        append(my, mouseY);
+    append(mx, mouseX);
+    append(my, mouseY);
     //}
     noStroke();
     fill(255, 0, 0);

@@ -21,17 +21,17 @@ function draw() {
 	}
 	// White vs Black circles
 	if (mouseIsPressed) {
-		fill(0);
+		fill(255);
 		if (outline) {
-			stroke(255);
+			stroke(0);
 		} else {
 			noStroke();
 		}
 
 	} else {
-		fill(255);
+		fill(0);
 		if (outline) {
-			stroke(0);
+			stroke(255);
 		} else {
 			noStroke();
 		}

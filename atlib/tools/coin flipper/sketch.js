@@ -13,7 +13,7 @@ var tailx = 290;
 function setup() {
     slider = createSlider(.5, 60.5, 20);
     slider.position(10, 10);
-    slider.style('width', '100px');
+    slider.style('width', '200px');
 
     var cnv = createCanvas(600, 600);
     var x = (windowWidth - width) / 2;
@@ -71,10 +71,11 @@ function draw() {
             text(currentflip, tailx, 100)
         }
 
-        // pink totals
-        fill(255, 0, 255);
+        // pink/red totals
+        fill(255, 0, 0);
         noStroke();
         text(heads, width / 2 - 120, 290);
+        fill(255, 0, 255);
         text(flipcount, width / 2 - 120, 350);
 
         // little fraction line
@@ -124,9 +125,9 @@ function draw() {
         fill(255);
         textSize(40);
         textAlign(CENTER, CENTER);
-        text("PRESS ANYWHERE TO GO", width / 2, height / 2);
-        textSize(20);
-        text("Use the slider in the top left to adjust speed", width / 2, height / 2 + 50);
+        text("PRESS ANYWHERE TO GO", width / 2, height / 2 + 30);
+        textSize(28);
+        text("Use the slider in the top left to adjust speed", width / 2, height / 2 - 30);
     }
 }
 

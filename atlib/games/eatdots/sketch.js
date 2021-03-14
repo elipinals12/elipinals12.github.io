@@ -292,3 +292,8 @@ function keyPressed() {
         print(colorcheat);
     }
 }
+
+
+function windowResized() {
+    resizeCanvas(window.innerWidth - 22, window.innerHeight - 22);
+}

@@ -14,12 +14,12 @@ function draw() {
     background(0);
 
     if (instructions) {
-        textSize(width / 17);
+        textSize(width / 12);
         fill(255);
 		textAlign(CENTER, CENTER);
-		text("CLICK to add branches", width / 2, 2 * height / 6);
-		text("RIGHT CLICK to remove branches", width / 2, 3 * height / 6);
-		text("MOVE MOUSE to bend branches", width / 2, 4 * height / 6);
+		text("CLICK", width / 2, 3 * height / 12);
+		text("&", width / 2, 4.5 * height / 12);
+		text("RIGHT CLICK", width / 2, 6 * height / 12);
 	}
     
     translate(width/2, height);

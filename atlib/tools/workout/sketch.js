@@ -10,7 +10,7 @@ var reptime = 35;
 var reps = 10;
 var represttime = 10;
 var setresttime = 90;
-var repcount = 0;
+var repcount = 1;
 
 function setup() {
     var cnv = createCanvas(window.innerWidth, window.innerHeight);
@@ -54,7 +54,6 @@ function draw() {
                 restsound.play();
 
                 time = represttime;
-                repcount++;
                 if (repcount == reps) {
                     started = false;
                 }
@@ -80,7 +79,7 @@ function draw() {
         stroke(219, 211, 216);
         fill(219, 211, 216);
         textSize(width / 15);
-        text("REPS: " + repcount + "/" + reps, width / 2, height / 8);
+        text("REP: " + repcount + "/" + reps, width / 2, height / 8);
 
         time = time - (1 / 60);
         stroke(112, 171, 175);
@@ -105,7 +104,7 @@ function keyPressed() {
 
 function start() {
     startsound.play();
-
+    repcount++;
     reset();
 
     if (!started) {

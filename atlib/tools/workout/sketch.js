@@ -19,7 +19,7 @@ function setup() {
     cnv.position(cnvx, cnvy);
 
     noStroke();
-    //frameRate(1);
+    frameRate(60);
 
     startsound = loadSound("start.mp3");
     restsound = loadSound("rest.mp3");

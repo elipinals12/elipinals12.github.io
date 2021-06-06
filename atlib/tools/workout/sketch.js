@@ -2,6 +2,14 @@
 
 var f, asharp;
 var started = false;
+var time = 0;
+var represt = false;
+var setrest = false;
+
+var reptime = 35;
+var sets = 10;
+var represttime = 10;
+var setresttime = 90;
 
 function setup() {
     var cnv = createCanvas(window.innerWidth, window.innerHeight);
@@ -17,36 +25,65 @@ function setup() {
 }
 
 function draw() {
-    background(150, 142, 133);
+    background(50, 41, 47);
+    fill(0, 255, 0, 100);
+    noStroke();
+    rectMode(CORNERS);
+    rect(0, 0, map(time, 0, 35, 0, width), height);
+
 
     if (!started) {
-        stroke(255, 161, 155);
-        fill(255, 161, 155);
-        textSize(width/10);
+        stroke(112, 171, 175);
+        fill(112, 171, 175);
+        textSize(width / 10);
         textAlign(CENTER, CENTER);
         text("CLICK TO START", width / 2, height / 2);
+    } else {
+        time = time + (1 / 60);
+
+        // TIME
+        stroke(112, 171, 175);
+        fill(112, 171, 175);
+        textSize(width / 3);
+        textAlign(CENTER, CENTER);
+        text(int(time), width / 2, height / 2);
     }
 
+    if (time == represttime) {
+        represt = true;
+        reset();
+    }
 }
 
 
 
 
 function mousePressed() {
-    if (!started) {
-        started = true;
-    }
+    start();
     reset();
 }
 
 function keyPressed() {
-
-    f.setVolume(.5);
-    f.play();
+    start();
 }
 
+function start() {
+    f.setVolume(.5);
+    //f.play();
+    asharp.setVolume(.5);
+    //asharp.play();
+    
+
+    if (!started) {
+        started = true;
+    }
+}
+
+
 function reset() {
-    print("hi");
+    time = 0;
+    represt = false;
+    setrest = false;
 }
 
 

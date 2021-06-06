@@ -1,6 +1,6 @@
 // TODO
 
-var f, asharp;
+var startsound, restsound;
 var started = false;
 var time;
 var represt = false;
@@ -21,10 +21,10 @@ function setup() {
     noStroke();
     //frameRate(1);
 
-    f = loadSound("F4.mp3");
-    asharp = loadSound("Asharp4.mp3");
-    f.setVolume(.5);
-    asharp.setVolume(.5);
+    startsound = loadSound("start.mp3");
+    restsound = loadSound("rest.mp3");
+    startsound.setVolume(.5);
+    restsound.setVolume(.5);
 
     textAlign(CENTER, CENTER);
 }
@@ -51,8 +51,7 @@ function draw() {
 
             if (time <= 0) {
                 represt = true;
-                asharp.play();
-                f.play();
+                restsound.play();
 
                 time = represttime;
                 repcount++;
@@ -105,8 +104,7 @@ function keyPressed() {
 }
 
 function start() {
-    f.play();
-    asharp.play();
+    startsound.play();
 
     reset();
 

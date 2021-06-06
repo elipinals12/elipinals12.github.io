@@ -33,7 +33,7 @@ function draw() {
     background(50, 41, 47);
 
     if (!started) {
-        stroke(112, 171, 175);
+        //stroke(112, 171, 175);
         fill(112, 171, 175);
         textSize(width / 10);
         text("CLICK TO START", width / 2, height / 2);
@@ -43,7 +43,7 @@ function draw() {
             noStroke();
             rectMode(CORNERS);
             rect(0, 0, map(time, reptime, 0, 0, width), height);
-            stroke(112, 171, 175);
+            //stroke(112, 171, 175);
             fill(112, 171, 175);
 
             if (time <= 0) {
@@ -51,7 +51,7 @@ function draw() {
                 repcount += .5;
                 represt = true;
 
-                restsound.play();
+                //restsound.play();
 
                 time = represttime;
 
@@ -64,11 +64,11 @@ function draw() {
             noStroke();
             rectMode(CORNERS);
             rect(0, 0, map(time, represttime, 0, 0, width), height);
-            stroke(212, 197, 199);
+            //stroke(212, 197, 199);
             fill(212, 197, 199);
 
-            stroke(219, 111, 116);
-            fill(219, 111, 116);
+            //stroke(229, 111, 116);
+            fill(229, 111, 116);
             textSize(width / 15);
             text("REST", width / 2, 7 * height / 8);
 
@@ -78,28 +78,28 @@ function draw() {
             }
         }
 
-        stroke(219, 211, 216);
-        fill(219, 211, 216);
+        //stroke(229, 211, 216);
+        fill(229, 211, 216);
         textSize(width / 15);
-        text("REP " + floor(repcount) + "/" + reps, width / 2, height / 8);
+        text("REP " + floor(repcount) + "/" + reps + "    " + frameCount, width / 2, height / 8);
 
 
         // TIME MOVES
         time -= 1 / 30;
 
-        stroke(112, 171, 175);
+        //stroke(112, 171, 175);
         fill(112, 171, 175);
         textSize(width / 3);
         text(ceil(time), width / 2, height / 2);
 
 
     } else {
-        stroke(219, 111, 116);
+        //stroke(219, 111, 116);
         fill(219, 111, 116);
         textSize(width / 15);
         text("go take a breather", width / 2, 7 * height / 8);
 
-        stroke(112, 171, 175);
+        //stroke(112, 171, 175);
         fill(112, 171, 175);
         textSize(width / 10);
         text("CLICK TO START", width / 2, height / 2);
@@ -118,7 +118,7 @@ function keyPressed() {
 }
 
 function start() {
-    startsound.play();
+    //startsound.play();
     reset();
 
     if (!started) {

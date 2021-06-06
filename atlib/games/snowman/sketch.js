@@ -2,7 +2,7 @@ var grounds = [];
 var minlength = 3;
 var maxlength = 30;
 var groundcount;
-var moverate = 1.5;
+var moverate = 2.5;
 var startheight;
 var moused = 100;
 var time = 0;

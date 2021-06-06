@@ -51,8 +51,8 @@ function draw() {
 
             if (time <= 0) {
                 represt = true;
-                //asharp.play();
-                //f.play();
+                asharp.play();
+                f.play();
 
                 time = represttime;
                 repcount++;
@@ -68,8 +68,8 @@ function draw() {
             stroke(212, 197, 199);
             fill(212, 197, 199);
 
-            stroke(255, 0, 0);
-            fill(255, 0, 0);
+            stroke(219, 111, 116);
+            fill(219, 111, 116);
             textSize(width / 15);
             text("REST", width / 2, 7 * height / 8);
 
@@ -105,8 +105,8 @@ function keyPressed() {
 }
 
 function start() {
-    //f.play();
-    //asharp.play();
+    f.play();
+    asharp.play();
 
     reset();
 

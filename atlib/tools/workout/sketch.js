@@ -19,7 +19,7 @@ function setup() {
     cnv.position(cnvx, cnvy);
 
     noStroke();
-    frameRate(60);
+    frameRate(30);
 
     startsound = loadSound("start.mp3");
     restsound = loadSound("rest.mp3");
@@ -32,15 +32,12 @@ function setup() {
 function draw() {
     background(50, 41, 47);
 
-
-
-
     if (!started) {
         stroke(112, 171, 175);
         fill(112, 171, 175);
         textSize(width / 10);
         text("CLICK TO START", width / 2, height / 2);
-    } else {
+    } else if (!setrest) {
         if (!represt) {
             fill(112, 93, 86);
             noStroke();
@@ -50,12 +47,16 @@ function draw() {
             fill(112, 171, 175);
 
             if (time <= 0) {
+
+                repcount += .5;
                 represt = true;
-                restsound.play();
+
+                //restsound.play();
 
                 time = represttime;
+
                 if (repcount > reps) {
-                    started = false;
+                    completeSet();
                 }
             }
         } else {
@@ -73,21 +74,35 @@ function draw() {
 
             if (time <= 0) {
                 start();
+                repcount += .5;
             }
         }
 
         stroke(219, 211, 216);
         fill(219, 211, 216);
         textSize(width / 15);
-        text("REP: " + repcount + "/" + reps, width / 2, height / 8);
+        text("REP " + floor(repcount) + "/" + reps, width / 2, height / 8);
 
-        time = time - (1 / 60);
+
+        // TIME MOVES
+        time -= 1 / 30;
+
         stroke(112, 171, 175);
         fill(112, 171, 175);
         textSize(width / 3);
         text(ceil(time), width / 2, height / 2);
 
 
+    } else {
+        stroke(219, 111, 116);
+        fill(219, 111, 116);
+        textSize(width / 15);
+        text("go take a breather", width / 2, 7 * height / 8);
+
+        stroke(112, 171, 175);
+        fill(112, 171, 175);
+        textSize(width / 10);
+        text("CLICK TO START", width / 2, height / 2);
     }
 }
 
@@ -103,26 +118,27 @@ function keyPressed() {
 }
 
 function start() {
-    startsound.play();
-    repcount++;
+    //startsound.play();
     reset();
 
     if (!started) {
         started = true;
+        repcount = 1;
     }
 }
 
 
 function reset() {
+    background(50, 41, 47);
     time = reptime;
     represt = false;
     setrest = false;
-    if (repcount == 10) {
-        repcount = 0;
-    }
 }
 
-
+function completeSet() {
+    setrest = true;
+    time = 0;
+}
 
 
 function windowResized() {

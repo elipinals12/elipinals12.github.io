@@ -119,8 +119,10 @@ function start() {
 function reset() {
     time = reptime;
     represt = false;
-    repcount = 0;
     setrest = false;
+    if (repcount == 10) {
+        repcount = 0;
+    }
 }
 
 

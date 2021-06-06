@@ -22,7 +22,7 @@ function setup() {
     //frameRate(1);
 
     f = loadSound("F4.mp3");
-    asharp = loadSound("A#4.mp3");
+    asharp = loadSound("Asharp4.mp3");
     f.setVolume(.5);
     asharp.setVolume(.5);
 

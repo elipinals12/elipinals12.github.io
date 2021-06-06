@@ -51,7 +51,7 @@ function draw() {
                 repcount += .5;
                 represt = true;
 
-                //restsound.play();
+                restsound.play();
 
                 time = represttime;
 
@@ -118,7 +118,7 @@ function keyPressed() {
 }
 
 function start() {
-    //startsound.play();
+    startsound.play();
     reset();
 
     if (!started) {

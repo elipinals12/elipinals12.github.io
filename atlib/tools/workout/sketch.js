@@ -17,9 +17,11 @@ function setup() {
     var cnvx = (windowWidth - width) / 2;
     var cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);
+    
+    pixelDensity(1)
 
     noStroke();
-    frameRate(30);
+    frameRate(60);
 
     startsound = loadSound("start.mp3");
     restsound = loadSound("rest.mp3");
@@ -51,7 +53,7 @@ function draw() {
                 repcount += .5;
                 represt = true;
 
-                //restsound.play();
+                restsound.play();
 
                 time = represttime;
 
@@ -81,11 +83,11 @@ function draw() {
         //stroke(229, 211, 216);
         fill(229, 211, 216);
         textSize(width / 15);
-        text("REP " + floor(repcount) + "/" + reps + "    " + frameCount, width / 2, height / 8);
+        text("REP " + floor(repcount) + "/" + reps, width / 2, height / 8);
 
 
         // TIME MOVES
-        time -= 1 / 30;
+        time -= 1 / 60;
 
         //stroke(112, 171, 175);
         fill(112, 171, 175);
@@ -118,7 +120,7 @@ function keyPressed() {
 }
 
 function start() {
-    //startsound.play();
+    startsound.play();
     reset();
 
     if (!started) {

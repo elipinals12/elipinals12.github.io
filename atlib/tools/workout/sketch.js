@@ -54,7 +54,7 @@ function draw() {
                 restsound.play();
 
                 time = represttime;
-                if (repcount == reps) {
+                if (repcount > reps) {
                     started = false;
                 }
             }

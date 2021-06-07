@@ -6,9 +6,9 @@ var time;
 var represt = false;
 var setrest = false;
 
-var reptime = 1;
+var reptime = 35;
 var reps = 10;
-var represttime = 1;
+var represttime = 10;
 var setresttime = 90;
 var repcount = 1;
 var timertime = 0;
@@ -68,7 +68,7 @@ function draw() {
 
             fill(112, 171, 175);
 
-            if (time <= 0) {
+            if (time < 0.1) {
 
                 repcount += .5;
                 represt = true;
@@ -94,7 +94,7 @@ function draw() {
             textSize(width / 15);
             text("REST", width / 2, 7 * height / 8);
 
-            if (time <= 0) {
+            if (time < 0.1) {
                 start();
                 repcount += .5;
             }
@@ -120,6 +120,8 @@ function draw() {
         fill(219, 111, 116);
         textSize(width / 15);
         text("go take a breather", width / 2, 7 * height / 8);
+
+        repcount = 1;
 
         timertime = (reptime + represttime) * reps;
 

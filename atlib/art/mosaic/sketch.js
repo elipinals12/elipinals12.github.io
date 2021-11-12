@@ -32,3 +32,7 @@ function draw() {
 	fill(col.r, col.g, col.b, 150);
 	ellipse(spot.x, spot.y, 20, 20);
 }
+
+function windowResized() {
+    resizeCanvas(window.innerWidth - 22, window.innerHeight - 22);
+}

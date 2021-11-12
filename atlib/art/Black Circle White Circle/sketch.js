@@ -80,3 +80,7 @@ function draw() {
 function setbackground() {
 	background(random(0, 256), random(0, 256), random(0, 256));
 }
+
+function windowResized() {
+    resizeCanvas(window.innerWidth - 22, window.innerHeight - 22);
+}

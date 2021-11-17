@@ -82,5 +82,7 @@ function setbackground() {
 }
 
 function windowResized() {
-    resizeCanvas(window.innerWidth - 22, window.innerHeight - 22);
+	resizeCanvas(window.innerWidth - 22, window.innerHeight - 22);
+	clear();
+	setbackground();
 }

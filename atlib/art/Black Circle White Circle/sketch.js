@@ -1,88 +1,103 @@
 var outline = false;
 var instructions = true;
 var diam = 80;
+var colors = [];
 
 function setup() {
-	createCanvas(window.innerWidth - 20, window.innerHeight - 20);
-	//background(random(0, 256), random(0, 256), random(0, 256));
-	setbackground();
+    createCanvas(window.innerWidth - 20, window.innerHeight - 20);
+    //background(random(0, 256), random(0, 256), random(0, 256));
+    setbackground();
 
-	// Get rid of that circle in corner
-	mouseX = -1000;
-	mouseY = -1000;
+    // Get rid of that circle in corner
+    mouseX = -1000;
+    mouseY = -1000;
 }
 
 function draw() {
-	if (instructions) {
-		textSize(width / 8);
-		textAlign(CENTER, CENTER);
-		text("Hold H for help", width / 2, height / 2);
-		instructions = false;
-	}
-	// White vs Black circles
-	if (mouseIsPressed) {
-		fill(255);
-		if (outline) {
-			stroke(0);
-		} else {
-			noStroke();
-		}
+    if (instructions) {
+        textSize(width / 8);
+        textAlign(CENTER, CENTER);
+        text("Hold H for help", width / 2, height / 2);
+        instructions = false;
+    }
+    // White vs Black circles
+    // vs erase
 
-	} else {
-		fill(0);
-		if (outline) {
-			stroke(255);
-		} else {
-			noStroke();
-		}
-	}
+    if (keyIsDown(69)) {
+        noStroke();
+        fill(colors[0], colors[1], colors[2]);
+    } else if (mouseIsPressed) {
+        fill(255);
+        if (outline) {
+            stroke(0);
+        } else {
+            noStroke();
+        }
 
-	// Actually make the circles
-	ellipse(mouseX, mouseY, diam, diam);
+    } else {
+        fill(0);
+        if (outline) {
+            stroke(255);
+        } else {
+            noStroke();
+        }
+    }
 
-	var diamchange = 2;
-	// Clear Screen
-	if (keyIsDown(DOWN_ARROW)) {
-		diam -= diamchange;
-	} else if (keyIsDown(UP_ARROW)) {
-		diam += diamchange;
-	}
-	if (keyIsPressed) {
-		if (keyCode == 32) {
-			outline = !outline;
-		} else if (keyCode == 82) {
-			clear();
-			//background(random(0, 256), random(0, 256), random(0, 256));
-			setbackground();
-		}
-		keyIsPressed = false;
-	}
-	if (diam < 1) {
-		diam = 1;
-	}
+    // Actually make the circles
+    ellipse(mouseX, mouseY, diam, diam);
 
-	if (keyIsDown(72)) {
-		textSize(width / 15);
-		textAlign(CENTER, CENTER);
-		fill(0);
-		rectMode(CORNERS);
-		rect(width / 15, height / 11, width - width / 15, 10 * height / 11);
-		fill(255);
-		text("H to get help", width / 2, 1 * height / 6);
-		text("ARROWS to change size", width / 2, 2 * height / 6);
-		text("CLICK to Invert", width / 2, 3 * height / 6);
-		text("SPACE to toggle borders", width / 2, 4 * height / 6);
-		text("R to reset", width / 2, 5 * height / 6);
-	}
+    var diamchange = 2;
+    // Clear Screen
+    if (keyIsDown(DOWN_ARROW)) {
+        diam -= diamchange;
+    } else if (keyIsDown(UP_ARROW)) {
+        diam += diamchange;
+    }
+    if (keyIsPressed) {
+        if (keyCode == 32) {
+            outline = !outline;
+        } else if (keyCode == 82) {
+            clear();
+            //background(random(0, 256), random(0, 256), random(0, 256));
+            setbackground();
+        }
+        keyIsPressed = false;
+    }
+    if (diam < 1) {
+        diam = 1;
+    }
+
+    if (keyIsDown(72)) {
+        textSize(height / 8);
+        textAlign(LEFT, CENTER);
+        fill(0);
+        rectMode(CORNERS);
+        rect(width / 11.5, height / 10, width - width / 11.5, height - height / 10);
+        fill(255);
+        text("H", width / 9, 2 * height / 9);
+        text("ARROWS", width / 9, 3 * height / 9);
+        text("CLICK", width / 9, 4 * height / 9);
+        text("SPACE", width / 9, 5 * height / 9);
+        text("R", width / 9, 6 * height / 9);
+        text("E", width / 9, 7 * height / 9);
+        textAlign(RIGHT, CENTER);
+        text("to get help", 8 * width / 9, 2 * height / 9);
+        text("to change size", 8 * width / 9, 3 * height / 9);
+        text("to Invert", 8 * width / 9, 4 * height / 9);
+        text("to toggle borders", 8 * width / 9, 5 * height / 9);
+        text("to reset", 8 * width / 9, 6 * height / 9);
+        text("to erase", 8 * width / 9, 7 * height / 9);
+    }
 }
 
 // Background chooser
 function setbackground() {
-	background(random(0, 256), random(0, 256), random(0, 256));
+    colors = [random(0, 256), random(0, 256), random(0, 256)];
+    background(colors[0], colors[1], colors[2]);
 }
 
 function windowResized() {
-	resizeCanvas(window.innerWidth - 22, window.innerHeight - 22);
-	clear();
-	setbackground();
+    resizeCanvas(window.innerWidth - 22, window.innerHeight - 22);
+    clear();
+    setbackground();
 }

@@ -4,7 +4,7 @@ var diam = 80;
 var colors = [];
 
 function setup() {
-    createCanvas(window.innerWidth - 20, window.innerHeight - 20);
+    createCanvas(window.innerWidth - 22, window.innerHeight - 22);
     //background(random(0, 256), random(0, 256), random(0, 256));
     setbackground();
 

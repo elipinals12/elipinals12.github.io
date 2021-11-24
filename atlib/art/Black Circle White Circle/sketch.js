@@ -1,10 +1,13 @@
 var outline = false;
 var instructions = true;
-var diam = 80;
+var diam = 100;
 var colors = [];
 
 function setup() {
-    createCanvas(window.innerWidth - 22, window.innerHeight - 22);
+    var cnv = createCanvas(window.innerWidth - 20, window.innerHeight - 20);
+    var x = (windowWidth - width) / 2;
+    var y = ((windowHeight - height) / 2);
+    cnv.position(x, y);
     //background(random(0, 256), random(0, 256), random(0, 256));
     setbackground();
 
@@ -97,7 +100,7 @@ function setbackground() {
 }
 
 function windowResized() {
-    resizeCanvas(window.innerWidth - 22, window.innerHeight - 22);
+    resizeCanvas(window.innerWidth - 20, window.innerHeight - 20);
     clear();
     setbackground();
 }

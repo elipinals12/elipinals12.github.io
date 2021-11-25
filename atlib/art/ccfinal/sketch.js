@@ -14,14 +14,28 @@ var bg = 0;
 var bb = 0;
 
 function setup() {
-    var cnv = createCanvas(window.innerHeight - 22, window.innerHeight - 22);
+    var cnv = createCanvas(windowWidth, windowHeight);
     var x = (windowWidth - width) / 2;
     var y = (windowHeight - height) / 2;
     cnv.position(x, y);
 }
 
 function draw() {
-    background(br, bg, bb);
+    // BACKGROUND DUN DUN DUNNNNNNNNNN
+    //print(time);
+    if (time < 7 && time > 6) {
+        // sunrise time
+        c1 = color(122, 135, 152);
+        c2 = color(238, 141, 75);
+        for (let y = 0; y < height; y++) {
+            n = map(y, 0, height, 0, 1);
+            let newc = lerpColor(c1, c2, n);
+            stroke(newc);
+            line(0, y, width, y);
+        }
+    } else {
+        background(br, bg, bb);
+    }
 
     if (instructions) {
         noStroke();
@@ -43,7 +57,7 @@ function draw() {
         ang = 0;
     }
 
-    time = map(mouseY, 0, height, 0, 24);
+    time = map(mouseY, height, 0, 0, 24);
 
 
     for (var i = 0; i < treeposx.length; i++) {

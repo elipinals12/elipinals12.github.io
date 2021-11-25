@@ -4,7 +4,7 @@ var diam = 100;
 var colors = [];
 
 function setup() {
-    var cnv = createCanvas(window.innerWidth - 20, window.innerHeight - 20);
+    var cnv = createCanvas(windowWidth, windowHeight);
     var x = (windowWidth - width) / 2;
     var y = ((windowHeight - height) / 2);
     cnv.position(x, y);

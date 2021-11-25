@@ -3,10 +3,10 @@ var lxs = [];
 var barwid;
 
 var time = 20;
-var speed = 4;
+var speed = 3;
 
 function setup() {
-	var cnv = createCanvas(window.innerWidth - 22, window.innerHeight - 22);
+	var cnv = createCanvas(windowWidth, windowHeight)
 	var cnvx = (windowWidth - width) / 2;
 	var cnvy = (windowHeight - height) / 2;
 	cnv.position(cnvx, cnvy);

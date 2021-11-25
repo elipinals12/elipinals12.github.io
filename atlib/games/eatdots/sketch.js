@@ -27,7 +27,7 @@ var cheat = false;
 var colorcheat = false;
 
 function setup() {
-    var cnv = createCanvas(window.innerWidth - 22, window.innerHeight - 22);
+    var cnv = createCanvas(windowWidth, windowHeight);
     var cnvx = (windowWidth - width) / 2;
     var cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);
@@ -297,5 +297,5 @@ function keyPressed() {
 
 
 function windowResized() {
-    resizeCanvas(window.innerWidth - 22, window.innerHeight - 22);
+    resizeCanvas(windowWidth, windowHeight);
 }

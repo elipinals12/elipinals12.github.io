@@ -97,9 +97,11 @@ function draw() {
     // draw ground
     stroke(groundcolor);
     fill(groundcolor);
+    strokeWeight(30);
     for (var i = 0; i < groundposx.length; i++) {
-        circle(groundposx[i], groundposy[i], 10);
+        line(groundposx[i], groundposy[i], groundposx[i], height + 5);
     }
+    strokeWeight(1);
 }
 
 function keyPressed() {

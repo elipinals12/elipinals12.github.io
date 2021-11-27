@@ -17,7 +17,6 @@ var time = 0;
 var br = 0;
 var bg = 0;
 var bb = 0;
-var groundcolor = 90;
 
 function setup() {
     var cnv = createCanvas(windowWidth, windowHeight);
@@ -68,6 +67,17 @@ function draw() {
 
     time = map(mouseY, height, 0, 0, 24);
 
+    if (keyIsDown(83)) {
+        showStars();
+    }
+
+    // draw ground
+    stroke(86,125,70);
+    strokeWeight(30);
+    for (var i = 0; i < groundposx.length; i++) {
+        line(groundposx[i], groundposy[i], groundposx[i], height + 5);
+    }
+    strokeWeight(1);
 
     for (var i = 0; i < treeposx.length; i++) {
         stroke(treers[i], treegs[i], treebs[i]);
@@ -90,18 +100,7 @@ function draw() {
         }
     }
 
-    if (keyIsDown(83)) {
-        showStars();
-    }
-
-    // draw ground
-    stroke(groundcolor);
-    fill(groundcolor);
-    strokeWeight(30);
-    for (var i = 0; i < groundposx.length; i++) {
-        line(groundposx[i], groundposy[i], groundposx[i], height + 5);
-    }
-    strokeWeight(1);
+    
 }
 
 function keyPressed() {

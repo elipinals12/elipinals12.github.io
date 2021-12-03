@@ -12,6 +12,9 @@ var groundposy = [];
 var starposx = [];
 var starposy = [];
 var lens = [];
+var lr = [];
+var lg = [];
+var lb = [];
 var stars = false
 var lenmax = 90;
 var time = 0;
@@ -31,6 +34,13 @@ function setup() {
         append(starposx, random(0, width))
         append(starposy, random(0, height))
     }
+
+    // make the leave colors
+    for (var i = 0; i < 1000; i++) {
+        append(lr, 80 + random(-20, 20));
+        append(lg, 120 + random(-20, 20));
+        append(lb, 40 + random(-20, 20));
+    }
 }
 
 function draw() {
@@ -38,22 +48,22 @@ function draw() {
     //print(time);
     gradmidy = mouseY;
     //if (time < 7 && time > 6) {
-        // sunrise time
-        c1 = color(71, 121, 144);
-        c2 = color(159, 194, 187);
-        c3 = color(249, 166, 0);
-        for (let y = 0; y < gradmidy; y++) {
-            n = map(y, 0, gradmidy, 0, 1);
-            let newc = lerpColor(c1, c2, n);
-            stroke(newc);
-            line(0, y, width, y);
-        }
-        for (let y = gradmidy; y < height; y++) {
-            n = map(y, gradmidy, height, 0, 1);
-            let newc = lerpColor(c2, c3, n);
-            stroke(newc);
-            line(0, y, width, y);
-        }
+    // sunrise time
+    c1 = color(71, 121, 144);
+    c2 = color(159, 194, 187);
+    c3 = color(249, 166, 0);
+    for (let y = 0; y < gradmidy; y++) {
+        n = map(y, 0, gradmidy, 0, 1);
+        let newc = lerpColor(c1, c2, n);
+        stroke(newc);
+        line(0, y, width, y);
+    }
+    for (let y = gradmidy; y < height; y++) {
+        n = map(y, gradmidy, height, 0, 1);
+        let newc = lerpColor(c2, c3, n);
+        stroke(newc);
+        line(0, y, width, y);
+    }
     //} else {
     //    background(br, bg, bb);
     //}
@@ -98,16 +108,21 @@ function draw() {
     }
 
     // draw ground
-    stroke(86, 125, 70);
+    stroke(80, 120, 40);
     strokeWeight(30);
     for (var i = 0; i < groundposx.length; i++) {
         line(groundposx[i], groundposy[i], groundposx[i], height + 5);
     }
     strokeWeight(1);
 
+    // sort trees
+    /*treeposx.sort(function (a, b) {
+        return a - b;
+    })*/
+    // draw trees  
     for (var i = 0; i < treeposx.length; i++) {
         stroke(treers[i], treegs[i], treebs[i]);
-        branch(lens[i], treeposx[i], treeposy[i]);
+        branch(lens[i], treeposx[i], treeposy[i], i);
     }
 
     if (mouseIsPressed) {
@@ -157,26 +172,27 @@ function keyPressed() {
 
 }
 
-function branch(len, x, y) {
+function branch(len, x, y, lcol) {
     push();
     translate(x, y);
-    strokeWeight(map(len, 1, lenmax, 2, 10));
+    strokeWeight(map(len, 1, lenmax, 2, 8));
     line(0, 0, 0, -len);
     translate(0, -len);
     if (len > h) {
         push();
         rotate(ang);
-        branch(len * .67, 0, 0);
+        branch(len * .67, 0, 0, lcol + 2);
         pop();
         push();
         rotate(-ang);
-        branch(len * .67, 0, 0);
+        branch(len * .67, 0, 0, lcol + 1);
         pop();
-    } /*else if (count > 5) {
-        fill(0, 255, 0);
-        stroke(0, 255, 0);
-        circle(x, y, 4);
-    }*/
+    } else if (count > 5) {
+        // leaves/fruit
+        noStroke();
+        fill(lr[lcol], lg[lcol], lb[lcol]);
+        circle(x, y, 8);
+    }
     pop();
 }
 

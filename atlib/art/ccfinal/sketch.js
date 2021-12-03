@@ -1,7 +1,7 @@
 var h = 180;
 var ang;
 var count = 0;
-var instructions = true;
+var instructions = false;
 var treers = [];
 var treegs = [];
 var treebs = [];
@@ -12,11 +12,14 @@ var groundposy = [];
 var starposx = [];
 var starposy = [];
 var lens = [];
-var lenmax = 120;
+var stars = false
+var lenmax = 90;
 var time = 0;
 var br = 0;
 var bg = 0;
 var bb = 0;
+var gradmidy = 0;
+var sunsize = 25;
 
 function setup() {
     var cnv = createCanvas(windowWidth, windowHeight);
@@ -24,7 +27,7 @@ function setup() {
     var y = (windowHeight - height) / 2;
     cnv.position(x, y);
 
-    for (var i = 0; i < width / 4; i++) {
+    for (var i = 0; i < width / 2; i++) {
         append(starposx, random(0, width))
         append(starposy, random(0, height))
     }
@@ -33,18 +36,37 @@ function setup() {
 function draw() {
     // BACKGROUND DUN DUN DUNNNNNNNNNN
     //print(time);
-    if (time < 7 && time > 6) {
+    gradmidy = mouseY;
+    //if (time < 7 && time > 6) {
         // sunrise time
-        c1 = color(122, 135, 152);
-        c2 = color(238, 141, 75);
-        for (let y = 0; y < height; y++) {
-            n = map(y, 0, height, 0, 1);
+        c1 = color(71, 121, 144);
+        c2 = color(159, 194, 187);
+        c3 = color(249, 166, 0);
+        for (let y = 0; y < gradmidy; y++) {
+            n = map(y, 0, gradmidy, 0, 1);
             let newc = lerpColor(c1, c2, n);
             stroke(newc);
             line(0, y, width, y);
         }
-    } else {
-        background(br, bg, bb);
+        for (let y = gradmidy; y < height; y++) {
+            n = map(y, gradmidy, height, 0, 1);
+            let newc = lerpColor(c2, c3, n);
+            stroke(newc);
+            line(0, y, width, y);
+        }
+    //} else {
+    //    background(br, bg, bb);
+    //}
+
+    //sun
+    if (false) {
+        noStroke();
+        fill(253, 220, 5);
+        circle(width / 2, height / 2, sunsize + 3)
+        fill(245, 251, 53);
+        circle(width / 2, height / 2, sunsize);
+        fill(251, 255, 245);
+        circle(width / 2, height / 2, sunsize - 5);
     }
 
     if (instructions) {
@@ -66,13 +88,17 @@ function draw() {
     }
 
     time = map(mouseY, height, 0, 0, 24);
-
-    if (keyIsDown(83)) {
+    if (stars) {
         showStars();
     }
 
+    if (keyIsDown(71)) {
+        append(groundposx, mouseX);
+        append(groundposy, mouseY);
+    }
+
     // draw ground
-    stroke(86,125,70);
+    stroke(86, 125, 70);
     strokeWeight(30);
     for (var i = 0; i < groundposx.length; i++) {
         line(groundposx[i], groundposy[i], groundposx[i], height + 5);
@@ -85,22 +111,17 @@ function draw() {
     }
 
     if (mouseIsPressed) {
-        if (mouseButton == RIGHT) {
-            append(groundposx, mouseX);
-            append(groundposy, mouseY);
-        } else {
-            instructions = false;
-            append(treeposx, mouseX);
-            append(treeposy, mouseY);
-            append(lens, random(50, lenmax));
-            append(treers, random(0, 255));
-            append(treegs, random(0, 255));
-            append(treebs, random(190, 255));
-            mouseIsPressed = false;
-        }
+        instructions = false;
+        append(treeposx, mouseX);
+        append(treeposy, mouseY);
+        append(lens, random(50, lenmax));
+        append(treers, random(0, 255));
+        append(treegs, random(0, 255));
+        append(treebs, random(190, 255));
+        mouseIsPressed = false;
     }
 
-    
+
 }
 
 function keyPressed() {
@@ -130,6 +151,8 @@ function keyPressed() {
         groundposx = [];
         groundposy = [];
         setup();
+    } else if (keyIsDown(83)) {
+        stars = !stars;
     }
 
 }
@@ -149,11 +172,11 @@ function branch(len, x, y) {
         rotate(-ang);
         branch(len * .67, 0, 0);
         pop();
-    } else if (count > 5) {
+    } /*else if (count > 5) {
         fill(0, 255, 0);
         stroke(0, 255, 0);
         circle(x, y, 4);
-    }
+    }*/
     pop();
 }
 

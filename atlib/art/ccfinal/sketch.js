@@ -44,11 +44,15 @@ function setup() {
 }
 
 function draw() {
+    // clock
+    time = map(mouseY, height, 0, 0, 24);
+
+    
     // BACKGROUND DUN DUN DUNNNNNNNNNN
-    //print(time);
-    gradmidy = mouseY;
-    //if (time < 7 && time > 6) {
+
+    if (time < 20 && time > 14) {
     // sunrise time
+    gradmidy = map(time,20,14,0,height);
     c1 = color(71, 121, 144);
     c2 = color(159, 194, 187);
     c3 = color(249, 166, 0);
@@ -64,9 +68,9 @@ function draw() {
         stroke(newc);
         line(0, y, width, y);
     }
-    //} else {
-    //    background(br, bg, bb);
-    //}
+    } else {
+        background(br, bg, bb);
+    }
 
     //sun
     if (false) {
@@ -97,7 +101,6 @@ function draw() {
         ang = 0;
     }
 
-    time = map(mouseY, height, 0, 0, 24);
     if (stars) {
         showStars();
     }
@@ -111,7 +114,7 @@ function draw() {
     stroke(80, 120, 40);
     strokeWeight(30);
     for (var i = 0; i < groundposx.length; i++) {
-        line(groundposx[i], groundposy[i], groundposx[i], height + 5);
+        line(groundposx[i], groundposy[i], groundposx[i], height + 7);
     }
     strokeWeight(1);
 

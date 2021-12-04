@@ -51,14 +51,14 @@ function draw() {
 
     // BACKGROUND DUN DUN DUNNNNNNNNNN
 
-    if (time < 24 && time > 20) {
+    if (time <= 24 && time > 20) {
         // sunrise -> night time
         midy = map(time, 20, 24, 0, height);
         c1 = [6, 2, 13];
         c2 = [71, 121, 144];
         c3 = [159, 194, 187];
         doubleGrad(c1, c2, c3, midy);
-    } else if (time < 20 && time > 14) {
+    } else if (time <= 20 && time > 14) {
         // sunrise time
         midy = map(time, 14, 20, 0, height);
         c1 = [71, 121, 144];
@@ -90,7 +90,7 @@ function draw() {
         text("Arrows", width / 2, 7 * height / 12);
     }
 
-    // decide ang and time
+    // decide ang
     ang = radians(map(mouseX, 0, width, 0, 180));
     if (ang > PI) {
         ang = PI;

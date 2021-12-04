@@ -21,8 +21,9 @@ var time = 0;
 var br = 0;
 var bg = 0;
 var bb = 0;
-var gradmidy = 0;
+var midy = 0;
 var sunsize = 25;
+let newc;
 
 function setup() {
     var cnv = createCanvas(windowWidth, windowHeight);
@@ -37,9 +38,9 @@ function setup() {
 
     // make the leave colors
     for (var i = 0; i < 1000; i++) {
-        append(lr, 80 + random(-20, 20));
-        append(lg, 120 + random(-20, 20));
-        append(lb, 40 + random(-20, 20));
+        append(lr, 45 + random(-20, 20));
+        append(lg, 90 + random(-20, 20));
+        append(lb, 39 + random(-20, 20));
     }
 }
 
@@ -47,27 +48,23 @@ function draw() {
     // clock
     time = map(mouseY, height, 0, 0, 24);
 
-    
+
     // BACKGROUND DUN DUN DUNNNNNNNNNN
 
-    if (time < 20 && time > 14) {
-    // sunrise time
-    gradmidy = map(time,20,14,0,height);
-    c1 = color(71, 121, 144);
-    c2 = color(159, 194, 187);
-    c3 = color(249, 166, 0);
-    for (let y = 0; y < gradmidy; y++) {
-        n = map(y, 0, gradmidy, 0, 1);
-        let newc = lerpColor(c1, c2, n);
-        stroke(newc);
-        line(0, y, width, y);
-    }
-    for (let y = gradmidy; y < height; y++) {
-        n = map(y, gradmidy, height, 0, 1);
-        let newc = lerpColor(c2, c3, n);
-        stroke(newc);
-        line(0, y, width, y);
-    }
+    if (time < 24 && time > 20) {
+        // sunrise -> night time
+        midy = map(time, 20, 24, 0, height);
+        c1 = [6, 2, 13];
+        c2 = [71, 121, 144];
+        c3 = [159, 194, 187];
+        doubleGrad(c1, c2, c3, midy);
+    } else if (time < 20 && time > 14) {
+        // sunrise time
+        midy = map(time, 14, 20, 0, height);
+        c1 = [71, 121, 144];
+        c2 = [159, 194, 187];
+        c3 = [249, 166, 0];
+        doubleGrad(c1, c2, c3, midy);
     } else {
         background(br, bg, bb);
     }
@@ -111,7 +108,7 @@ function draw() {
     }
 
     // draw ground
-    stroke(80, 120, 40);
+    stroke(45, 90, 39);
     strokeWeight(30);
     for (var i = 0; i < groundposx.length; i++) {
         line(groundposx[i], groundposy[i], groundposx[i], height + 7);
@@ -176,6 +173,7 @@ function keyPressed() {
 }
 
 function branch(len, x, y, lcol) {
+    lcol = lcol % 1000;
     push();
     translate(x, y);
     strokeWeight(map(len, 1, lenmax, 2, 8));
@@ -184,11 +182,11 @@ function branch(len, x, y, lcol) {
     if (len > h) {
         push();
         rotate(ang);
-        branch(len * .67, 0, 0, lcol + 2);
+        branch(len * .67, 0, 0, lcol + 13);
         pop();
         push();
         rotate(-ang);
-        branch(len * .67, 0, 0, lcol + 1);
+        branch(len * .67, 0, 0, lcol + 19);
         pop();
     } else if (count > 5) {
         // leaves/fruit
@@ -204,6 +202,24 @@ function showStars() {
         stroke(255);
         fill(255);
         circle(starposx[i], starposy[i], random(1, 3));
+    }
+}
+
+function doubleGrad(c1, c2, c3, midy) {
+    c1 = color(c1[0], c1[1], c1[2]);
+    c2 = color(c2[0], c2[1], c2[2]);
+    c3 = color(c3[0], c3[1], c3[2]);
+    for (let y = 0; y < midy; y++) {
+        n = map(y, 0, midy, 0, 1);
+        newc = lerpColor(c1, c2, n);
+        stroke(newc);
+        line(0, y, width, y);
+    }
+    for (let y = midy; y < height; y++) {
+        n = map(y, midy, height, 0, 1);
+        newc = lerpColor(c2, c3, n);
+        stroke(newc);
+        line(0, y, width, y);
     }
 }
 

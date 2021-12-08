@@ -15,15 +15,24 @@ var lens = [];
 var lr = [];
 var lg = [];
 var lb = [];
-var stars = false
+var times = [24, 22, 20, 16, 12, 8, 4, 0];
+var stars = false;
+var stara = 0;
+var sky = false;
 var lenmax = 90;
 var time = 0;
-var br = 0;
-var bg = 0;
-var bb = 0;
-var midy = 0;
+var midy;
 var sunsize = 25;
 let newc;
+var sc1 = [2, 0, 2];
+var sc2 = [6, 2, 13];
+var sc3 = [3, 7, 28];
+var sc4 = [71, 121, 144];
+var sc5 = [159, 194, 187];
+var sc6 = [249, 166, 0];
+var sc7 = [249, 166, 0];
+var sc8 = [249, 166, 0];
+var sc9 = [249, 166, 0];
 
 function setup() {
     var cnv = createCanvas(windowWidth, windowHeight);
@@ -31,7 +40,7 @@ function setup() {
     var y = (windowHeight - height) / 2;
     cnv.position(x, y);
 
-    for (var i = 0; i < width / 2; i++) {
+    for (var i = 0; i < width / 1.5; i++) {
         append(starposx, random(0, width))
         append(starposy, random(0, height))
     }
@@ -42,42 +51,56 @@ function setup() {
         append(lg, 90 + random(-20, 20));
         append(lb, 39 + random(-20, 20));
     }
+
+    background(0);
 }
 
 function draw() {
     // clock
     time = map(mouseY, height, 0, 0, 24);
 
-
     // BACKGROUND DUN DUN DUNNNNNNNNNN
-
-    if (time <= 24 && time > 20) {
-        // sunrise -> night time
-        midy = map(time, 20, 24, 0, height);
-        c1 = [6, 2, 13];
-        c2 = [71, 121, 144];
-        c3 = [159, 194, 187];
-        doubleGrad(c1, c2, c3, midy);
-    } else if (time <= 20 && time > 14) {
-        // sunrise time
-        midy = map(time, 14, 20, 0, height);
-        c1 = [71, 121, 144];
-        c2 = [159, 194, 187];
-        c3 = [249, 166, 0];
-        doubleGrad(c1, c2, c3, midy);
+    if (sky) {
+        if (time <= times[0] && time > times[1]) {
+            midy = map(time, times[1], times[0], 0, height);
+            doubleGrad(sc1, sc2, sc3, midy);
+        } else if (time <= times[1] && time > times[2]) {
+            midy = map(time, times[2], times[1], 0, height);
+            doubleGrad(sc2, sc3, sc4, midy);
+            stara = map(midy, 0, height, 0, 255);
+        } else if (time <= times[2] && time > times[3]) {
+            midy = map(time, times[3], times[2], 0, height);
+            doubleGrad(sc3, sc4, sc5, midy);
+        } else if (time <= times[3] && time > times[4]) {
+            midy = map(time, times[4], times[3], 0, height);
+            doubleGrad(sc4, sc5, sc6, midy);
+        } else if (time <= times[4] && time > times[5]) {
+            midy = map(time, times[4], times[5], 0, height);
+            doubleGrad(sc5, sc6, sc7, midy);
+        } else if (time <= times[5] && time > times[6]) {
+            midy = map(time, times[6], times[5], 0, height);
+            doubleGrad(sc6, sc7, sc8, midy);
+        } else if (time <= times[6] && time > times[7]) {
+            midy = map(time, times[7], times[6], 0, height);
+            doubleGrad(sc7, sc8, sc9, midy);
+        } else {
+            background(0);
+        }
     } else {
-        background(br, bg, bb);
+        background(0);
     }
+
+    showStars();
 
     //sun
     if (false) {
         noStroke();
         fill(253, 220, 5);
-        circle(width / 2, height / 2, sunsize + 3)
+        circle(mouseX, mouseY, sunsize + 3)
         fill(245, 251, 53);
-        circle(width / 2, height / 2, sunsize);
+        circle(mouseX, mouseY, sunsize);
         fill(251, 255, 245);
-        circle(width / 2, height / 2, sunsize - 5);
+        circle(mouseX, mouseY, sunsize - 5);
     }
 
     if (instructions) {
@@ -130,9 +153,9 @@ function draw() {
         append(treeposx, mouseX);
         append(treeposy, mouseY);
         append(lens, random(50, lenmax));
-        append(treers, random(0, 255));
-        append(treegs, random(0, 255));
-        append(treebs, random(190, 255));
+        append(treers, 43 + random(-10, 10));
+        append(treegs, 26 + random(-10, 10));
+        append(treebs, 9 + random(-10, 10));
         mouseIsPressed = false;
     }
 
@@ -167,7 +190,7 @@ function keyPressed() {
         groundposy = [];
         setup();
     } else if (keyIsDown(83)) {
-        stars = !stars;
+        sky = !sky;
     }
 
 }
@@ -199,8 +222,8 @@ function branch(len, x, y, lcol) {
 
 function showStars() {
     for (var i = 0; i < starposx.length; i++) {
-        stroke(255);
-        fill(255);
+        stroke(255, stara);
+        fill(255, stara);
         circle(starposx[i], starposy[i], random(1, 3));
     }
 }

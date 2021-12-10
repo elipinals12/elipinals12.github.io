@@ -66,7 +66,7 @@ function draw() {
     time = map(mouseY, height, 0, 0, 24);
 
     // BACKGROUND DUN DUN DUNNNNNNNNNN
-    if (!sky) {
+    if (sky) {
         //night
         if (time <= times[0] && time > times[1]) {
             midy = map(time, times[1], times[0], 0, height);

@@ -28,7 +28,8 @@ var sc1 = [2, 0, 2];
 var sc2 = [6, 2, 13];
 var sc3 = [3, 7, 28];
 var sc4 = [27, 64, 95];
-var sc5 = [97, 157, 186];
+var sc5 = [248, 74, 47];
+var sc5_2 = [247, 152, 70];
 var sc6 = [91, 171, 212];
 var sc7 = [91, 171, 212];
 var sc9 = [232, 205, 134];
@@ -90,15 +91,15 @@ function draw() {
             //reverse reverse
         } else if (time <= times[5] && time > times[6]) {
             midy = map(time, times[6], times[5], 0, height);
-            doubleGrad(sc7, sc6, sc5, midy);
+            doubleGrad(sc7, sc6, sc5_2, midy);
             stara = 0;
         } else if (time <= times[6] && time > times[7]) {
             midy = map(time, times[7], times[6], 0, height);
-            doubleGrad(sc6, sc5, sc4, midy);
+            doubleGrad(sc6, sc5_2, sc4, midy);
             stara = 0;
         } else if (time <= times[7] && time > times[8]) {
             midy = map(time, times[8], times[7], 0, height);
-            doubleGrad(sc5, sc4, sc3, midy);
+            doubleGrad(sc5_2, sc4, sc3, midy);
             stara = map(midy, 0, height, 255, 0);
         } else if (time <= times[8] && time > times[9]) {
             midy = map(time, times[9], times[8], 0, height);
@@ -275,14 +276,32 @@ function doubleGrad(c1, c2, c3, midy) {
     c1 = color(c1[0], c1[1], c1[2]);
     c2 = color(c2[0], c2[1], c2[2]);
     c3 = color(c3[0], c3[1], c3[2]);
-    for (let y = -60; y < midy; y++) {
-        n = map(y, -60, midy, 0, 1);
+    for (let y = -50; y < midy; y++) {
+        n = map(y, -50, midy, 0, 1);
         newc = lerpColor(c1, c2, n);
         stroke(newc);
         line(0, y, width, y);
     }
-    for (let y = midy; y < height + 60; y++) {
-        n = map(y, midy, height + 60, 0, 1);
+    for (let y = midy; y < height + 50; y++) {
+        n = map(y, midy, height + 50, 0, 1);
+        newc = lerpColor(c2, c3, n);
+        stroke(newc);
+        line(0, y, width, y);
+    }
+}
+
+function halfGrad(c1, c2, c3, midy) {
+    c1 = color(c1[0], c1[1], c1[2]);
+    c2 = color(c2[0], c2[1], c2[2]);
+    c3 = color(c3[0], c3[1], c3[2]);
+    for (let y = height/2; y < midy; y++) {
+        n = map(y, height/2, midy, 0, 1);
+        newc = lerpColor(c1, c2, n);
+        stroke(newc);
+        line(0, y, width, y);
+    }
+    for (let y = midy; y < height + 50; y++) {
+        n = map(y, midy, height + 50, 0, 1);
         newc = lerpColor(c2, c3, n);
         stroke(newc);
         line(0, y, width, y);

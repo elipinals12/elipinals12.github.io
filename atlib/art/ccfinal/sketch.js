@@ -117,11 +117,14 @@ function draw() {
 
     showStars();
 
-    stroke(0);
-    fill(255);
-    textSize(30);
-    textAlign(LEFT, TOP);
-    text(int(time) + ":00", 15, 15);
+    //clock
+    if (false) {
+        stroke(0);
+        fill(255);
+        textSize(30);
+        textAlign(LEFT, TOP);
+        text(int(time) + ":00", 15, 15);
+    }
 
     //sun
     if (false) {
@@ -129,8 +132,8 @@ function draw() {
         var suny = mouseY;
         noStroke();
         for (i = 0; i < 100; i++) {
-            fill(255, 255, 150, map(i,0,100,105,0));
-            circle(sunx, suny, sunsize + i*2);
+            fill(255, 255, 150, map(i, 0, 100, 105, 0));
+            circle(sunx, suny, sunsize + i * 2);
         }
         fill(253, 220, 5);
         circle(sunx, suny, sunsize + 3)

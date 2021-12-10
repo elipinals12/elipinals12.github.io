@@ -17,6 +17,7 @@ var lg = [];
 var lb = [];
 var times = [24, 22, 20, 18, 16, 8, 6, 4, 2, 0];
 var stars = false;
+var freeze = false;
 var stara = 0;
 var sky = false;
 var lenmax = 90;
@@ -62,8 +63,10 @@ function setup() {
 }
 
 function draw() {
-    // clock
-    time = map(mouseY, height, 0, 0, 24);
+    // time
+    if (!freeze) {
+        time = map(mouseY, height, 0, 0, 24);
+    }
 
     // BACKGROUND DUN DUN DUNNNNNNNNNN
     if (sky) {
@@ -229,6 +232,8 @@ function keyPressed() {
         setup();
     } else if (keyIsDown(83)) {
         sky = !sky;
+    } else if (keyIsDown(70)) {
+        freeze = !freeze;
     }
 
 }
@@ -288,8 +293,8 @@ function halfGrad(c1, c2, c3, midy) {
     c1 = color(c1[0], c1[1], c1[2]);
     c2 = color(c2[0], c2[1], c2[2]);
     c3 = color(c3[0], c3[1], c3[2]);
-    for (let y = height/2; y < midy; y++) {
-        n = map(y, height/2, midy, 0, 1);
+    for (let y = height / 2; y < midy; y++) {
+        n = map(y, height / 2, midy, 0, 1);
         newc = lerpColor(c1, c2, n);
         stroke(newc);
         line(0, y, width, y);

@@ -196,9 +196,9 @@ function draw() {
         append(treeposx, mouseX);
         append(treeposy, mouseY);
         append(lens, random(50, lenmax));
-        append(treers, 82 + random(-10, 10));
-        append(treegs, 59 + random(-10, 10));
-        append(treebs, 33 + random(-10, 10));
+        append(treers, 82 + random(-20, 10));
+        append(treegs, 59 + random(-20, 10));
+        append(treebs, 33 + random(-20, 10));
         mouseIsPressed = false;
     }
 }

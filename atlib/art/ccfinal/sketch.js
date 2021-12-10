@@ -165,10 +165,6 @@ function draw() {
         ang = 0;
     }
 
-    if (stars) {
-        showStars();
-    }
-
     if (keyIsDown(71)) {
         append(groundposx, mouseX);
         append(groundposy, mouseY);
@@ -202,8 +198,6 @@ function draw() {
         append(treebs, 33 + random(-10, 10));
         mouseIsPressed = false;
     }
-
-
 }
 
 function keyPressed() {

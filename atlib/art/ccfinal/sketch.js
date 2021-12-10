@@ -15,24 +15,29 @@ var lens = [];
 var lr = [];
 var lg = [];
 var lb = [];
-var times = [24, 22, 20, 16, 12, 8, 4, 0];
+var times = [24, 22, 20, 18, 16, 8, 6, 4, 2, 0];
 var stars = false;
 var stara = 0;
 var sky = false;
 var lenmax = 90;
 var time = 0;
 var midy;
-var sunsize = 25;
+var sunsize = 45;
 let newc;
 var sc1 = [2, 0, 2];
 var sc2 = [6, 2, 13];
 var sc3 = [3, 7, 28];
-var sc4 = [71, 121, 144];
-var sc5 = [159, 194, 187];
-var sc6 = [249, 166, 0];
-var sc7 = [249, 166, 0];
-var sc8 = [249, 166, 0];
-var sc9 = [249, 166, 0];
+var sc4 = [27, 64, 95];
+var sc5 = [97, 157, 186];
+var sc6 = [91, 171, 212];
+var sc7 = [91, 171, 212];
+var sc9 = [232, 205, 134];
+var sc10 = [232, 205, 134];
+var sc11 = [247, 152, 70];
+var sc12 = [247, 152, 70];
+//var sc6 = [248, 74, 47]; deep red
+//;var sc5 = [247, 152, 70];
+//
 
 function setup() {
     var cnv = createCanvas(windowWidth, windowHeight);
@@ -47,9 +52,9 @@ function setup() {
 
     // make the leave colors
     for (var i = 0; i < 1000; i++) {
-        append(lr, 45 + random(-20, 20));
-        append(lg, 90 + random(-20, 20));
-        append(lb, 39 + random(-20, 20));
+        append(lr, 55 + random(-20, 20));
+        append(lg, 100 + random(-20, 20));
+        append(lb, 49 + random(-20, 20));
     }
 
     background(0);
@@ -60,29 +65,49 @@ function draw() {
     time = map(mouseY, height, 0, 0, 24);
 
     // BACKGROUND DUN DUN DUNNNNNNNNNN
-    if (sky) {
+    if (!sky) {
+        //night
         if (time <= times[0] && time > times[1]) {
             midy = map(time, times[1], times[0], 0, height);
             doubleGrad(sc1, sc2, sc3, midy);
+            stara = 255;
         } else if (time <= times[1] && time > times[2]) {
             midy = map(time, times[2], times[1], 0, height);
             doubleGrad(sc2, sc3, sc4, midy);
-            stara = map(midy, 0, height, 0, 255);
+            stara = 255;
         } else if (time <= times[2] && time > times[3]) {
             midy = map(time, times[3], times[2], 0, height);
             doubleGrad(sc3, sc4, sc5, midy);
+            stara = map(midy, 0, height, 0, 255);
         } else if (time <= times[3] && time > times[4]) {
             midy = map(time, times[4], times[3], 0, height);
             doubleGrad(sc4, sc5, sc6, midy);
+            stara = 0;
         } else if (time <= times[4] && time > times[5]) {
-            midy = map(time, times[4], times[5], 0, height);
+            midy = map(time, times[5], times[4], 0, height);
             doubleGrad(sc5, sc6, sc7, midy);
+            stara = 0;
+            //reverse reverse
         } else if (time <= times[5] && time > times[6]) {
             midy = map(time, times[6], times[5], 0, height);
-            doubleGrad(sc6, sc7, sc8, midy);
+            doubleGrad(sc7, sc6, sc5, midy);
+            stara = 0;
         } else if (time <= times[6] && time > times[7]) {
             midy = map(time, times[7], times[6], 0, height);
-            doubleGrad(sc7, sc8, sc9, midy);
+            doubleGrad(sc6, sc5, sc4, midy);
+            stara = 0;
+        } else if (time <= times[7] && time > times[8]) {
+            midy = map(time, times[8], times[7], 0, height);
+            doubleGrad(sc5, sc4, sc3, midy);
+            stara = map(midy, 0, height, 255, 0);
+        } else if (time <= times[8] && time > times[9]) {
+            midy = map(time, times[9], times[8], 0, height);
+            doubleGrad(sc4, sc3, sc2, midy);
+            stara = 255;
+        } else if (time <= times[9] && time > times[10]) {
+            midy = map(time, times[10], times[9], 0, height);
+            doubleGrad(sc3, sc2, sc1, midy);
+            stara = 255;
         } else {
             background(0);
         }
@@ -92,15 +117,30 @@ function draw() {
 
     showStars();
 
+    stroke(0);
+    fill(255);
+    textSize(30);
+    textAlign(LEFT, TOP);
+    text(int(time) + ":00", 15, 15);
+
     //sun
     if (false) {
+        var sunx = mouseX;
+        var suny = mouseY;
         noStroke();
+        for (i = 0; i < 100; i++) {
+            fill(255, 255, 150, map(i,0,100,105,0));
+            circle(sunx, suny, sunsize + i*2);
+        }
         fill(253, 220, 5);
-        circle(mouseX, mouseY, sunsize + 3)
+        circle(sunx, suny, sunsize + 3)
         fill(245, 251, 53);
-        circle(mouseX, mouseY, sunsize);
-        fill(251, 255, 245);
-        circle(mouseX, mouseY, sunsize - 5);
+        circle(sunx, suny, sunsize);
+        fill(255, 255, 255);
+        circle(sunx, suny, sunsize - 5);
+        var a = map(mouseY, 0, height, 255, 0);
+        fill(255, 255, 255, a);
+        circle(sunx, suny, sunsize + 3);
     }
 
     if (instructions) {
@@ -153,9 +193,9 @@ function draw() {
         append(treeposx, mouseX);
         append(treeposy, mouseY);
         append(lens, random(50, lenmax));
-        append(treers, 43 + random(-10, 10));
-        append(treegs, 26 + random(-10, 10));
-        append(treebs, 9 + random(-10, 10));
+        append(treers, 82 + random(-10, 10));
+        append(treegs, 59 + random(-10, 10));
+        append(treebs, 33 + random(-10, 10));
         mouseIsPressed = false;
     }
 
@@ -232,14 +272,14 @@ function doubleGrad(c1, c2, c3, midy) {
     c1 = color(c1[0], c1[1], c1[2]);
     c2 = color(c2[0], c2[1], c2[2]);
     c3 = color(c3[0], c3[1], c3[2]);
-    for (let y = 0; y < midy; y++) {
-        n = map(y, 0, midy, 0, 1);
+    for (let y = -60; y < midy; y++) {
+        n = map(y, -60, midy, 0, 1);
         newc = lerpColor(c1, c2, n);
         stroke(newc);
         line(0, y, width, y);
     }
-    for (let y = midy; y < height; y++) {
-        n = map(y, midy, height, 0, 1);
+    for (let y = midy; y < height + 60; y++) {
+        n = map(y, midy, height + 60, 0, 1);
         newc = lerpColor(c2, c3, n);
         stroke(newc);
         line(0, y, width, y);

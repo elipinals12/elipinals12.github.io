@@ -295,7 +295,6 @@ function keyPressed() {
     }
 }
 
-
 function windowResized() {
     setup();
 }

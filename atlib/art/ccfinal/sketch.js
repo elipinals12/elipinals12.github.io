@@ -23,8 +23,10 @@ var sky = false;
 var lenmax = 90;
 var time = 0;
 var midy;
+var help = false;
 var sunsize = 45;
-let newc;
+var newc;
+var boxh;
 var sc1 = [2, 0, 2];
 var sc2 = [6, 2, 13];
 var sc3 = [3, 7, 28];
@@ -67,7 +69,6 @@ function draw() {
     if (!freeze) {
         time = map(mouseY, height, 0, 0, 24);
     }
-
     // BACKGROUND DUN DUN DUNNNNNNNNNN
     if (sky) {
         //night
@@ -117,6 +118,13 @@ function draw() {
         }
     } else {
         background(0);
+
+        if (!help) {
+            textSize(width / 8);
+            textAlign(CENTER, CENTER);
+            fill(255);
+            text("Press H for help", width / 2, height / 2);
+        }
     }
 
     showStars();
@@ -148,16 +156,6 @@ function draw() {
         var a = map(mouseY, 0, height, 255, 0);
         fill(255, 255, 255, a);
         circle(sunx, suny, sunsize + 3);
-    }
-
-    if (instructions) {
-        noStroke();
-        textSize(width / 15);
-        fill(255);
-        textAlign(CENTER, CENTER);
-        text("Click", width / 2, 3 * height / 12);
-        text("&", width / 2, 5 * height / 12);
-        text("Arrows", width / 2, 7 * height / 12);
     }
 
     // decide ang
@@ -201,6 +199,32 @@ function draw() {
         append(treebs, 33 + random(-20, 10));
         mouseIsPressed = false;
     }
+
+    // instructions
+    if (help) {
+        rectMode(CENTER);
+        fill(85);
+        noStroke();
+        if (width < height) {
+            boxh = width;
+        } else {
+            boxh = height;
+        }
+        rect(width / 2, height / 2, boxh - 50, boxh - 50);
+        textSize(boxh / 13);
+        fill(255);
+        textAlign(CENTER, CENTER);
+        text("G to draw ground", width / 2, 1 * height / 10);
+        text("Click to plant trees", width / 2, 2 * height / 10);
+        text("Up arrow to grow trees", width / 2, 3 * height / 10);
+        text("S to toggle sky", width / 2, 4 * height / 10);
+        text("F to freeze sky", width / 2, 5 * height / 10);
+        text("R to reset trees/ground", width / 2, 6 * height / 10);
+        text("H to toggle this menu", width / 2, 7 * height / 10);
+        textSize(boxh/15);
+        text("Mouse height for sky color", width / 2, 8 * height / 10);
+        text("Mouse width for tree angle", width / 2, 9 * height / 10);
+    }
 }
 
 function keyPressed() {
@@ -234,6 +258,8 @@ function keyPressed() {
         sky = !sky;
     } else if (keyIsDown(70)) {
         freeze = !freeze;
+    } else if (keyIsDown(72)) {
+        help = !help;
     }
 
 }

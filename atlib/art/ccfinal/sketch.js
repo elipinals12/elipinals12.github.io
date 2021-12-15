@@ -1,7 +1,7 @@
 var h = 180;
 var ang;
 var count = 0;
-var instructions = false;
+var instructions = true;
 var treers = [];
 var treegs = [];
 var treebs = [];
@@ -119,7 +119,7 @@ function draw() {
     } else {
         background(0);
 
-        if (!help) {
+        if (instructions) {
             textSize(width / 8);
             textAlign(CENTER, CENTER);
             fill(255);
@@ -200,8 +200,9 @@ function draw() {
         mouseIsPressed = false;
     }
 
-    // instructions
+    // help menu
     if (help) {
+        instructions=false;
         rectMode(CENTER);
         fill(85);
         noStroke();
@@ -210,25 +211,25 @@ function draw() {
         } else {
             boxh = height;
         }
-        rect(width / 2, height / 2, boxh - 50, boxh - 50);
-        textSize(boxh / 13);
+        rect(width / 2, height / 2, boxh + 90, boxh - 50);
+        //textSize(boxh / 13);
         fill(255);
-        textAlign(CENTER, CENTER);
-        text("G to draw ground", width / 2, 1 * height / 10);
-        text("Click to plant trees", width / 2, 2 * height / 10);
-        text("Up arrow to grow trees", width / 2, 3 * height / 10);
-        text("S to toggle sky", width / 2, 4 * height / 10);
-        text("F to freeze sky", width / 2, 5 * height / 10);
-        text("R to reset trees/ground", width / 2, 6 * height / 10);
-        text("H to toggle this menu", width / 2, 7 * height / 10);
-        textSize(boxh/15);
-        text("Mouse height for sky color", width / 2, 8 * height / 10);
-        text("Mouse width for tree angle", width / 2, 9 * height / 10);
+        textSize(boxh/23);
+        textAlign(LEFT, CENTER);
+        var margin=(width/2)-(boxh/2);
+        text("1. Hold G and move the mouse to draw the ground", margin, 1 * boxh / 9);
+        text("2. Click to grow a tree from where your mouse is", margin, 2 * boxh / 9);
+        text("3. Grow the trees by pressing the up arrow repeatedly", margin, 3 * boxh / 9);
+        text("4. Press S to toggle the sky", margin, 4 * boxh / 9);
+        text("    control it by moving the mouse vertically", margin, 5 * boxh / 9);
+        text("F - freeze the sky", margin, 6 * boxh / 9);
+        text("R - reset the trees and ground", margin, 7 * boxh / 9);
+        text("H - toggle this menu", margin, 8 * boxh / 9);
     }
 }
 
 function keyPressed() {
-    instructions = false;
+    instructions=false;
     if (keyIsDown(40)) {
         if (h < 180) {
             h = h / .67;

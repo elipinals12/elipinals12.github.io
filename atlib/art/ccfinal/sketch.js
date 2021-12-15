@@ -202,7 +202,7 @@ function draw() {
 
     // help menu
     if (help) {
-        instructions=false;
+        instructions = false;
         rectMode(CENTER);
         fill(85);
         noStroke();
@@ -214,29 +214,30 @@ function draw() {
         rect(width / 2, height / 2, boxh + 90, boxh - 50);
         //textSize(boxh / 13);
         fill(255);
-        textSize(boxh/23);
+        textSize(boxh / 23);
         textAlign(LEFT, CENTER);
-        var margin=(width/2)-(boxh/2);
-        text("1. Hold G and move the mouse to draw the ground", margin, 1 * boxh / 9);
-        text("2. Click to grow a tree from where your mouse is", margin, 2 * boxh / 9);
-        text("3. Grow the trees by pressing the up arrow repeatedly", margin, 3 * boxh / 9);
-        text("4. Press S to toggle the sky", margin, 4 * boxh / 9);
-        text("    control it by moving the mouse vertically", margin, 5 * boxh / 9);
-        text("F - freeze the sky", margin, 6 * boxh / 9);
-        text("R - reset the trees and ground", margin, 7 * boxh / 9);
-        text("H - toggle this menu", margin, 8 * boxh / 9);
+        var margin = (width / 2) - (boxh / 2);
+        text("1. Hold G and move the mouse to draw the ground", margin, 1 * boxh / 10);
+        text("2. Click to grow a tree from where your mouse is", margin, 2 * boxh / 10);
+        text("3. Grow the trees by pressing the up arrow repeatedly", margin, 3 * boxh / 10);
+        text("    control them by moving the mouse horizontally", margin, 4 * boxh / 10);
+        text("4. Press S to toggle the sky", margin, 5 * boxh / 10);
+        text("    control it by moving the mouse vertically", margin, 6 * boxh / 10);
+        text("F - Freeze the sky", margin, 7 * boxh / 10);
+        text("R - Reset the trees, ground, and stars", margin, 8 * boxh / 10);
+        text("H - Toggle this menu", margin, 9 * boxh / 10);
     }
 }
 
 function keyPressed() {
-    instructions=false;
+    instructions = false;
     if (keyIsDown(40)) {
         if (h < 180) {
             h = h / .67;
             count--;
         }
     } else if (keyIsDown(38)) {
-        if (h > 3) {
+        if (h > 5) {
             h = h * .67;
             count++;
         }

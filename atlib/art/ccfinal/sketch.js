@@ -49,7 +49,7 @@ function setup() {
     var y = (windowHeight - height) / 2;
     cnv.position(x, y);
 
-    for (var i = 0; i < width / 1.5; i++) {
+    for (var i = 0; i < width / 1.7; i++) {
         append(starposx, random(0, width))
         append(starposy, random(0, height))
     }

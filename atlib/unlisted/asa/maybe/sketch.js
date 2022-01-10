@@ -20,7 +20,7 @@ function draw() {
 	textAlign(LEFT, TOP);
 	noStroke();
 	fill(0);
-	textSize(12);
+	textSize(15);
 	textFont('Georgia');
 	if (yes) {
 		text("yes.", 5, 5);

@@ -5,7 +5,7 @@ var billys = [];
 
 let img;
 function preload() {
-	//img = loadImage('burnbill.png');
+	img = loadImage('burnbill.png');
 }
 
 function setup() {

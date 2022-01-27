@@ -15,7 +15,7 @@ var maxsize = startmaxsize;
 var prox, touching;
 var paused = false;
 var lost = false;
-var lostsound, munchsound;
+var lostsound, munchsound, maxsound;
 var dotcount;
 var frozedensity;
 var densitydivider;
@@ -25,6 +25,7 @@ var score = 0;
 var blinker = 0;
 var cheat = false;
 var colorcheat = false;
+
 
 function setup() {
     var cnv = createCanvas(windowWidth, windowHeight);
@@ -37,6 +38,7 @@ function setup() {
 
     lostsound = loadSound("lost.mp3");
     munchsound = loadSound("munch.mp3");
+    maxsound = loadSound("max.mp3");
 
     densitydivider = map(density, 1, 10, 120, 5);
     print(width);
@@ -57,6 +59,7 @@ function draw() {
 
     if (began) {
         if (lost) {
+            maxsound.stop();
             for (let i = 0; i < dots.length; i++) {
                 dots[i].show();
                 dots[i].move();
@@ -263,6 +266,7 @@ function reset() {
     for (let i = 0; i < dotcount; i++) {
         newDot();
     }
+    maxsound.loop();
 }
 
 function mousePressed() {

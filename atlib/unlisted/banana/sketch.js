@@ -19,7 +19,7 @@ function setup() {
 }
 
 function draw() {
-    background(255);    
+    background(255);
 
     if (go) {
         cols[0] = random(0, 255);
@@ -27,16 +27,16 @@ function draw() {
         cols[2] = random(0, 255);
         background(cols[0], cols[1], cols[2]);
     } else {
-        
+
     }
-    
+
     imageMode(CENTER);
-    image(img, width/2, width/2);
+    image(img, width / 2, height / 2, width / 5, width / 5);
 }
 
 function mousePressed() {
     go = !go;
-    if (go) {
+    if (!go) {
         backsound.pause();
     } else {
         backsound.play();

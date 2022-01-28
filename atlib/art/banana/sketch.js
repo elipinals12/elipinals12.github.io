@@ -39,7 +39,7 @@ function mousePressed() {
     if (!go) {
         backsound.pause();
     } else {
-        backsound.play();
+        backsound.loop();
     }
 }
 

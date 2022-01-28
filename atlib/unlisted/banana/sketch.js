@@ -19,10 +19,7 @@ function setup() {
 }
 
 function draw() {
-    background(255);
-
-    imageMode(CENTER);
-    image(img, width/4, width/4, width/2, height/2);
+    background(255);    
 
     if (go) {
         cols[0] = random(0, 255);
@@ -32,6 +29,9 @@ function draw() {
     } else {
 
     }
+    
+    imageMode(CENTER);
+    image(img, width/4, width/4, width/2, height/2);
 }
 
 function mousePressed() {

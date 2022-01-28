@@ -73,7 +73,7 @@ function draw() {
             textAlign(CENTER, CENTER);
             text("GAME OVER", width / 2, (height / 2) - 100);
             textSize(40);
-            text("Density: " + frozedensity, width / 2, (height / 2) + 190);
+            text("Level: " + frozedensity, width / 2, (height / 2) + 190);
             fill(255);
             textSize(150);
             text("Score: " + score, width / 2, (height / 2) + 100);
@@ -82,7 +82,7 @@ function draw() {
             fill(255, 0, 0);
             textSize(50);
             textAlign(RIGHT, CENTER);
-            text(density, width - 15, height - 35);
+            text("Level: " + density, width - 15, height - 35);
         } else {
             if (paused) {
                 for (let i = 0; i < dots.length; i++) {
@@ -100,7 +100,7 @@ function draw() {
                 fill(255, 0, 0);
                 textSize(50);
                 textAlign(RIGHT, CENTER);
-                text(density, width - 15, height - 35);
+                text("Level: " + density, width - 15, height - 35);
             } else {
                 for (let i = 0; i < dots.length; i++) {
                     prox = dist(mouseX, mouseY, dots[i].x, dots[i].y);
@@ -157,7 +157,7 @@ function draw() {
         fill(255, 0, 0);
         textSize(50);
         textAlign(RIGHT, CENTER);
-        text("Up and Down arrows to change difficulty: " + density, width - 15, height - 35);
+        text("Up and Down arrows change level: " + density, width - 15, height - 35);
     }
     if (minsize / height > brokevalue) {
         lost = true;

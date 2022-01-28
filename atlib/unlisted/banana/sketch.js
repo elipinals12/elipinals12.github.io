@@ -26,18 +26,21 @@ function draw() {
         cols[1] = random(0, 255);
         cols[2] = random(0, 255);
         background(cols[0], cols[1], cols[2]);
-
-        backsound.play();
     } else {
-        backsound.pause();
+        
     }
     
     imageMode(CENTER);
-    image(img, width/2, width/2, width/5, height/5);
+    image(img, width/2, width/2);
 }
 
 function mousePressed() {
     go = !go;
+    if (go) {
+        backsound.pause();
+    } else {
+        backsound.play();
+    }
 }
 
 function keyPressed() {

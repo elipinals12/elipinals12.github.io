@@ -39,6 +39,10 @@ function setup() {
     lostsound = loadSound("lost.mp3");
     munchsound = loadSound("munch.mp3");
     maxsound = loadSound("max.mp3");
+    
+    maxsound.setVolume(.4);
+    munchsound.setVolume(.5);
+    lostsound.setVolume(.3);
 
     densitydivider = map(density, 1, 10, 120, 5);
     print(width);
@@ -103,12 +107,10 @@ function draw() {
                     touching = (dots[i].size / 2) + ((score + playersize) / 2);
                     if (prox <= touching) {
                         if ((dots[i].size > score + playersize) && !cheat) {
-                            lostsound.setVolume(.3);
                             lostsound.play();
                             lost = true;
                         } else if (dots[i].size < score + playersize) {
                             score++;
-                            munchsound.setVolume(.5);
                             munchsound.play();
                             dots.splice(i, 1);
                             newDot();

@@ -1,0 +1,47 @@
+// TODO
+
+var go = false;
+var cols = [];
+let img;
+
+
+function setup() {
+    var cnv = createCanvas(windowWidth, windowHeight);
+    var cnvx = (windowWidth - width) / 2;
+    var cnvy = (windowHeight - height) / 2;
+    cnv.position(cnvx, cnvy);
+
+    frameRate(20);
+
+    img = loadImage("bananan.png");
+    //backsound = loadSound("backsound.mp3");
+    //backsound.setVolume(1.5);
+}
+
+function draw() {
+    background(255);
+
+    imageMode(CENTER);
+    image(img, width/4, width/4, width/2, height/2);
+
+    if (go) {
+        cols[0] = random(0, 255);
+        cols[1] = random(0, 255);
+        cols[2] = random(0, 255);
+        background(cols[0], cols[1], cols[2]);
+    } else {
+
+    }
+}
+
+function mousePressed() {
+    go = !go;
+}
+
+function keyPressed() {
+
+}
+
+function windowResized() {
+    setup();
+}

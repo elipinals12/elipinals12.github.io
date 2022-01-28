@@ -13,9 +13,9 @@ function setup() {
 
     frameRate(20);
 
-    img = loadImage("bananan.png");
-    //backsound = loadSound("backsound.mp3");
-    //backsound.setVolume(1.5);
+    img = loadImage("banana.png");
+    backsound = loadSound("bananarave.mp3");
+    backsound.setVolume(1.5);
 }
 
 function draw() {

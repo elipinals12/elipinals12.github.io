@@ -15,7 +15,7 @@ function setup() {
 
     img = loadImage("banana.png");
     backsound = loadSound("bananarave.mp3");
-    backsound.setVolume(1.5);
+    backsound.setVolume(1);
 }
 
 function draw() {
@@ -31,7 +31,7 @@ function draw() {
     }
     
     imageMode(CENTER);
-    image(img, width/4, width/4, width/2, height/2);
+    image(img, width/2, width/2, width/4, height/4);
 }
 
 function mousePressed() {

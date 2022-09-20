@@ -28,9 +28,9 @@ var colorcheat = false;
 
 
 function setup() {
-    var cnv = createCanvas(windowWidth, windowHeight);
+    var cnv = createCanvas(windowWidth, windowHeight-2);
     var cnvx = (windowWidth - width) / 2;
-    var cnvy = (windowHeight - height) / 2 - 2;
+    var cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);
 
     noStroke();

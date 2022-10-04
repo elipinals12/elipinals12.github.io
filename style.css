@@ -55,6 +55,7 @@
 	}
 	
 	.images {
+		display: flex;
 		column-count: 2;
 		column-gap: 10px;
 	}
@@ -228,6 +229,7 @@
 	}
 
 	.images {
+		display: flex;
 		column-count: 4;
 		column-gap: 10px;
 	}

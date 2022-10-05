@@ -12,7 +12,7 @@
 }
 
 img {
-    display: block;
+  display: inline-block;
 	margin: auto;
 	width: 100%;
 	padding-top: 5px;
@@ -21,12 +21,12 @@ img {
 }
 
 img:hover {
-	transform: scale(.9);
+	transform: scale(.95);
 }
 
 .images {
-  display: flex;
-    column-count: 3;
+  display: inline-block;
+  column-count: 3;
 	column-gap: 10px;
 }
 

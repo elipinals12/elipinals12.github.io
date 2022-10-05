@@ -55,13 +55,13 @@
 	}
 	
 	.images {
-		display: flex;
+		display: inline-block;
 		column-count: 2;
 		column-gap: 10px;
 	}
 	
 	.display-img {
-		display: block;
+		display: inline-block;
 		margin: auto;
 		width: 100%;
 		padding-top: 5px;
@@ -229,14 +229,13 @@
 	}
 
 	.images {
-		display: flex;
+		display: inline-block;
 		column-count: 4;
 		column-gap: 10px;
 	}
 	
 	/* format the images so they um aren't shitty? */
 	.display-img {
-		display: block;
 		margin: auto;
 		width: 100%;
 		padding-top: 5px;

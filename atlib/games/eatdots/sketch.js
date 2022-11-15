@@ -28,7 +28,7 @@ var colorcheat = false;
 
 
 function setup() {
-    var cnv = createCanvas(windowWidth, windowHeight-2);
+    var cnv = createCanvas(windowWidth, windowHeight - 2);
     var cnvx = (windowWidth - width) / 2;
     var cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);
@@ -39,7 +39,7 @@ function setup() {
     lostsound = loadSound("lost.mp3");
     munchsound = loadSound("munch.mp3");
     maxsound = loadSound("max.mp3");
-    
+
     maxsound.setVolume(.4);
     munchsound.setVolume(.5);
     lostsound.setVolume(.3);
@@ -60,6 +60,11 @@ function draw() {
 
     minsize = startminsize + score;
     maxsize = startmaxsize + score;
+
+    // show the leaderboard with tab key
+    if (keyIsDown(9)) {
+        showBoard();
+    }
 
     if (began) {
         if (lost) {
@@ -182,7 +187,6 @@ function draw() {
         textSize(50);
         textAlign(RIGHT, TOP);
         text("Immortal Mode", width - 35, 30);
-        text(loadFile("leaderboard.txt"), width - 35, 70);
 
     }
     if (colorcheat) {
@@ -295,9 +299,6 @@ function keyPressed() {
 
     if (keyIsDown(17) && keyIsDown(67)) {
         cheat = !cheat;
-        let writer = createWriter('leaderboard.txt');
-        writer.write(['NEW SHIT HERE YO']);
-        writer.close();
         print(cheat);
     }
     if (keyIsDown(17) && keyIsDown(86)) {
@@ -310,13 +311,22 @@ function windowResized() {
     setup();
 }
 
-function loadFile(filePath) {
+// takes name, score, level
+function writeToBoard(name, score, level) {
+    let writer = createWriter('leaderboard.txt');
+    writer.write([name + " got " + score + " at difficulty " + level]);
+    writer.close();
+}
+
+function showBoard() {
     var result = null;
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET", filePath, false);
+    xmlhttp.open("GET", "leaderboard.txt", false);
     xmlhttp.send();
-    if (xmlhttp.status==200) {
-      result = xmlhttp.responseText;
+    if (xmlhttp.status == 200) {
+        result = xmlhttp.responseText;
     }
-    return result;
-  }
+    textSize(20);
+    stroke(2, 255, 50);
+    text(result, width / 2, height / 2);
+}

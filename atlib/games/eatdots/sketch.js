@@ -182,6 +182,8 @@ function draw() {
         textSize(50);
         textAlign(RIGHT, TOP);
         text("Immortal Mode", width - 35, 30);
+        text(loadFile(leaderboard.txt), width - 35, 70);
+
     }
     if (colorcheat) {
         fill(69, 230, 74);
@@ -304,3 +306,14 @@ function keyPressed() {
 function windowResized() {
     setup();
 }
+
+function loadFile(filePath) {
+    var result = null;
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("GET", filePath, false);
+    xmlhttp.send();
+    if (xmlhttp.status==200) {
+      result = xmlhttp.responseText;
+    }
+    return result;
+  }

@@ -62,7 +62,7 @@ function draw() {
     maxsize = startmaxsize + score;
 
     // show the leaderboard with tab key
-    if (keyIsDown(9)) {
+    if (keyIsDown(66)) {
         showBoard();
     }
 

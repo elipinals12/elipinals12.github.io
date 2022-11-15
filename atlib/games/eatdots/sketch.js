@@ -295,6 +295,9 @@ function keyPressed() {
 
     if (keyIsDown(17) && keyIsDown(67)) {
         cheat = !cheat;
+        let writer = createWriter('leaderboard.txt');
+        writer.write(['NEW SHIT HERE YO']);
+        writer.close();
         print(cheat);
     }
     if (keyIsDown(17) && keyIsDown(86)) {

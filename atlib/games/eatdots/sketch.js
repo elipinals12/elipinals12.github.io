@@ -182,7 +182,7 @@ function draw() {
         textSize(50);
         textAlign(RIGHT, TOP);
         text("Immortal Mode", width - 35, 30);
-        text(loadFile(leaderboard.txt), width - 35, 70);
+        text(loadFile("leaderboard.txt"), width - 35, 70);
 
     }
     if (colorcheat) {

@@ -12,9 +12,10 @@
 }
 
 img {
-  display: inline-block;
+  flex-wrap: wrap;
+  vertical-align: middle;
 	margin: auto;
-	width: 100%;
+	width: 33%;
 	padding-top: 5px;
   padding-bottom: 5px;
   transition-duration: 0.4s;
@@ -25,8 +26,8 @@ img:hover {
 }
 
 .images {
-  display: inline-block;
-  column-count: 3;
+  
+  flex-wrap: wrap;
 	column-gap: 10px;
 }
 

@@ -6,6 +6,7 @@ var timefader = 255;
 var winfadeint = 5;
 var posstring;
 var time = 0;
+var moveTimer = true;
 
 function setup() {
     var cnv = createCanvas((window.innerHeight - 22) / 8 * 12, window.innerHeight - 22);
@@ -111,6 +112,7 @@ function draw() {
         }
     } else {
         fader = 255;
+        timefader = 255;
     }
 }
 
@@ -173,7 +175,7 @@ function timer() {
     }
 
     if (posstring != winstring) {
-        time = time + (1 / 60);
+        if (moveTimer) time = time + (1 / 60);
     } else {
         timefader -= 10;
     }
@@ -185,6 +187,7 @@ function timer() {
 function keyPressed() {
     if (keyIsDown(17) && keyIsDown(67)) {
         print("true");
-        pos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 12, 13, 14, 11, 15];
+        moveTimer = !moveTimer;
+        //pos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 12, 13, 14, 11, 15];
     }
 }

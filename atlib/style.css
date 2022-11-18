@@ -26,7 +26,6 @@ img:hover {
 }
 
 .images {
-  
   flex-wrap: wrap;
 	column-gap: 10px;
 }

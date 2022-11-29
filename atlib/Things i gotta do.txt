@@ -1,2 +1,13 @@
-change file names to ones without spaces
-move atlib to its own domain
+change file names to ones without spaces - why?
+
+move atlib to its own domain - BOOOOOOOOOO
+
+
+11/28/2022 update
+verify smaller and larger browser size works for all applications
+
+LEADERBOARD, i think best route is google sheets api
+
+build link list ui from ground its disgusting
+	this includes fixing golda.ml
+

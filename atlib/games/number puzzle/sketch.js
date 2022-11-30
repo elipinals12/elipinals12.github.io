@@ -7,6 +7,26 @@ var winfadeint = 5;
 var posstring;
 var time = 0;
 var moveTimer = true;
+var lead = true;
+var showLeads = false;
+var name = "mystery man"
+let rankData;
+
+function preload() {
+    rankData = [];
+    const apiKey = "AIzaSyDiEtTNaLP4xCi30j1xYQS5bNYBwlXwJbA";
+    const spreadSheetId = "1SnjG8pGZHTnr_9wv0wJ9IR71MAfAwbNzm7ywd5CO6aM";
+    fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${spreadSheetId}/values/numberpuzzle!a1:b?key=${apiKey}`,
+        {
+            method: "GET",
+        }
+    )
+    .then((r) => r.json())
+    .then((data) => {
+      rankData = data.values.map((item) => item);
+    });
+}
 
 function setup() {
     var cnv = createCanvas((window.innerHeight - 22) / 8 * 12, window.innerHeight - 22);
@@ -62,7 +82,7 @@ function draw() {
             }
 
             noStroke();
-            textSize(90);
+            textSize(height / 6);
             text(num, row * wid + .5 * wid, col * wid + .5 * wid);
         }
     }
@@ -96,6 +116,10 @@ function draw() {
     textAlign(LEFT);
     noStroke();
     if (posstring == winstring) {
+        if (lead) {
+            boardAppend(name, time);
+        }
+        lead = false;
         fill(255, 150, 0, fader);
         text("WINNER!", 0, .55 * height / 4)
         fill(160, 255, 140, fader);
@@ -114,6 +138,8 @@ function draw() {
         fader = 255;
         timefader = 255;
     }
+
+    if (showLeads) { showLeaderboard(); }
 }
 
 function swap(arr, a, b) {
@@ -160,7 +186,7 @@ function instructions() {
 }
 
 function timer() {
-    textSize(100);
+    textSize(height / 6);
     fill(0, 255, 0, timefader);
     textAlign(CENTER, TOP);
     noStroke();
@@ -189,5 +215,45 @@ function keyPressed() {
         print("true");
         moveTimer = !moveTimer;
         //pos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 12, 13, 14, 11, 15];
+        lead = false;
+    } else if (keyIsDown(76)) {
+        showLeads = !showLeads;
+        print("show lead");
     }
+}
+
+function showLeaderboard() {
+    fill(0, 0, 255, 95);
+    noStroke();
+    rectMode(CORNERS);
+    var pad = 20;
+    var widthExtraPad = 100;
+    rect(pad + widthExtraPad, pad, width - pad - widthExtraPad, height - pad);
+
+    stroke(255);
+    strokeWeight(3);
+    fill(0);
+    textSize(30);
+    textAlign(CENTER, CENTER);
+    getCleanLeaderboard();
+
+    rectMode(CORNER);
+}
+
+//API STUFF
+function boardAppend(name, time) {
+
+}
+
+function getCleanLeaderboard() {
+    rankData.forEach((f, idx) => {
+    const temp = `${f[1]} : ${f[0]}`;
+    fill(255);
+    textSize(32);
+    text(temp, width / 2, idx * 32 + height / 2);
+  });
+}
+
+function windowResized() {
+    setup();
 }

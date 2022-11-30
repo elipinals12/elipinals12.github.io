@@ -41,6 +41,8 @@ function setup() {
         append(pos, i);
     }
 
+    textFont('Helvetica');
+
     append(pos, 0);
 
     mixit();
@@ -228,7 +230,7 @@ function keyPressed() {
 
 function showLeaderboard() {
     sortLeads();
-    fill(0, 0, 255, 95);
+    fill(0, 0, 255, 145);
     noStroke();
     rectMode(CORNERS);
     var pad = 20;
@@ -269,13 +271,13 @@ function drawLeaderboard() {
     textAlign(RIGHT, CENTER);
 
     names.forEach((s, idx) => {
-        text(s + " ", width / 2, idx * 60 + height / 2);
+        text((idx + 1) + ". " + s + " ", width / 2, idx * 60 + height / 10);
     });
 
     textAlign(LEFT, CENTER);
 
     scores.forEach((s, idx) => {
-        text(" " + s, width / 2, idx * 60 + height / 2);
+        text(" " + s, width / 2, idx * 60 + height / 10);
     });
 }
 

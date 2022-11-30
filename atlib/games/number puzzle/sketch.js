@@ -11,21 +11,23 @@ var lead = true;
 var showLeads = false;
 var name = "mystery man"
 let rankData;
+let scores;
+let names;
 
 function preload() {
     rankData = [];
     const apiKey = "AIzaSyDiEtTNaLP4xCi30j1xYQS5bNYBwlXwJbA";
     const spreadSheetId = "1SnjG8pGZHTnr_9wv0wJ9IR71MAfAwbNzm7ywd5CO6aM";
     fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${spreadSheetId}/values/numberpuzzle!a1:b?key=${apiKey}`,
+        `https://sheets.googleapis.com/v4/spreadsheets/${spreadSheetId}/values/numberpuzzle!a2:b?key=${apiKey}`,
         {
             method: "GET",
         }
     )
-    .then((r) => r.json())
-    .then((data) => {
-      rankData = data.values.map((item) => item);
-    });
+        .then((r) => r.json())
+        .then((data) => {
+            rankData = data.values.map((item) => item);
+        });
 }
 
 function setup() {
@@ -38,7 +40,9 @@ function setup() {
     for (var i = 1; i < 16; i++) {
         append(pos, i);
     }
+
     append(pos, 0);
+
     mixit();
 }
 
@@ -223,6 +227,7 @@ function keyPressed() {
 }
 
 function showLeaderboard() {
+    sortLeads();
     fill(0, 0, 255, 95);
     noStroke();
     rectMode(CORNERS);
@@ -230,28 +235,48 @@ function showLeaderboard() {
     var widthExtraPad = 100;
     rect(pad + widthExtraPad, pad, width - pad - widthExtraPad, height - pad);
 
-    stroke(255);
-    strokeWeight(3);
-    fill(0);
-    textSize(30);
-    textAlign(CENTER, CENTER);
-    getCleanLeaderboard();
+    drawLeaderboard();
 
     rectMode(CORNER);
 }
 
-//API STUFF
+//API append STUFF
 function boardAppend(name, time) {
 
 }
 
-function getCleanLeaderboard() {
-    rankData.forEach((f, idx) => {
-    const temp = `${f[1]} : ${f[0]}`;
-    fill(255);
-    textSize(32);
-    text(temp, width / 2, idx * 32 + height / 2);
-  });
+function sortLeads() {
+    scores = [];
+    names = [];
+    for (var row = 0; row < rankData.length; row++) {
+        for (var col = 0; col < rankData[0].length; col++) {
+            if (col % 2 != 0) {
+                const tempscore = rankData[row][col];
+                append(scores, tempscore);
+            } else {
+                const tempname = rankData[row][col];
+                append(names, tempname);
+            }
+        }
+    }
+}
+
+function drawLeaderboard() {
+    stroke(255);
+    strokeWeight(3);
+    fill(0);
+    textSize(60);
+    textAlign(RIGHT, CENTER);
+
+    names.forEach((s, idx) => {
+        text(s + " ", width / 2, idx * 60 + height / 2);
+    });
+
+    textAlign(LEFT, CENTER);
+
+    scores.forEach((s, idx) => {
+        text(" " + s, width / 2, idx * 60 + height / 2);
+    });
 }
 
 function windowResized() {

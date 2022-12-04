@@ -326,52 +326,14 @@ function rowHeight(i) {
 }
 
 //API append STUFF
-function unofficialboardAppend(bname, time) {
-    print(name, time);
-    var url =
-        "https://sheets.googleapis.com/v4/spreadsheets/1SnjG8pGZHTnr_9wv0wJ9IR71MAfAwbNzm7ywd5CO6aM/values/Sheet1!A1:C?valueInputOption=USER_ENTERED";
-
-    httpDo(url);
-    print("should be sent ¯\_(ツ)_/¯");
-}
-
-function anotherfakeboardAppend() {
-    print(playername, time);
-    print("attempting append");
-
-    var params = {
-        // The ID of the spreadsheet to update.
-        spreadsheetId: '1SnjG8pGZHTnr_9wv0wJ9IR71MAfAwbNzm7ywd5CO6aM',
-        // The A1 notation of a range to search for a logical table of data.
-        // Values will be appended after the last row of the table.
-        range: 'numberpuzzlein!A5:B',
-        valueInputOption: 'USER_ENTERED',
-        insertDataOption: 'INSERT_ROWS',
-    };
-
-    var valueRangeBody = {
-        // TODO: Add desired properties to the request body.
-        playername,
-        time
-    };
-
-    var request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
-    request.then(function (response) {
-        // TODO: Change code below to process the `response` object:
-        console.log(response.result);
-    }, function (reason) {
-        console.error('error: ' + reason.result.error.message);
-    });
-
-}
 
 function boardAppend() {
     print(playername, time);
     var url =
         "https://script.google.com/macros/s/AKfycbz9qCkxXs1JQz-hy2mFBxBmsMyNQDzGC8ufKpFSxB93NBaBTTs-uX26HCb0nQKGORNa/exec" +
-        "?name=" +
+        "?" +
         playername +
-        "&score=" +
+        "&" +
         time;
     httpDo(url);
 }

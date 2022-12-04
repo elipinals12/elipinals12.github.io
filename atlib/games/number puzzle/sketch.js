@@ -86,7 +86,7 @@ function draw() {
         text("virus installing......", width / 2, height / 2);
         text("installed", width / 2, height / 2 + 15);
     }
-    
+
     background(0);
     noStroke();
     instructions()
@@ -252,7 +252,7 @@ function instructions() {
     text("numbers in order", width - (width - 4 * wid) / 2, 1.8 * height / 5 + 100);
     text("as fast as you can", width - (width - 4 * wid) / 2, 1.8 * height / 5 + 150);
 
-    text("Arrows: Move", width - (width - 4 * wid) / 2, 3.2 * height / 5+25);
+    text("Arrows: Move", width - (width - 4 * wid) / 2, 3.2 * height / 5 + 25);
     text("L: Leaderboard", width - (width - 4 * wid) / 2, 3.2 * height / 5 + 65);
 
     text("Space Bar: Reset", width - (width - 4 * wid) / 2, 3.2 * height / 5 + 105);
@@ -302,6 +302,12 @@ function showLeaderboard() {
     rectMode(CORNERS);
     let leadsLeftX = pad + widthExtraPad;
     rect(leadsLeftX, pad, width - pad - widthExtraPad, height - pad);
+
+    fill(255, 0, 0);
+    noStroke();
+    textSize(15);
+    textAlign(RIGHT, TOP)
+    text("live results", width - pad - widthExtraPad - 5, pad + 5);
 
     stroke(0);
     strokeWeight(3);
@@ -379,7 +385,7 @@ function myInputEvent() {
         playername = "anonymous";
     }
 
-    if (!theyCheated) {boardAppend();}
+    if (!theyCheated) { boardAppend(); }
 
     input.hide();
     button.hide();

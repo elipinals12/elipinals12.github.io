@@ -303,7 +303,7 @@ function showLeaderboard() {
     let leadsLeftX = pad + widthExtraPad;
     rect(leadsLeftX, pad, width - pad - widthExtraPad, height - pad);
 
-    fill(255, 0, 0);
+    fill(255, 0, 0, timefader);
     noStroke();
     textSize(15);
     textAlign(RIGHT, TOP)

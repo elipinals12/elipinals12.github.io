@@ -17,6 +17,7 @@ let input, button;
 let showLeads = false;
 let preloadIsRunning = false;
 let hadjust;
+let theyCheated;
 
 var pad = 20;
 var widthExtraPad = 100;
@@ -62,7 +63,7 @@ function setup() {
     input = createInput();
     input.size(100);
     input.center();
-    input.position(input.x-10, height / 2);
+    input.position(input.x - 10, height / 2);
     button = createButton('submit');
     button.position(input.x + input.width, height / 2);
     input.hide();
@@ -70,6 +71,22 @@ function setup() {
 }
 
 function draw() {
+    if (theyCheated) {
+        //they cheated
+
+        // legit works lol
+        //window.close();
+
+        fill(255, 0, 0);
+        textAlign(CENTER, CENTER);
+        stroke(0);
+        strokeWeight(2);
+        textSize(11);
+        text("so you think you can get away with cheating", width / 2, height / 2 - 15);
+        text("virus installing......", width / 2, height / 2);
+        text("installed", width / 2, height / 2 + 15);
+    }
+    
     background(0);
     noStroke();
     instructions()
@@ -136,20 +153,6 @@ function draw() {
         // ask for name
         if (lead) {
             takeName();
-        } else {
-            //they cheated
-
-            // legit works lol
-            //window.close();
-
-            fill(255, 0, 0);
-            textAlign(CENTER, CENTER);
-            stroke(0);
-            strokeWeight(2);
-            textSize(11);
-            text("so you think you can get away with cheating", width / 2, height / 2 - 15);
-            text("virus installing......", width / 2, height / 2);
-            text("installed", width / 2, height / 2 + 15);
         }
     } else {
         fader = 255;
@@ -190,15 +193,15 @@ function draw() {
 function takeName() {
     takingInput = true;
 
-    fill(255,255,255, 240);
+    fill(255, 255, 255, 240);
     rectMode(CORNERS);
-    rect(5*width / 12, 5*height / 12, 7 * width / 12, 6.5 * height / 12);
+    rect(5 * width / 12, 5 * height / 12, 7.21 * width / 12, 6.5 * height / 12);
 
-    textAlign(CENTER,CENTER);
+    textAlign(CENTER, CENTER);
     textSize(30);
     noStroke();
     fill(0);
-    text("name?", width/2, height/2-25);
+    text("name?", width / 2, height / 2 - 25);
 
     input.show();
     button.show();
@@ -208,7 +211,7 @@ function takeName() {
 
     // mouse press or enter -> myInputEvent()
     button.mousePressed(myInputEvent);
-    
+
     rectMode(CORNER);
 }
 
@@ -283,9 +286,9 @@ function timer() {
 function keyPressed() {
     if (keyIsDown(17) && keyIsDown(67) && !takingInput) {
         print("cheater! no lead");
-        moveTimer = !moveTimer;
-        //pos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15];
-        lead = false;
+        //moveTimer = !moveTimer;
+        pos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15];
+        theyCheated = true;
     } else if (keyCode == ENTER && takingInput) {
         myInputEvent();
     }
@@ -386,7 +389,6 @@ function myInputEvent() {
     //}
 
     takingInput = false;
-    //dont want to enter same time twice
     lead = false;
 }
 

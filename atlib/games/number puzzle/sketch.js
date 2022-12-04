@@ -366,6 +366,7 @@ function anotherfakeboardAppend() {
 }
 
 function boardAppend() {
+    print(playername, time);
     var url =
         "" +
         "?name=" +
@@ -395,9 +396,11 @@ function myInputEvent() {
     playername = input.value();
     if (playername.length > 20) {
         // bad long playername bad, so far no problem
-    } else if (playername = "") {
+    } else if (playername=="") {
         playername = "anonymous";
     }
+    
+    boardAppend();
 
     input.hide();
     button.hide();
@@ -405,8 +408,6 @@ function myInputEvent() {
     //if (a instanceof String && !(a.equals(""))) {
     //    playername = a;
     //}
-
-    boardAppend();
 
     takingInput = false;
 }

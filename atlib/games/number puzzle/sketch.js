@@ -61,7 +61,8 @@ function setup() {
 
     input = createInput();
     input.size(100);
-    input.position(width / 2, height / 2);
+    input.center();
+    input.position(input.x-10, height / 2);
     button = createButton('submit');
     button.position(input.x + input.width, height / 2);
     input.hide();
@@ -134,19 +135,7 @@ function draw() {
 
         // ask for name
         if (lead) {
-            takingInput = true;
-
-            input.show();
-            button.show();
-
-            // TODO may need an option for not asking for a name every time
-            // must have record time button
-
-            // mouse press or enter -> myInputEvent()
-            button.mousePressed(myInputEvent);
-
-            //dont want to enter same time twice
-            lead = false;
+            takeName();
         } else {
             //they cheated
 
@@ -196,6 +185,31 @@ function draw() {
         keyIsPressed = false;
     }
     if (showLeads) { showLeaderboard(); }
+}
+
+function takeName() {
+    takingInput = true;
+
+    fill(255,255,255, 240);
+    rectMode(CORNERS);
+    rect(5*width / 12, 5*height / 12, 7 * width / 12, 6.5 * height / 12);
+
+    textAlign(CENTER,CENTER);
+    textSize(30);
+    noStroke();
+    fill(0);
+    text("name?", width/2, height/2-25);
+
+    input.show();
+    button.show();
+
+    // TODO may need an option for not asking for a name every time
+    // must have record time button
+
+    // mouse press or enter -> myInputEvent()
+    button.mousePressed(myInputEvent);
+    
+    rectMode(CORNER);
 }
 
 function swap(arr, a, b) {
@@ -270,8 +284,8 @@ function keyPressed() {
     if (keyIsDown(17) && keyIsDown(67) && !takingInput) {
         print("cheater! no lead");
         moveTimer = !moveTimer;
-        pos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15];
-        //lead = false;
+        //pos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15];
+        lead = false;
     } else if (keyCode == ENTER && takingInput) {
         myInputEvent();
     }
@@ -358,10 +372,10 @@ function myInputEvent() {
     playername = input.value();
     if (playername.length > 20) {
         // bad long playername bad, so far no problem
-    } else if (playername=="") {
+    } else if (playername == "") {
         playername = "anonymous";
     }
-    
+
     boardAppend();
 
     input.hide();
@@ -371,6 +385,9 @@ function myInputEvent() {
     //    playername = a;
     //}
 
+
+    //dont want to enter same time twice
+    lead = false;
     takingInput = false;
 }
 

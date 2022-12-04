@@ -8,13 +8,24 @@ var posstring;
 var time = 0;
 var moveTimer = true;
 var lead = true;
-var showLeads = false;
-var name = "mystery man"
+var playername = "anonymous";
 let rankData;
 let scores;
 let names;
+let takingInput = false;
+let input, button;
+let showLeads = false;
+let preloadIsRunning = false;
+let hadjust;
+
+var pad = 20;
+var widthExtraPad = 100;
+
+
+//----\/\/\/\/---A VERY COMPLICATED SLIDE PUZZLE---\/\/\/\/----
 
 function preload() {
+    preloadIsRunning = true;
     rankData = [];
     const apiKey = "AIzaSyDiEtTNaLP4xCi30j1xYQS5bNYBwlXwJbA";
     const spreadSheetId = "1SnjG8pGZHTnr_9wv0wJ9IR71MAfAwbNzm7ywd5CO6aM";
@@ -28,6 +39,7 @@ function preload() {
         .then((data) => {
             rankData = data.values.map((item) => item);
         });
+    preloadIsRunning = false;
 }
 
 function setup() {
@@ -46,6 +58,14 @@ function setup() {
     append(pos, 0);
 
     mixit();
+
+    input = createInput();
+    input.size(100);
+    input.position(width / 2, height / 2);
+    button = createButton('submit');
+    button.position(input.x + input.width, height / 2);
+    input.hide();
+    button.hide();
 }
 
 function draw() {
@@ -93,7 +113,61 @@ function draw() {
         }
     }
 
-    if (keyIsPressed) {
+    textSize(height / 4.4);
+    textAlign(LEFT);
+    noStroke();
+    if (posstring == winstring) {
+        fill(255, 150, 0, fader);
+        text("WINNER!", 0, .55 * height / 4);
+        fill(160, 255, 140, fader);
+        text("WINNER!", 0, 1.55 * height / 4);
+        fill(80, 60, 255, fader);
+        text("WINNER!", 0, 2.55 * height / 4);
+        fill(100, 160, 200, fader);
+        text("WINNER!", 0, 3.55 * height / 4);
+        fader -= winfadeint;
+        if (fader < 0) {
+            winfadeint = -5;
+        } else if (fader > 260) {
+            winfadeint = 5;
+        }
+
+        // ask for name
+        if (lead) {
+            takingInput = true;
+
+            input.show();
+            button.show();
+
+            // TODO may need an option for not asking for a name every time
+            // must have record time button
+
+            // mouse press or enter -> myInputEvent()
+            button.mousePressed(myInputEvent);
+
+            //dont want to enter same time twice
+            lead = false;
+        } else {
+            //they cheated
+
+            // legit works lol
+            //window.close();
+
+            fill(255, 0, 0);
+            textAlign(CENTER, CENTER);
+            stroke(0);
+            strokeWeight(2);
+            textSize(11);
+            text("so you think you can get away with cheating", width / 2, height / 2 - 15);
+            text("virus installing......", width / 2, height / 2);
+            text("installed", width / 2, height / 2 + 15);
+        }
+    } else {
+        fader = 255;
+        timefader = 255;
+    }
+
+    if (keyIsPressed && !takingInput) {
         blank = pos.indexOf(0);
         var b;
 
@@ -108,7 +182,11 @@ function draw() {
         } else if (keyCode == 32) {
             time = 0;
             timefader = 255;
+            lead = true;
             mixit();
+        } else if (keyCode == 76) {
+            preload();
+            showLeads = !showLeads;
         }
 
         if (b >= 0 && b < 16) {
@@ -117,34 +195,6 @@ function draw() {
 
         keyIsPressed = false;
     }
-
-    textSize(height / 4.4);
-    textAlign(LEFT);
-    noStroke();
-    if (posstring == winstring) {
-        if (lead) {
-            boardAppend(name, time);
-        }
-        lead = false;
-        fill(255, 150, 0, fader);
-        text("WINNER!", 0, .55 * height / 4)
-        fill(160, 255, 140, fader);
-        text("WINNER!", 0, 1.55 * height / 4)
-        fill(80, 60, 255, fader);
-        text("WINNER!", 0, 2.55 * height / 4)
-        fill(100, 160, 200, fader);
-        text("WINNER!", 0, 3.55 * height / 4)
-        fader -= winfadeint;
-        if (fader < 0) {
-            winfadeint = -5;
-        } else if (fader > 260) {
-            winfadeint = 5;
-        }
-    } else {
-        fader = 255;
-        timefader = 255;
-    }
-
     if (showLeads) { showLeaderboard(); }
 }
 
@@ -217,34 +267,112 @@ function timer() {
 }
 
 function keyPressed() {
-    if (keyIsDown(17) && keyIsDown(67)) {
-        print("true");
+    if (keyIsDown(17) && keyIsDown(67) && !takingInput) {
+        print("cheater! no lead");
         moveTimer = !moveTimer;
-        //pos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 12, 13, 14, 11, 15];
-        lead = false;
-    } else if (keyIsDown(76)) {
-        showLeads = !showLeads;
-        print("show lead");
+        pos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15];
+        //lead = false;
+    } else if (keyCode == ENTER && takingInput) {
+        myInputEvent();
     }
 }
 
 function showLeaderboard() {
     sortLeads();
-    fill(0, 0, 255, 145);
+    fill(0, 0, 255, 160);
+    if (preloadIsRunning) { fill(255); }
     noStroke();
     rectMode(CORNERS);
-    var pad = 20;
-    var widthExtraPad = 100;
-    rect(pad + widthExtraPad, pad, width - pad - widthExtraPad, height - pad);
+    let leadsLeftX = pad + widthExtraPad;
+    rect(leadsLeftX, pad, width - pad - widthExtraPad, height - pad);
 
-    drawLeaderboard();
+    stroke(0);
+    strokeWeight(3);
+    fill(255);
+    textSize(width / 23);
+
+    hadjust = 12;
+    let innerRectWid = (width - pad - widthExtraPad) - (20 + leadsLeftX);
+    let nameX = leadsLeftX + innerRectWid / 3;
+    let timeX = nameX * 2;
+
+    //col titles
+    textAlign(CENTER, CENTER);
+    text("name", nameX, 3 * pad);
+    text("time", timeX, 3 * pad);
+
+    for (let i = 0; i < 10; i++) {
+        // numbers
+        textAlign(LEFT, CENTER);
+        text(i + 1 + ".", 10 + leadsLeftX, rowHeight(i));
+    }
+
+    // names
+    textAlign(CENTER, CENTER);
+    names.forEach((s, i) => {
+        text(s, nameX, rowHeight(i));
+    });
+
+    // times
+    scores.forEach((s, i) => {
+        text(s, timeX, rowHeight(i));
+    });
 
     rectMode(CORNER);
 }
 
-//API append STUFF
-function boardAppend(name, time) {
+function rowHeight(i) {
+    return 4 * pad + ((height - 4 * pad) / 11) * (i + 1);
+}
 
+//API append STUFF
+function unofficialboardAppend(bname, time) {
+    print(name, time);
+    var url =
+        "https://sheets.googleapis.com/v4/spreadsheets/1SnjG8pGZHTnr_9wv0wJ9IR71MAfAwbNzm7ywd5CO6aM/values/Sheet1!A1:C?valueInputOption=USER_ENTERED";
+
+    httpDo(url);
+    print("should be sent ¯\_(ツ)_/¯");
+}
+
+function anotherfakeboardAppend() {
+    print(playername, time);
+    print("attempting append");
+
+    var params = {
+        // The ID of the spreadsheet to update.
+        spreadsheetId: '1SnjG8pGZHTnr_9wv0wJ9IR71MAfAwbNzm7ywd5CO6aM',
+        // The A1 notation of a range to search for a logical table of data.
+        // Values will be appended after the last row of the table.
+        range: 'numberpuzzlein!A5:B',
+        valueInputOption: 'USER_ENTERED',
+        insertDataOption: 'INSERT_ROWS',
+    };
+
+    var valueRangeBody = {
+        // TODO: Add desired properties to the request body.
+        playername,
+        time
+    };
+
+    var request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
+    request.then(function (response) {
+        // TODO: Change code below to process the `response` object:
+        console.log(response.result);
+    }, function (reason) {
+        console.error('error: ' + reason.result.error.message);
+    });
+
+}
+
+function boardAppend() {
+    var url =
+        "" +
+        "?name=" +
+        playername +
+        "&score=" +
+        time;
+    httpDo(url);
 }
 
 function sortLeads() {
@@ -263,24 +391,26 @@ function sortLeads() {
     }
 }
 
-function drawLeaderboard() {
-    stroke(255);
-    strokeWeight(3);
-    fill(0);
-    textSize(60);
-    textAlign(RIGHT, CENTER);
+function myInputEvent() {
+    playername = input.value();
+    if (playername.length > 20) {
+        // bad long playername bad, so far no problem
+    } else if (playername = "") {
+        playername = "anonymous";
+    }
 
-    names.forEach((s, idx) => {
-        text((idx + 1) + ". " + s + " ", width / 2, idx * 60 + height / 10);
-    });
+    input.hide();
+    button.hide();
+    // }
+    //if (a instanceof String && !(a.equals(""))) {
+    //    playername = a;
+    //}
 
-    textAlign(LEFT, CENTER);
+    boardAppend();
 
-    scores.forEach((s, idx) => {
-        text(" " + s, width / 2, idx * 60 + height / 10);
-    });
+    takingInput = false;
 }
 
 function windowResized() {
-    setup();
+    //setup();
 }

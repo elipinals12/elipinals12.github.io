@@ -175,6 +175,7 @@ function draw() {
             time = 0;
             timefader = 255;
             lead = true;
+            showLeads = false;
             mixit();
         } else if (keyCode == 76) {
             preload();

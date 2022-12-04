@@ -385,10 +385,9 @@ function myInputEvent() {
     //    playername = a;
     //}
 
-
+    takingInput = false;
     //dont want to enter same time twice
     lead = false;
-    takingInput = false;
 }
 
 function windowResized() {

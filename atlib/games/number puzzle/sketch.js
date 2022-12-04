@@ -379,7 +379,7 @@ function myInputEvent() {
         playername = "anonymous";
     }
 
-    boardAppend();
+    if (!theyCheated) {boardAppend();}
 
     input.hide();
     button.hide();

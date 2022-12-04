@@ -252,10 +252,10 @@ function instructions() {
     text("numbers in order", width - (width - 4 * wid) / 2, 1.8 * height / 5 + 100);
     text("as fast as you can", width - (width - 4 * wid) / 2, 1.8 * height / 5 + 150);
 
-    text("Arrows:", width - (width - 4 * wid) / 2, 3.2 * height / 5);
-    text("Move Piece", width - (width - 4 * wid) / 2, 3.2 * height / 5 + 50);
+    text("Arrows: Move", width - (width - 4 * wid) / 2, 3.2 * height / 5+25);
+    text("L: Leaderboard", width - (width - 4 * wid) / 2, 3.2 * height / 5 + 65);
 
-    text("Space Bar: Reset", width - (width - 4 * wid) / 2, 4 * height / 5);
+    text("Space Bar: Reset", width - (width - 4 * wid) / 2, 3.2 * height / 5 + 105);
 }
 
 function timer() {

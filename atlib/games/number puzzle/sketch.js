@@ -368,7 +368,7 @@ function anotherfakeboardAppend() {
 function boardAppend() {
     print(playername, time);
     var url =
-        "https://script.google.com/macros/s/AKfycbygEm1bHDryhTnrZNB8TeYQ3wQA7qEfWnls0nX6rrBj4Z9hXOQ7XQ1rtQuBaR1hMZ_I/exec" +
+        "https://script.google.com/macros/s/AKfycbz9qCkxXs1JQz-hy2mFBxBmsMyNQDzGC8ufKpFSxB93NBaBTTs-uX26HCb0nQKGORNa/exec" +
         "?name=" +
         playername +
         "&score=" +

@@ -18,6 +18,7 @@ let showLeads = false;
 let preloadIsRunning = false;
 let hadjust;
 let theyCheated;
+let timedecimal = 0;
 
 var pad = 20;
 var widthExtraPad = 100;
@@ -260,22 +261,33 @@ function instructions() {
 }
 
 function timer() {
-    textSize(height / 6);
+    textSize(height / 8);
     fill(0, 255, 0, timefader);
     textAlign(CENTER, TOP);
     noStroke();
-    if (floor(time) < 10) {
-        text("0:" + "0" + floor(time), width - (width - 4 * wid) / 2, 50);
-    } else if (floor(time) < 60) {
-        text("0:" + floor(time), width - (width - 4 * wid) / 2, 50);
-    } else if (floor(time) % 60 < 10) {
-        text(floor(time / 60) + ":" + "0" + floor(time) % 60, width - (width - 4 * wid) / 2, 50);
+
+    let timedecimalstring = "";
+    if (timedecimal < 10) {
+        timedecimalstring = "0" + round(timedecimal);
     } else {
-        text(floor(time / 60) + ":" + floor(time) % 60, width - (width - 4 * wid) / 2, 50);
+        timedecimalstring = round(timedecimal);
+    }
+
+    if (floor(time) < 10) {
+        text("0:" + "0" + floor(time) + "." + timedecimalstring, width - (width - 4 * wid) / 2, 50);
+    } else if (floor(time) < 60) {
+        text("0:" + floor(time) + "." + timedecimalstring, width - (width - 4 * wid) / 2, 50);
+    } else if (floor(time) % 60 < 10) {
+        text(floor(time / 60) + ":" + "0" + floor(time) % 60 + "." + timedecimalstring, width - (width - 4 * wid) / 2, 50);
+    } else {
+        text(floor(time / 60) + ":" + floor(time) % 60 + "." + timedecimalstring, width - (width - 4 * wid) / 2, 50);
     }
 
     if (posstring != winstring) {
-        if (moveTimer) time = time + (1 / 60);
+        if (moveTimer) {
+            time = time + (1 / 60);
+            timedecimal = round(time * 100)-100*floor(round(time * 100)/100);
+        }
     } else {
         timefader -= 10;
     }

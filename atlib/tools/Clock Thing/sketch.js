@@ -14,11 +14,18 @@ var times = [];
 var cangles = [];
 
 function setup() {
-    var cnv = createCanvas(800, 800);
-    var x = (windowWidth - width) / 2;
-    var y = (windowHeight - height) / 2;
-    cnv.position(x, y);
+    var cnv = createCanvas(windowWidth, windowHeight - 2);
+    var cnvx = (windowWidth - width) / 2;
+    var cnvy = (windowHeight - height) / 2;
+    cnv.position(cnvx, cnvy);
+
+
+    cthic = min(height, width) / 19.644;
+    lthic = cthic / 7.5;
+    gap = cthic / 3 - 1;
+
     angleMode(DEGREES);
+    csizes = [];
     for (var i = 0; i < 6; i++) {
         csizes.push(210 + ((2 * cthic + gap) * (i + 1)));
     }
@@ -28,9 +35,9 @@ function draw() {
     background(0);
     cangles = [];
     times = [];
-    translate(width/2, height/2);
+    translate(width / 2, height / 2);
     rotate(-90);
-    
+
     strokeWeight(1);
     noFill();
     //ellipse(0, 0, width);
@@ -41,7 +48,7 @@ function draw() {
     times.push(day());
     times.push(month());
 
-    
+
     cangles.push(map(times[0], 0, 60, 0.01, 360)); // seconds
     cangles.push(map(times[1], 0, 60, 0.01, 360)); // minutes
     cangles.push(map(times[2], 0, 24, 0.01, 360)); // hours
@@ -59,12 +66,12 @@ function draw() {
     push();
     rotate(90);
     textLeading(gap + cthic);
-    textSize(cthic - 2);
+    textSize(cthic - 6);
     stroke(255);
     fill(255);
     strokeWeight(1);
-    textAlign(LEFT);
-    text(year(), 0, 16);
+    textAlign(LEFT, CENTER);
+    text(year(), 0, 0);
     pop();
 
     for (var i = 0; i < times.length; i++) {
@@ -83,7 +90,7 @@ function draw() {
         push();
         rotate(90);
         textLeading(gap + cthic);
-        textSize(cthic - 2);
+        textSize(cthic - 6);
         stroke(255);
         fill(255);
         strokeWeight(1);
@@ -104,3 +111,5 @@ function mousePressed() {
     //print(csizes);
     print(month());
 }
+
+function windowResized() { setup(); }

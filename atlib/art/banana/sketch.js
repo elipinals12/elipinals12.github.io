@@ -6,7 +6,7 @@ let img;
 
 
 function setup() {
-    var cnv = createCanvas(windowWidth, windowHeight);
+    var cnv = createCanvas(windowWidth - .5, windowHeight - .5);
     var cnvx = (windowWidth - width) / 2;
     var cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);
@@ -35,11 +35,13 @@ function draw() {
 }
 
 function mousePressed() {
-    go = !go;
-    if (!go) {
-        backsound.pause();
-    } else {
-        backsound.loop();
+    if (abs(mouseX - width / 2) < 25 && abs(mouseY - height / 2) < 25) {
+        go = !go;
+        if (!go) {
+            backsound.pause();
+        } else {
+            backsound.loop();
+        }
     }
 }
 

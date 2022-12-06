@@ -26,6 +26,36 @@ var blinker = 0;
 var cheat = false;
 var colorcheat = false;
 
+let theyCheated;
+let scores;
+let names;
+let takingInput = false;
+let input, button;
+var lead = true;
+var playername = "anonymous";
+var pad = 20;
+var widthExtraPad = 100;
+let showLeads = false;
+
+
+
+function preload() {
+    preloadIsRunning = true;
+    rankData = [];
+    const apiKey = "AIzaSyDiEtTNaLP4xCi30j1xYQS5bNYBwlXwJbA";
+    const spreadSheetId = "1SnjG8pGZHTnr_9wv0wJ9IR71MAfAwbNzm7ywd5CO6aM";
+    fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${spreadSheetId}/values/eatdots!a2:b?key=${apiKey}`,
+        {
+            method: "GET",
+        }
+    )
+        .then((r) => r.json())
+        .then((data) => {
+            rankData = data.values.map((item) => item);
+        });
+    preloadIsRunning = false;
+}
 
 function setup() {
     var cnv = createCanvas(windowWidth, windowHeight - 2);
@@ -51,6 +81,15 @@ function setup() {
     for (let i = 0; i < dotcount; i++) {
         newDot();
     }
+
+    input = createInput();
+    input.size(100);
+    input.center();
+    input.position(input.x - 10, height / 2);
+    button = createButton('submit');
+    button.position(input.x + input.width, height / 2);
+    input.hide();
+    button.hide();
 }
 
 function draw() {
@@ -88,6 +127,11 @@ function draw() {
             textSize(50);
             textAlign(RIGHT, CENTER);
             text("Level: " + density, width - 15, height - 35);
+
+            // ask for name
+            if (lead) {
+                takeName();
+            }
         } else {
             if (paused) {
                 for (let i = 0; i < dots.length; i++) {
@@ -187,14 +231,17 @@ function draw() {
         textSize(50);
         textAlign(RIGHT, TOP);
         text("Immortal Mode", width - 35, 30);
-
+        theyCheated = true;
     }
     if (colorcheat) {
         fill(69, 230, 74);
         textSize(50);
         textAlign(RIGHT, TOP);
         text("Christmas Mode", width - 35, 80);
+        theyCheated = true;
     }
+
+    if (showLeads) { showLeaderboard(); }
 }
 
 class Dot {
@@ -265,6 +312,7 @@ function newDot() {
 }
 
 function reset() {
+    theyCheated = false;
     dots = [];
     score = 0;
     began = true;
@@ -284,26 +332,36 @@ function mousePressed() {
 }
 
 function keyPressed() {
-    if (keyCode == 32 && !lost) {
-        paused = !paused;
-    } else if (keyCode == 32) {
-        reset();
-    }
-    if (!began || lost) {
-        if (keyCode == 38 && density < 10) {
-            density++;
-        } else if (keyCode == 40 && density > 1) {
-            density--;
+    if (!takingInput) {
+        if (keyCode == 32 && !lost) {
+            paused = !paused;
+        } else if (keyCode == 32) {
+            lead = true;
+            showLeads = false;
+            reset();
+        } else if (keyCode == ENTER && takingInput) {
+            myInputEvent();
+        } else if (keyCode == 76) {
+            preload();
+            showLeads = !showLeads;
         }
-    }
 
-    if (keyIsDown(17) && keyIsDown(67)) {
-        cheat = !cheat;
-        print(cheat);
-    }
-    if (keyIsDown(17) && keyIsDown(86)) {
-        colorcheat = !colorcheat;
-        print(colorcheat);
+        if (!began || lost) {
+            if (keyCode == 38 && density < 10) {
+                density++;
+            } else if (keyCode == 40 && density > 1) {
+                density--;
+            }
+        }
+
+        if (keyIsDown(17) && keyIsDown(67)) {
+            cheat = !cheat;
+            print(cheat);
+        }
+        if (keyIsDown(17) && keyIsDown(86)) {
+            colorcheat = !colorcheat;
+            print(colorcheat);
+        }
     }
 }
 
@@ -311,22 +369,131 @@ function windowResized() {
     setup();
 }
 
-// takes name, score, level
-function writeToBoard(name, score, level) {
-    let writer = createWriter('leaderboard.txt');
-    writer.write([name + " got " + score + " at difficulty " + level]);
-    writer.close();
+
+//API append and board STUFF
+function showLeaderboard() {
+    sortLeads();
+    fill(0, 0, 255, 160);
+    if (preloadIsRunning) { fill(255); }
+    noStroke();
+    rectMode(CORNERS);
+    let leadsLeftX = pad + widthExtraPad;
+    rect(leadsLeftX, pad, width - pad - widthExtraPad, height - pad);
+
+    fill(255, 0, 0);
+    noStroke();
+    textSize(15);
+    textAlign(RIGHT, TOP)
+    text("live results", width - pad - widthExtraPad - 5, pad + 5);
+
+    stroke(0);
+    strokeWeight(3);
+    fill(255);
+    textSize(width / 23);
+
+    hadjust = 12;
+    let innerRectWid = (width - pad - widthExtraPad) - (20 + leadsLeftX);
+    let nameX = leadsLeftX + innerRectWid / 3;
+    let timeX = nameX * 2;
+
+    //col titles
+    textAlign(CENTER, CENTER);
+    text("name", nameX, 3 * pad);
+    text("time", timeX, 3 * pad);
+
+    for (let i = 0; i < 10; i++) {
+        // numbers
+        textAlign(LEFT, CENTER);
+        text(i + 1 + ".", 10 + leadsLeftX, rowHeight(i));
+    }
+
+    // names
+    textAlign(CENTER, CENTER);
+    names.forEach((s, i) => {
+        text(s, nameX, rowHeight(i));
+    });
+
+    // times
+    scores.forEach((s, i) => {
+        text(s, timeX, rowHeight(i));
+    });
+
+    rectMode(CORNER);
 }
 
-function showBoard() {
-    var result = null;
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET", "leaderboard.txt", false);
-    xmlhttp.send();
-    if (xmlhttp.status == 200) {
-        result = xmlhttp.responseText;
+function rowHeight(i) {
+    return 4 * pad + ((height - 4 * pad) / 11) * (i + 1);
+}
+
+function boardAppend() {
+    print(playername, time);
+    var url =
+        "https://script.google.com/macros/s/AKfycbz9qCkxXs1JQz-hy2mFBxBmsMyNQDzGC8ufKpFSxB93NBaBTTs-uX26HCb0nQKGORNa/exec" +
+        "?" +
+        playername +
+        "&" +
+        time;
+    httpDo(url);
+}
+
+function sortLeads() {
+    scores = [];
+    names = [];
+    for (var row = 0; row < rankData.length; row++) {
+        for (var col = 0; col < rankData[0].length; col++) {
+            if (col % 2 != 0) {
+                const tempscore = rankData[row][col];
+                append(scores, tempscore);
+            } else {
+                const tempname = rankData[row][col];
+                append(names, tempname);
+            }
+        }
     }
-    textSize(20);
-    stroke(2, 255, 50);
-    text(result, width / 2, height / 2);
+}
+
+function myInputEvent() {
+    playername = input.value();
+    if (playername.length > 20) {
+        // bad long playername bad, so far no problem
+    } else if (playername == "") {
+        playername = "anonymous";
+    }
+
+    if (!theyCheated) { boardAppend(); }
+
+    input.hide();
+    button.hide();
+    // }
+    //if (a instanceof String && !(a.equals(""))) {
+    //    playername = a;
+    //}
+
+    takingInput = false;
+    lead = false;
+}
+
+function takeName() {
+    takingInput = true;
+
+    fill(255, 255, 255, 240);
+    rectMode(CORNERS);
+    rect(5 * width / 12, 5 * height / 12, 7.21 * width / 12, 6.5 * height / 12);
+
+    textAlign(CENTER, CENTER);
+    textSize(30);
+    noStroke();
+    fill(0);
+    text("name?", width / 2, height / 2 - 25);
+
+    input.show();
+    button.show();
+
+    // TODO may need an option for not asking for a name every time
+    // must have record time button
+
+    // mouse press or enter -> myInputEvent()
+    button.mousePressed(myInputEvent);
+
+    rectMode(CORNER);
 }

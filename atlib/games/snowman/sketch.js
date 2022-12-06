@@ -64,12 +64,7 @@ function draw() {
                     }
                 }
 
-                xd1 = abs(mouseX - grounds[i].x1);
-                xd2 = abs(mouseX - (grounds[i].x1 + grounds[i].edge));
-                yd1 = abs(mouseY - grounds[i].y1);
-                yd2 = abs(mouseY - (grounds[i].y1 + grounds[i].edge));
-
-                if (((yd1 <= moused / 2 || yd2 <= moused / 2) && mouseX < grounds[i].x1 + grounds[i].edge && mouseX > grounds[i].x1) || ((xd1 <= moused / 2 || xd2 <= moused / 2) && mouseY < grounds[i].y1 + grounds[i].edge && mouseY > grounds[i].y1)) {
+                if (grounds[i].isPurple()) {
                     moused -= .65;
                     print("-------------------------");
                     print(xd1);
@@ -142,10 +137,16 @@ class Ground {
     move() {
         this.y1 += moverate;
     }
+
+    isPurple() {
+        //let mr = moused/2;
+        //if (abs()) {}
+        return false;
+    }
 }
 
 function newGround() {
-    x1 = random(-50, width + 50);
+    x1 = random(-100, width + 50);
     y1 = random(startheight, 0);
     edge = random(height / 15, height / 5);
 
@@ -185,6 +186,8 @@ function timer() {
 
     var timex = 9 * width / 10;
     var timey = height / 25;
+
+    if (moused < 0) moused = 0;
 
     if (floor(time) < 10) {
         text("0:" + "0" + floor(time), timex, timey);

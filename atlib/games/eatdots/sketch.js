@@ -128,6 +128,12 @@ function draw() {
             textAlign(RIGHT, CENTER);
             text("Level: " + density, width - 15, height - 35);
 
+            fill(0);
+            stroke(255);
+            strokeWeight(1);
+            triangle(mouseX, mouseY, mouseX - 5, mouseY + 10, mouseX + 5, mouseY + 10);
+            noStroke();
+
             // ask for name
             if (lead) {
                 takeName();

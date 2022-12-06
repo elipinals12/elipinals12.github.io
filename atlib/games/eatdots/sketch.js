@@ -325,6 +325,7 @@ function reset() {
     noCursor();
     lead = true;
     theyCheated = false;
+    showLeads = false;
     dots = [];
     score = 0;
     began = true;

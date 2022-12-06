@@ -29,6 +29,7 @@ var colorcheat = false;
 let theyCheated;
 let scores;
 let names;
+let levels;
 let takingInput = false;
 let input, button;
 var lead = true;
@@ -45,7 +46,7 @@ function preload() {
     const apiKey = "AIzaSyDiEtTNaLP4xCi30j1xYQS5bNYBwlXwJbA";
     const spreadSheetId = "1SnjG8pGZHTnr_9wv0wJ9IR71MAfAwbNzm7ywd5CO6aM";
     fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${spreadSheetId}/values/eatdots!a2:b?key=${apiKey}`,
+        `https://sheets.googleapis.com/v4/spreadsheets/${spreadSheetId}/values/eatdots!a2:c?key=${apiKey}`,
         {
             method: "GET",
         }
@@ -90,6 +91,8 @@ function setup() {
     button.position(input.x + input.width, height / 2);
     input.hide();
     button.hide();
+
+    noCursor();
 }
 
 function draw() {
@@ -122,22 +125,14 @@ function draw() {
             textSize(150);
             text("Score: " + score, width / 2, (height / 2) + 100);
             textSize(50);
-            text("Click to Restart", width / 2, (height / 2));
+            text("Space to Restart", width / 2, (height / 2));
             fill(255, 0, 0);
             textSize(50);
             textAlign(RIGHT, CENTER);
-            text("Level: " + density, width - 15, height - 35);
-
-            fill(0);
-            stroke(255);
-            strokeWeight(1);
-            triangle(mouseX, mouseY, mouseX - 5, mouseY + 10, mouseX + 5, mouseY + 10);
-            noStroke();
+            text("can change with up/down arrows: " + density, width - 15, height - 35);
 
             // ask for name
-            if (lead) {
-                takeName();
-            }
+            if (lead) takeName();
         } else {
             if (paused) {
                 for (let i = 0; i < dots.length; i++) {
@@ -162,11 +157,11 @@ function draw() {
                     touching = (dots[i].size / 2) + ((score + playersize) / 2);
                     if (prox <= touching) {
                         if ((dots[i].size > score + playersize) && !cheat) {
-                            lostsound.play();
+                            //lostsound.play();
                             lost = true;
                         } else if (dots[i].size < score + playersize) {
                             score++;
-                            munchsound.play();
+                            //munchsound.play();
                             dots.splice(i, 1);
                             newDot();
                         } else if (dots[i].size == score + playersize) {
@@ -203,9 +198,9 @@ function draw() {
         textSize(100);
         textAlign(CENTER, CENTER);
         text("Eat smaller dots to grow", width / 2, (height / 2) - 150);
-        text("Click to start", width / 2, (height / 2) + 145);
+        text("Space to start", width / 2, (height / 2) + 145);
         //textSize(150);
-        text("Space to pause", width / 2, (height / 2));
+        text("Click to pause", width / 2, (height / 2));
         fill(255);
         circle(mouseX, mouseY, score + playersize);
 
@@ -248,6 +243,15 @@ function draw() {
     }
 
     if (showLeads) { showLeaderboard(); }
+
+    if (lost) {
+        // fill(0);
+        // stroke(255);
+        // strokeWeight(1);
+        // triangle(mouseX, mouseY, mouseX - 5, mouseY + 10, mouseX + 5, mouseY + 10);
+        // noStroke();
+        cursor(ARROW);
+    }
 }
 
 class Dot {
@@ -318,6 +322,8 @@ function newDot() {
 }
 
 function reset() {
+    noCursor();
+    lead = true;
     theyCheated = false;
     dots = [];
     score = 0;
@@ -332,24 +338,16 @@ function reset() {
 }
 
 function mousePressed() {
-    if (lost || !began) {
-        reset();
-        input.hide();
-        button.hide();
+    if (!lost) {
+        paused = !paused;
     }
 }
 
 function keyPressed() {
-    if (!takingInput) {
-        if (keyCode == 32 && !lost) {
-            paused = !paused;
-        } else if (keyCode == 32) {
-            lead = true;
-            showLeads = false;
-            reset();
-        } else if (keyCode == ENTER && takingInput) {
-            myInputEvent();
-        } else if (keyCode == 76) {
+    if (takingInput) {
+        if (keyCode == ENTER) myInputEvent();
+    } else {
+        if (keyCode == 76) {
             preload();
             showLeads = !showLeads;
         }
@@ -359,6 +357,10 @@ function keyPressed() {
                 density++;
             } else if (keyCode == 40 && density > 1) {
                 density--;
+            } else if (keyCode == 32) {
+                reset();
+                input.hide();
+                button.hide();
             }
         }
 
@@ -372,6 +374,7 @@ function keyPressed() {
         }
     }
 }
+
 
 function windowResized() {
     setup();
@@ -402,13 +405,16 @@ function showLeaderboard() {
 
     hadjust = 12;
     let innerRectWid = (width - pad - widthExtraPad) - (20 + leadsLeftX);
-    let nameX = leadsLeftX + innerRectWid / 3;
+    let nameX = leadsLeftX + innerRectWid / 4.2;
     let timeX = nameX * 2;
+    let levelX = nameX * 3
 
     //col titles
     textAlign(CENTER, CENTER);
     text("name", nameX, 3 * pad);
-    text("time", timeX, 3 * pad);
+    text("score", timeX, 3 * pad);
+    text("level", levelX, 3 * pad);
+    
 
     for (let i = 0; i < 10; i++) {
         // numbers
@@ -422,9 +428,14 @@ function showLeaderboard() {
         text(s, nameX, rowHeight(i));
     });
 
-    // times
+    // scores
     scores.forEach((s, i) => {
         text(s, timeX, rowHeight(i));
+    });
+
+    // times
+    levels.forEach((s, i) => {
+        text(s, levelX, rowHeight(i));
     });
 
     rectMode(CORNER);
@@ -450,14 +461,18 @@ function boardAppend() {
 function sortLeads() {
     scores = [];
     names = [];
+    levels = [];
     for (var row = 0; row < rankData.length; row++) {
         for (var col = 0; col < rankData[0].length; col++) {
-            if (col % 2 != 0) {
+            if (col == 1) {
                 const tempscore = rankData[row][col];
                 append(scores, tempscore);
-            } else {
+            } else if (col == 0) {
                 const tempname = rankData[row][col];
                 append(names, tempname);
+            } else {
+                const templevel = rankData[row][col];
+                append(levels, templevel);
             }
         }
     }

@@ -396,6 +396,7 @@ function showLeaderboard() {
     strokeWeight(3);
     fill(255);
     textSize(width / 23);
+    strokeWeight(1);
 
     hadjust = 12;
     let innerRectWid = (width - pad - widthExtraPad) - (20 + leadsLeftX);

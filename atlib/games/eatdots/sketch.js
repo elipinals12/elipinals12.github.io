@@ -334,6 +334,8 @@ function reset() {
 function mousePressed() {
     if (lost || !began) {
         reset();
+        input.hide();
+        button.hide();
     }
 }
 

@@ -432,7 +432,9 @@ function boardAppend() {
         "?" +
         playername +
         "&" +
-        time;
+        score +
+        "&" +
+        density;
     httpDo(url);
 }
 

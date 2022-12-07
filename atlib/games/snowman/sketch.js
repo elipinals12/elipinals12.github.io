@@ -18,10 +18,7 @@ var xmindist;
 var xmaxdist;
 var ymindist;
 var ymaxdist;
-var edgex1;
-var edgex2;
-var edgey1;
-var edgey2;
+
 
 function setup() {
     var cnv = createCanvas(window.innerWidth - 22, window.innerHeight - 22);
@@ -180,10 +177,10 @@ class Ground {
         // for each edge
         for (var i = 0; i < this.edges.length; i++) {
             // do
-            edgex1 = min(this.edges[i][0], this.edges[i][2]);
-            edgex2 = max(this.edges[i][0], this.edges[i][2]);
-            edgey1 = min(this.edges[i][1], this.edges[i][3]);
-            edgey2 = max(this.edges[i][1], this.edges[i][3]);
+            var edgex1 = min(this.edges[i][0], this.edges[i][2]);
+            var edgex2 = max(this.edges[i][0], this.edges[i][2]);
+            var edgey1 = min(this.edges[i][1], this.edges[i][3]);
+            var edgey2 = max(this.edges[i][1], this.edges[i][3]);
             // print(edgex1, edgey1, edgex2, edgey2);
             // print(mouseX, mouseY);
             // geeksforgeeks gave me godly written checkOverlap (appreciate), gonna use that now

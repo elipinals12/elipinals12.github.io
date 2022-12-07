@@ -9,9 +9,6 @@ var time = 0;
 var smalltext;
 var edge;
 var first = true;
-var r = 255;
-var g = 255;
-var b = 255;
 var redFont = false;
 var pause = false;
 var xmindist;
@@ -56,9 +53,6 @@ function draw() {
     } else {
         if (int(moused) > 0) {
             for (let i = 0; i < grounds.length; i++) {
-                r = 255;
-                g = 255;
-                b = 255;
                 if (grounds[i].y1 > height + 100) {
                     grounds.splice(i, 1);
                     newGround();
@@ -70,12 +64,9 @@ function draw() {
                 if (grounds[i].isPurple()) {
                     redFont = true;
                     moused -= .65;
-                    r = 180;
-                    g = 100;
-                    b = 200;
                 }
 
-                //if (int(mousem) - int(m) <= abs(moused) && mouseX < grounds[i].x2 && mouseX > grounds[i].x1 && mouseY < grounds[i].y2 && mouseY > grounds[i].y1) {
+                //if (int(mousem) - int(m) <= as(moused) && mouseX < grounds[i].x2 && mouseX > grounds[i].x1 && mouseY < grounds[i].y2 && mouseY > grounds[i].y1) {
                 //  moused -= .5;
                 //   }
 
@@ -188,7 +179,7 @@ class Ground {
                 return true;
             }
 
-            // TODO something below doesnt work no clue what cause its not outputting anything
+            // something below doesnt work no clue what cause its not outputting anything
             // below distance from each wall of each edge to relevant mouse x/y
             // if mouseX within left and right wall of edge, xmindist < mouseX < xmaxdist
             // what about if mouseX is not a point but a circle

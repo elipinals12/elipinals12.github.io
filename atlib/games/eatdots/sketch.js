@@ -111,14 +111,14 @@ function draw() {
     if (began) {
         if (lost) {
             maxsound.stop();
-            for (let i = 0; i < dots.length; i++) {
-                dots[i].show();
-                dots[i].move();
-            }
             fill(255, 0, 0);
             textSize(180);
             textAlign(CENTER, CENTER);
             text("GAME OVER", width / 2, (height / 2) - 100);
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].show();
+                dots[i].move();
+            }
             textSize(40);
             text("Level: " + frozedensity, width / 2, (height / 2) + 190);
             fill(255);
@@ -378,7 +378,10 @@ function keyPressed() {
 
 
 function windowResized() {
-    setup();
+    var cnv = createCanvas(windowWidth, windowHeight - 2);
+    var cnvx = (windowWidth - width) / 2;
+    var cnvy = (windowHeight - height) / 2;
+    cnv.position(cnvx, cnvy);
 }
 
 
@@ -440,6 +443,7 @@ function showLeaderboard() {
     });
 
     rectMode(CORNER);
+    noStroke();
 }
 
 function rowHeight(i) {

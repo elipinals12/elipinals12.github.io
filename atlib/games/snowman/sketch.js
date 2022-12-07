@@ -31,7 +31,7 @@ function setup() {
 
     startheight = -height;
 
-    groundcount = int(width / 140);
+    groundcount = 10;
 
     for (let i = 0; i < groundcount; i++) {
         newGround();
@@ -226,7 +226,6 @@ function newGround() {
 
 function reset() {
     grounds = [];
-    groundcount = 40;
     moverate = 1.5;
     moused = 100;
     time = 0;

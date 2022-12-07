@@ -112,7 +112,10 @@ function draw() {
         fill(255, 0, 0);
         if (redFont) { fill(255, 0, 0); }
         noStroke();
-        circle(mouseX, mouseY, moused + .5);
+
+        if (int(moused) <= 0) {
+            circle(mouseX, mouseY, moused + .5);
+        }
 
         // score
         textSize(smalltext);

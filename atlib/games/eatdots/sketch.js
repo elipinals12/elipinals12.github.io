@@ -452,9 +452,12 @@ function rowHeight(i) {
 
 function boardAppend() {
     print(playername, score, density);
+    const id = "eatdotsin";
     var url =
         "https://script.google.com/macros/s/AKfycbz9qCkxXs1JQz-hy2mFBxBmsMyNQDzGC8ufKpFSxB93NBaBTTs-uX26HCb0nQKGORNa/exec" +
         "?" +
+        id +
+        "&" +
         playername +
         "&" +
         score +

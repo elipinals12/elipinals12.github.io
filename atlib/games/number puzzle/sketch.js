@@ -7,6 +7,8 @@ var winfadeint = 5;
 var posstring;
 var time = 0;
 var moveTimer = true;
+let timedecimal = 0;
+
 var lead = true;
 var playername = "anonymous";
 let rankData;
@@ -18,8 +20,6 @@ let showLeads = false;
 let preloadIsRunning = false;
 let hadjust;
 let theyCheated;
-let timedecimal = 0;
-
 var pad = 20;
 var widthExtraPad = 100;
 
@@ -365,9 +365,12 @@ function rowHeight(i) {
 
 function boardAppend() {
     print(playername, time);
+    const id = "numberpuzzlein";
     var url =
         "https://script.google.com/macros/s/AKfycbz9qCkxXs1JQz-hy2mFBxBmsMyNQDzGC8ufKpFSxB93NBaBTTs-uX26HCb0nQKGORNa/exec" +
         "?" +
+        id +
+        "&" +
         playername +
         "&" +
         time;

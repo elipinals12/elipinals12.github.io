@@ -23,6 +23,8 @@ let theyCheated;
 var pad = 20;
 var widthExtraPad = 100;
 
+var keydowntimer = 0;
+
 
 //----\/\/\/\/---A VERY COMPLICATED SLIDE PUZZLE---\/\/\/\/----
 
@@ -72,6 +74,16 @@ function setup() {
 }
 
 function draw() {
+    if (/*keyIsDown(UP_ARROW) || keyIsDown(LEFT_ARROW) || keyIsDown(DOWN_ARROW) || keyIsDown(RIGHT_ARROW) || */keyIsDown(32)) {
+        keydowntimer ++;
+    } else {
+        keydowntimer = 0;
+    }
+
+    // in 1/60 seconds
+    const repeattime = 30;
+    if ((keydowntimer % repeattime) == repeattime-1) { moveFromInput(); }
+
     if (theyCheated) {
         //they cheated
 
@@ -160,35 +172,6 @@ function draw() {
         timefader = 255;
     }
 
-    if (keyIsPressed && !takingInput) {
-        blank = pos.indexOf(0);
-        var b;
-
-        if (keyCode == UP_ARROW) {
-            b = blank + 4;
-        } else if (keyCode == DOWN_ARROW) {
-            b = blank - 4;
-        } else if (keyCode == LEFT_ARROW && blank % 4 != 3) {
-            b = blank + 1;
-        } else if (keyCode == RIGHT_ARROW && blank % 4 != 0) {
-            b = blank - 1;
-        } else if (keyCode == 32) {
-            time = 0;
-            timefader = 255;
-            lead = true;
-            showLeads = false;
-            mixit();
-        } else if (keyCode == 76) {
-            preload();
-            showLeads = !showLeads;
-        }
-
-        if (b >= 0 && b < 16) {
-            swap(pos, blank, b);
-        }
-
-        keyIsPressed = false;
-    }
     if (showLeads) { showLeaderboard(); }
 }
 
@@ -286,7 +269,7 @@ function timer() {
     if (posstring != winstring) {
         if (moveTimer) {
             time = time + (1 / 60);
-            timedecimal = round(time * 100)-100*floor(round(time * 100)/100);
+            timedecimal = round(time * 100) - 100 * floor(round(time * 100) / 100);
         }
     } else {
         timefader -= 10;
@@ -304,7 +287,42 @@ function keyPressed() {
         theyCheated = true;
     } else if (keyCode == ENTER && takingInput) {
         myInputEvent();
+    } else if (!takingInput && keyCode == 76) {
+        preload();
+        showLeads = !showLeads;
+    } else {
+        moveFromInput();
     }
+}
+
+function moveFromInput() {
+    blank = pos.indexOf(0);
+    var b;
+
+    if (keyIsPressed) {
+        if (keyCode == UP_ARROW) {
+            b = blank + 4;
+        } else if (keyCode == DOWN_ARROW) {
+            b = blank - 4;
+        } else if (keyCode == LEFT_ARROW && blank % 4 != 3) {
+            b = blank + 1;
+        } else if (keyCode == RIGHT_ARROW && blank % 4 != 0) {
+            b = blank - 1;
+        } else if (keyCode == 32) {
+            time = 0;
+            timefader = 255;
+            lead = true;
+            showLeads = false;
+            mixit();
+        }
+
+        if (b >= 0 && b < 16) {
+            swap(pos, blank, b);
+        }
+    }
+}
+
+function keyReleased() {
 }
 
 function showLeaderboard() {
@@ -415,5 +433,6 @@ function myInputEvent() {
 }
 
 function windowResized() {
-    //setup();
+    // setup();
+    // erases time
 }

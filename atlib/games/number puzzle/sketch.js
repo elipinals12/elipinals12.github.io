@@ -74,7 +74,8 @@ function setup() {
 }
 
 function draw() {
-    if (/*keyIsDown(UP_ARROW) || keyIsDown(LEFT_ARROW) || keyIsDown(DOWN_ARROW) || keyIsDown(RIGHT_ARROW) || */keyIsDown(32)) {
+    if (/*keyIsDown(UP_ARROW) || keyIsDown(LEFT_ARROW) || keyIsDown(DOWN_ARROW) || keyIsDown(RIGHT_ARROW) || */
+    keyIsDown(32) && !takingInput) {
         keydowntimer ++;
     } else {
         keydowntimer = 0;
@@ -299,7 +300,7 @@ function moveFromInput() {
     blank = pos.indexOf(0);
     var b;
 
-    if (keyIsPressed) {
+    if (keyIsPressed && !takingInput) {
         if (keyCode == UP_ARROW) {
             b = blank + 4;
         } else if (keyCode == DOWN_ARROW) {

@@ -1,4 +1,5 @@
-// TODO
+// TODO i dont want t o have to enter a time every single game god, maybe make an option to take leaderboard
+
 
 var startminsize = 2;
 var startmaxsize = 100;

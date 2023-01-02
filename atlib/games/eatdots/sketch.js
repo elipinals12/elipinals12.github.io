@@ -17,6 +17,7 @@ var prox, touching;
 var paused = false;
 var lost = false;
 var lostsound, munchsound, maxsound;
+var mute = false;
 var dotcount;
 var frozedensity;
 var densitydivider;
@@ -120,6 +121,8 @@ function draw() {
                 dots[i].show();
                 dots[i].move();
             }
+
+            fill(255, 0, 0);
             textSize(40);
             text("Level: " + frozedensity, width / 2, (height / 2) + 190);
             fill(255);
@@ -352,6 +355,8 @@ function keyPressed() {
         if (keyCode == 76) {
             preload();
             showLeads = !showLeads;
+        } else if (keyCode == 77) {
+            toggleMute();
         }
 
         if (!began || lost) {
@@ -419,7 +424,7 @@ function showLeaderboard() {
     text("name", nameX, 3 * pad);
     text("score", timeX, 3 * pad);
     text("level", levelX, 3 * pad);
-    
+
 
     for (let i = 0; i < 10; i++) {
         // numbers
@@ -531,4 +536,19 @@ function takeName() {
     button.mousePressed(myInputEvent);
 
     rectMode(CORNER);
+}
+
+function toggleMute() {
+    // todo if you want, fader m toggle situation
+    mute = !mute;
+
+    if (mute) { 
+        maxsound.setVolume(0);
+        munchsound.setVolume(0);
+        lostsound.setVolume(0);
+    } else {
+        maxsound.setVolume(.4);
+        munchsound.setVolume(.5);
+        lostsound.setVolume(.3);
+    }
 }

@@ -2,6 +2,8 @@
 // a beautiful (from the user side) app
 // with pretty messy insides
 
+// todo fix input box disappearing sometimes
+
 var startminsize = 2;
 var startmaxsize = 100;
 var density = 6;
@@ -9,6 +11,8 @@ var playersize = 20;
 var fastspeed = 4;
 var slowspeed = 1;
 var brokevalue = 2.5;
+
+var liveresultstimer = 0;
 
 var farout = 400;
 var out = 100;
@@ -75,7 +79,7 @@ function setup() {
     maxsound = loadSound("max.mp3");
 
     maxsound.setVolume(.4);
-    munchsound.setVolume(.5);
+    munchsound.setVolume(.4);
     lostsound.setVolume(.3);
 
     densitydivider = map(density, 1, 10, 120, 5);
@@ -99,6 +103,17 @@ function setup() {
 }
 
 function draw() {
+    
+    if (liveresultstimer > 180) {
+        loadLeads();
+        liveresultstimer = 0;
+    }
+    liveresultstimer++;
+    // nice, now leads need to not flash
+    // needs to store and display stored num
+    // update num dont preload each time
+
+
     background(8, 0, 28);
     densitydivider = map(density, 1, 10, 100, 8);
     dotcount = floor(width / densitydivider);
@@ -114,10 +129,12 @@ function draw() {
     if (began) {
         if (lost) {
             maxsound.stop();
+
             fill(255, 0, 0);
             textSize(180);
             textAlign(CENTER, CENTER);
             text("GAME OVER", width / 2, (height / 2) - 100);
+
             for (let i = 0; i < dots.length; i++) {
                 dots[i].show();
                 dots[i].move();
@@ -362,7 +379,7 @@ function keyPressed() {
         }
     } else {
         if (keyCode == 76) {
-            preload();
+            loadLeads();
             showLeads = !showLeads;
         } else if (keyCode == 77) {
             toggleMute();
@@ -551,11 +568,16 @@ function toggleMute() {
 
     if (mute) {
         maxsound.setVolume(0);
-        munchsound.setVolume(0);
-        lostsound.setVolume(0);
+        // munchsound.setVolume(0);
+        // lostsound.setVolume(0);
     } else {
         maxsound.setVolume(.4);
-        munchsound.setVolume(.5);
+        munchsound.setVolume(.4);
         lostsound.setVolume(.3);
     }
+}
+
+// this exists for a very important reason
+function loadLeads() {
+    preload();
 }

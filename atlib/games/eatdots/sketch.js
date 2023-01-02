@@ -1,5 +1,6 @@
-// TODO i dont want t o have to enter a time every single game god, maybe make an option to take leaderboard
-
+// ATLIB EATDOTS
+// a beautiful (from the user side) app
+// with pretty messy insides
 
 var startminsize = 2;
 var startmaxsize = 100;

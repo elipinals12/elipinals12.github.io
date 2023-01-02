@@ -107,9 +107,9 @@ function draw() {
     maxsize = startmaxsize + score;
 
     // show the leaderboard with tab key
-    if (keyIsDown(66)) {
-        showBoard();
-    }
+    // if (keyIsDown(9)) {
+    //     showLeaderboard();
+    // }
 
     if (began) {
         if (lost) {
@@ -123,7 +123,7 @@ function draw() {
                 dots[i].move();
             }
 
-            fill(255, 0, 0);
+            fill(245, 173, 5);
             textSize(40);
             text("Level: " + frozedensity, width / 2, (height / 2) + 190);
             fill(255);
@@ -131,10 +131,10 @@ function draw() {
             text("Score: " + score, width / 2, (height / 2) + 100);
             textSize(50);
             text("Space to Restart", width / 2, (height / 2));
-            fill(255, 0, 0);
+            fill(245, 173, 5);
             textSize(50);
             textAlign(RIGHT, CENTER);
-            text("can change with up/down arrows: " + density, width - 15, height - 35);
+            text("Change level with up/down arrows: " + density, width - 15, height - 35);
 
             // ask for name
             if (lead) takeName();
@@ -146,13 +146,13 @@ function draw() {
                 fill(255);
                 textSize(100);
                 textAlign(CENTER, CENTER);
-                text("Press Space To Resume", width / 2, height / 2);
+                text("Click To Resume", width / 2, height / 2);
                 fill(255);
                 textSize(100);
                 textAlign(LEFT, TOP);
                 text(score, 35, 35);
 
-                fill(255, 0, 0);
+                fill(245, 173, 5);
                 textSize(50);
                 textAlign(RIGHT, CENTER);
                 text("Level: " + density, width - 15, height - 35);
@@ -191,7 +191,7 @@ function draw() {
                 textAlign(LEFT, TOP);
                 text(score, 35, 35);
 
-                fill(255, 0, 0);
+                fill(245, 173, 5);
                 textSize(50);
                 textAlign(RIGHT, CENTER);
                 text(density, width - 15, height - 35);
@@ -202,14 +202,14 @@ function draw() {
         fill(255);
         textSize(100);
         textAlign(CENTER, CENTER);
-        text("Eat smaller dots to grow", width / 2, (height / 2) - 150);
+        text("Eat to grow", width / 2, (height / 2) - 150);
         text("Space to start", width / 2, (height / 2) + 145);
         //textSize(150);
         text("Click to pause", width / 2, (height / 2));
         fill(255);
         circle(mouseX, mouseY, score + playersize);
 
-        fill(255, 0, 0);
+        fill(245, 173, 5);
         textSize(50);
         textAlign(RIGHT, CENTER);
         text("Up and Down arrows change level: " + density, width - 15, height - 35);
@@ -327,6 +327,9 @@ function newDot() {
 }
 
 function reset() {
+    input.hide();
+    button.hide();
+
     noCursor();
     lead = true;
     theyCheated = false;
@@ -351,7 +354,12 @@ function mousePressed() {
 
 function keyPressed() {
     if (takingInput) {
-        if (keyCode == ENTER) myInputEvent();
+        if (keyCode == ENTER) {
+            myInputEvent();
+        } else if (keyCode == 32) {
+            myInputEvent();
+            reset();
+        }
     } else {
         if (keyCode == 76) {
             preload();
@@ -367,8 +375,6 @@ function keyPressed() {
                 density--;
             } else if (keyCode == 32) {
                 reset();
-                input.hide();
-                button.hide();
             }
         }
 
@@ -543,7 +549,7 @@ function toggleMute() {
     // todo if you want, fader m toggle situation
     mute = !mute;
 
-    if (mute) { 
+    if (mute) {
         maxsound.setVolume(0);
         munchsound.setVolume(0);
         lostsound.setVolume(0);

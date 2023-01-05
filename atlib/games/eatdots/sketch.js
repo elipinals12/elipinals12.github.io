@@ -344,10 +344,8 @@ function newDot() {
 }
 
 function reset() {
-    input.hide();
-    button.hide();
-
     noCursor();
+    
     lead = true;
     theyCheated = false;
     showLeads = false;

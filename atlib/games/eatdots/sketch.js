@@ -103,7 +103,7 @@ function setup() {
 }
 
 function draw() {
-    
+
     if (liveresultstimer > 180) {
         loadLeads();
         liveresultstimer = 0;
@@ -154,7 +154,12 @@ function draw() {
             text("Change level with up/down arrows: " + density, width - 15, height - 35);
 
             // ask for name
-            if (lead) takeName();
+            if (lead) {
+                takeName();
+
+                input.show();
+                button.show();
+            }
         } else {
             if (paused) {
                 for (let i = 0; i < dots.length; i++) {
@@ -345,7 +350,7 @@ function newDot() {
 
 function reset() {
     noCursor();
-    
+
     lead = true;
     theyCheated = false;
     showLeads = false;
@@ -406,10 +411,14 @@ function keyPressed() {
 
 
 function windowResized() {
-    var cnv = createCanvas(windowWidth, windowHeight - 2);
-    var cnvx = (windowWidth - width) / 2;
-    var cnvy = (windowHeight - height) / 2;
-    cnv.position(cnvx, cnvy);
+    setup();
+
+    input.show();
+    button.show();
+    // var cnv = createCanvas(windowWidth, windowHeight - 2);
+    // var cnvx = (windowWidth - width) / 2;
+    // var cnvy = (windowHeight - height) / 2;
+    // cnv.position(cnvx, cnvy);
 }
 
 
@@ -539,17 +548,20 @@ function takeName() {
     takingInput = true;
 
     fill(255, 255, 255, 240);
+    let nameWO2 = 100;
+    let nameHO2 = 50;
+    let woffset = 7;
+    let hoffset = -8;
     rectMode(CORNERS);
-    rect(5 * width / 12, 5 * height / 12, 7.21 * width / 12, 6.5 * height / 12);
+    rect(width / 2 - nameWO2 + woffset, height / 2 - nameHO2 + hoffset, width / 2 + nameWO2 + woffset, height / 2 + nameHO2 + hoffset);
+    // old way
+    // rect(5 * width / 12, 5 * height / 12, 7.21 * width / 12, 6.5 * height / 12);
 
     textAlign(CENTER, CENTER);
     textSize(30);
     noStroke();
     fill(0);
     text("name?", width / 2, height / 2 - 25);
-
-    input.show();
-    button.show();
 
     // TODO may need an option for not asking for a name every time
     // must have record time button

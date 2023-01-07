@@ -180,8 +180,14 @@ function takeName() {
     takingInput = true;
 
     fill(255, 255, 255, 240);
+    let nameWO2 = 100;
+    let nameHO2 = 50;
+    let woffset = 7;
+    let hoffset = -8;
     rectMode(CORNERS);
-    rect(5 * width / 12, 5 * height / 12, 7.21 * width / 12, 6.5 * height / 12);
+    rect(width / 2 - nameWO2 + woffset, height / 2 - nameHO2 + hoffset, width / 2 + nameWO2 + woffset, height / 2 + nameHO2 + hoffset);
+    // old way
+    // rect(5 * width / 12, 5 * height / 12, 7.21 * width / 12, 6.5 * height / 12);
 
     textAlign(CENTER, CENTER);
     textSize(30);

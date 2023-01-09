@@ -413,8 +413,13 @@ function keyPressed() {
 function windowResized() {
     setup();
 
-    input.show();
-    button.show();
+    if (takingInput) {
+        input.show();
+        button.show();
+    } else {
+        input.hide();
+        button.hide();
+    }
     // var cnv = createCanvas(windowWidth, windowHeight - 2);
     // var cnvx = (windowWidth - width) / 2;
     // var cnvy = (windowHeight - height) / 2;
@@ -442,20 +447,16 @@ function showLeaderboard() {
     strokeWeight(3);
     fill(255);
     textSize(width / 23);
-    strokeWeight(1);
 
     hadjust = 12;
     let innerRectWid = (width - pad - widthExtraPad) - (20 + leadsLeftX);
-    let nameX = leadsLeftX + innerRectWid / 4.2;
+    let nameX = leadsLeftX + innerRectWid / 3;
     let timeX = nameX * 2;
-    let levelX = nameX * 3
 
     //col titles
     textAlign(CENTER, CENTER);
     text("name", nameX, 3 * pad);
-    text("score", timeX, 3 * pad);
-    text("level", levelX, 3 * pad);
-
+    text("full score", timeX, 3 * pad);
 
     for (let i = 0; i < 10; i++) {
         // numbers
@@ -469,18 +470,12 @@ function showLeaderboard() {
         text(s, nameX, rowHeight(i));
     });
 
-    // scores
+    // times
     scores.forEach((s, i) => {
         text(s, timeX, rowHeight(i));
     });
 
-    // times
-    levels.forEach((s, i) => {
-        text(s, levelX, rowHeight(i));
-    });
-
     rectMode(CORNER);
-    noStroke();
 }
 
 function rowHeight(i) {

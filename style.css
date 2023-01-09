@@ -127,21 +127,51 @@ h2 {
   margin: 10px 0;
 }
 
-a:link {
+.mainlinks:link {
   text-decoration: none;
 }
 
 
-a:visited {
+.mainlinks:visited {
   text-decoration: none;
 }
 
 
-a:hover {
+.mainlinks:hover {
   text-decoration: underline;
 }
 
 
-a:active {
+.mainlinks:active {
   text-decoration: none;
+}
+
+.nonmainpages {
+  position: absolute;
+  left: 0;
+  bottom: 0px;
+}
+
+.nonmainpageslink:link {
+  text-decoration: none;
+  /* visibility: hidden; */
+  color: #9100B9;
+}
+
+.nonmainpageslink:visited {
+  text-decoration: none;
+  /* visibility: hidden; */
+  color: #9100B9;
+}
+
+.nonmainpageslink:hover {
+  text-decoration: underline;
+  visibility: show;
+  color: black;
+}
+
+.nonmainpageslink:active {
+  text-decoration: underline;
+  visibility: show;
+  color: black;
 }

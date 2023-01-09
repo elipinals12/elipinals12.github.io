@@ -155,13 +155,13 @@ h2 {
 .nonmainpageslink:link {
   text-decoration: none;
   /* visibility: hidden; */
-  color: #9100B9;
+  color: #9400BB;
 }
 
 .nonmainpageslink:visited {
   text-decoration: none;
   /* visibility: hidden; */
-  color: #9100B9;
+  color: #9400BB;
 }
 
 .nonmainpageslink:hover {

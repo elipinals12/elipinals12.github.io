@@ -10,7 +10,7 @@ body {
   background: linear-gradient(to left bottom, rgb(0, 9, 74), rgb(151, 0, 189));
   /*Top Right to Left Bottom*/
 
-  -webkit-transform: translateZ(0);
+  /* -webkit-transform: translateZ(0); */
 }
 
 * {
@@ -137,7 +137,9 @@ a:visited {
 }
 
 
-a:hover {}
+a:hover {
+  text-decoration: underline;
+}
 
 
 a:active {

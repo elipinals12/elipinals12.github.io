@@ -9,7 +9,7 @@ var my = [];
 var x, y;
 
 function setup() {
-    var cnv = createCanvas(800, 800);
+    var cnv = createCanvas(600, 600);
     var x = (windowWidth - width) / 2;
     var y = ((windowHeight - height) / 2);
     cnv.position(x, y);
@@ -32,6 +32,8 @@ function setup() {
 }
 
 function draw() {
+    check4collisions();
+
     loadPixels();
 
     updatePixels();
@@ -43,14 +45,6 @@ function draw() {
     wikiSteps();
 
 
-    // make outer walls
-    stroke(0);
-    strokeWeight(15);
-    line(wid, 0, width, 0);
-    line(width, 0, width, height);
-    line(width - wid, height, 0, height);
-    line(0, 0, 0, height);
-
     if (grid[0].dead == true) {
         moveGuy();
     }
@@ -58,8 +52,7 @@ function draw() {
 
     //clear
     if (keyIsPressed && keyCode == 82) {
-        mx = [];
-        my = [];
+        resetMarker()
     }
 
     // you
@@ -72,9 +65,36 @@ function draw() {
     for (var k = 0; k < mx.length; k++) {
         ellipse(mx[k], my[k], 6, 6);
     }
+
+    // make outer walls
+    stroke(0);
+    strokeWeight(15);
+    line(wid, 0, width, 0);
+    line(width, 0, width, height);
+    line(width - wid, height, 0, height);
+    line(0, 0, 0, height);
 }
 
 function moveGuy() {
     // TODO:
     // reading the pixels, set the maze as background and 
+}
+
+function resetMarker() {
+    mx = [];
+    my = [];
+}
+
+function check4collisions() {
+    // check for wall collision
+    for (c in grid) {
+        print(c.walls[1]);
+
+        //check each wall for each cell
+        for (var i = 0; i < 3; i++) {
+            mouseIsOnBorder = false;
+            // if (cell.walls[i] && mouseIsOnBorder) resetMarker();
+        }
+    }
+
 }

@@ -2,7 +2,7 @@
 // a beautiful (from the user side) app
 // with pretty messy insides
 
-// todo fix input box disappearing sometimes
+// todo fix input box disappearing sometimes - I think its solved
 
 var startminsize = 2;
 var startmaxsize = 100;

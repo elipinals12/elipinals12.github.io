@@ -23,8 +23,8 @@
 /* make there a grey hover over images */
 .display-img:hover {
 		opacity: 75%;
-	//	transition: .1s ease-in-out;
-	}
+	/*	transition: .1s ease-in-out;*/
+}
 
 
 /* makes is so like width includes padding and font is white */
@@ -107,15 +107,15 @@
         padding: 4px 11px;
         text-align: center;
         text-decoration: none;
-        //display: inline-block;
+        /*display: inline-block;*/
         font-size: 13px;
         background-color: black;
         border: 1.5px solid white;
         cursor: pointer;
 		font-weight: bold;
 		margin: auto;
-        //position: absolute;
-        //bottom: 0;
+        /*position: absolute;
+        /*bottom: 0;*/
 	}
 	
 	.topnav a {
@@ -165,7 +165,7 @@
 	#greyed {
 		cursor: not-allowed;
 		color: grey;
-		//pointer-events: none;
+		/*pointer-events: none;*/
 	}
 }
 
@@ -309,7 +309,7 @@
 	#greyed {
 		cursor: not-allowed;
 		color: grey;
-		//pointer-events: none;
+		/*pointer-events: none;*/
 	}
 
 	.down {

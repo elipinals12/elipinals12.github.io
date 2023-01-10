@@ -2,7 +2,7 @@ var grounds = [];
 var minlength = 3;
 var maxlength = 30;
 var groundcount;
-var moverate = 3;
+var moverate = 10;
 var startheight;
 var moused = 100;
 var time = 0;
@@ -72,7 +72,7 @@ function draw() {
                 if (grounds[i].y1 > height + 100) {
                     grounds.splice(i, 1);
                     newGround();
-                    if (moverate < 35) {
+                    if (moverate < 30) {
                         moverate += .028;
                     }
                 }

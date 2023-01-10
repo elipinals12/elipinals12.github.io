@@ -455,8 +455,8 @@ function showLeaderboard() {
 
     //col titles
     textAlign(CENTER, CENTER);
-    text("name", nameX, 3 * pad);
-    text("full score", timeX, 3 * pad);
+    text("name", nameX, 3 * pad+2);
+    text("full score", timeX, 3 * pad+2);
 
     for (let i = 0; i < 10; i++) {
         // numbers

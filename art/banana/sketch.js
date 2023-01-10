@@ -38,7 +38,17 @@ function touchStarted() {
     // old way, just a circle, TERRIBLE
     // if (abs(mouseX - width / 2) < 30 && abs(mouseY - height / 2) < 30) {
     // new way, use pixel value, no need to make or use or think boundaries
-    if (get(mouseX, mouseY) != [255, 255, 255, 255]) {
+
+    let colAr = get(mouseX, mouseY);
+    let totalrgbnum = 0;
+    print(colAr);
+    for (var rgbnum in colAr) {
+        print(rgbnum);
+        totalrgbnum += colAr[rgbnum];
+    }
+    print(totalrgbnum);
+
+    if (totalrgbnum < 1020) {
         go = !go;
         if (go) {
             backsound.loop();
@@ -46,6 +56,7 @@ function touchStarted() {
             backsound.pause();
         }
     }
+    totalrgbnum = 0;
 }
 
 function keyPressed() {

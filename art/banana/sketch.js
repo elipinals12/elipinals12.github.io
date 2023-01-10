@@ -3,13 +3,10 @@
 var go = false;
 var cols = [];
 let img;
-
+var cnv, cnvx, cnvy;
 
 function setup() {
-    var cnv = createCanvas(windowWidth - .5, windowHeight - .5);
-    var cnvx = (windowWidth - width) / 2;
-    var cnvy = (windowHeight - height) / 2;
-    cnv.position(cnvx, cnvy);
+    windowResized();
 
     frameRate(20);
 
@@ -19,6 +16,7 @@ function setup() {
 }
 
 function draw() {
+    if (frameCount % 60 == 0) frameRate(random(5, 25));
     background(255);
 
     if (go) {
@@ -41,12 +39,12 @@ function touchStarted() {
 
     let colAr = get(mouseX, mouseY);
     let totalrgbnum = 0;
-    print(colAr);
+    // print(colAr);
     for (var rgbnum in colAr) {
         print(rgbnum);
         totalrgbnum += colAr[rgbnum];
     }
-    print(totalrgbnum);
+    // print(totalrgbnum);
 
     if (totalrgbnum < 1020) {
         go = !go;
@@ -64,5 +62,8 @@ function keyPressed() {
 }
 
 function windowResized() {
-    setup();
+    cnv = createCanvas(windowWidth - .5, windowHeight - .5);
+    cnvx = (windowWidth - width) / 2;
+    cnvy = (windowHeight - height) / 2;
+    cnv.position(cnvx, cnvy);
 }

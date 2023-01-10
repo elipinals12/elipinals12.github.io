@@ -34,13 +34,13 @@ function draw() {
     image(img, width / 2, height / 2, width / 5, width / 5);
 }
 
-function mousePressed() {
-    if (abs(mouseX - width / 2) < 25 && abs(mouseY - height / 2) < 25) {
+function touchStarted() {
+    if (abs(mouseX - width / 2) < 30 && abs(mouseY - height / 2) < 30) {
         go = !go;
-        if (!go) {
-            backsound.pause();
-        } else {
+        if (go) {
             backsound.loop();
+        } else {
+            backsound.pause();
         }
     }
 }

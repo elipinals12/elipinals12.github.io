@@ -14,7 +14,7 @@ var times = [];
 var cangles = [];
 
 function setup() {
-    var cnv = createCanvas(windowWidth, windowHeight - 2);
+    var cnv = createCanvas(windowWidth, windowHeight - 1);
     var cnvx = (windowWidth - width) / 2;
     var cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);
@@ -61,7 +61,12 @@ function draw() {
         cangles.push(map(times[3], 1, 31, 0.01, 360)); // days low
     }
 
-    cangles.push(map(times[4], 1, 13, 0.01, 360)); // months
+    if (times[4] == 1) {
+        cangles.push(map(times[4], 1, 13, 15, 360)); // months
+    } else {
+        cangles.push(map(times[4], 1, 13, 0.01, 360)); // months
+    }
+
 
     push();
     rotate(90);
@@ -71,7 +76,7 @@ function draw() {
     fill(255);
     strokeWeight(1);
     textAlign(LEFT, CENTER);
-    text(year(), 0, 0);
+    text(" " + year(), 0, 0);
     pop();
 
     for (var i = 0; i < times.length; i++) {
@@ -95,7 +100,7 @@ function draw() {
         fill(255);
         strokeWeight(1);
         textAlign(LEFT);
-        text(times[i], 0, -((2 * cthic + gap) * (i + 1)) / 2 - 90);
+        text(" " + times[i], 0, -((2 * cthic + gap) * (i + 1)) / 2 - 93);
         pop();
     }
 

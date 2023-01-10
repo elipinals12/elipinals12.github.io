@@ -2,16 +2,16 @@ var heads = 0;
 var flipcount = 0;
 let slider, currentflip, winration, linewidth;
 var go = false;
-var currentflip2;
 var redcornerY, bluecornerY;
 
-var headx = 100;
-var tailx = 290;
+var headx = 165;
+var tailx = 165;
 
+var simcount = 1;
 
 
 function setup() {
-    slider = createSlider(.5, 60.5, 20);
+    slider = createSlider(0.5, 60.5, 10);
     slider.position(10, 10);
     slider.style('width', '200px');
 
@@ -26,25 +26,27 @@ function draw() {
     background(0);
 
     if (go) {
-        // flip the coin
-        currentflip = random(["Heads", "Tails"]);
-        if (slider.value() > 45) {
-            currentflip2 = random(["Heads", "Tails"]);
-            // add up heads and total
+        // map simcount to slider, keep it int
+        simcount = int(map(slider.value(), 0.5, 60.5, 1, 100));
+        fill(255, 255, 0);
+        textSize(15);
+        textAlign(RIGHT, TOP);
+        noStroke();
+        let frameval = floor(slider.value());
+        if (frameval == 0) frameval = slider.value();
+
+        text("Flipping " + simcount + " Coins per Frame", width - 25, 25);
+        text("Showing " + frameval + " Frames per Second", width - 25, 50);
+
+        // flip the coin SIMCOUNT TIMES
+        for (let i = 0; i < simcount; i++) {
+            currentflip = random(["Heads", "Tails"]);
             if (currentflip == "Heads") {
+                // add to heads total
                 heads++;
             }
-            print("hu");
-            flipcount += 2;
-            if (currentflip2 == "Heads") {
-                heads++;
-            }
-        } else {
-            // add up heads and total
-            if (currentflip == "Heads") {
-                heads++;
-            }
-            flipcount++;
+            // add to flips total
+            flipcount++
         }
 
         // make the coins
@@ -53,22 +55,22 @@ function draw() {
             fill(255, 0, 0);
             stroke(50);
             strokeWeight(5);
-            circle(headx, 100, 160);
+            circle(headx, 120, 160);
 
             fill(255);
             noStroke();
             textSize(50);
-            text(currentflip, headx, 100)
+            text(currentflip, headx, 120)
         } else {
             fill(0, 0, 255);
             stroke(30);
             strokeWeight(5);
-            circle(tailx, 100, 160);
+            circle(tailx, 120, 160);
 
             fill(255);
             noStroke();
             textSize(50);
-            text(currentflip, tailx, 100)
+            text(currentflip, tailx, 120)
         }
 
         // pink/red totals
@@ -93,7 +95,10 @@ function draw() {
             linewidth = 84;
         } else if (flipcount < 1000000) {
             linewidth = 94;
+        } else if (flipcount < 10000000) {
+            linewidth = 104;
         }
+
         line(180 - linewidth, 318, 180 + linewidth, 318)
 
         // win percent

@@ -9,15 +9,17 @@ var tailx = 165;
 
 var simcount = 1;
 
+var cnv,x,y;
+
 
 function setup() {
     slider = createSlider(0.5, 60.5, 10);
     slider.position(10, 10);
     slider.style('width', '200px');
 
-    var cnv = createCanvas(600, 600);
-    var x = (windowWidth - width) / 2;
-    var y = ((windowHeight - height) / 2);
+    cnv = createCanvas(600, 600);
+    x = (windowWidth - width) / 2;
+    y = ((windowHeight - height) / 2);
     cnv.position(x, y);
 }
 
@@ -96,36 +98,39 @@ function draw() {
         } else if (flipcount < 1000000) {
             linewidth = 94;
         } else if (flipcount < 10000000) {
-            linewidth = 104;
-        }
+            linewidth = 106;
+        } else if (flipcount < 100000000) {
+            linewidth = 122;
+        } else { linewidth = width * 3 }
 
         line(180 - linewidth, 318, 180 + linewidth, 318)
 
         // win percent
         fill(255, 0, 0);
         noStroke();
-        textAlign(LEFT, CENTER);
+        textAlign(LEFT, BOTTOM);
         winratio = round(100 * heads / flipcount, 7);
-        text(winratio + "%", 50, 500);
+        text(winratio + "%", 50, 560);
 
         // bar graph
-        redcornerY = map((heads / flipcount), 0, 1, 500, 100);
+        redcornerY = map((heads / flipcount), 0, 1, 550, 50);
 
         stroke(255);
         strokeWeight(1);
         line(390, 300, 590, 300);
         textSize(14);
         fill(255);
+        textAlign(LEFT, CENTER);
         text("50%", 360, 300);
 
         noStroke();
         fill(255, 0, 0);
         rectMode(CORNERS);
-        rect(400, 500, 485, redcornerY);
+        rect(400, 550, 485, redcornerY);
 
-        bluecornerY = map((heads / flipcount), 0, 1, 100, 500);
+        bluecornerY = map((heads / flipcount), 0, 1, 50, 550);
         fill(0, 0, 255);
-        rect(495, bluecornerY, 580, 500);
+        rect(495, bluecornerY, 580, 550);
     } else {
         fill(255);
         textSize(40);
@@ -140,4 +145,11 @@ function mouseClicked() {
     if (mouseX > 0 && mouseX < width) {
         go = true;
     }
+}
+
+function windowResized() {
+    cnv = createCanvas(600, 600);
+    x = (windowWidth - width) / 2;
+    y = ((windowHeight - height) / 2);
+    cnv.position(x, y);
 }

@@ -175,3 +175,21 @@ h2 {
   visibility: show;
   color: black;
 }
+
+.golda {
+  position: absolute;
+  /* left:35px;
+  bottom: 35px; */
+  height: 50px;
+  right:30px;
+  bottom: 30px;
+}
+
+.cake {
+  position: absolute;
+  left:30px;
+  bottom: 30px;
+  /* right:30px;
+  bottom: 30px; */
+  height: 75px;
+}

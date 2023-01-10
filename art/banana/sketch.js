@@ -35,7 +35,10 @@ function draw() {
 }
 
 function touchStarted() {
-    if (abs(mouseX - width / 2) < 30 && abs(mouseY - height / 2) < 30) {
+    // old way, just a circle, TERRIBLE
+    // if (abs(mouseX - width / 2) < 30 && abs(mouseY - height / 2) < 30) {
+    // new way, use pixel value, no need to make or use or think boundaries
+    if (get(mouseX, mouseY) != [255, 255, 255, 255]) {
         go = !go;
         if (go) {
             backsound.loop();

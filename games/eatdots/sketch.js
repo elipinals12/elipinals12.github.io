@@ -84,9 +84,9 @@ function setup() {
     lostsound.setVolume(.3);
 
     densitydivider = map(density, 1, 10, 120, 5);
-    print(width);
+    // print(width);
     dotcount = floor(width / densitydivider);
-    print(dotcount);
+    // print(dotcount);
     for (let i = 0; i < dotcount; i++) {
         newDot();
     }
@@ -204,8 +204,6 @@ function draw() {
 
                     dots[i].move();
                     dots[i].show();
-                    fill(255);
-                    circle(mouseX, mouseY, score + playersize);
                 }
 
                 fill(255);
@@ -228,8 +226,6 @@ function draw() {
         text("Space to start", width / 2, (height / 2) + 145);
         //textSize(150);
         text("Click to pause", width / 2, (height / 2));
-        fill(255);
-        circle(mouseX, mouseY, score + playersize);
 
         fill(245, 173, 5);
         textSize(50);
@@ -274,11 +270,17 @@ function draw() {
     if (lost) {
         // fill(0);
         // stroke(255);
-        // strokeWeight(1);
+        // strokeWeight(2);
         // triangle(mouseX, mouseY, mouseX - 5, mouseY + 10, mouseX + 5, mouseY + 10);
         // noStroke();
         cursor(ARROW);
     }
+
+    // player
+    fill(255);
+    stroke(0);
+    strokeWeight(2);
+    circle(mouseX, mouseY, score + playersize);
 }
 
 class Dot {
@@ -312,6 +314,8 @@ class Dot {
         }
 
         fill(this.r, this.g, this.b);
+        stroke(0);
+        strokeWeight(2);
         circle(this.x, this.y, this.size);
     }
 }
@@ -502,7 +506,13 @@ function boardAppend() {
         score +
         "&" +
         density;
-    httpDo(url);
+
+    // try {
+        httpDo(url);
+    // } catch {
+
+    // }
+    
 }
 
 function sortLeads() {

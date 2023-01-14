@@ -181,6 +181,7 @@ function draw() {
         text("WINNER!", 0, 2.55 * height / 4);
         fill(100, 160, 200, fader);
         text("WINNER!", 0, 3.55 * height / 4);
+        pop();
         fader -= winfadeint;
         if (fader < 0) {
             winfadeint = -5;
@@ -192,7 +193,6 @@ function draw() {
         if (lead) {
             takeName();
         }
-        pop();
     } {
         fader = 255;
         timefader = 255;
@@ -298,7 +298,7 @@ function timer() {
         text(floor(time / 60) + ":" + floor(time) % 60 + "." + timedecimalstring, width - (width - 4 * wid) / 2, 50);
     }
 
-    if (posstring != winstring) {
+    if (posstring != winstring && posstring != reversewinstring) {
         if (moveTimer) {
             time = time + (1 / 60);
             timedecimal = round(time * 100) - 100 * floor(round(time * 100) / 100);

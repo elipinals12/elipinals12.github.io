@@ -295,6 +295,8 @@ class Dot {
         this.x = x;
         this.y = y;
         this.size = random(minsize, maxsize);
+        this.bonus = random(99) == 0;
+
         if (!colorcheat) {
             this.r = random(30, 255);
             this.g = random(30, 255);
@@ -321,6 +323,7 @@ class Dot {
         }
 
         fill(this.r, this.g, this.b);
+        if (this.bonus) fill(8, 0, 28);
         stroke(0);
         strokeWeight(2);
         circle(this.x, this.y, this.size);

@@ -87,8 +87,8 @@ function resetMarker() {
 
 function check4collisions() {
     // check for wall collision
-    for (c in grid) {
-        print(c.walls[1]);
+    for (eachWall in grid) {
+        print(eachWall.walls[1]);
 
         //check each wall for each cell
         for (var i = 0; i < 3; i++) {

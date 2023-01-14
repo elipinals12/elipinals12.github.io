@@ -1,6 +1,7 @@
 var wid, num, blank;
 var pos = [];
 var winstring = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0";
+var reversewinstring = "0,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1";
 var fader = 255;
 var timefader = 255;
 var winfadeint = 5;
@@ -168,7 +169,31 @@ function draw() {
         if (lead) {
             takeName();
         }
-    } else {
+    } else if (posstring == reversewinstring) {
+        push();
+        angleMode(DEGREES);
+        rotate(180);
+        fill(255, 150, 0, fader);
+        text("WINNER!", 0, .55 * height / 4);
+        fill(160, 255, 140, fader);
+        text("WINNER!", 0, 1.55 * height / 4);
+        fill(80, 60, 255, fader);
+        text("WINNER!", 0, 2.55 * height / 4);
+        fill(100, 160, 200, fader);
+        text("WINNER!", 0, 3.55 * height / 4);
+        fader -= winfadeint;
+        if (fader < 0) {
+            winfadeint = -5;
+        } else if (fader > 260) {
+            winfadeint = 5;
+        }
+
+        // ask for name
+        if (lead) {
+            takeName();
+        }
+        pop();
+    } {
         fader = 255;
         timefader = 255;
     }

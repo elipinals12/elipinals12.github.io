@@ -243,7 +243,7 @@ function newGround() {
 function reset() {
     lead = true;
     grounds = [];
-    moverate = 1.5;
+    moverate = 10;
     moused = 100;
     time = 0;
     for (let i = 0; i < groundcount; i++) {
@@ -427,7 +427,7 @@ function showLeaderboard() {
     //col titles
     textAlign(CENTER, CENTER);
     text("name", nameX, 3 * pad);
-    text("time", timeX, 3 * pad);
+    text("seconds", timeX, 3 * pad);
 
     for (let i = 0; i < 10; i++) {
         // numbers

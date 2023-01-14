@@ -1,6 +1,7 @@
 var wid, num, blank;
 var pos = [];
-var winstring = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0";
+var winstring = "0";
+// var winstring = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0";
 var reversewinstring = "0,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1";
 var fader = 255;
 var timefader = 255;
@@ -170,6 +171,7 @@ function draw() {
             takeName();
         }
     } else if (posstring == reversewinstring) {
+        // rotation not working :( ig todo
         push();
         angleMode(DEGREES);
         rotate(180);

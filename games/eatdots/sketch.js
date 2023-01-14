@@ -67,7 +67,7 @@ function preload() {
 }
 
 function setup() {
-    var cnv = createCanvas(windowWidth, windowHeight - 2, WEBGL);
+    var cnv = createCanvas(windowWidth, windowHeight - 2);
     var cnvx = (windowWidth - width) / 2;
     var cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);
@@ -151,7 +151,7 @@ function draw() {
             fill(245, 173, 5);
             textSize(50);
             textAlign(RIGHT, CENTER);
-            text("Change level with up/down arrows: " + density, width - 15, height - 35);
+            text("Up/Down to change level: " + density, width - 15, height - 35);
 
             // ask for name
             if (lead) {
@@ -222,15 +222,16 @@ function draw() {
         fill(255);
         textSize(100);
         textAlign(CENTER, CENTER);
-        text("Eat to grow", width / 2, (height / 2) - 150);
-        text("Space to start", width / 2, (height / 2) + 145);
+        text("Eat to grow", width / 2, (height / 2) - height/12);
+        text("Space to start", width / 2, (height / 2) + height/12);
         //textSize(150);
-        text("Click to pause", width / 2, (height / 2));
+        // pause is cheating!
+        // text("Click to pause", width / 2, (height / 2));
 
         fill(245, 173, 5);
         textSize(50);
         textAlign(RIGHT, CENTER);
-        text("Up and Down arrows change level: " + density, width - 15, height - 35);
+        text("Up/Down to change level: " + density, width - 15, height - 35);
     }
     if (minsize / height > brokevalue) {
         lost = true;
@@ -283,11 +284,12 @@ function draw() {
     if (!paused && !takingInput) circle(mouseX, mouseY, score + playersize);
     strokeWeight(2);
 
-    push();
-    rotateX(frameCount * 0.01);
-    rotateZ(frameCount * 0.01);
-    cylinder(20, 50);
-    pop();
+    // was gonna be for the 3d coin
+    // push();
+    // rotateX(frameCount * 0.01);
+    // rotateZ(frameCount * 0.01);
+    // cylinder(20, 50);
+    // pop();
 }
 
 class Dot {
@@ -427,7 +429,7 @@ function windowResized() {
     // it is naive to just call setup() on window resize
     // you need jesus
     // and
-    cnv = createCanvas(windowWidth, windowHeight - 2, WEBGL);
+    cnv = createCanvas(windowWidth, windowHeight - 2);
     cnvx = (windowWidth - width) / 2;
     cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);

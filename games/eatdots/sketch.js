@@ -372,7 +372,8 @@ function reset() {
 
 function mousePressed() {
     if (!lost) {
-        paused = !paused;
+        // pausing is cheating
+        // paused = !paused;
     }
 }
 

@@ -262,7 +262,9 @@ function mousePressed() {
 
 function keyPressed() {
     if (keyCode == 32 && !takingInput) {
-        pause = !pause;
+        // pausing is cheating
+        // pause = !pause;
+
         // ----pause must pause----
         //  DONE - circle drawing ==== AFTER TESTING, this should still be drawn
         //        to clarify this feature could be fully used to cheat, dont care, cheating is trivial in multiple ways to knowledgable party, just game for fun

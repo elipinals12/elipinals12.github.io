@@ -32,8 +32,6 @@ function setup() {
 }
 
 function draw() {
-    check4collisions();
-
     loadPixels();
 
     updatePixels();
@@ -56,6 +54,12 @@ function draw() {
     }
 
     // you
+
+
+    let colAr = get(mouseX, mouseY);
+    //print(colAr)
+    if (colAr[0] != 115 || colAr[1] != 15 || colAr[2] != 215) resetMarker();
+
     //if (mouseIsPressed) {
     append(mx, mouseX);
     append(my, mouseY);
@@ -83,18 +87,4 @@ function moveGuy() {
 function resetMarker() {
     mx = [];
     my = [];
-}
-
-function check4collisions() {
-    // check for wall collision
-    for (eachWall in grid) {
-        print(eachWall.walls[1]);
-
-        //check each wall for each cell
-        for (var i = 0; i < 3; i++) {
-            mouseIsOnBorder = false;
-            // if (cell.walls[i] && mouseIsOnBorder) resetMarker();
-        }
-    }
-
 }

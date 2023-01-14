@@ -67,7 +67,7 @@ function preload() {
 }
 
 function setup() {
-    var cnv = createCanvas(windowWidth, windowHeight - 2);
+    var cnv = createCanvas(windowWidth, windowHeight - 2, WEBGL);
     var cnvx = (windowWidth - width) / 2;
     var cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);
@@ -279,8 +279,15 @@ function draw() {
     // player
     fill(255);
     stroke(0);
-    strokeWeight(2);
+    strokeWeight(1);
     if (!paused && !takingInput) circle(mouseX, mouseY, score + playersize);
+    strokeWeight(2);
+
+    push();
+    rotateX(frameCount * 0.01);
+    rotateZ(frameCount * 0.01);
+    cylinder(20, 50);
+    pop();
 }
 
 class Dot {
@@ -420,7 +427,7 @@ function windowResized() {
     // it is naive to just call setup() on window resize
     // you need jesus
     // and
-    cnv = createCanvas(windowWidth, windowHeight - 2);
+    cnv = createCanvas(windowWidth, windowHeight - 2, WEBGL);
     cnvx = (windowWidth - width) / 2;
     cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);
@@ -509,7 +516,7 @@ function boardAppend() {
         density;
 
     // try {
-        httpDo(url);
+    httpDo(url);
     // } catch {
 
     // }

@@ -280,7 +280,7 @@ function draw() {
     fill(255);
     stroke(0);
     strokeWeight(2);
-    circle(mouseX, mouseY, score + playersize);
+    if (!paused && !takingInput) circle(mouseX, mouseY, score + playersize);
 }
 
 class Dot {
@@ -512,7 +512,7 @@ function boardAppend() {
     // } catch {
 
     // }
-    
+
 }
 
 function sortLeads() {

@@ -45,8 +45,9 @@ var pad = 20;
 var widthExtraPad = 100;
 let showLeads = false;
 
+var cnv, cnvx, cnvy;
 
-
+// it begins
 function preload() {
     preloadIsRunning = true;
     rankData = [];
@@ -103,7 +104,6 @@ function setup() {
 }
 
 function draw() {
-
     if (liveresultstimer > 180) {
         loadLeads();
         liveresultstimer = 0;
@@ -411,7 +411,14 @@ function keyPressed() {
 
 
 function windowResized() {
-    setup();
+    // setup();
+    // it is naive to just call setup() on window resize
+    // you need jesus
+    // and
+    cnv = createCanvas(windowWidth, windowHeight - 2);
+    cnvx = (windowWidth - width) / 2;
+    cnvy = (windowHeight - height) / 2;
+    cnv.position(cnvx, cnvy);
 
     if (takingInput) {
         input.show();
@@ -455,8 +462,8 @@ function showLeaderboard() {
 
     //col titles
     textAlign(CENTER, CENTER);
-    text("name", nameX, 3 * pad+2);
-    text("full score", timeX, 3 * pad+2);
+    text("name", nameX, 3 * pad + 2);
+    text("full score", timeX, 3 * pad + 2);
 
     for (let i = 0; i < 10; i++) {
         // numbers

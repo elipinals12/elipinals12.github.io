@@ -62,7 +62,7 @@ function keyPressed() {
 }
 
 function windowResized() {
-    cnv = createCanvas(windowWidth - .5, windowHeight - .5);
+    cnv = createCanvas(windowWidth, windowHeight);
     cnvx = (windowWidth - width) / 2;
     cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);

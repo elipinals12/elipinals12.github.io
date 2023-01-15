@@ -4,6 +4,7 @@ var go = false;
 var cols = [];
 let img;
 var cnv, cnvx, cnvy;
+var pause = false;
 
 function setup() {
     windowResized();
@@ -16,16 +17,22 @@ function setup() {
 }
 
 function draw() {
-    if (frameCount % 60 == 0) frameRate(random(5, 25));
     background(255);
+    if (frameCount % 60 == 0 && !pause) {
+        frameRate(random(5, 25));
+    }
 
     if (go) {
-        cols[0] = random(0, 255);
-        cols[1] = random(0, 255);
-        cols[2] = random(0, 255);
+        if (!pause) {
+            cols[0] = random(0, 255);
+            cols[1] = random(0, 255);
+            cols[2] = random(0, 255);
+        }
         background(cols[0], cols[1], cols[2]);
     } else {
-
+        // if you need an offline (non banana) switch
+        // fill(0);
+        // rect(100, 100, 100, 100);
     }
 
     imageMode(CENTER);
@@ -58,12 +65,12 @@ function touchStarted() {
 }
 
 function keyPressed() {
-
+    if (keyCode == 32) pause = !pause;
 }
 
 function windowResized() {
-    cnv = createCanvas(windowWidth, windowHeight);
+    cnv = createCanvas(windowWidth, windowHeight - .1);
     cnvx = (windowWidth - width) / 2;
-    cnvy = (windowHeight - height) / 2;
+    cnvy = (windowHeight - .1 - height) / 2;
     cnv.position(cnvx, cnvy);
 }

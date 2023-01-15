@@ -16,6 +16,7 @@ function setup() {
 	cnv.position(cnvx, cnvy);
 	// Background
 	background(0);
+	frameRate(1);
 }
 
 function draw() {

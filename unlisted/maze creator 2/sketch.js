@@ -32,8 +32,6 @@ function setup() {
 }
 
 function draw() {
-    check4collisions();
-
     loadPixels();
 
     updatePixels();
@@ -55,7 +53,26 @@ function draw() {
         resetMarker()
     }
 
+    // make outer walls
+    // entrance and exit
+    stroke(0,255,0);
+    strokeWeight(5);
+    line(0, 0, wid, 0);
+    line(width - wid, height, width, height);
+    // bigwalls
+    stroke(0);
+    strokeWeight(15);
+    line(wid, 0, width, 0);
+    line(width, 0, width, height);
+    line(width - wid, height, 0, height);
+    line(0, 0, 0, height);
+
+    
     // you
+    let colAr = get(mouseX, mouseY);
+    //print(colAr)
+    if (colAr[0] != 115 || colAr[1] != 15 || colAr[2] != 215) resetMarker();
+
     //if (mouseIsPressed) {
     append(mx, mouseX);
     append(my, mouseY);
@@ -65,14 +82,6 @@ function draw() {
     for (var k = 0; k < mx.length; k++) {
         ellipse(mx[k], my[k], 6, 6);
     }
-
-    // make outer walls
-    stroke(0);
-    strokeWeight(15);
-    line(wid, 0, width, 0);
-    line(width, 0, width, height);
-    line(width - wid, height, 0, height);
-    line(0, 0, 0, height);
 }
 
 function moveGuy() {
@@ -83,18 +92,4 @@ function moveGuy() {
 function resetMarker() {
     mx = [];
     my = [];
-}
-
-function check4collisions() {
-    // check for wall collision
-    for (eachWall in grid) {
-        print(eachWall.walls[1]);
-
-        //check each wall for each cell
-        for (var i = 0; i < 3; i++) {
-            mouseIsOnBorder = false;
-            // if (cell.walls[i] && mouseIsOnBorder) resetMarker();
-        }
-    }
-
 }

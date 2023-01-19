@@ -59,7 +59,7 @@ function drawTimeNumbers() {
     seconds = now.getSeconds();
 
     hourRotation = map(hours % 24, 0, 24, 0, 360);
-    minuteRotation = map(minutes-1, 0, 59, 0, 360);
+    minuteRotation = map(minutes, 0, 60, 0, 360);
     secondRotation = map(seconds, 0, 60, 0, 360);
 
     fill(0);

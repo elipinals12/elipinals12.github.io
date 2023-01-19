@@ -5,11 +5,16 @@ let hourRotation;
 let minuteRotation;
 let secondRotation;
 let minwh;
+let hourcount;
+let now;
+
+// this is a 12 hour clock
+let ampm = true;
 
 function setup() {
     windowResized();
     angleMode(DEGREES);
-    
+
     minwh = min(width, height);
 }
 
@@ -26,9 +31,19 @@ function draw() {
     strokeWeight(2);
     stroke(255, 0, 0);
     strokeCap(SQUARE);
-    line(0, 0, 0, -minwh * 0.4);
+    line(0, 0, 0, -minwh * 0.45);
     fill(0);
     circle(0, 0, 20);
+
+    if (ampm) {
+        textSize(minwh*.05);
+        strokeWeight(1);
+        if (hours > 12) {
+            text("PM", 0, minwh * .075);
+        } else {
+            text("AM", 0, minwh * .075);
+        }
+    }
 }
 
 function windowResized() {
@@ -41,59 +56,81 @@ function windowResized() {
 function drawDisks() {
     // Draw hour disk
     fill(255, 100, 150);
-    ellipse(0, 0, minwh * 0.8, minwh * 0.8);
+    circle(0, 0, minwh * 0.9);
 
     // Draw minute disk
     fill(100, 255, 150);
-    ellipse(0, 0, minwh * 0.7, minwh * 0.7);
+    circle(0, 0, minwh * 0.75);
 
     // Draw second disk
     fill(150, 100, 255);
-    ellipse(0, 0, minwh * 0.6, minwh * 0.6);
+    circle(0, 0, minwh * 0.6);
 }
 
 function drawTimeNumbers() {
-    let now = new Date();
+    now = new Date();
     hours = now.getHours();
     minutes = now.getMinutes();
     seconds = now.getSeconds();
 
-    hourRotation = map(hours % 24, 0, 24, 0, 360);
     minuteRotation = map(minutes, 0, 60, 0, 360);
     secondRotation = map(seconds, 0, 60, 0, 360);
 
     fill(0);
+    if (ampm) {
+        hourcount = 12;
+        hourRotation = map(hours % 12, 0, 12, 0, 360);
+    } else {
+        hourcount = 24;
+        hourRotation = map(hours % 24, 0, 24, 0, 360);
+    }
     // Hour numbers
-    textSize(minwh * 0.041);
-    textAlign(CENTER,CENTER);
-    for (let i = 0; i <= 23; i++) {
+    textSize(minwh * 0.06);
+    textAlign(CENTER, CENTER);
+    for (let i = 0; i < hourcount; i++) {
         push();
-        rotate(i * (360 / 24) - hourRotation);
-        text(i, 0, -(minwh * 0.37));
+        rotate(i * (360 / hourcount) - hourRotation);
+        text(i, 0, -(minwh * 0.41));
         pop();
     }
 
     // Minute numbers
-    textSize(minwh * 0.035);
-    textAlign(CENTER,CENTER);
+    textSize(minwh * 0.044);
+    textAlign(CENTER, CENTER);
     for (let i = 0; i < 12; i++) {
         push();
-        rotate((i * (360 / 12) - (minuteRotation - (360/60)*5)));
+        rotate((i * (360 / 12) - (minuteRotation - (360 / 60) * 5)));
         if ((i + 1) * 5 != 60) {
-            text((i + 1) * 5, 0, -(minwh * 0.32));
+            text((i + 1) * 5, 0, -(minwh * 0.335));
         } else {
-            text(0, 0, -(minwh * 0.32));
+            text(0, 0, -(minwh * 0.335));
         }
         pop();
     }
+    // minute tick marks
+    strokeWeight(3);
+    for (let i = 0; i < 60; i++) {
+        push();
+        rotate(i * (360 / 60) - (minuteRotation - (360 / 60)));
+        line(0,-(minwh * 0.73)/2,0,-(minwh * 0.75)/2)
+        pop();
+    }
+    strokeWeight(1);
 
     // Second numbers
-    textSize(minwh * 0.017);
-    textAlign(CENTER,CENTER);
+    textSize(minwh * 0.02);
+    textAlign(CENTER, CENTER);
     for (let i = 0; i < 60; i++) {
         push();
         rotate(i * (360 / 60) - secondRotation);
         text(i, 0, -(minwh * 0.275));
+        pop();
+    }
+    // second tick marks
+    for (let i = 0; i < 60; i++) {
+        push();
+        rotate(i * (360 / 60) - (minuteRotation - (360 / 60)));
+        line(0,-(minwh * 0.58)/2,0,-(minwh * 0.6)/2)
         pop();
     }
 }

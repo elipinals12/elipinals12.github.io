@@ -3,20 +3,6 @@ html {
   height: 100%;
 }
 
-body {
-  min-height: 100%;
-  background: #00094a;
-
-  background: linear-gradient(to left bottom, rgb(0, 9, 74), rgb(151, 0, 189));
-  /*Top Right to Left Bottom*/
-
-  /* -webkit-transform: translateZ(0); */
-
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
 * {
   box-sizing: border-box;
 
@@ -157,6 +143,96 @@ h2 {
   bottom: 0px;
 }
 
+/* On screens that are 600px wide or less */
+@media only screen and (max-width: 600px) {
+  body {
+    background: rgb(40,40,40); 
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .golda {
+    position: absolute;
+    /* left:35px;
+    bottom: 35px; */
+    height: 25px;
+    right: 15px;
+    top: 15px;
+  }
+  
+  .cake {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    /* right:30px;
+    bottom: 30px; */
+    height: 30px;
+  }
+
+  
+
+.nonmainpageslink:link {
+  text-decoration: none;
+  /* visibility: hidden; */
+  color: rgb(40,40,40);
+}
+
+.nonmainpageslink:visited {
+  text-decoration: none;
+  /* visibility: hidden; */
+  color: rgb(40,40,40);
+}
+
+.nonmainpageslink:hover {
+  text-decoration: underline;
+  visibility: show;
+  color: #9400BB;
+}
+
+.nonmainpageslink:active {
+  text-decoration: underline;
+  visibility: show;
+  color: #9400BB;
+}
+}
+
+/* screens bigger than 600px wid*/
+@media only screen and (min-width: 600px) {
+  body {
+    min-height: 100%;
+    background: #00094a;
+  
+    background: linear-gradient(to left bottom, rgb(0, 9, 74), rgb(151, 0, 189));
+    /*Top Right to Left Bottom*/
+  
+    /* -webkit-transform: translateZ(0); */
+  
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+.golda {
+  position: absolute;
+  /* left:35px;
+  bottom: 35px; */
+  height: 50px;
+  right: 30px;
+  bottom: 30px;
+}
+
+.cake {
+  position: absolute;
+  left: 30px;
+  bottom: 30px;
+  /* right:30px;
+  bottom: 30px; */
+  height: 75px;
+}
+
+
+
 .nonmainpageslink:link {
   text-decoration: none;
   /* visibility: hidden; */
@@ -180,21 +256,4 @@ h2 {
   visibility: show;
   color: black;
 }
-
-.golda {
-  position: absolute;
-  /* left:35px;
-  bottom: 35px; */
-  height: 50px;
-  right: 30px;
-  bottom: 30px;
-}
-
-.cake {
-  position: absolute;
-  left: 30px;
-  bottom: 30px;
-  /* right:30px;
-  bottom: 30px; */
-  height: 75px;
 }

@@ -434,7 +434,7 @@ function windowResized() {
     cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);
 
-    fastspeed = width / 280;
+    fastspeed = width / 300;
     slowspeed = fastspeed / 4;
 
     if (takingInput) {

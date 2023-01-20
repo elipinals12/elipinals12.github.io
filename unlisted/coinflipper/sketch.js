@@ -1,15 +1,13 @@
-var heads = true;
+var headsfs = true;
+
 function setup() {
-    var cnv = createCanvas(windowWidth, windowHeight);
-    var cnvx = (windowWidth - width) / 2;
-    var cnvy = (windowHeight - height) / 2;
-    cnv.position(cnvx, cnvy);
+    windowResized();
 }
 
 function draw() {
-    background(255, 255, 255);
+    background(5, 0, 36);
 
-    if (heads == true) {
+    if (headsfs == true) {
         fill(255, 225, 0);
         strokeWeight(2);
         circle(width / 2, height / 2, 80);
@@ -30,20 +28,21 @@ function draw() {
 
 function mousePressed() {
     if (mouseX > width / 2) {
-        heads = true;
+        headsfs = true;
     } else {
-        heads = false;
+        headsfs = false;
     }
 }
 
 function keyPressed() {
     if (keyCode == 72) {
-        heads = true;
+        headsfs = true;
     } else if (keyCode == 84) {
-        heads = false;
+        headsfs = false;
     }
 }
 
 function windowResized() {
-    setup();
+    var cnv = createCanvas(windowWidth, windowHeight, WEBGL);
+    cnv.position((windowWidth - width) / 2, (windowHeight - height) / 2);
 }

@@ -67,10 +67,7 @@ function preload() {
 }
 
 function setup() {
-    var cnv = createCanvas(windowWidth, windowHeight - 2);
-    var cnvx = (windowWidth - width) / 2;
-    var cnvy = (windowHeight - height) / 2;
-    cnv.position(cnvx, cnvy);
+    windowResized();
 
     noStroke();
     //frameRate(1);
@@ -222,8 +219,8 @@ function draw() {
         fill(255);
         textSize(100);
         textAlign(CENTER, CENTER);
-        text("Eat to grow", width / 2, (height / 2) - height/12);
-        text("Space to start", width / 2, (height / 2) + height/12);
+        text("Eat to grow", width / 2, (height / 2) - height / 12);
+        text("Space to start", width / 2, (height / 2) + height / 12);
         //textSize(150);
         // pause is cheating!
         // text("Click to pause", width / 2, (height / 2));
@@ -436,6 +433,9 @@ function windowResized() {
     cnvx = (windowWidth - width) / 2;
     cnvy = (windowHeight - height) / 2;
     cnv.position(cnvx, cnvy);
+
+    fastspeed = width / 280;
+    slowspeed = fastspeed / 4;
 
     if (takingInput) {
         input.show();

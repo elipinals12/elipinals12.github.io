@@ -1,4 +1,7 @@
 var mss, secs, mins, hrs, dys, wks, mnts;
+var hyear = 2023;
+let hmonth = 3;
+let hday = 29;
 var now, heaven;
 var prog;
 
@@ -7,7 +10,7 @@ function setup() {
 
     // Apr 28, 2023 final exams done, lets say first min of Apr 29, =
     // 4/29/2023, 12am
-    heaven = new Date(2023, 3, 29, 0, 0, 0, 0);
+    heaven = new Date(hyear, hmonth, hday, 0, 0, 0, 0);
 }
 
 function draw() {
@@ -34,7 +37,7 @@ function setTotals() {
     hrs = floor(secs / 60 / 60);
     dys = floor(secs / 60 / 60 / 24);
     wks = floor(secs / 60 / 60 / 24 / 7);
-    mnts = floor(secs / 60 / 60 / 24 / 31);
+    mnts = floor(secs / 60 / 60 / 24 / 30);
 }
 
 function writeStuff() {
@@ -43,7 +46,7 @@ function writeStuff() {
     textSize(13);
     textAlign(LEFT, TOP);
 
-    text("tth", 2, 2);
+    text("tth ("+hmonth+"/"+hday+"/"+hyear+")", 2, 2);
 
     text("totals", 2, 28);
 

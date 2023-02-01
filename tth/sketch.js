@@ -21,7 +21,7 @@ function draw() {
 
     secTimer();
     minTimer();
-    // hrTimer();
+    hrTimer();
     // dayTimer();
 }
 
@@ -78,6 +78,11 @@ function progBar() {
     strokeWeight(1);
     line(0, 131, width, 131);
 
+    fill(255,0,0);
+    noStroke();
+    textAlign(RIGHT, BOTTOM);
+    text("once the blue crosses the red, its heaven time mate", width-2, 129);
+
     prog = map(secs, 7515500 + 2246400, 0, height, 130);
 
     noStroke();
@@ -101,7 +106,7 @@ function secTimer() {
     angleMode(DEGREES);
     strokeWeight(4);
     stroke(255, 132, 0);
-    let secang = map(now.getMilliseconds(), 0, 999, 0, 364);
+    let secang = map(now.getMilliseconds(), 0, 999, 0, 360);
     secang += 270;
     let handlen = 85 / 2 - 2;
     let handx = cos(secang) * handlen + circx;
@@ -125,7 +130,8 @@ function minTimer() {
     strokeWeight(4);
     stroke(255, 132, 0);
     let minthous = abs(secs / 60) - floor(secs / 60);
-    let minang = map(minthous, 1, 0, 0, 364);
+    let minang = map(minthous, 1, 0, 0, 360);
+    print(minthous);
     minang += 270;
     let handlen = 85 / 2 - 2;
     let handx = cos(minang) * handlen + circx;
@@ -149,7 +155,7 @@ function hrTimer() {
     strokeWeight(4);
     stroke(255, 132, 0);
     let hrthous = abs(secs / 60 / 60) - floor(secs / 60 / 60);
-    let secang = map(hrthous, 1, 0, 0, 364);
+    let secang = map(hrthous, 1, 0, 0, 360);
     secang += 270;
     let handlen = 85 / 2 - 2;
     let handx = cos(secang) * handlen + circx;
@@ -173,7 +179,7 @@ function dayTimer() {
     strokeWeight(4);
     stroke(255, 132, 0);
     let daythous = abs(secs / 60 / 60 / 24) - floor(secs / 60 / 60 / 24);
-    let secang = map(daythous, 1, 0, 0, 364);
+    let secang = map(daythous, 1, 0, 0, 360);
     secang += 270;
     let handlen = 85 / 2 - 2;
     let handx = cos(secang) * handlen + circx;

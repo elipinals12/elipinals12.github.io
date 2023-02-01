@@ -1,7 +1,9 @@
-var mss, secs, mins, hrs, dys, wks, mnts;
-var hyear = 2023;
+let hyear = 2023;
 let hmonth = 3;
 let hday = 29;
+let desc = "sophomore year done!";
+
+var mss, secs, mins, hrs, dys, wks, mnts;
 var now, heaven;
 var prog;
 
@@ -46,7 +48,7 @@ function writeStuff() {
     textSize(13);
     textAlign(LEFT, TOP);
 
-    text("tth ("+hmonth+"/"+hday+"/"+hyear+")", 2, 2);
+    text("tth  ("+hmonth+"/"+hday+"/"+hyear+" "+desc+")", 2, 2);
 
     text("totals", 2, 28);
 

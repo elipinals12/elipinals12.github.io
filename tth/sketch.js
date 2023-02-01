@@ -49,27 +49,27 @@ function writeStuff() {
 
     if (secs > 0) {
         text("seconds:", 2, 41);
-        text(secs, 64, 41);
+        text(nfc(secs), 64, 41);
     }
     if (mins > 0) {
         text("minutes:", 2, 54);
-        text(mins, 64, 54);
+        text(nfc(mins), 64, 54);
     }
     if (hrs > 0) {
         text("hours:", 2, 67);
-        text(hrs, 64, 67);
+        text(nfc(hrs), 64, 67);
     }
     if (dys > 0) {
         text("days:", 2, 80);
-        text(dys, 64, 80);
+        text(nfc(dys), 64, 80);
     }
     if (wks > 0) {
         text("weeks:", 2, 93);
-        text(wks, 64, 93);
+        text(nfc(wks), 64, 93);
     }
     if (mnts > 0) {
         text("months:", 2, 106);
-        text(mnts, 64, 106);
+        text(nfc(mnts), 64, 106);
     }
 }
 

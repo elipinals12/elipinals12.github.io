@@ -20,7 +20,7 @@ function draw() {
     progBar();
 
     secTimer();
-    // minTimer();
+    minTimer();
     // hrTimer();
     // dayTimer();
 }
@@ -78,7 +78,7 @@ function progBar() {
     strokeWeight(1);
     line(0, 131, width, 131);
 
-    prog = map(secs, 7515500+2246400, 0, height, 130);
+    prog = map(secs, 7515500 + 2246400, 0, height, 130);
 
     noStroke();
     fill(0, 0, 185);
@@ -124,17 +124,12 @@ function minTimer() {
     angleMode(DEGREES);
     strokeWeight(4);
     stroke(255, 132, 0);
-    // todo if ever, NEEDS WORK
-    // let minthous;
-    // if (now.getSeconds() == 0) {
-    //     minthous = 0;
-    // }
-    // minthous 
-    // let secang = map(minthous, 0, 999, 0, 364);
-    secang += 270;
+    let minthous = abs(secs / 60) - floor(secs / 60);
+    let minang = map(minthous, 1, 0, 0, 364);
+    minang += 270;
     let handlen = 85 / 2 - 2;
-    let handx = cos(secang) * handlen + circx;
-    let handy = sin(secang) * handlen + 65;
+    let handx = cos(minang) * handlen + circx;
+    let handy = sin(minang) * handlen + 65;
     line(circx, 65, handx, handy);
 }
 
@@ -153,7 +148,8 @@ function hrTimer() {
     angleMode(DEGREES);
     strokeWeight(4);
     stroke(255, 132, 0);
-    let secang = map(now.getMilliseconds(), 0, 999, 0, 364);
+    let hrthous = abs(secs / 60 / 60) - floor(secs / 60 / 60);
+    let secang = map(hrthous, 1, 0, 0, 364);
     secang += 270;
     let handlen = 85 / 2 - 2;
     let handx = cos(secang) * handlen + circx;
@@ -176,7 +172,8 @@ function dayTimer() {
     angleMode(DEGREES);
     strokeWeight(4);
     stroke(255, 132, 0);
-    let secang = map(now.getMilliseconds(), 0, 999, 0, 364);
+    let daythous = abs(secs / 60 / 60 / 24) - floor(secs / 60 / 60 / 24);
+    let secang = map(daythous, 1, 0, 0, 364);
     secang += 270;
     let handlen = 85 / 2 - 2;
     let handx = cos(secang) * handlen + circx;

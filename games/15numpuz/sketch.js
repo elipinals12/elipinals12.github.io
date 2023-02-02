@@ -170,7 +170,7 @@ function draw() {
         if (lead) {
             takeName();
         }
-    } else if (posstring == reversewinstring) {
+    } else if (posstring == reversewinstring && false) {
         // rotation not working :( ig todo
         push();
         angleMode(DEGREES);
@@ -195,7 +195,7 @@ function draw() {
         if (lead) {
             takeName();
         }
-    } {
+    } else {
         fader = 255;
         timefader = 255;
     }

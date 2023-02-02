@@ -136,7 +136,6 @@ function minTimer() {
     stroke(255, 132, 0);
     let minthous = abs(secs / 60) - floor(secs / 60);
     let minang = map(minthous, 1, 0, 0, 360);
-    print(minthous);
     minang += 270;
     let handlen = 85 / 2 - 2;
     let handx = cos(minang) * handlen + circx;

@@ -3,6 +3,7 @@ let hmonth = 3; // 0-11 !!!!!
 let hday = 29;
 let desc = "sophomore year done!";
 
+let redHeight = 140;
 var mss, secs, mins, hrs, dys, wks, mnts;
 var now, heaven;
 var prog;
@@ -28,7 +29,7 @@ function draw() {
     secTimer();
     minTimer();
     hrTimer();
-    // dayTimer();
+    // dayTimer(); // dont even think it works but whatevs, dont want
 }
 
 function setTotals() {
@@ -77,19 +78,31 @@ function writeStuff() {
         text("months:", 2, 106);
         text(nfc(mnts), 64, 106);
     }
+
+    writeFullTimeLeft();
+}
+
+function writeFullTimeLeft() {
+    let tempTimeTotalSecs = 0;
+    let fullDateString = mnts + " months, " +
+        dys%30 + " days, " +
+        hrs%24 + " hours, " +
+        mins%60 + " minutes, " +
+        floor(secs%60) + " seconds"
+    text(fullDateString + " left", 2, 123);
 }
 
 function progBar() {
     stroke(255, 0, 0);
     strokeWeight(1);
-    line(0, 131, width, 131);
+    line(0, redHeight + 1, width, redHeight + 1);
 
     fill(255, 0, 0);
     noStroke();
     textAlign(RIGHT, BOTTOM);
-    text("once the blue crosses the red, its heaven time mate", width - 2, 129);
+    text("once the blue crosses the red, its heaven time mate", width - 2, redHeight - 1);
 
-    prog = map(secs, 7515500 + 2246400, 0, height, 130);
+    prog = map(secs, 7515500 + 2246400, 0, height, redHeight);
 
     noStroke();
     fill(0, 0, 185);

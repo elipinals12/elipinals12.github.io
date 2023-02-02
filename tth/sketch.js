@@ -1,5 +1,5 @@
 let hyear = 2023;
-let hmonth = 3;
+let hmonth = 3; // 0-11 !!!!!
 let hday = 29;
 let desc = "sophomore year done!";
 
@@ -13,6 +13,7 @@ function setup() {
     // Apr 28, 2023 final exams done, lets say first min of Apr 29, =
     // 4/29/2023, 12am
     heaven = new Date(hyear, hmonth, hday, 0, 0, 0, 0);
+    hmonth++;
 }
 
 function draw() {
@@ -48,7 +49,7 @@ function writeStuff() {
     textSize(13);
     textAlign(LEFT, TOP);
 
-    text("tth  ("+hmonth+"/"+hday+"/"+hyear+" "+desc+")", 2, 2);
+    text("tth  (" + hmonth + "/" + hday + "/" + hyear + " " + desc + ")", 2, 2);
 
     text("totals", 2, 28);
 
@@ -83,10 +84,10 @@ function progBar() {
     strokeWeight(1);
     line(0, 131, width, 131);
 
-    fill(255,0,0);
+    fill(255, 0, 0);
     noStroke();
     textAlign(RIGHT, BOTTOM);
-    text("once the blue crosses the red, its heaven time mate", width-2, 129);
+    text("once the blue crosses the red, its heaven time mate", width - 2, 129);
 
     prog = map(secs, 7515500 + 2246400, 0, height, 130);
 

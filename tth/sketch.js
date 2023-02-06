@@ -7,6 +7,12 @@ let redHeight = 140;
 var mss, secs, mins, hrs, dys, wks, mnts;
 var now, heaven;
 var prog;
+let timeHeights = [];
+let textX = 2;
+let numsX = 74;
+let timerXs = [];
+let timerY = 70;
+let barrior;
 
 function setup() {
     windowResized();
@@ -24,12 +30,23 @@ function draw() {
 
     writeStuff();
 
+    // OLDprogBar();
     progBar();
 
     secTimer();
     minTimer();
     hrTimer();
     // dayTimer(); // dont even think it works but whatevs, dont want
+
+    for (let i = 0; i < dusts.length; i++) {
+        dusts[i].move();
+        strokeWeight(1);
+        dusts[i].show();
+    }
+}
+
+function progBar() {
+
 }
 
 function setTotals() {
@@ -47,52 +64,58 @@ function setTotals() {
 function writeStuff() {
     fill(0, 255, 0);
     noStroke();
-    textSize(13);
+    textSize(17);
     textAlign(LEFT, TOP);
 
     text("tth  (" + hmonth + "/" + hday + "/" + hyear + " " + desc + ")", 2, 2);
 
-    text("totals", 2, 28);
+    textSize(20);
+    text("totals", 2, timeHeights[0] - 18);
 
+    textSize(17);
     if (secs > 0) {
-        text("seconds:", 2, 41);
-        text(nfc(secs), 64, 41);
+        text("seconds:", textX, timeHeights[0]);
+        text(nfc(secs), numsX, timeHeights[0]);
     }
     if (mins > 0) {
-        text("minutes:", 2, 54);
-        text(nfc(mins), 64, 54);
+        text("minutes:", textX, timeHeights[1]);
+        text(nfc(mins), numsX, timeHeights[1]);
     }
     if (hrs > 0) {
-        text("hours:", 2, 67);
-        text(nfc(hrs), 64, 67);
+        text("hours:", textX, timeHeights[2]);
+        text(nfc(hrs), numsX, timeHeights[2]);
     }
     if (dys > 0) {
-        text("days:", 2, 80);
-        text(nfc(dys), 64, 80);
+        text("days:", textX, timeHeights[3]);
+        text(nfc(dys), numsX, timeHeights[3]);
     }
     if (wks > 0) {
-        text("weeks:", 2, 93);
-        text(nfc(wks), 64, 93);
+        text("weeks:", textX, timeHeights[4]);
+        text(nfc(wks), numsX, timeHeights[4]);
     }
     if (mnts > 0) {
-        text("months:", 2, 106);
-        text(nfc(mnts), 64, 106);
+        text("months:", textX, timeHeights[5]);
+        text(nfc(mnts), numsX, timeHeights[5]);
     }
 
     writeFullTimeLeft();
 }
 
 function writeFullTimeLeft() {
-    let tempTimeTotalSecs = 0;
     let fullDateString = mnts + " months, " +
-        dys%30 + " days, " +
-        hrs%24 + " hours, " +
-        mins%60 + " minutes, " +
-        floor(secs%60) + " seconds"
-    text(fullDateString + " left", 2, 123);
+        dys % 30 + " days, " +
+        hrs % 24 + " hours, " +
+        mins % 60 + " minutes, " +
+        floor(secs % 60) + " seconds"
+    text(fullDateString + " left", 2, timeHeights[5] + 20);
+
+    stroke(255);
+    strokeWeight(2);
+    barrior = timeHeights[5] + 40;
+    line(0, barrior, width, barrior);
 }
 
-function progBar() {
+function OLDprogBar() {
     stroke(255, 0, 0);
     strokeWeight(1);
     line(0, redHeight + 1, width, redHeight + 1);
@@ -114,12 +137,12 @@ function secTimer() {
     stroke(255);
     strokeWeight(2);
     fill(30, 13, 92);
-    let circx = 210;
-    circle(circx, 65, 85);
-    circle(circx, 65, 5);
-    stroke(0);
+    let circx = timerXs[0];
+    circle(circx, timerY, 85);
+    circle(circx, timerY, 5);
+    stroke(99);
     strokeWeight(2);
-    line(circx, 34, circx, 24);
+    line(circx, timerY - 85 / 2 + 8, circx, timerY - 85 / 2 + 1);
 
     // hand
     angleMode(DEGREES);
@@ -129,20 +152,20 @@ function secTimer() {
     secang += 270;
     let handlen = 85 / 2 - 2;
     let handx = cos(secang) * handlen + circx;
-    let handy = sin(secang) * handlen + 65;
-    line(circx, 65, handx, handy);
+    let handy = sin(secang) * handlen + timerY;
+    line(circx, timerY, handx, handy);
 }
 
 function minTimer() {
     stroke(255);
     strokeWeight(2);
     fill(30, 13, 92);
-    let circx = 310;
-    circle(circx, 65, 85);
-    circle(circx, 65, 5);
-    stroke(0);
+    let circx = timerXs[1];
+    circle(circx, timerY, 85);
+    circle(circx, timerY, 5);
+    stroke(99);
     strokeWeight(2);
-    line(circx, 34, circx, 24);
+    line(circx, timerY - 85 / 2 + 8, circx, timerY - 85 / 2);
 
     // hand
     angleMode(DEGREES);
@@ -153,20 +176,20 @@ function minTimer() {
     minang += 270;
     let handlen = 85 / 2 - 2;
     let handx = cos(minang) * handlen + circx;
-    let handy = sin(minang) * handlen + 65;
-    line(circx, 65, handx, handy);
+    let handy = sin(minang) * handlen + timerY;
+    line(circx, timerY, handx, handy);
 }
 
 function hrTimer() {
     stroke(255);
     strokeWeight(2);
     fill(30, 13, 92);
-    let circx = 410;
-    circle(circx, 65, 85);
-    circle(circx, 65, 5);
-    stroke(0);
+    let circx = timerXs[2];
+    circle(circx, timerY, 85);
+    circle(circx, timerY, 5);
+    stroke(99);
     strokeWeight(2);
-    line(circx, 34, circx, 24);
+    line(circx, timerY - 85 / 2 + 8, circx, timerY - 85 / 2);
 
     // hand
     angleMode(DEGREES);
@@ -177,8 +200,8 @@ function hrTimer() {
     secang += 270;
     let handlen = 85 / 2 - 2;
     let handx = cos(secang) * handlen + circx;
-    let handy = sin(secang) * handlen + 65;
-    line(circx, 65, handx, handy);
+    let handy = sin(secang) * handlen + timerY;
+    line(circx, timerY, handx, handy);
 }
 
 function dayTimer() {
@@ -186,8 +209,8 @@ function dayTimer() {
     strokeWeight(2);
     fill(30, 13, 92);
     let circx = 510;
-    circle(circx, 65, 85);
-    circle(circx, 65, 5);
+    circle(circx, timerY, 85);
+    circle(circx, timerY, 5);
     stroke(0);
     strokeWeight(2);
     line(circx, 34, circx, 24);
@@ -201,12 +224,34 @@ function dayTimer() {
     secang += 270;
     let handlen = 85 / 2 - 2;
     let handx = cos(secang) * handlen + circx;
-    let handy = sin(secang) * handlen + 65;
-    line(circx, 65, handx, handy);
+    let handy = sin(secang) * handlen + timerY;
+    line(circx, timerY, handx, handy);
 }
 
+let dusts = [];
 function mousePressed() {
+    // WANT TO HAVE MOUSE HELD OPTION
+    dusts.push(new Particulate());
+}
 
+class Particulate {
+    constructor() {
+        this.x = mouseX;
+        this.y = mouseY;
+        this.speed = 0; // gravity will change this
+        this.r = random(100, 255);
+        this.g = random(100, 255);
+        this.b = random(100, 255);
+    }
+
+    show() {
+        stroke(this.r, this.g, this.b);
+        if (this.y > barrior) { point(this.x, this.y); }
+    }
+
+    move() {
+        //must apply gravity, for now just stand
+    }
 }
 
 function keyPressed() {
@@ -216,4 +261,11 @@ function keyPressed() {
 function windowResized() {
     var cnv = createCanvas(window.innerWidth - 2, window.innerHeight - 2);
     cnv.position((windowWidth - width) / 2, (windowHeight - height) / 2);
+
+    for (let i = 0; i < 6; i++) {
+        timeHeights.push(41 + 17 * i);
+    }
+    timeHeights.push(123);
+
+    timerXs = [numsX + 180, numsX + 275, numsX + 370];
 }

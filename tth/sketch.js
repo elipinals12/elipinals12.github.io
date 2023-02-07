@@ -11,8 +11,9 @@ let timeHeights = [];
 let textX = 2;
 let numsX = 74;
 let timerXs = [];
-let timerY = 70;
+let timerY = 80;
 let barrior;
+var moveEm = 0;
 
 function setup() {
     windowResized();
@@ -38,10 +39,21 @@ function draw() {
     hrTimer();
     // dayTimer(); // dont even think it works but whatevs, dont want
 
-    for (let i = 0; i < dusts.length; i++) {
-        dusts[i].move();
+    textSize(20);
+    noStroke();
+    fill(255);
+    text(dusts.length +" particles alive", 2, barrior+4);
+
+    for (var i in dusts) {
         strokeWeight(1);
         dusts[i].show();
+
+        dusts[i].move();
+        if (dusts[i].y > height) { dusts.splice(i, 1); }
+    }
+
+    if (mouseIsPressed && mss%2==0) {
+        dusts.push(new Particulate());
     }
 }
 
@@ -165,7 +177,7 @@ function minTimer() {
     circle(circx, timerY, 5);
     stroke(99);
     strokeWeight(2);
-    line(circx, timerY - 85 / 2 + 8, circx, timerY - 85 / 2);
+    line(circx, timerY - 85 / 2 + 8, circx, timerY - 85 / 2 + 1);
 
     // hand
     angleMode(DEGREES);
@@ -189,7 +201,7 @@ function hrTimer() {
     circle(circx, timerY, 5);
     stroke(99);
     strokeWeight(2);
-    line(circx, timerY - 85 / 2 + 8, circx, timerY - 85 / 2);
+    line(circx, timerY - 85 / 2 + 8, circx, timerY - 85 / 2 + 1);
 
     // hand
     angleMode(DEGREES);
@@ -230,7 +242,6 @@ function dayTimer() {
 
 let dusts = [];
 function mousePressed() {
-    // WANT TO HAVE MOUSE HELD OPTION
     dusts.push(new Particulate());
 }
 
@@ -239,18 +250,45 @@ class Particulate {
         this.x = mouseX;
         this.y = mouseY;
         this.speed = 0; // gravity will change this
-        this.r = random(100, 255);
-        this.g = random(100, 255);
-        this.b = random(100, 255);
+        this.r = random(50, 255);
+        this.g = random(50, 255);
+        this.b = random(50, 255);
     }
 
     show() {
         stroke(this.r, this.g, this.b);
-        if (this.y > barrior) { point(this.x, this.y); }
+        fill(this.r, this.g, this.b);
+        if (this.y > barrior) { circle(this.x, this.y, 10); }
     }
 
     move() {
-        //must apply gravity, for now just stand
+        this.y+=1; // must apply gravity, for now just fall 1 per frame
+
+        avoidHydrogenBomb();
+
+        // enforce borders
+        // if (this.y >= height) this.y--;
+        if (this.y <= 0) this.y++;
+        if (this.x >= width) this.x--;
+        if (this.x <= 0) this.x++;
+    }
+}
+function avoidHydrogenBomb() {
+    let fusionDistance = 2;
+    // pop off existing cell, else nuclear fusion
+    for (var pi in dusts) {
+        if (abs(this.x - dusts[pi].x) < fusionDistance && abs(this.y - dusts[pi].y) < fusionDistance) {
+            let directionChoice = ceil(random(4));
+            if (directionChoice == 1) {
+                this.y++;
+            } else if (directionChoice == 2) {
+                this.y--;
+            } else if (directionChoice == 3) {
+                this.x++;
+            } else {
+                this.x--;
+            }
+        }
     }
 }
 
@@ -267,5 +305,7 @@ function windowResized() {
     }
     timeHeights.push(123);
 
-    timerXs = [numsX + 180, numsX + 275, numsX + 370];
+    let w2 = width / 2;
+    timerXs = [w2 - 95, w2, w2 + 95];
+    if (w2 - 95 <= numsX + 180) timerXs = [numsX + 180, numsX + 275, numsX + 370];
 }

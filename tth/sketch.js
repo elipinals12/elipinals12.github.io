@@ -42,7 +42,7 @@ function draw() {
     textSize(20);
     noStroke();
     fill(255);
-    text(dusts.length +" particles alive", 2, barrior+4);
+    text(dusts.length + " particles alive", 2, barrior + 5);
 
     for (var i in dusts) {
         strokeWeight(1);
@@ -50,9 +50,10 @@ function draw() {
 
         dusts[i].move();
         if (dusts[i].y > height) { dusts.splice(i, 1); }
+        // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
     }
 
-    if (mouseIsPressed && mss%2==0) {
+    if (mouseIsPressed && mss % 2 == 0) {
         dusts.push(new Particulate());
     }
 }
@@ -262,7 +263,7 @@ class Particulate {
     }
 
     move() {
-        this.y+=1; // must apply gravity, for now just fall 1 per frame
+        this.y += 1; // must apply gravity, for now just fall 1 per frame
 
         avoidHydrogenBomb();
 

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GPT-3 Model UI</title>
+    <link rel="icon" type="image/png"
+        href="https://hackster.imgix.net/uploads/attachments/1378822/_nfINiSfnAw.blob?auto=compress&w=900&h=675&fit=min&fm=jpg">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-top: 50px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        label {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            height: 50px;
+            font-size: 20px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        button[type="button"] {
+            width: 80%;
+            height: 50px;
+            font-size: 20px;
+            background-color: #3cba54;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>GPT-3 Model UI</h1>
+    <form>
+        <label for="input">Enter input:</label>
+        <input type="text" id="input" name="input">
+        <button type="button" onclick="generateResponse()">Generate Response</button>
+    </form>
+    <h2>Output:</h2>
+    <p id="output"></p>
+
+    <script src="respond.js"></script>
+    <script>
+        document.querySelector("form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            generateResponse();
+        });
+
+        document.querySelector("#input").addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                generateResponse();
+            }
+        });
+    </script>
+</body>
+
+</html>

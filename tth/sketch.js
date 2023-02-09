@@ -53,8 +53,10 @@ function draw() {
         // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
     }
 
-    if (mouseIsPressed && mss % 2 == 0) {
+    if (mouseIsPressed && frameCount % 5 == 0) {
+        // for (let i = 0; i<100; i++) {
         dusts.push(new Particulate());
+        // }
     }
 }
 

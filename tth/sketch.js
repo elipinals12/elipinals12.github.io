@@ -14,6 +14,9 @@ let timerXs = [];
 let timerY = 80;
 let barrior;
 var moveEm = 0;
+var secflat = false;
+
+let dusts = [];
 
 function setup() {
     windowResized();
@@ -53,7 +56,9 @@ function draw() {
         // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
     }
 
-    if (mouseIsPressed && frameCount % 5 == 0) {
+    secflat = secs - floor(secs) < .02;
+
+    if (mouseIsPressed && secflat) {
         // for (let i = 0; i<100; i++) {
         dusts.push(new Particulate());
         // }
@@ -243,9 +248,8 @@ function dayTimer() {
     line(circx, timerY, handx, handy);
 }
 
-let dusts = [];
 function mousePressed() {
-    dusts.push(new Particulate());
+    if (!secflat) dusts.push(new Particulate());
 }
 
 class Particulate {
@@ -261,7 +265,7 @@ class Particulate {
     show() {
         stroke(this.r, this.g, this.b);
         fill(this.r, this.g, this.b);
-        if (this.y > barrior) { circle(this.x, this.y, 10); }
+        if (this.y > barrior) { circle(this.x, this.y, 18); }
     }
 
     move() {

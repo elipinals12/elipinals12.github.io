@@ -1,13 +1,12 @@
 change file names to ones without spaces - why?
 
-move atlib to its own domain - BOOOOOOOOOO
+move atlib to its own domain - BOOOOOOOOOO.....oml chose atlib.boo, coincidence?
 
 
 11/28/2022 update
 verify smaller and larger browser size works for all applications
 
-LEADERBOARD, i think best route is google sheets api
+LEADERBOARD, i think best route is google sheets api - DONE!!!!!
 
-build link list ui from ground its disgusting
+build link list ui from ground its disgusting - FIX MAIN PAGE
 	this includes fixing golda.ml
-

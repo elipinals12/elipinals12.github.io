@@ -16,7 +16,7 @@ let barrior;
 var moveEm = 0;
 var secflat = false;
 var phone;
-let circSize = 120;
+let circSize = 110;
 let dustSize = 18;
 
 let dusts = [];
@@ -171,7 +171,7 @@ function secTimer() {
 
     // hand
     angleMode(DEGREES);
-    strokeWeight(4);
+    strokeWeight(5);
     stroke(255, 132, 0);
     let secang = map(now.getMilliseconds(), 0, 999, 0, 360);
     secang += 270;
@@ -194,7 +194,7 @@ function minTimer() {
 
     // hand
     angleMode(DEGREES);
-    strokeWeight(4);
+    strokeWeight(5);
     stroke(255, 132, 0);
     let minthous = abs(secs / 60) - floor(secs / 60);
     let minang = map(minthous, 1, 0, 0, 360);
@@ -218,7 +218,7 @@ function hrTimer() {
 
     // hand
     angleMode(DEGREES);
-    strokeWeight(4);
+    strokeWeight(5);
     stroke(255, 132, 0);
     let hrthous = abs(secs / 60 / 60) - floor(secs / 60 / 60);
     let secang = map(hrthous, 1, 0, 0, 360);
@@ -318,8 +318,8 @@ function windowResized() {
     timeHeights.push(123);
 
     let w2 = width / 2;
-    timerXs = [w2 - 95, w2, w2 + 95];
-    if (w2 - 95 <= numsX + 180) timerXs = [numsX + 180, numsX + 275, numsX + 370];
+    timerXs = [w2 - 120, w2, w2 + 120];
+    if (w2 - 120 <= numsX + 180) timerXs = [numsX + 180, numsX + 300, numsX + 420];
 
     if (width > 680) { phone = false; } else { phone = true; }
 }

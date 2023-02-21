@@ -1,6 +1,6 @@
 let hyear = 2023;
-let hmonth = 3; // 0-11 !!!!!
-let hday = 29;
+let hmonth = 4; // 0-11 !!!!!
+let hday = 1;
 let desc = "sophomore year done!";
 
 let redHeight = 140;
@@ -15,8 +15,13 @@ let timerY = 80;
 let barrior;
 var moveEm = 0;
 var secflat = false;
+var phone;
+let circSize = 120;
+let dustSize = 18;
 
 let dusts = [];
+
+
 
 function setup() {
     windowResized();
@@ -56,9 +61,9 @@ function draw() {
         // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
     }
 
-    secflat = secs - floor(secs) < .02;
+    // secflat = secs - floor(secs) < .02;
 
-    if (mouseIsPressed && secflat) {
+    if (mouseIsPressed) {
         // for (let i = 0; i<100; i++) {
         dusts.push(new Particulate());
         // }
@@ -158,11 +163,11 @@ function secTimer() {
     strokeWeight(2);
     fill(30, 13, 92);
     let circx = timerXs[0];
-    circle(circx, timerY, 85);
+    circle(circx, timerY, circSize);
     circle(circx, timerY, 5);
     stroke(99);
     strokeWeight(2);
-    line(circx, timerY - 85 / 2 + 8, circx, timerY - 85 / 2 + 1);
+    line(circx, timerY - circSize / 2 + 8, circx, timerY - circSize / 2 + 1);
 
     // hand
     angleMode(DEGREES);
@@ -170,7 +175,7 @@ function secTimer() {
     stroke(255, 132, 0);
     let secang = map(now.getMilliseconds(), 0, 999, 0, 360);
     secang += 270;
-    let handlen = 85 / 2 - 2;
+    let handlen = circSize / 2 - 2;
     let handx = cos(secang) * handlen + circx;
     let handy = sin(secang) * handlen + timerY;
     line(circx, timerY, handx, handy);
@@ -181,11 +186,11 @@ function minTimer() {
     strokeWeight(2);
     fill(30, 13, 92);
     let circx = timerXs[1];
-    circle(circx, timerY, 85);
+    circle(circx, timerY, circSize);
     circle(circx, timerY, 5);
     stroke(99);
     strokeWeight(2);
-    line(circx, timerY - 85 / 2 + 8, circx, timerY - 85 / 2 + 1);
+    line(circx, timerY - circSize / 2 + 8, circx, timerY - circSize / 2 + 1);
 
     // hand
     angleMode(DEGREES);
@@ -194,7 +199,7 @@ function minTimer() {
     let minthous = abs(secs / 60) - floor(secs / 60);
     let minang = map(minthous, 1, 0, 0, 360);
     minang += 270;
-    let handlen = 85 / 2 - 2;
+    let handlen = circSize / 2 - 2;
     let handx = cos(minang) * handlen + circx;
     let handy = sin(minang) * handlen + timerY;
     line(circx, timerY, handx, handy);
@@ -205,11 +210,11 @@ function hrTimer() {
     strokeWeight(2);
     fill(30, 13, 92);
     let circx = timerXs[2];
-    circle(circx, timerY, 85);
+    circle(circx, timerY, circSize);
     circle(circx, timerY, 5);
     stroke(99);
     strokeWeight(2);
-    line(circx, timerY - 85 / 2 + 8, circx, timerY - 85 / 2 + 1);
+    line(circx, timerY - circSize / 2 + 8, circx, timerY - circSize / 2 + 1);
 
     // hand
     angleMode(DEGREES);
@@ -218,7 +223,7 @@ function hrTimer() {
     let hrthous = abs(secs / 60 / 60) - floor(secs / 60 / 60);
     let secang = map(hrthous, 1, 0, 0, 360);
     secang += 270;
-    let handlen = 85 / 2 - 2;
+    let handlen = circSize / 2 - 2;
     let handx = cos(secang) * handlen + circx;
     let handy = sin(secang) * handlen + timerY;
     line(circx, timerY, handx, handy);
@@ -229,7 +234,7 @@ function dayTimer() {
     strokeWeight(2);
     fill(30, 13, 92);
     let circx = 510;
-    circle(circx, timerY, 85);
+    circle(circx, timerY, circSize);
     circle(circx, timerY, 5);
     stroke(0);
     strokeWeight(2);
@@ -242,7 +247,7 @@ function dayTimer() {
     let daythous = abs(secs / 60 / 60 / 24) - floor(secs / 60 / 60 / 24);
     let secang = map(daythous, 1, 0, 0, 360);
     secang += 270;
-    let handlen = 85 / 2 - 2;
+    let handlen = circSize / 2 - 2;
     let handx = cos(secang) * handlen + circx;
     let handy = sin(secang) * handlen + timerY;
     line(circx, timerY, handx, handy);
@@ -265,7 +270,7 @@ class Particulate {
     show() {
         stroke(this.r, this.g, this.b);
         fill(this.r, this.g, this.b);
-        if (this.y > barrior) { circle(this.x, this.y, 18); }
+        if (this.y-dustSize/2 > barrior) { circle(this.x, this.y, dustSize); }
     }
 
     move() {
@@ -315,4 +320,6 @@ function windowResized() {
     let w2 = width / 2;
     timerXs = [w2 - 95, w2, w2 + 95];
     if (w2 - 95 <= numsX + 180) timerXs = [numsX + 180, numsX + 275, numsX + 370];
+
+    if (width > 680) { phone = false; } else { phone = true; }
 }

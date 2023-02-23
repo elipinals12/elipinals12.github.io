@@ -257,6 +257,10 @@ function mousePressed() {
     if (!secflat) dusts.push(new Particulate());
 }
 
+function keyPressed() {
+    dusts = [];
+}
+
 class Particulate {
     constructor() {
         this.x = mouseX;
@@ -302,10 +306,6 @@ function avoidHydrogenBomb() {
             }
         }
     }
-}
-
-function keyPressed() {
-
 }
 
 function windowResized() {

@@ -67,7 +67,8 @@ function preload() {
 }
 
 function setup() {
-    windowResized();
+    // windowResized(); THIS IS CHEATING BRUV BSMAN
+    setDopeCanvas();
 
     noStroke();
     //frameRate(1);
@@ -297,9 +298,9 @@ class Dot {
         this.bonus = random(99) == 0;
 
         if (!colorcheat) {
-            this.r = random(30, 255);
-            this.g = random(30, 255);
-            this.b = random(30, 255);
+            this.r = random(50, 255);
+            this.g = random(50, 255);
+            this.b = random(50, 255);
         }
         this.xspeed = xspeed;
         this.yspeed = yspeed;
@@ -325,6 +326,7 @@ class Dot {
         if (this.bonus) fill(8, 0, 28);
         stroke(0);
         strokeWeight(2);
+        noStroke();
         circle(this.x, this.y, this.size);
     }
 }
@@ -428,11 +430,9 @@ function windowResized() {
     // setup();
     // it is naive to just call setup() on window resize
     // you need jesus
-    // and
-    cnv = createCanvas(windowWidth, windowHeight - 2);
-    cnvx = (windowWidth - width) / 2;
-    cnvy = (windowHeight - height) / 2;
-    cnv.position(cnvx, cnvy);
+    // and                OML SIMILAR ERROR DIP STOP CHEATING
+    setDopeCanvas(); // this is where god canv code lives now
+    //a throne
 
     fastspeed = width / 300;
     slowspeed = fastspeed / 4;
@@ -615,4 +615,12 @@ function toggleMute() {
 // this exists for a very important reason
 function loadLeads() {
     preload();
+}
+
+// the throne
+function setDopeCanvas() {
+    cnv = createCanvas(windowWidth-2, windowHeight - 2);
+    cnvx = (windowWidth - width) / 2;
+    cnvy = (windowHeight - height) / 2;
+    cnv.position(cnvx, cnvy);
 }

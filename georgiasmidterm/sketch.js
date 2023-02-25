@@ -49,15 +49,14 @@ function draw() {
     // OLDprogBar();
     progBar();
 
-    secTimer();
-    minTimer();
-    hrTimer();
     // dayTimer(); // dont even think it works but whatevs, dont want
 
     textSize(20);
     noStroke();
     fill(255);
     text(dusts.length + " particles alive", 2, barrior + 5);
+    textSize(12);
+    text("press any key to delete em all", 2, barrior + 30);
 
     for (var i in dusts) {
         strokeWeight(1);
@@ -75,6 +74,11 @@ function draw() {
         dusts.push(new Particulate());
         // }
     }
+    
+
+    secTimer();
+    minTimer();
+    hrTimer();
 }
 
 function progBar() {
@@ -94,7 +98,7 @@ function setTotals() {
 }
 
 function writeStuff() {
-    fill(0, 255, 0);
+    fill(157,50, 255);
     noStroke();
     textSize(17);
     textAlign(LEFT, TOP);
@@ -143,7 +147,7 @@ function writeFullTimeLeft() {
     stroke(255);
     strokeWeight(2);
     barrior = timeHeights[5] + 40;
-    line(0, barrior, width, barrior);
+    // line(0, barrior, width, barrior);
 }
 
 function OLDprogBar() {
@@ -280,15 +284,17 @@ class Particulate {
     show() {
         stroke(this.r, this.g, this.b);
         fill(this.r, this.g, this.b);
-        if (this.y-dustSize/2 > barrior) { circle(this.x, this.y, dustSize); }
+        // if (this.y-dustSize/2 > barrior) { 
+        circle(this.x, this.y, dustSize);
+        //  }
     }
 
     move() {
-        this.y += 1; // must apply gravity, for now just fall 1 per frame
+        this.y += .5; // must apply gravity, for now just fall 1 per frame
 
         avoidHydrogenBomb();
 
-        // enforce borders
+        // enforce borde...........................................rs
         // if (this.y >= height) this.y--;
         if (this.y <= 0) this.y++;
         if (this.x >= width) this.x--;

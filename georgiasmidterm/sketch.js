@@ -6,9 +6,9 @@
 //      maybe the dots shouldnt even fall if ^ works. 
 
 let hyear = 2023;
-let hmonth = 4; // 0-11 !!!!!
+let hmonth = 2; // 0-11 !!!!!
 let hday = 1;
-let desc = "sophomore year done!";
+let desc = "GEORGIA'S TWO MIDTERMS (dun dun dunnn)";
 
 let redHeight = 140;
 var mss, secs, mins, hrs, dys, wks, mnts;
@@ -274,7 +274,7 @@ class Particulate {
         this.y = mouseY;
         this.speed = 0; // gravity will change this
         this.r = random(50, 255);
-        this.g = random(50, 255);
+        this.g = random(50, 125);
         this.b = random(50, 255);
     }
 

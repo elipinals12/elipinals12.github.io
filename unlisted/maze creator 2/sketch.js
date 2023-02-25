@@ -1,3 +1,10 @@
+// COOL MAZE - NOT MY DESIGN AT ALL, JUST ADDING (hecka) FEATURES
+// ..............................................................
+// TODO
+// add smooth line code magic (fill in between far gaps automatically, even draw lines hmmmmmmmmm from points that may(would) be easy af)
+// sart/attaboy msg on get(mousepos) = green
+// finish border reach
+
 var ver, hor;
 var tcols, trows;
 var wid = 40;
@@ -7,6 +14,8 @@ var stack = [];
 var mx = [];
 var my = [];
 var x, y;
+
+var mecells=[];
 
 function setup() {
     var cnv = createCanvas(600, 600);
@@ -42,12 +51,6 @@ function draw() {
 
     wikiSteps();
 
-
-    if (grid[0].dead == true) {
-        moveGuy();
-    }
-
-
     //clear
     if (keyIsPressed && keyCode == 82) {
         resetMarker()
@@ -68,15 +71,21 @@ function draw() {
     line(0, 0, 0, height);
 
     
-    // you
+    // youR COLOR
     let colAr = get(mouseX, mouseY);
-    //print(colAr)
-    if (colAr[0] != 115 || colAr[1] != 15 || colAr[2] != 215) resetMarker();
+    // for (all of me)
+    // mecells.    append(maybe mecells, new mecell(colr, colg, colb));
+    // NEED TO FIGURE OUT HOW TO FOR LOOP IN A CIRCLE AROUND A Point
+    // maybe for all points in < x distance from mouse do ...
 
-    //if (mouseIsPressed) {
+    // if (colAr[0] != 115 || colAr[1] != 15 || colAr[2] != 215) resetMarker();
+    // smarter:
+    if (colAr[1] < 30 && colAr[2] < 215) resetMarker();
+
+    // if (mouseIsPressed) {
     append(mx, mouseX);
     append(my, mouseY);
-    //}
+    // }
     noStroke();
     fill(255, 0, 0);
     for (var k = 0; k < mx.length; k++) {
@@ -84,12 +93,7 @@ function draw() {
     }
 }
 
-function moveGuy() {
-    // TODO:
-    // reading the pixels, set the maze as background and 
-}
-
 function resetMarker() {
     mx = [];
-    my = [];
+    my = []; // northeastern: should use like a struct something less vague
 }

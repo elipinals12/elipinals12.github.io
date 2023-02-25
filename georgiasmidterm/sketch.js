@@ -29,7 +29,6 @@ let dustSize = 18;
 let dusts = [];
 
 
-
 function setup() {
     windowResized();
 
@@ -60,9 +59,9 @@ function draw() {
 
     for (var i in dusts) {
         strokeWeight(1);
+        dusts[i].move();
         dusts[i].show();
 
-        dusts[i].move();
         if (dusts[i].y > height) { dusts.splice(i, 1); }
         // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
     }
@@ -75,7 +74,6 @@ function draw() {
         // }
     }
     
-
     secTimer();
     minTimer();
     hrTimer();
@@ -301,6 +299,7 @@ class Particulate {
         if (this.x <= 0) this.x++;
     }
 }
+
 function avoidHydrogenBomb() {
     let fusionDistance = 2;
     // pop off existing cell, else nuclear fusion

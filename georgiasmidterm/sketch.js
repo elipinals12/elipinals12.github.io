@@ -99,7 +99,7 @@ function writeStuff() {
     textSize(17);
     textAlign(LEFT, TOP);
 
-    text("tth  (" + hmonth + "/" + hday + "/" + hyear + " " + desc + ")", 2, 2);
+    text(hmonth + "/" + hday + "/" + hyear + " " + desc, 2, 2);
 
     textSize(20);
     text("totals", 2, timeHeights[0] - 18);
@@ -134,8 +134,7 @@ function writeStuff() {
 }
 
 function writeFullTimeLeft() {
-    let fullDateString = mnts + " months, " +
-        dys % 30 + " days, " +
+    let fullDateString = dys % 30 + " days, " +
         hrs % 24 + " hours, " +
         mins % 60 + " minutes, " +
         floor(secs % 60) + " seconds"

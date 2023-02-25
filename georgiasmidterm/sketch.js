@@ -60,10 +60,11 @@ function draw() {
     for (var i in dusts) {
         strokeWeight(1);
         dusts[i].move();
-        dusts[i].show();
 
         if (dusts[i].y > height) { dusts.splice(i, 1); }
         // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
+
+        dusts[i].show();
     }
 
     // secflat = secs - floor(secs) < .02;

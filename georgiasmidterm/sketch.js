@@ -58,13 +58,14 @@ function draw() {
     text("press any key to delete em all", 2, barrior + 30);
 
     for (var i in dusts) {
+        if (dusts[i].y > height) { dusts.splice(i, 1); }
+    }
+
+    for (var i in dusts) {
         strokeWeight(1);
         dusts[i].move();
-
-        if (dusts[i].y > height) { dusts.splice(i, 1); }
-        // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
-
         dusts[i].show();
+        // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
     }
 
     // secflat = secs - floor(secs) < .02;
@@ -74,7 +75,7 @@ function draw() {
         dusts.push(new Particulate());
         // }
     }
-    
+
     secTimer();
     minTimer();
     hrTimer();
@@ -97,7 +98,7 @@ function setTotals() {
 }
 
 function writeStuff() {
-    fill(157,50, 255);
+    fill(157, 50, 255);
     noStroke();
     textSize(17);
     textAlign(LEFT, TOP);

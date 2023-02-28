@@ -6,7 +6,10 @@ move atlib to its own domain - BOOOOOOOOOO.....oml chose atlib.boo, coincidence?
 11/28/2022 update
 verify smaller and larger browser size works for all applications
 
-LEADERBOARD, i think best route is google sheets api - DONE!!!!!
+LEADERBOARD, i think best route is google sheets api - DONE!!!!! not for all
 
 build link list ui from ground its disgusting - FIX MAIN PAGE
 	this includes fixing golda.ml
+
+count lines:
+dir -Recurse -Include *.* -Exclude *p5.js*,*p5.dom*,*p5.sound*,*png,*git*,*jpg* | Get-Content | Measure-Object -Line

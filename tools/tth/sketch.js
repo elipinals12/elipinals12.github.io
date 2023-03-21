@@ -6,9 +6,9 @@
 //      maybe the dots shouldnt even fall if ^ works. 
 
 let hyear = 2023;
-let hmonth = 2; // 0-11 !!!!!
+let hmonth = 4; // 0-11 !!!!!
 let hday = 1;
-let desc = "GEORGIA'S TWO MIDTERMS (dun dun dunnn)";
+let desc = "sophomore year done!";
 
 let redHeight = 140;
 var mss, secs, mins, hrs, dys, wks, mnts;
@@ -27,6 +27,9 @@ let circSize = 110;
 let dustSize = 18;
 
 let dusts = [];
+
+var began = false;
+
 
 
 function setup() {
@@ -48,23 +51,17 @@ function draw() {
     // OLDprogBar();
     progBar();
 
+    secTimer();
+    minTimer();
+    hrTimer();
     // dayTimer(); // dont even think it works but whatevs, dont want
-
-    textSize(20);
-    noStroke();
-    fill(255);
-    text(dusts.length + " particles alive", 2, barrior + 5);
-    textSize(12);
-    text("press any key to delete em all", 2, barrior + 30);
-
-    for (var i in dusts) {
-        if (dusts[i].y > height) { dusts.splice(i, 1); }
-    }
 
     for (var i in dusts) {
         strokeWeight(1);
-        dusts[i].move();
         dusts[i].show();
+
+        dusts[i].move();
+        if (dusts[i].y > height) { dusts.splice(i, 1); }
         // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
     }
 
@@ -75,10 +72,6 @@ function draw() {
         dusts.push(new Particulate());
         // }
     }
-
-    secTimer();
-    minTimer();
-    hrTimer();
 }
 
 function progBar() {
@@ -98,12 +91,12 @@ function setTotals() {
 }
 
 function writeStuff() {
-    fill(157, 50, 255);
+    fill(0, 255, 0);
     noStroke();
     textSize(17);
     textAlign(LEFT, TOP);
 
-    text(hmonth + "/" + hday + "/" + hyear + " " + desc, 2, 2);
+    text("tth  (" + hmonth + "/" + hday + "/" + hyear + " " + desc + ")", 2, 2);
 
     textSize(20);
     text("totals", 2, timeHeights[0] - 18);
@@ -111,43 +104,75 @@ function writeStuff() {
     textSize(17);
     if (secs > 0) {
         text("seconds:", textX, timeHeights[0]);
-        text(nfc(secs), numsX, timeHeights[0]);
     }
     if (mins > 0) {
         text("minutes:", textX, timeHeights[1]);
-        text(nfc(mins), numsX, timeHeights[1]);
     }
     if (hrs > 0) {
         text("hours:", textX, timeHeights[2]);
-        text(nfc(hrs), numsX, timeHeights[2]);
     }
     if (dys > 0) {
         text("days:", textX, timeHeights[3]);
-        text(nfc(dys), numsX, timeHeights[3]);
     }
     if (wks > 0) {
         text("weeks:", textX, timeHeights[4]);
-        text(nfc(wks), numsX, timeHeights[4]);
     }
     if (mnts > 0) {
         text("months:", textX, timeHeights[5]);
+    }
+    
+    fill(0, 200, 255);
+    textSize(18);
+    if (secs > 0) {
+        text(nfc(secs), numsX, timeHeights[0]);
+    }
+    if (mins > 0) {
+        text(nfc(mins), numsX, timeHeights[1]);
+    }
+    if (hrs > 0) {
+        text(nfc(hrs), numsX, timeHeights[2]);
+    }
+    if (dys > 0) {
+        text(nfc(dys), numsX, timeHeights[3]);
+    }
+    if (wks > 0) {
+        text(nfc(wks), numsX, timeHeights[4]);
+    }
+    if (mnts > 0) {
         text(nfc(mnts), numsX, timeHeights[5]);
     }
 
+    fill(0,255,0);
     writeFullTimeLeft();
+
+    textSize(20);
+    noStroke();
+    fill(255);
+    text(dusts.length + " particles alive", 2, barrior + 5);
+
+    // before began click message
+    if (!began) {
+        fill(255);
+        textSize(100);
+        textAlign(CENTER, CENTER);
+        text("CLICK HERE", width / 2, height / 2);
+    }
 }
 
 function writeFullTimeLeft() {
-    let fullDateString = dys % 30 + " days, " +
+    let fullDateString = mnts + " months, " +
+        dys % 30 + " days, " +
         hrs % 24 + " hours, " +
         mins % 60 + " minutes, " +
-        floor(secs % 60) + " seconds"
+        floor(secs % 60) + " seconds";
+    
+    fill(0, 200, 255);
     text(fullDateString + " left", 2, timeHeights[5] + 20);
 
     stroke(255);
     strokeWeight(2);
     barrior = timeHeights[5] + 40;
-    // line(0, barrior, width, barrior);
+    line(0, barrior, width, barrior);
 }
 
 function OLDprogBar() {
@@ -265,6 +290,7 @@ function dayTimer() {
 
 function mousePressed() {
     if (!secflat) dusts.push(new Particulate());
+    began = true;
 }
 
 function keyPressed() {
@@ -277,31 +303,28 @@ class Particulate {
         this.y = mouseY;
         this.speed = 0; // gravity will change this
         this.r = random(50, 255);
-        this.g = random(50, 125);
+        this.g = random(50, 255);
         this.b = random(50, 255);
     }
 
     show() {
         stroke(this.r, this.g, this.b);
         fill(this.r, this.g, this.b);
-        // if (this.y-dustSize/2 > barrior) { 
-        circle(this.x, this.y, dustSize);
-        //  }
+        if (this.y - dustSize / 2 > barrior) { circle(this.x, this.y, dustSize); }
     }
 
     move() {
-        this.y += .5; // must apply gravity, for now just fall 1 per frame
+        this.y += 1; // must apply gravity, for now just fall 1 per frame
 
         avoidHydrogenBomb();
 
-        // enforce borde...........................................rs
+        // enforce borders
         // if (this.y >= height) this.y--;
         if (this.y <= 0) this.y++;
         if (this.x >= width) this.x--;
         if (this.x <= 0) this.x++;
     }
 }
-
 function avoidHydrogenBomb() {
     let fusionDistance = 2;
     // pop off existing cell, else nuclear fusion

@@ -8,7 +8,7 @@
 let hyear = 2023;
 let hmonth = 4; // 0-11 !!!!!
 let hday = 1;
-let desc = "sophomore year done!";
+let desc = "!!!semester ends!!!";
 
 let redHeight = 140;
 var mss, secs, mins, hrs, dys, wks, mnts;

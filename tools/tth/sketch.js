@@ -47,9 +47,15 @@ function draw() {
     // OLDprogBar();
     progBar();
 
-    textSize(20);
     noStroke();
     fill(255);
+
+    textAlign(RIGHT, TOP);
+    textSize(12);
+    text("press any key to kill 'em all", width - 2, barrior + 5);
+
+    textAlign(LEFT, TOP);
+    textSize(20);
     text(dusts.length + " particles alive", 2, barrior + 5);
 
     for (var i in dusts) {        

@@ -47,11 +47,6 @@ function draw() {
     // OLDprogBar();
     progBar();
 
-    secTimer();
-    minTimer();
-    hrTimer();
-    // dayTimer(); // dont even think it works but whatevs, dont want
-
     textSize(20);
     noStroke();
     fill(255);
@@ -73,6 +68,12 @@ function draw() {
         dusts.push(new Particulate());
         // }
     }
+    
+    secTimer();
+    minTimer();
+    hrTimer();
+    // dayTimer(); // dont even think it works but whatevs, dont want
+    // time goes last
 }
 
 function progBar() {

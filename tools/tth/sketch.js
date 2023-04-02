@@ -8,7 +8,7 @@
 let hyear = 2023;
 let hmonth = 4; // 0-11 !!!!!
 let hday = 1;
-let desc = "!!!semester ends!!!";
+let desc = "semester ends!";
 
 let redHeight = 140;
 var mss, secs, mins, hrs, dys, wks, mnts;
@@ -52,12 +52,14 @@ function draw() {
     fill(255);
     text(dusts.length + " particles alive", 2, barrior + 5);
 
-    for (var i in dusts) {
+    for (var i in dusts) {        
+        // if (dusts[i].y > height) dusts.splice(i, 1);
+        if (dusts[i].y > height + 2) makeThisOneRed(i);
+
         strokeWeight(1);
         dusts[i].show();
 
         dusts[i].move();
-        if (dusts[i].y > height) { dusts.splice(i, 1); }
         // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
     }
 
@@ -93,41 +95,19 @@ function setTotals() {
 }
 
 function writeStuff() {
-    fill(0, 255, 0);
     noStroke();
     textSize(17);
     textAlign(LEFT, TOP);
 
+    fill(255);
     text("tth  (" + hmonth + "/" + hday + "/" + hyear + " " + desc + ")", 2, 2);
 
     textSize(20);
     text("totals", 2, timeHeights[0] - 18);
 
     textSize(17);
-    if (secs > 0) {
-        text("seconds:", textX, timeHeights[0]);
-        text(nfc(secs), numsX, timeHeights[0]);
-    }
-    if (mins > 0) {
-        text("minutes:", textX, timeHeights[1]);
-        text(nfc(mins), numsX, timeHeights[1]);
-    }
-    if (hrs > 0) {
-        text("hours:", textX, timeHeights[2]);
-        text(nfc(hrs), numsX, timeHeights[2]);
-    }
-    if (dys > 0) {
-        text("days:", textX, timeHeights[3]);
-        text(nfc(dys), numsX, timeHeights[3]);
-    }
-    if (wks > 0) {
-        text("weeks:", textX, timeHeights[4]);
-        text(nfc(wks), numsX, timeHeights[4]);
-    }
-    if (mnts > 0) {
-        text("months:", textX, timeHeights[5]);
-        text(nfc(mnts), numsX, timeHeights[5]);
-    }
+
+    writeNiceText();
 
     writeFullTimeLeft();
 }
@@ -291,9 +271,9 @@ class Particulate {
 
         // enforce borders
         // if (this.y >= height) this.y--;
-        if (this.y <= 0) this.y++;
-        if (this.x >= width) this.x--;
-        if (this.x <= 0) this.x++;
+        // if (this.y <= 0) this.y++;
+        // if (this.x >= width) this.x--;
+        // if (this.x <= 0) this.x++;
     }
 }
 function avoidHydrogenBomb() {
@@ -329,4 +309,54 @@ function windowResized() {
     if (w2 - 120 <= numsX + 180) timerXs = [numsX + 180, numsX + 300, numsX + 420];
 
     if (width > 680) { phone = false; } else { phone = true; }
+}
+
+// flip flop
+function writeNiceText() {
+    fill(0, 255, 0);
+    if (secs > 0) {
+        text("seconds:", textX, timeHeights[0]);
+    }
+    if (mins > 0) {
+        text("minutes:", textX, timeHeights[1]);
+    }
+    if (hrs > 0) {
+        text("hours:", textX, timeHeights[2]);
+    }
+    if (dys > 0) {
+        text("days:", textX, timeHeights[3]);
+    }
+    if (wks > 0) {
+        text("weeks:", textX, timeHeights[4]);
+    }
+    if (mnts > 0) {
+        text("months:", textX, timeHeights[5]);
+    }
+
+    fill(0, 200, 255);    
+    if (secs > 0) {
+        text(nfc(secs), numsX, timeHeights[0]);
+    }
+    if (mins > 0) {
+        text(nfc(mins), numsX, timeHeights[1]);
+    }
+    if (hrs > 0) {
+        text(nfc(hrs), numsX, timeHeights[2]);
+    }
+    if (dys > 0) {
+        text(nfc(dys), numsX, timeHeights[3]);
+    }
+    if (wks > 0) {
+        text(nfc(wks), numsX, timeHeights[4]);
+    }
+    if (mnts > 0) {
+        text(nfc(mnts), numsX, timeHeights[5]);
+    }
+}
+
+
+function makeThisOneRed(i) {
+    dusts[i].r=255;
+    dusts[i].g=0;
+    dusts[i].b=0;
 }

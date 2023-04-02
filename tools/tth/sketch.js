@@ -8,7 +8,7 @@
 let hyear = 2023;
 let hmonth = 4; // 0-11 !!!!!
 let hday = 1;
-let desc = "sophomore year done!";
+let desc = "!!!semester ends!!!";
 
 let redHeight = 140;
 var mss, secs, mins, hrs, dys, wks, mnts;
@@ -25,11 +25,7 @@ var secflat = false;
 var phone;
 let circSize = 110;
 let dustSize = 18;
-
 let dusts = [];
-
-var began = false;
-
 
 
 function setup() {
@@ -55,6 +51,11 @@ function draw() {
     minTimer();
     hrTimer();
     // dayTimer(); // dont even think it works but whatevs, dont want
+
+    textSize(20);
+    noStroke();
+    fill(255);
+    text(dusts.length + " particles alive", 2, barrior + 5);
 
     for (var i in dusts) {
         strokeWeight(1);
@@ -104,59 +105,30 @@ function writeStuff() {
     textSize(17);
     if (secs > 0) {
         text("seconds:", textX, timeHeights[0]);
-    }
-    if (mins > 0) {
-        text("minutes:", textX, timeHeights[1]);
-    }
-    if (hrs > 0) {
-        text("hours:", textX, timeHeights[2]);
-    }
-    if (dys > 0) {
-        text("days:", textX, timeHeights[3]);
-    }
-    if (wks > 0) {
-        text("weeks:", textX, timeHeights[4]);
-    }
-    if (mnts > 0) {
-        text("months:", textX, timeHeights[5]);
-    }
-    
-    fill(0, 200, 255);
-    textSize(18);
-    if (secs > 0) {
         text(nfc(secs), numsX, timeHeights[0]);
     }
     if (mins > 0) {
+        text("minutes:", textX, timeHeights[1]);
         text(nfc(mins), numsX, timeHeights[1]);
     }
     if (hrs > 0) {
+        text("hours:", textX, timeHeights[2]);
         text(nfc(hrs), numsX, timeHeights[2]);
     }
     if (dys > 0) {
+        text("days:", textX, timeHeights[3]);
         text(nfc(dys), numsX, timeHeights[3]);
     }
     if (wks > 0) {
+        text("weeks:", textX, timeHeights[4]);
         text(nfc(wks), numsX, timeHeights[4]);
     }
     if (mnts > 0) {
+        text("months:", textX, timeHeights[5]);
         text(nfc(mnts), numsX, timeHeights[5]);
     }
 
-    fill(0,255,0);
     writeFullTimeLeft();
-
-    textSize(20);
-    noStroke();
-    fill(255);
-    text(dusts.length + " particles alive", 2, barrior + 5);
-
-    // before began click message
-    if (!began) {
-        fill(255);
-        textSize(100);
-        textAlign(CENTER, CENTER);
-        text("CLICK HERE", width / 2, height / 2);
-    }
 }
 
 function writeFullTimeLeft() {
@@ -164,9 +136,7 @@ function writeFullTimeLeft() {
         dys % 30 + " days, " +
         hrs % 24 + " hours, " +
         mins % 60 + " minutes, " +
-        floor(secs % 60) + " seconds";
-    
-    fill(0, 200, 255);
+        floor(secs % 60) + " seconds"
     text(fullDateString + " left", 2, timeHeights[5] + 20);
 
     stroke(255);
@@ -290,7 +260,6 @@ function dayTimer() {
 
 function mousePressed() {
     if (!secflat) dusts.push(new Particulate());
-    began = true;
 }
 
 function keyPressed() {
@@ -310,7 +279,8 @@ class Particulate {
     show() {
         stroke(this.r, this.g, this.b);
         fill(this.r, this.g, this.b);
-        if (this.y - dustSize / 2 > barrior) { circle(this.x, this.y, dustSize); }
+        //if (this.y-dustSize/2 > barrior) { 
+            circle(this.x, this.y, dustSize); //}
     }
 
     move() {

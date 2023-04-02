@@ -132,7 +132,7 @@ function writeStuff() {
 }
 
 function writeFullTimeLeft() {
-    let fullDateString = mnts + " months, " +
+    let fullDateString =
         dys % 30 + " days, " +
         hrs % 24 + " hours, " +
         mins % 60 + " minutes, " +
@@ -280,7 +280,7 @@ class Particulate {
         stroke(this.r, this.g, this.b);
         fill(this.r, this.g, this.b);
         //if (this.y-dustSize/2 > barrior) { 
-            circle(this.x, this.y, dustSize); //}
+        circle(this.x, this.y, dustSize); //}
     }
 
     move() {

@@ -5,10 +5,11 @@
 // maybe have something to sense if the browser is slowing down, then remove dots 
 //      maybe the dots shouldnt even fall if ^ works. 
 
+let desc = "tammy time";
 let hyear = 2023;
-let hmonth = 4; // 0-11 !!!!!
-let hday = 1;
-let desc = "semester ends!";
+let hmonth = 5; // 0-11 !!!
+let hday = 4;
+let hhour = 13; // 0-23 !!!
 
 let redHeight = 140;
 var mss, secs, mins, hrs, dys, wks, mnts;
@@ -33,7 +34,7 @@ function setup() {
 
     // Apr 28, 2023 final exams done, lets say first min of Apr 29, =
     // 4/29/2023, 12am
-    heaven = new Date(hyear, hmonth, hday, 0, 0, 0, 0);
+    heaven = new Date(hyear, hmonth, hday, hhour);
     hmonth++;
 }
 

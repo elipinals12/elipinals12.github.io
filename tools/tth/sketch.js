@@ -121,7 +121,8 @@ function writeStuff() {
 
 function writeFullTimeLeft() {
     let fullDateString =
-        dys % 30 + " days, " +
+    mnts + " months, " +
+    dys % 30 + " days, " +
         hrs % 24 + " hours, " +
         mins % 60 + " minutes, " +
         floor(secs % 60) + " seconds"

@@ -5,10 +5,10 @@
 // maybe have something to sense if the browser is slowing down, then remove dots 
 //      maybe the dots shouldnt even fall if ^ works. 
 
-let desc = "tammy time";
+let desc = "!!!semester ends!!!";
 let hyear = 2023;
-let hmonth = 5; // 0-11 !!!
-let hday = 4;
+let hmonth = 12; // 0-11 !!!
+let hday = 6;
 let hhour = 13; // 0-23 !!!
 
 let redHeight = 140;

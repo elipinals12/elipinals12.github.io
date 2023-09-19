@@ -11,8 +11,8 @@
 //      maybe the dots shouldnt even fall if ^ works. 
 
 let hyear = 2023;
-let hmonth = 4; // 0-11 !!!!!
-let hday = 1;
+let hmonth = 12; // 0-11 !!!!!
+let hday = 15;
 let desc = "!!!semester ends!!!";
 
 let redHeight = 140;

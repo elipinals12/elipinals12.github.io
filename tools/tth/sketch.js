@@ -7,7 +7,7 @@
 
 let desc = "!!!semester ends!!!";
 let hyear = 2023;
-let hmonth = 12; // 0-11 !!!
+let hmonth = 11; // 0-11 !!!
 let hday = 6;
 let hhour = 13; // 0-23 !!!
 

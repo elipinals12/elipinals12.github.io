@@ -59,15 +59,13 @@ function draw() {
     textSize(20);
     text(dusts.length + " particles alive", 2, barrior + 5);
 
-    for (var i in dusts) {        
-        // if (dusts[i].y > height) dusts.splice(i, 1);
-        if (dusts[i].y > height + 2) makeThisOneRed(i);
-
+    for (var i in dusts) {
         strokeWeight(1);
         dusts[i].show();
 
         dusts[i].move();
         // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
+        if (dusts[i].y > height + 2) dusts.splice(i, 1);
     }
 
     // secflat = secs - floor(secs) < .02;
@@ -274,7 +272,6 @@ class Particulate {
 
     move() {
         this.y += 1; // must apply gravity, for now just fall 1 per frame
-
         avoidHydrogenBomb();
 
         // enforce borders
@@ -284,6 +281,7 @@ class Particulate {
         // if (this.x <= 0) this.x++;
     }
 }
+
 function avoidHydrogenBomb() {
     let fusionDistance = 2;
     // pop off existing cell, else nuclear fusion

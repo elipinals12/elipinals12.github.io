@@ -6,7 +6,7 @@
 //      maybe the dots shouldnt even fall if ^ works. 
 
 let desc = "!!!semester ends!!!";
-let hyear = 2023;
+let hyear = 2024;
 let hmonth = 3; // 0-11 !!!
 let hday = 26;
 let hhour = 9; // 0-23 !!!

@@ -7,9 +7,9 @@
 
 let desc = "!!!semester ends!!!";
 let hyear = 2023;
-let hmonth = 11; // 0-11 !!!
-let hday = 6;
-let hhour = 13; // 0-23 !!!
+let hmonth = 3; // 0-11 !!!
+let hday = 26;
+let hhour = 9; // 0-23 !!!
 
 let redHeight = 140;
 var mss, secs, mins, hrs, dys, wks, mnts;

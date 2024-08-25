@@ -15,7 +15,7 @@ function draw() {
     y = mouseY;
     noStroke();
     fill(0, 255, 255, fader);
-    if (mouseIsPressed) {
+    if (/*mouseIsPressed*/True) {
         rect(x, y, grow * x, grow * y);
     }
 }

@@ -38,3 +38,7 @@ function keyPressed() {
         reset();
     }
 }
+
+function mousePressed() {
+    if (before) before = false;
+}

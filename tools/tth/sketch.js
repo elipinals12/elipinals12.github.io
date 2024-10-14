@@ -5,11 +5,11 @@
 // maybe have something to sense if the browser is slowing down, then remove dots 
 //      maybe the dots shouldnt even fall if ^ works. 
 
-let desc = "!!!semester ends!!!";
+let desc = "! ! ! semester ends ! ! !";
 let hyear = 2024;
-let hmonth = 3; // 0-11 !!!
-let hday = 26;
-let hhour = 9; // 0-23 !!!
+let hmonth = 12; // 1-12
+let hday = 12;
+let hhour = 8; // 1-24
 
 let redHeight = 140;
 var mss, secs, mins, hrs, dys, wks, mnts;
@@ -32,9 +32,8 @@ let dusts = [];
 function setup() {
     windowResized();
 
-    // Apr 28, 2023 final exams done, lets say first min of Apr 29, =
-    // 4/29/2023, 12am
-    heaven = new Date(hyear, hmonth, hday, hhour);
+    // converts 0-11 and 0-24 month and hour
+    heaven = new Date(hyear, hmonth-1, hday, hhour-1);
     hmonth++;
 }
 

@@ -13,7 +13,7 @@ var cnv,x,y;
 
 
 function setup() {
-    slider = createSlider(0.5, 60.5, 10);
+    slider = createSlider(0.5, 60.5,  0.5);
     slider.position(10, 10);
     slider.style('width', '200px');
 

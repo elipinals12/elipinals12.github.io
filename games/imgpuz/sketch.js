@@ -109,10 +109,10 @@ function setup() {
 
     // --- Create UI Elements ---
     // Splash Screen Elements
-    splashTitle = createDiv("Welcome to ImgPuz")
+    splashTitle = createDiv("welcome to imgpuz")
         .style('font-size', '32px').style('color', 'white')
         .style('text-align', 'center').style('width', '100%');
-    splashText = createDiv("Use the default image or upload your own?")
+    splashText = createDiv("Use the default image or upload your own")
         .style('font-size', '18px').style('color', 'lightgray')
         .style('text-align', 'center').style('width', '100%');
     defaultButton = createButton("Use Default")

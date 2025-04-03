@@ -9,7 +9,7 @@
 const MIN_GRID_SIZE = 2;        // Minimum selectable grid dimension
 const MAX_GRID_SIZE = 10;       // Maximum selectable grid dimension
 const DEFAULT_GRID_SIZE = 4;    // Initial grid dimension
-const DEFAULT_IMAGE_PATH = './realtree.jpg'; // Default image location relative to HTML (adjust if needed)
+const DEFAULT_IMAGE_PATH = './../../realtree.jpg'; // Default image location relative to HTML (adjust if needed)
 
 // Game States - Used to control program flow and UI visibility
 const STATE_SPLASH = 'splash';      // Initial screen asking for image choice

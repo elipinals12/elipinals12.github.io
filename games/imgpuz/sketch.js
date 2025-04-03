@@ -144,7 +144,7 @@ function draw() {
              image(finalTile, col * tileWidth, row * tileHeight, tileWidth, tileHeight);
 
              // Optional: Draw "SOLVED!" overlay
-             fill(0, 200, 0, 180);
+             fill(0, 200, 0, 80);
              rect(0, 0, puzzleAreaSize, puzzleAreaSize);
              fill(255);
              textSize(puzzleAreaSize / 8);

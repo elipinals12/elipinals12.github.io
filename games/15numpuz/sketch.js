@@ -1,6 +1,6 @@
 //----\/\/\/\/---A VERY COMPLICATED SLIDE PUZZLE---\/\/\/\/----
 // 
-// by eli pinals
+// by eli
 
 var wid, num, blank;
 var pos = [];

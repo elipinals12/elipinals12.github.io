@@ -16,37 +16,34 @@
 const MIN_GRID_SIZE = 2;
 const MAX_GRID_SIZE = 10;
 const DEFAULT_GRID_SIZE = 4;
-const DEFAULT_IMAGE_PATH = './../../ref/realtree.jpg'; // Ensure this path is correct relative to HTML
+const DEFAULT_IMAGE_PATH = './../../ref/realtree.jpg'; // Relative path
 
 // Game States
 const STATE_SPLASH = 'splash';
-const STATE_LOADING = 'loading'; // State while image/puzzle data is prepared
+const STATE_LOADING = 'loading'; // Brief state during initialization
 const STATE_PLAYING = 'playing';
 const STATE_SOLVED = 'solved';
 
 // --- Global Variables ---
 
 // Image Data
-let puzzleImage; // Current p5.Image object for the puzzle
-let defaultPuzzleImage; // Stores the loaded default image
-let isDefaultImageLoaded = false; // Flag for successful default image load in preload
-// Stores calculated info for direct drawing from the source image
-let puzzleImageSourceInfo = {
-    img: null, size: 0, offsetX: 0, offsetY: 0, srcTileW: 0, srcTileH: 0
-};
+let puzzleImage;
+let defaultPuzzleImage;
+let isDefaultImageLoaded = false;
+let puzzleImageSourceInfo = { img: null, size: 0, offsetX: 0, offsetY: 0, srcTileW: 0, srcTileH: 0 };
 
 // Board State & Layout
 let gridSize = DEFAULT_GRID_SIZE;
-let board = []; // 1D array storing tile indices (0 to n*n-1, where n*n-1 is blank)
-let tileWidth = 0; // On-screen display width of a tile
+let board = [];
+let tileWidth = 0;
 let tileHeight = 0;
-let puzzleAreaSize = 0; // Pixel dimension of the square puzzle area
-let puzzleX = 0; // Top-left X coordinate of the puzzle area
+let puzzleAreaSize = 0;
+let puzzleX = 0;
 let puzzleY = 0;
 
 // Game Flow & State
-let gameState = STATE_SPLASH; // Initial state
-let isPuzzleReady = false; // True when image, source info, and board are ready
+let gameState = STATE_SPLASH;
+let isPuzzleReady = false;
 let isSolved = false;
 
 // Timer
@@ -54,110 +51,91 @@ let timerRunning = false;
 let startTime = 0;
 let elapsedTime = 0;
 let timerDisplayString = "0:00.00";
-// Timer Flashing on Solve
+// Timer Flashing
 let timerFlashState = true;
 const TIMER_FLASH_INTERVAL = 400; // ms
 let lastFlashToggle = 0;
 
 // UI DOM Elements
-let gridSizeSlider, gridSizeLabel, resetButton, fileInput, uploadLabel; // Game UI
-let splashTitle, splashText, defaultButton, uploadButton; // Splash UI
+let gridSizeSlider, gridSizeLabel, resetButton, fileInput, uploadLabel;
+let splashTitle, splashText, defaultButton, uploadButton;
 let cnv;
 
 
 // --- Preload ---
-// Loads assets (like the default image) before setup() begins.
-// NOTE: If the default image file is large, this step can take time,
-// delaying the appearance of the splash screen.
 function preload() {
     console.log("Preloading default image...");
     defaultPuzzleImage = loadImage(DEFAULT_IMAGE_PATH,
-        // Success callback
         (img) => {
-            console.log("Default image loaded successfully.");
+            console.log("Default image loaded.");
             isDefaultImageLoaded = true;
-            // If splash screen is already waiting, enable the button
             if (gameState === STATE_SPLASH && defaultButton) {
                 defaultButton.removeAttribute('disabled');
             }
         },
-        // Error callback
         (err) => {
             console.error(`!!! FAILED TO LOAD DEFAULT IMAGE: ${DEFAULT_IMAGE_PATH}`, err);
             isDefaultImageLoaded = false;
-            // User will be alerted in setup if needed
         }
     );
 }
 
 // --- Setup ---
-// Runs once after preload. Creates canvas, initial UI, sets initial state.
 function setup() {
     console.log("Setting up sketch...");
     cnv = createCanvas(windowWidth, windowHeight);
-    cnv.style('display', 'block'); // Prevent scrollbars
+    cnv.style('display', 'block');
+    calculateLayout(); // Initial layout calculation
 
-    calculateLayout(); // Calculate initial layout for element positioning
+    createSplashUI(); // Create splash elements
+    createGameUI();   // Create game elements
 
-    // --- Create UI Elements (both splash and game) ---
-    createSplashUI();
-    createGameUI();
-
-    // --- Initial UI State ---
     positionElements(); // Position based on initial state (splash)
     if (gameState === STATE_SPLASH) {
         showSplashUI();
         hideGameUI();
-        // Disable default button immediately if preload failed
         if (!isDefaultImageLoaded && defaultButton) {
             defaultButton.attribute('disabled', '');
         }
-    } else { // Should not normally happen
+    } else {
         hideSplashUI();
         showGameUI();
     }
 
-    // Alert if default image failed (only once in setup during splash)
     if (!isDefaultImageLoaded && gameState === STATE_SPLASH) {
-        alert(`Warning: Could not load default image "${DEFAULT_IMAGE_PATH}".\nCheck path/server. 'Use Default' disabled.`);
+        alert(`Warning: Could not load default image "${DEFAULT_IMAGE_PATH}". Check path/server. 'Use Default' disabled.`);
     }
 
-    // p5 global settings
-    noStroke();
-    imageMode(CORNER);
-    textAlign(CENTER, CENTER);
+    noStroke(); imageMode(CORNER); textAlign(CENTER, CENTER);
     console.log("Setup complete. Initial state:", gameState);
 }
 
 // --- Main Draw Loop ---
-// Runs continuously. Handles drawing based on the current game state.
 function draw() {
-    background(30); // Clear background
+    background(30);
 
-    // --- Update Timer ---
+    // Update Timer if running
     if (timerRunning) {
-        elapsedTime = (millis() - startTime) / 1000.0; // Elapsed seconds
+        elapsedTime = (millis() - startTime) / 1000.0;
         timerDisplayString = formatTime(elapsedTime);
     }
 
     // --- State Machine ---
     switch (gameState) {
         case STATE_SPLASH:
-            // UI is DOM, nothing to draw usually
+            // Splash UI is DOM based
             break;
         case STATE_LOADING:
-            // Show loading feedback
             fill(200); textSize(24);
-            text("Loading / Preparing Puzzle...", width / 2, height / 2);
+            text("loading puzzle...", width / 2, height / 2); // Lowercase text
             break;
         case STATE_PLAYING:
         case STATE_SOLVED:
-            // Draw the puzzle board and timer if ready
             if (isPuzzleReady) {
                 drawPuzzleBoard();
-                drawTimer();
+                drawTimer(); // Draw timer in playing/solved states
             } else {
-                // Show error if state is playing/solved but puzzle isn't ready
+                // Error state - should ideally not be reached if init fails properly
                 fill(255, 0, 0); textSize(20);
                 text("Error: Puzzle data not ready!", width / 2, height / 2);
             }
@@ -168,10 +146,10 @@ function draw() {
 // --- UI Creation and Management ---
 
 function createSplashUI() {
-    splashTitle = createDiv("Welcome to ImgPuz")
+    splashTitle = createDiv("welcome to imgpzl") // Lowercase text
         .style('font-size', '32px').style('color', 'white')
         .style('text-align', 'center').style('width', '100%');
-    splashText = createDiv("Use the default image or upload your own?")
+    splashText = createDiv("use the default image or upload your own?") // Lowercase text
         .style('font-size', '18px').style('color', 'lightgray')
         .style('text-align', 'center').style('width', '100%');
     defaultButton = createButton("Use Default")
@@ -192,8 +170,7 @@ function createGameUI() {
         .style('color', 'white').style('font-family', 'sans-serif')
         .style('text-align', 'center');
     fileInput = createFileInput(handleFile)
-        .style('color', 'white') // Style browser's button/text
-        .hide(); // Hidden until needed
+        .style('color', 'white').hide();
 }
 
 function showSplashUI() {
@@ -220,7 +197,7 @@ function showGameUI() {
     if (resetButton) resetButton.show();
     if (uploadLabel) uploadLabel.show();
     if (fileInput) fileInput.show();
-    positionGameUI(); // Update positions when shown
+    positionGameUI(); // Position elements when shown
 }
 
 function hideGameUI() {
@@ -232,29 +209,25 @@ function hideGameUI() {
 }
 
 function positionElements() {
-    // Central positioning based on state and layout
-    calculateLayout(); // Recalculate positions first
+    // Central positioning function based on state and layout
+    calculateLayout();
     if (gameState === STATE_SPLASH) {
-        // Center splash elements
         if (splashTitle) splashTitle.position(0, height * 0.3);
         if (splashText) splashText.position(0, height * 0.4);
         if (defaultButton) defaultButton.position(width / 2 - 110, height * 0.5);
         if (uploadButton) uploadButton.position(width / 2 + 10, height * 0.5);
     } else {
-        // Position game UI below puzzle area
         positionGameUI();
     }
 }
 
 function positionGameUI() {
-    // Positions game UI elements sequentially below the puzzle area
+    // Positions game UI elements below the puzzle area
     let uiStartX = puzzleX; let uiWidth = puzzleAreaSize;
-    // Start UI below puzzle, reserve space for timer first
-    let timerHeight = 30; // Height reserved for drawing timer text
-    let uiStartY = puzzleY + puzzleAreaSize + 10 + timerHeight + 10; // Start below timer area + padding
-    let currentY = uiStartY; // Track vertical position for subsequent elements
-    let itemHeight = 25; // Approx height for labels/buttons for spacing
-    let itemMargin = 5;  // Vertical margin between items
+    let timerHeight = 30; // Space reserved for drawing timer
+    let uiStartY = puzzleY + puzzleAreaSize + 10 + timerHeight + 10; // Start below puzzle & timer space
+    let currentY = uiStartY;
+    let itemHeight = 25; let itemMargin = 5;
 
     if (gridSizeLabel) {
         gridSizeLabel.style('width', `${uiWidth}px`);
@@ -265,20 +238,19 @@ function positionGameUI() {
         let sliderWidth = uiWidth * 0.5;
         gridSizeSlider.style('width', `${sliderWidth}px`);
         gridSizeSlider.position(uiStartX + (uiWidth - sliderWidth) / 2, currentY);
-        currentY += itemHeight + itemMargin + 5; // Extra space after slider
+        currentY += itemHeight + itemMargin + 5;
     }
     if (resetButton) {
         resetButton.position(uiStartX + (uiWidth - resetButton.width) / 2, currentY);
-        currentY += itemHeight + itemMargin + 10; // Extra space after button
+        currentY += itemHeight + itemMargin + 10;
     }
     if (uploadLabel) {
         uploadLabel.style('width', `${uiWidth}px`);
         uploadLabel.position(uiStartX, currentY);
-        currentY += itemHeight - 5; // Less space before file input
+        currentY += itemHeight - 5;
     }
     if (fileInput) {
-        // Center file input approximately
-        fileInput.position(uiStartX + (uiWidth - 150) / 2, currentY);
+        fileInput.position(uiStartX + (uiWidth - 150) / 2, currentY); // Approx center
     }
 }
 
@@ -290,131 +262,122 @@ function useDefaultImage() {
         alert("Default image is not available (load may have failed)."); return;
     }
     console.log("Starting game with default image.");
-    puzzleImage = defaultPuzzleImage; // Set active image
-    startGame(); // Transition state and initialize
+    puzzleImage = defaultPuzzleImage;
+    startGame(); // Transition state and initialize puzzle
 }
 
 function triggerUpload() {
     // Triggered by the 'Upload Image' button
     console.log("Triggering file input click...");
-    if (fileInput) fileInput.elt.click(); // Click the hidden HTML input
+    if (fileInput) fileInput.elt.click();
 }
 
 function startGame() {
-    // Central function to transition from splash/loading to playing
-    // Assumes 'puzzleImage' is set correctly before this is called
+    // Central function to transition from splash to playing
+    // Assumes 'puzzleImage' is set correctly before calling
     hideSplashUI();
-    gameState = STATE_LOADING; // Show loading feedback
-    setTimeout(() => { // Allow loading text to render
-        if (initializePuzzle(gridSize)) { // Initialize board, calc source info, shuffle
-            showGameUI();
-            // State (playing/solved) is set inside initializePuzzle/checkWinCondition
-        } else { // Handle initialization failure
-            gameState = STATE_SPLASH; showSplashUI(); hideGameUI();
-            alert("Error: Failed to prepare puzzle from image.");
-        }
-    }, 50);
+    gameState = STATE_LOADING; // Show loading message
+    // Directly initialize - remove setTimeout delay
+    if (initializePuzzle(gridSize)) {
+        showGameUI();
+        // State (playing/solved) is set within initializePuzzle/checkWinCondition
+    } else {
+        // Handle initialization failure
+        gameState = STATE_SPLASH; showSplashUI(); hideGameUI();
+        alert("Error: Failed to prepare puzzle from the selected image.");
+    }
 }
 
 // --- Puzzle Board Drawing ---
 
 function drawPuzzleBoard() {
-    // Draws puzzle using direct source sampling (9-arg image())
-    if (!isPuzzleReady || !puzzleImageSourceInfo.img) return; // Guard clause
+    // Draws the puzzle using direct source sampling
+    if (!isPuzzleReady || !puzzleImageSourceInfo.img) return;
 
-    push(); // Isolate drawing state
-    translate(puzzleX, puzzleY); // Move to puzzle area origin
+    push();
+    translate(puzzleX, puzzleY);
 
     let blankValue = gridSize * gridSize - 1;
     let blankIndex = board.indexOf(blankValue);
     let blankCol = (blankIndex !== -1) ? blankIndex % gridSize : -1;
     let blankRow = (blankIndex !== -1) ? floor(blankIndex / gridSize) : -1;
+    let { img, offsetX, offsetY, srcTileW, srcTileH } = puzzleImageSourceInfo;
 
-    let { img, offsetX, offsetY, srcTileW, srcTileH } = puzzleImageSourceInfo; // Get pre-calculated source info
-
-    // Draw each tile based on the board state
     for (let i = 0; i < board.length; i++) {
-        let tileIndex = board[i]; // The piece index (0..n*n-1)
-        if (tileIndex === blankValue) continue; // Skip blank
+        let tileIndex = board[i];
+        if (tileIndex === blankValue) continue;
 
         let boardCol = i % gridSize; let boardRow = floor(i / gridSize);
 
-        // Calculate precise integer Destination rect (dx, dy, dw, dh) for gapless rendering
+        // Precise Destination Coordinates
         let dx = round(boardCol * tileWidth); let dy = round(boardRow * tileHeight);
         let dNextX = round((boardCol + 1) * tileWidth); let dNextY = round((boardRow + 1) * tileHeight);
         let dw = dNextX - dx; let dh = dNextY - dy;
 
-        // Calculate integer Source rect (sx, sy, sw, sh) from original image
+        // Source Coordinates
         let srcTileCol = tileIndex % gridSize; let srcTileRow = floor(tileIndex / gridSize);
         let sx = floor(offsetX + srcTileCol * srcTileW); let sy = floor(offsetY + srcTileRow * srcTileH);
         let sw = floor(srcTileW); let sh = floor(srcTileH);
 
-        // Validate source rect before drawing
+        // Validate Source Rect
         if (sx < 0 || sy < 0 || sw <= 0 || sh <= 0 || sx + sw > img.width + 1 || sy + sh > img.height + 1) {
              console.error(`Invalid source rect for tile ${tileIndex}`); fill(255,0,0); noStroke(); rect(dx,dy,dw,dh); continue;
         }
-        // Draw the specific tile piece
+        // Draw Tile
         image(img, dx, dy, dw, dh, sx, sy, sw, sh);
     }
 
     // Draw final tile and overlay if solved
     if (gameState === STATE_SOLVED && blankIndex !== -1) {
-        // Destination rect for blank spot
         let dx = round(blankCol * tileWidth); let dy = round(blankRow * tileHeight);
         let dNextX = round((blankCol + 1) * tileWidth); let dNextY = round((blankRow + 1) * tileHeight);
         let dw = dNextX - dx; let dh = dNextY - dy;
-        // Source rect for the final piece
         let srcTileCol = blankValue % gridSize; let srcTileRow = floor(blankValue / gridSize);
         let sx = floor(offsetX + srcTileCol * srcTileW); let sy = floor(offsetY + srcTileRow * srcTileH);
         let sw = floor(srcTileW); let sh = floor(srcTileH);
 
-        // Draw final piece if source is valid
         if (!(sx < 0 || sy < 0 || sw <= 0 || sh <= 0 || sx + sw > img.width + 1 || sy + sh > img.height + 1)) {
-            image(img, dx, dy, dw, dh, sx, sy, sw, sh);
+            image(img, dx, dy, dw, dh, sx, sy, sw, sh); // Draw final piece
         } else { console.error("Invalid source rect for final tile."); fill(0,0,255); noStroke(); rect(dx,dy,dw,dh); }
 
         // Solved Overlay
         fill(0, 200, 0, 80); noStroke(); rect(0, 0, puzzleAreaSize, puzzleAreaSize);
         fill(255); textSize(puzzleAreaSize / 8); noStroke(); text("SOLVED!", puzzleAreaSize / 2, puzzleAreaSize / 2);
     }
-    pop(); // Restore original drawing state
+    pop(); // Restore origin
 }
 
 // --- Timer Drawing ---
 function drawTimer() {
-    // Draws the timer text below the puzzle area
+    // Draws the formatted timer string below the puzzle area
     let timerX = puzzleX + puzzleAreaSize / 2; // Center horizontally
     let timerY = puzzleY + puzzleAreaSize + 20; // Position below puzzle + padding
     let timerSize = 24;
 
     textSize(timerSize);
-    textAlign(CENTER, TOP); // Align text by its top edge
+    textAlign(CENTER, TOP);
 
     // Handle flashing when solved
     if (gameState === STATE_SOLVED) {
         let now = millis();
         if (now - lastFlashToggle > TIMER_FLASH_INTERVAL) {
-            timerFlashState = !timerFlashState; // Toggle visibility
+            timerFlashState = !timerFlashState; // Toggle
             lastFlashToggle = now;
         }
         fill(0, 255, 0, timerFlashState ? 255 : 100); // Flash alpha
     } else {
-        fill(0, 255, 0, 255); // Solid green when playing/loading
+        fill(0, 255, 0, 255); // Solid green
     }
-
-    // Display the formatted time string
-    text(timerDisplayString, timerX, timerY);
+    text(timerDisplayString, timerX, timerY); // Display the time
 }
 
 
 // --- Puzzle Initialization and Core Logic ---
 
 function initializePuzzle(size) {
-    // Prepares the puzzle board, calculates source image info, resets timer, shuffles.
-    // Returns true on success, false on failure.
-    console.log(`Initializing puzzle core for size ${size}x${size}`);
+    // Prepares board, calculates source info, resets timer, shuffles. Returns T/F.
+    console.log(`Initializing puzzle core size ${size}x${size}`);
     isPuzzleReady = false; isSolved = false; // Reset flags
-    // gameState remains STATE_LOADING during this process
 
     if (!puzzleImage || !puzzleImage.width || puzzleImage.width <= 0) {
         console.error("InitializePuzzle Error: Invalid puzzleImage."); return false;
@@ -422,9 +385,9 @@ function initializePuzzle(size) {
 
     gridSize = size;
     if (gridSizeLabel) gridSizeLabel.html(`Grid Size: ${gridSize}x${gridSize}`);
-    calculateLayout(); // Recalculate layout for the new grid size
+    calculateLayout(); // Recalculate layout (essential for source info)
 
-    // Calculate and cache source image parameters
+    // Calculate source image parameters
     try {
         puzzleImageSourceInfo.img = puzzleImage;
         let imgSize = min(puzzleImage.width, puzzleImage.height);
@@ -435,79 +398,70 @@ function initializePuzzle(size) {
         puzzleImageSourceInfo.srcTileH = imgSize / gridSize;
         if (puzzleImageSourceInfo.srcTileW <= 0) { throw new Error("Src tile width <= 0."); }
         console.log("Calculated source image info.");
-    } catch (e) { console.error("Error calculating source image info:", e); return false; }
+    } catch (e) { console.error("Error calc source info:", e); return false; }
 
-    // Setup board in solved state
+    // Setup board
     board = []; let totalTiles = gridSize * gridSize;
     for (let i = 0; i < totalTiles; i++) { board.push(i); }
 
     // Reset Timer
     timerRunning = false; elapsedTime = 0; startTime = 0;
-    timerDisplayString = formatTime(0);
-    timerFlashState = true; lastFlashToggle = 0;
+    timerDisplayString = formatTime(0); timerFlashState = true; lastFlashToggle = 0;
 
-    // Shuffle and finalize state
+    // Shuffle and set final state
     shufflePuzzle();
-    checkWinCondition(); // Sets isSolved and gameState (playing or solved)
+    checkWinCondition(); // Sets isSolved and gameState
     isPuzzleReady = true; // Mark as ready
     console.log("Puzzle core initialized. Ready:", isPuzzleReady, "State:", gameState);
     return true; // Success
 }
 
 function resetPuzzle() {
-     // Resets and shuffles the puzzle using the current image and grid size
+     // Resets and shuffles using current settings
      console.log("Resetting puzzle...");
-     if (!puzzleImage) { alert("Cannot reset, no image is loaded."); return; }
+     if (!puzzleImage) { alert("Cannot reset, no image loaded."); return; }
      gameState = STATE_LOADING;
-     setTimeout(() => {
-         if (initializePuzzle(gridSize)) { showGameUI(); } // Re-initialize and show UI
-         else { gameState = STATE_SPLASH; showSplashUI(); hideGameUI(); alert("Error re-initializing puzzle.");} // Revert on failure
-     }, 50);
+     // No timeout needed now
+     if (initializePuzzle(gridSize)) {
+         showGameUI();
+         // State is set by checkWinCondition in initializePuzzle
+     } else {
+         gameState = STATE_SPLASH; showSplashUI(); hideGameUI();
+         alert("Error re-initializing puzzle.");
+     }
 }
 
 function calculateLayout() {
-    // Calculates centered puzzle position and tile dimensions, updates source info cache.
-    // *** ADJUSTED LAYOUT CONSTANTS ***
-    let safeMargin = 30; // Slightly smaller margin
-    let uiSpace = 180;   // Increased space below puzzle for timer and all UI elements
+    // Calculates centered puzzle position and tile dimensions
+    // *** INCREASED UI SPACE ***
+    let safeMargin = 30; let uiSpace = 200; // Increased space for all UI elements
 
     let availableWidth = windowWidth - safeMargin;
-    let availableHeight = windowHeight - safeMargin - uiSpace; // Available height for puzzle itself
-    puzzleAreaSize = floor(min(availableWidth, availableHeight)); // Ensure integer size
+    let availableHeight = windowHeight - safeMargin - uiSpace;
+    puzzleAreaSize = floor(min(availableWidth, availableHeight));
     puzzleX = floor((windowWidth - puzzleAreaSize) / 2);
-    puzzleY = floor((windowHeight - puzzleAreaSize - uiSpace) / 2); // Center vertically in available top space
-
-    // Calculate tile dimensions (can be fractional)
+    puzzleY = floor((windowHeight - puzzleAreaSize - uiSpace) / 2);
     if (gridSize > 0) { tileWidth = puzzleAreaSize / gridSize; tileHeight = puzzleAreaSize / gridSize; }
     else { tileWidth = 0; tileHeight = 0; }
     console.log(`Layout Updated: Area=${puzzleAreaSize}px @ (${puzzleX},${puzzleY}), TileW=${tileWidth.toFixed(3)}px`);
 
-    // Update source info cache if possible
+    // Update source info cache
      if (puzzleImage && puzzleImage.width > 0 && gridSize > 0) {
-         try {
-            let imgSize = min(puzzleImage.width, puzzleImage.height);
-            puzzleImageSourceInfo.size = imgSize;
-            puzzleImageSourceInfo.offsetX = (puzzleImage.width - imgSize) / 2;
-            puzzleImageSourceInfo.offsetY = (puzzleImage.height - imgSize) / 2;
-            puzzleImageSourceInfo.srcTileW = imgSize / gridSize;
-            puzzleImageSourceInfo.srcTileH = imgSize / gridSize;
-            if (puzzleImageSourceInfo.srcTileW <= 0) { throw new Error("Invalid src tile width on layout calc."); }
-            puzzleImageSourceInfo.img = puzzleImage;
-         } catch (e) { console.error("Error recalculating source info:", e); isPuzzleReady=false; puzzleImageSourceInfo.img=null; }
+         try { /* ... calculate source info ... */ let isz=min(puzzleImage.width,puzzleImage.height); puzzleImageSourceInfo.size=isz; puzzleImageSourceInfo.offsetX=(puzzleImage.width-isz)/2; puzzleImageSourceInfo.offsetY=(puzzleImage.height-isz)/2; puzzleImageSourceInfo.srcTileW=isz/gridSize; puzzleImageSourceInfo.srcTileH=isz/gridSize; if(puzzleImageSourceInfo.srcTileW<=0)throw new Error("Bad srcW."); puzzleImageSourceInfo.img=puzzleImage; }
+         catch (e) { console.error("Err recalc src:", e); isPuzzleReady=false; puzzleImageSourceInfo.img=null; }
      } else { puzzleImageSourceInfo.img = null; }
 }
 
 // Removed createImageTiles function
 
 function shufflePuzzle() {
-    // Shuffles the 'board' array using random valid moves from the blank space
+    // Shuffles the 'board' array using random valid moves
     console.log("Shuffling board...");
     let blankValue = gridSize*gridSize - 1; let blankIndex = board.indexOf(blankValue);
-    if (blankIndex === -1) { console.error("Shuffle Error: Blank tile not found!"); board=[]; let tt=gridSize*gridSize; for(let i=0;i<tt;i++) board.push(i); blankIndex = tt-1; if (board.length===0 || board[blankIndex]!==blankValue) { console.error("Cannot recover board state!"); return; } }
+    if (blankIndex === -1) { console.error("Shuffle Err: Blank!"); board=[]; let tt=gridSize*gridSize; for(let i=0;i<tt;i++) board.push(i); blankIndex = tt-1; if (board.length===0 || board[blankIndex]!==blankValue) { console.error("Cannot recover board state!"); return; } }
     let shuffleMoves = 150 * gridSize * gridSize; let lastMoveSource = -1;
-    for (let i=0; i<shuffleMoves; i++){let possibleMoves=[]; let a=blankIndex-gridSize, b=blankIndex+gridSize, l=blankIndex-1, r=blankIndex+1; if(blankIndex>=gridSize && a!==lastMoveSource) possibleMoves.push(a); if(blankIndex<gridSize*gridSize-gridSize && b!==lastMoveSource) possibleMoves.push(b); if(blankIndex%gridSize!==0 && l!==lastMoveSource) possibleMoves.push(l); if(blankIndex%gridSize!==gridSize-1 && r!==lastMoveSource) possibleMoves.push(r); if(possibleMoves.length > 0){let moveIndex=random(possibleMoves); swap(board, blankIndex, moveIndex); lastMoveSource=blankIndex; blankIndex=moveIndex;} else {lastMoveSource=-1; i--;}}
-    isSolved = false; // Ensure not marked as solved
-    console.log("Shuffle complete.");
+    for (let i=0; i<shuffleMoves; i++){let pm=[]; let a=blankIndex-gridSize, b=blankIndex+gridSize, l=blankIndex-1, r=blankIndex+1; if(blankIndex>=gridSize && a!==lastMoveSource) pm.push(a); if(blankIndex<gridSize*gridSize-gridSize && b!==lastMoveSource) pm.push(b); if(blankIndex%gridSize!==0 && l!==lastMoveSource) pm.push(l); if(blankIndex%gridSize!==gridSize-1 && r!==lastMoveSource) pm.push(r); if(pm.length > 0){let mi=random(pm); swap(board, blankIndex, mi); lastMoveSource=blankIndex; blankIndex=mi;} else {lastMoveSource=-1; i--;}}
+    isSolved = false; console.log("Shuffle complete.");
 }
 
 
@@ -516,62 +470,54 @@ function shufflePuzzle() {
 function handleSliderChange() {
     // Triggered by the grid size slider
     let newSize = gridSizeSlider.value();
-    // Only re-initialize if size changed AND game is currently active
     if (newSize !== gridSize && (gameState === STATE_PLAYING || gameState === STATE_SOLVED)) {
         console.log("Slider changed to:", newSize);
         gameState = STATE_LOADING;
-        setTimeout(() => {
-            if (initializePuzzle(newSize)) { showGameUI(); } // Re-init and show UI
-            else { gameState = STATE_SPLASH; showSplashUI(); hideGameUI(); } // Revert on failure
-        }, 50);
-    } else if (newSize !== gridSize) { // If game inactive, just update var and label
+        // No timeout needed
+        if (initializePuzzle(newSize)) { showGameUI(); }
+        else { gameState = STATE_SPLASH; showSplashUI(); hideGameUI(); }
+    } else if (newSize !== gridSize) {
          gridSize = newSize; if (gridSizeLabel) gridSizeLabel.html(`Grid Size: ${gridSize}x${gridSize}`);
-         console.log("Slider changed while inactive. Grid size set to:", newSize);
+         console.log("Slider changed while inactive. Size set to:", newSize);
     }
 }
 
 function handleFile(file) {
-    // Triggered when a file is selected via the createFileInput element
-    console.log("File input changed. File info:", file);
+    // Triggered when file selected via createFileInput
+    console.log("File input changed:", file);
     console.log("Attempting to load image from file data...");
-    hideSplashUI(); hideGameUI(); gameState = STATE_LOADING; // Hide UI, show loading
+    hideSplashUI(); hideGameUI(); gameState = STATE_LOADING;
 
-    // Load image data using p5's loadImage
     loadImage(file.data,
-        // Success Callback
-        (newImg) => {
-            console.log("Custom image loaded successfully from file.");
-            puzzleImage = newImg; // Update the active puzzle image
-            setTimeout(() => { // Brief delay for loading message render
-                if (initializePuzzle(gridSize)) { // Initialize puzzle with the new image
-                    showGameUI(); // Show game UI if init succeeds
-                } else { // Handle initialization failure
-                    gameState = STATE_SPLASH; showSplashUI(); hideGameUI();
-                }
-                if (fileInput) fileInput.value(''); // Clear file input field
-            }, 50);
+        (newImg) => { // Success
+            console.log("Custom image loaded successfully.");
+            puzzleImage = newImg; // Set as current image
+            // No timeout needed
+            if (initializePuzzle(gridSize)) { // Initialize with new image
+                showGameUI();
+            } else { // Handle init failure
+                gameState = STATE_SPLASH; showSplashUI(); hideGameUI();
+            }
+            if (fileInput) fileInput.value(''); // Clear input
         },
-        // Error Callback
-        (err) => {
-            console.error("Error loading image data from file:", err);
+        (err) => { // Error
+            console.error("Error loading image from file:", err);
             alert("Failed to load file as image. Use JPG, PNG, GIF, WebP etc.");
-            if (fileInput) fileInput.value(''); // Clear file input field
-            gameState = STATE_SPLASH; showSplashUI(); hideGameUI(); // Revert to splash on error
+            if (fileInput) fileInput.value('');
+            gameState = STATE_SPLASH; showSplashUI(); hideGameUI(); // Revert to splash
         }
     );
 }
 
 function keyPressed() {
-    // Handles tile movement via arrow keys and starts the timer
-    if (gameState !== STATE_PLAYING) return; // Only allow moves when playing
+    // Handles tile movement via arrow keys and starts timer
+    if (gameState !== STATE_PLAYING) return; // Ignore if not playing
 
     let blankValue = gridSize * gridSize - 1;
     let blankIndex = board.indexOf(blankValue);
-    if (blankIndex === -1) return; // Exit if blank not found
+    if (blankIndex === -1) return;
 
     let targetIndex = -1; // Index of tile to swap with blank
-
-    // Determine target index based on key pressed
     if (keyCode === UP_ARROW && blankIndex < gridSize*gridSize - gridSize) targetIndex = blankIndex + gridSize;
     else if (keyCode === DOWN_ARROW && blankIndex >= gridSize) targetIndex = blankIndex - gridSize;
     else if (keyCode === LEFT_ARROW && blankIndex % gridSize !== gridSize - 1) targetIndex = blankIndex + 1;
@@ -579,73 +525,49 @@ function keyPressed() {
 
     // If a valid move was identified
     if (targetIndex !== -1) {
-        // Start Timer only on the very first valid move
-        if (!timerRunning && !isSolved) { // Second condition prevents restart if keys hit after solve
-            timerRunning = true;
-            startTime = millis(); // Record start time
-            elapsedTime = 0; // Ensure elapsed starts at 0
+        // Start Timer on first valid move
+        if (!timerRunning && !isSolved) {
+            timerRunning = true; startTime = millis(); elapsedTime = 0;
             console.log("Timer started!");
         }
 
-        swap(board, blankIndex, targetIndex); // Perform the move
-        checkWinCondition(); // Check if the puzzle is now solved (stops timer if true)
+        swap(board, blankIndex, targetIndex); // Perform move
+        checkWinCondition(); // Check if solved (stops timer)
 
         // --- Slider Focus Fix ---
-        // Remove focus from any active DOM element (like the slider)
-        // so subsequent arrow presses control the puzzle, not the slider.
-        if (document.activeElement) {
-            document.activeElement.blur();
-        }
+        if (document.activeElement) document.activeElement.blur();
     }
 }
 
 function checkWinCondition() {
-    // Checks if the 'board' array is in the solved state (0, 1, 2, ...)
-    // Updates game state (PLAYING or SOLVED) and timer status.
-    let totalTiles = gridSize * gridSize;
-    if (board.length !== totalTiles) { isSolved=false; if(gameState===STATE_SOLVED) gameState=STATE_PLAYING; return; } // Safety check
-
-    for (let i = 0; i < totalTiles; i++) {
-        if (board[i] !== i) { // If any tile is out of order
-            isSolved = false;
-            // If state was SOLVED (e.g., user made a move after solving), revert to PLAYING
-            if (gameState === STATE_SOLVED) gameState = STATE_PLAYING;
-            return; // Not solved
-        }
-    }
-
-    // If the loop completes, the puzzle is solved
-    if (!isSolved) { // Only log/stop timer on the transition to solved
-        console.log(">>> PUZZLE SOLVED! <<<");
-        timerRunning = false; // Stop the timer
-        lastFlashToggle = millis(); // Initialize flash timing
-        timerFlashState = true; // Start flash visible
-    }
-    isSolved = true;
-    gameState = STATE_SOLVED; // Set state
+    // Checks if solved, updates state, stops timer
+    let totalTiles = gridSize * gridSize; if(board.length !== totalTiles) { isSolved=false; if(gameState===STATE_SOLVED)gameState=STATE_PLAYING; return; }
+    for (let i = 0; i < totalTiles; i++) { if (board[i] !== i) { isSolved=false; if(gameState===STATE_SOLVED)gameState=STATE_PLAYING; return; } }
+    // If solved:
+    if (!isSolved) { console.log(">>> PUZZLE SOLVED! <<<"); timerRunning = false; lastFlashToggle = millis(); timerFlashState = true; } // Stop timer, init flash
+    isSolved = true; gameState = STATE_SOLVED;
 }
 
 // --- Utilities ---
 
 function formatTime(seconds) {
-    // Formats time in seconds to a M:SS.ss string using p5.nf() for padding
+    // Formats seconds into M:SS.ss
     let mins = floor(seconds / 60);
     let secs = floor(seconds) % 60;
     let hund = floor((seconds * 100) % 100);
-    // nf(number, [digitsLeft], [digitsRight])
     return `${nf(mins, 1)}:${nf(secs, 2, 0)}.${nf(hund, 2, 0)}`;
 }
 
 function swap(arr, i, j) {
-    // Swaps two elements in an array efficiently
+    // Swaps array elements
     [arr[i], arr[j]] = [arr[j], arr[i]];
 }
 
 function windowResized() {
-    // Handles window resize event
+    // Handles window resize
     resizeCanvas(windowWidth, windowHeight);
     console.log("Window resized.");
-    calculateLayout(); // Recalculate all positions and sizes
-    positionElements(); // Reposition UI elements based on current state
+    calculateLayout(); // Recalculate layout
+    positionElements(); // Reposition UI
     console.log("Window resized processed.");
 }

@@ -176,7 +176,7 @@ function createUIElements() {
 
 // Sets visibility of UI elements
 function setUIVisibility(visible) {
-  const elements = [gridSizeSlider, gridSizeLabel, resetButton];
+  const elements = [gridSizeSlider, gridSizeLabel, resetButton, uploadButtonVisible];
   for (let el of elements) {
     if (visible) {
       el.show();
@@ -186,19 +186,8 @@ function setUIVisibility(visible) {
   }
   
   // Always ensure upload button is visible if we're not in splash screen
-  if (!splashScreen && uploadButton && uploadButtonVisible) {
-    try {
-      let uploadContainer = uploadButtonVisible.parent();
-      uploadContainer.style('display', 'block');
-      uploadButtonVisible.show();
-      uploadButton.show();
-    } catch (e) {
-      console.log("Error showing upload button:", e);
-    }
-  } else if (!visible) {
-    // Hide upload components only if specifically asked to hide all UI
-    if (uploadButton) uploadButton.hide();
-    if (uploadButtonVisible) uploadButtonVisible.hide();
+  if (!splashScreen && uploadButtonVisible) {
+    uploadButtonVisible.show();
   }
   
   // Splash screen buttons
@@ -223,9 +212,6 @@ function useSplashOption(option) {
         initPuzzle();
         loadingScreen = false;
         setUIVisibility(true);
-        
-        // Explicitly show the upload button
-        showUploadButton();
       }, 500); // Short delay for visual feedback
     }
   } else if (option === 'upload') {
@@ -242,16 +228,7 @@ function useSplashOption(option) {
 // Helper function to ensure upload button is visible
 function showUploadButton() {
   if (uploadButtonVisible) {
-    try {
-      let uploadContainer = uploadButtonVisible.parent();
-      if (uploadContainer) {
-        uploadContainer.style('display', 'block');
-        uploadButtonVisible.style('display', 'block');
-        uploadButton.style('display', 'block');
-      }
-    } catch (e) {
-      console.log("Error in showUploadButton:", e);
-    }
+    uploadButtonVisible.show();
   }
 }
 
@@ -267,9 +244,6 @@ function handleImageUpload(file) {
       initPuzzle();
       loadingScreen = false;
       setUIVisibility(true);
-      
-      // Explicitly show the upload button
-      showUploadButton();
     });
   } else {
     alert('Please upload an image file (JPG, PNG, GIF, WebP).');
@@ -309,7 +283,7 @@ function handleSliderChange() {
 // Initialize or reset the puzzle
 function initPuzzle(forceNewShuffle = false) {
   // Calculate tile size based on puzzle width and grid size
-  tileSize = puzzleWidth / gridSize;
+  tileSize = Math.floor(puzzleWidth / gridSize);
   
   // Reset game state
   tiles = [];
@@ -727,22 +701,7 @@ function updateUIPositions() {
   // Position buttons side by side below slider
   let buttonsY = sliderY + 50;
   resetButton.position(width/2 - buttonWidth - 10, buttonsY);
-  
-  // Position upload button container
-  try {
-    let uploadContainer = uploadButtonVisible.parent();
-    uploadContainer.position(width/2 + 10, buttonsY);
-    
-    // Make sure it's visible (fixes the "disappearing upload button" issue)
-    uploadContainer.style('display', 'block');
-    uploadButtonVisible.show();
-    uploadButton.show();
-  } catch (e) {
-    // Fallback if error
-    if (uploadButton) {
-      uploadButton.position(width/2 + 10, buttonsY);
-    }
-  }
+  uploadButtonVisible.position(width/2 + 10, buttonsY);
   
   // Update splash screen buttons if visible
   defaultButton.position(width/2 - buttonWidth - uiSpacing, height/2 + 50);
@@ -764,11 +723,16 @@ function windowResized() {
   
   // Update tile size
   if (gameStarted) {
-    tileSize = puzzleWidth / gridSize;
+    tileSize = Math.floor(puzzleWidth / gridSize);
   }
   
   // Update UI positions
   updateUIPositions();
+  
+  // Ensure upload button is visible after resize
+  if (!splashScreen) {
+    showUploadButton();
+  }
 }
 
 // Format time as M:SS.ss
@@ -791,12 +755,6 @@ function draw() {
     drawSolvedText(); // Draw "SOLVED!" text first if solved
     drawTimer(); // Draw timer at the top
     drawPuzzle(); // Draw the puzzle below
-    
-    // Try to ensure upload button is visible in each frame
-    // This addresses some browser-specific issues
-    if (frameCount % 60 === 0) { // Check every second
-      showUploadButton();
-    }
   }
 }
 
@@ -885,10 +843,9 @@ function updateFlashingAlpha() {
 function drawPuzzle() {
   // Draw background for puzzle area - completely black
   fill(0); // Pure black background for puzzle area
-  stroke(100); // Subtle border
-  strokeWeight(3);
+  stroke(0); // No border to avoid any blue artifacts
+  strokeWeight(0); // No stroke width
   rect(puzzleX, puzzleY, puzzleWidth, puzzleWidth);
-  strokeWeight(0);
   
   if (isSolved) {
     // If solved, draw the complete image rather than tiles
@@ -915,23 +872,25 @@ function drawPuzzle() {
     pop();
   } else {
     // Draw tiles when not solved
+    noStroke(); // Ensure no stroke between tiles
+    
     for (let tile of tiles) {
       if (!tile.isBlank) { // Don't draw the blank tile
-        // Calculate position on canvas
-        let x = puzzleX + tile.j * tileSize;
-        let y = puzzleY + tile.i * tileSize;
+        // Calculate precise position on canvas
+        let x = Math.floor(puzzleX + tile.j * tileSize);
+        let y = Math.floor(puzzleY + tile.i * tileSize);
         
         // For Firefox compatibility, ensure we're using CORNER mode for image drawing
         push();
         imageMode(CORNER);
         
-        // Draw image tile
+        // Draw image tile - use exact sizing to prevent gaps
         image(
           img,
           x,                // X position in CORNER mode
           y,                // Y position in CORNER mode
-          tileSize,         // Width of the target rectangle
-          tileSize,         // Height of the target rectangle
+          tileSize + 1,     // Add 1px to avoid gaps between tiles
+          tileSize + 1,     // Add 1px to avoid gaps between tiles
           tile.sx,          // Source x position in the original image
           tile.sy,          // Source y position in the original image
           tile.sw,          // Source width in the original image

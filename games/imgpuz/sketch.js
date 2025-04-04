@@ -69,7 +69,7 @@ function setup() {
   puzzleY = height * 0.2;
   
   // Initialize numShuffleMoves based on default grid size
-  numShuffleMoves = 10 * (gridSize * gridSize);
+  numShuffleMoves = 100 * (gridSize * gridSize);
   
   // Create UI elements
   createUIElements();

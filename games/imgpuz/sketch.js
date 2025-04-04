@@ -112,8 +112,8 @@ function createUIElements() {
   
   // Create file input for custom image upload
   uploadButton = createFileInput(handleImageUpload);
-  uploadButton.position(width/2 - buttonWidth/2, uiY + 120);
-  uploadButton.size(buttonWidth);
+  uploadButton.position(width/2 - 150, uiY + 120);
+  uploadButton.size(300, 30); // Wider button to show more text
   uploadButton.style('color', '#ccc');
   uploadButton.style('background-color', '#333');
   uploadButton.style('border', '1px solid #555');
@@ -231,12 +231,17 @@ function handleImageUpload(file) {
 // Handle slider change for grid size
 function handleSliderChange() {
   // Get new grid size from slider
-  gridSize = gridSizeSlider.value();
-  gridSizeLabel.html(`Grid Size: ${gridSize}x${gridSize}`);
+  let newGridSize = gridSizeSlider.value();
   
-  // Reset puzzle with new grid size
-  if (img) {
-    resetPuzzle();
+  // Only reset if grid size actually changed
+  if (newGridSize !== gridSize) {
+    gridSize = newGridSize;
+    gridSizeLabel.html(`Grid Size: ${gridSize}x${gridSize}`);
+    
+    // Reset puzzle with new grid size
+    if (img) {
+      resetPuzzle(true); // Force shuffle for small grid sizes
+    }
   }
   
   // Ensure slider doesn't keep focus (to avoid arrow key issues)
@@ -244,7 +249,7 @@ function handleSliderChange() {
 }
 
 // Initialize or reset the puzzle
-function initPuzzle() {
+function initPuzzle(forceNewShuffle = false) {
   // Calculate tile size based on puzzle width and grid size
   tileSize = puzzleWidth / gridSize;
   
@@ -262,7 +267,7 @@ function initPuzzle() {
   
   // Create and shuffle tiles
   createTiles();
-  shuffleTiles();
+  shuffleTiles(forceNewShuffle);
 }
 
 // Create tiles from the image
@@ -306,22 +311,29 @@ function createTiles() {
 }
 
 // Shuffle tiles ensuring puzzle is solvable
-function shuffleTiles() {
-  // First, perform a large number of random moves
-  // This ensures the puzzle is always solvable
+function shuffleTiles(forceNewShuffle = false) {
+  // Set up variables for shuffling
   let lastDir = null;
-  
-  // Number of random moves - should be higher for smaller grids to ensure proper scrambling
-  const moves = gridSize * gridSize * (gridSize <= 2 ? 40 : 20);
+  let isShuffled = false;
+  let shuffleAttempts = 0;
+  const MAX_SHUFFLE_ATTEMPTS = 10; // Maximum number of shuffle attempts
   
   // Ensure isSolved is false when starting to shuffle
   isSolved = false;
   
-  // For 2x2 puzzles, explicitly check we don't accidentally end up in solved state
-  let totalShuffles = 0;
-  const maxShuffles = 100; // Safety limit
+  // For smaller grid sizes, we need more moves to ensure proper scrambling
+  let baseMoves = gridSize <= 2 ? 100 : gridSize * gridSize * 20;
   
-  do {
+  // Keep shuffling until we get a properly shuffled configuration
+  // or hit the maximum number of attempts
+  while (!isShuffled && shuffleAttempts < MAX_SHUFFLE_ATTEMPTS) {
+    // Reset positions to starting state for a clean shuffle
+    resetTilePositions();
+    
+    // Number of random moves - higher for smaller grids
+    const moves = baseMoves + (shuffleAttempts * 20); // Increase moves with each attempt
+    
+    // Perform random moves
     for (let move = 0; move < moves; move++) {
       let possibleDirs = [];
       
@@ -351,29 +363,91 @@ function shuffleTiles() {
       lastDir = dir;
     }
     
-    // Check if we're still in solved state (especially for 2x2)
-    let stillSolved = true;
-    for (let tile of tiles) {
-      if (tile.i !== tile.correctI || tile.j !== tile.correctJ) {
-        stillSolved = false;
-        break;
-      }
-    }
+    // Check if we're still in the solved state
+    checkSolution();
     
-    // If still solved and it's a small grid, try shuffling again
-    if (stillSolved && gridSize <= 3) {
-      totalShuffles++;
+    // If we're no longer in the solved state, or if we're forcing a new shuffle
+    // and have scrambled the puzzle enough
+    if (!isSolved || !forceNewShuffle) {
+      isShuffled = true;
     } else {
-      // We've successfully shuffled, so exit the loop
-      break;
+      // We're still in the solved state, try again with more moves
+      shuffleAttempts++;
     }
-  } while (totalShuffles < maxShuffles);
+  }
   
-  // Ensure isSolved is updated
-  checkSolution();
+  // If we hit max attempts and still haven't shuffled properly, force it for 2x2
+  if (!isShuffled && gridSize <= 3) {
+    console.log("Forcing unsolved state for small grid");
+    forceUnsolved();
+  }
   
   // Reset the game start time flag
   firstMove = false;
+}
+
+// Reset tiles to their starting positions
+function resetTilePositions() {
+  for (let tile of tiles) {
+    tile.i = tile.correctI;
+    tile.j = tile.correctJ;
+    
+    // Update blank position
+    if (tile.isBlank) {
+      blankPos = { i: tile.i, j: tile.j };
+    }
+  }
+}
+
+// Force the puzzle to be in an unsolved state (for 2x2 grids)
+function forceUnsolved() {
+  // For 2x2, just swap two adjacent tiles
+  if (gridSize === 2) {
+    // Find two non-blank tiles
+    let tileA = null;
+    let tileB = null;
+    
+    for (let tile of tiles) {
+      if (!tile.isBlank) {
+        if (tileA === null) {
+          tileA = tile;
+        } else if (tileB === null) {
+          tileB = tile;
+          break;
+        }
+      }
+    }
+    
+    // Swap their positions
+    if (tileA && tileB) {
+      const tempI = tileA.i;
+      const tempJ = tileA.j;
+      tileA.i = tileB.i;
+      tileA.j = tileB.j;
+      tileB.i = tempI;
+      tileB.j = tempJ;
+      
+      // Make sure it's not solved
+      isSolved = false;
+    }
+  } else {
+    // For 3x3, make a few random moves
+    for (let i = 0; i < 10; i++) {
+      const randomTileIndex = floor(random(tiles.length - 1)); // Exclude the last tile (blank)
+      const tile = tiles[randomTileIndex];
+      
+      // Try to swap with adjacent blank
+      if (isAdjacent(tile.i, tile.j, blankPos.i, blankPos.j)) {
+        moveTile(tile.i, tile.j, false);
+      }
+    }
+  }
+}
+
+// Check if two positions are adjacent
+function isAdjacent(i1, j1, i2, j2) {
+  return (Math.abs(i1 - i2) === 1 && j1 === j2) || 
+         (Math.abs(j1 - j2) === 1 && i1 === i2);
 }
 
 // Move a tile to the blank space
@@ -449,9 +523,9 @@ function checkSolution() {
 }
 
 // Reset/Shuffle the puzzle
-function resetPuzzle() {
+function resetPuzzle(forceNewShuffle = false) {
   if (img) {
-    initPuzzle();
+    initPuzzle(forceNewShuffle);
   }
 }
 
@@ -478,27 +552,27 @@ function keyPressed() {
 function updateUIPositions() {
   // Calculate spacing to ensure elements don't overlap
   // Base UI position with margin to ensure no overlap with puzzle
-  let uiY = puzzleY + puzzleWidth + 40;
+  let uiY = puzzleY + puzzleWidth + 60; // Increased spacing from puzzle
   let buttonWidth = 150;
   let buttonHeight = 40;
   let uiSpacing = 20;
-  let elementSpacing = 60; // Space between UI elements
+  let elementSpacing = 70; // Increased spacing between UI elements
   
   // Adjust UI Y position if window height is too small
-  let totalUIHeight = 200; // Approximate total height of all UI elements
+  let totalUIHeight = 280; // Approximate total height of all UI elements with increased spacing
   if (uiY + totalUIHeight > height - 20) {
     // Reduce puzzle size to fit UI
     puzzleWidth = min(puzzleWidth, height - totalUIHeight - puzzleY - 60);
     tileSize = puzzleWidth / gridSize;
-    uiY = puzzleY + puzzleWidth + 40;
+    uiY = puzzleY + puzzleWidth + 60;
   }
   
-  // Update UI positions
+  // Update UI positions with more spacing
   gridSizeSlider.position(width/2 - 100, uiY);
   gridSizeLabel.position(width/2 - 100, uiY - 30);
   resetButton.position(width/2 - buttonWidth/2, uiY + elementSpacing);
   uploadLabel.position(width/2 - 100, uiY + elementSpacing*2);
-  uploadButton.position(width/2 - buttonWidth/2, uiY + elementSpacing*2 + 30);
+  uploadButton.position(width/2 - 150, uiY + elementSpacing*2 + 30); // Wider button positioning
   
   // Update splash screen buttons if visible
   defaultButton.position(width/2 - buttonWidth - uiSpacing, height/2 + 50);
@@ -605,7 +679,7 @@ function drawPuzzle() {
     // "SOLVED!" text above the puzzle with dark mode friendly color
     textSize(min(40, puzzleWidth/10));
     fill(0, 255, 150); // Brighter green for dark mode
-    text("SOLVED!", puzzleX + puzzleWidth/2, puzzleY - 20);
+    text("SOLVED!", puzzleX + puzzleWidth/2, puzzleY - 30); // Increased spacing
   } else {
     // Draw tiles when not solved
     for (let tile of tiles) {
@@ -660,8 +734,8 @@ function drawTimer() {
     displayTime = formatTime(elapsedTime);
   }
   
-  // Position timer just below the puzzle with adequate spacing
-  let timerY = min(puzzleY + puzzleWidth + 25, gridSizeLabel.position().y - 10);
+  // Position timer just below the puzzle with more spacing
+  let timerY = min(puzzleY + puzzleWidth + 40, gridSizeLabel.position().y - 20);
   
   // Display timer text
   text(displayTime, width/2, timerY);

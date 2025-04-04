@@ -69,7 +69,7 @@ function setup() {
   puzzleY = height * 0.2;
   
   // Initialize numShuffleMoves based on default grid size
-  numShuffleMoves = 100 * (gridSize * gridSize);
+  numShuffleMoves = 10 * (gridSize * gridSize);
   
   // Create UI elements
   createUIElements();
@@ -367,6 +367,13 @@ function createTiles() {
 
 // Shuffle tiles ensuring puzzle is solvable
 function shuffleTiles(forceNewShuffle = false) {
+  // For very large puzzles (over 15x15), use the optimized shuffling approach
+  if (gridSize > 15) {
+    shuffleLargePuzzle();
+    return;
+  }
+  
+  // For smaller puzzles, use the random move approach
   // Reset tiles to their initial positions first
   resetTilePositions();
   
@@ -443,6 +450,145 @@ function shuffleTiles(forceNewShuffle = false) {
     }
     
     // Force isSolved to false
+    isSolved = false;
+  }
+  
+  // Reset the game start time flag
+  firstMove = false;
+}
+
+// Optimized shuffle algorithm for very large puzzles
+// This uses a different approach that's much faster
+function shuffleLargePuzzle() {
+  console.log(`Using optimized shuffle for large ${gridSize}x${gridSize} puzzle`);
+  
+  // First create tiles in solved position
+  createTiles();
+  
+  // Create a copy of the tiles array to work with
+  let tilesCopy = JSON.parse(JSON.stringify(tiles));
+  
+  // Determine number of shuffle operations (fewer than full random moves)
+  // For large puzzles, we don't need as many random swaps to get good randomization
+  const swapCount = gridSize * gridSize * 3;
+  
+  console.log(`Performing ${swapCount} random swaps`);
+  
+  // Perform random valid swaps
+  for (let swap = 0; swap < swapCount; swap++) {
+    // Pick two random non-blank tiles
+    let idx1, idx2;
+    do {
+      idx1 = floor(random(tilesCopy.length));
+    } while (tilesCopy[idx1].isBlank);
+    
+    do {
+      idx2 = floor(random(tilesCopy.length));
+    } while (tilesCopy[idx2].isBlank || idx1 === idx2);
+    
+    // Swap their positions
+    [tilesCopy[idx1].i, tilesCopy[idx2].i] = [tilesCopy[idx2].i, tilesCopy[idx1].i];
+    [tilesCopy[idx1].j, tilesCopy[idx2].j] = [tilesCopy[idx2].j, tilesCopy[idx1].j];
+  }
+  
+  // Now we need to ensure the puzzle is solvable
+  // For a sliding puzzle, we need to make sure the parity is correct
+  
+  // Calculate the number of inversions
+  let inversions = 0;
+  for (let i = 0; i < tilesCopy.length - 1; i++) {
+    if (tilesCopy[i].isBlank) continue;
+    
+    for (let j = i + 1; j < tilesCopy.length; j++) {
+      if (tilesCopy[j].isBlank) continue;
+      
+      // Calculate the linear indices of the tiles
+      const tileIdx1 = tilesCopy[i].correctI * gridSize + tilesCopy[i].correctJ;
+      const tileIdx2 = tilesCopy[j].correctI * gridSize + tilesCopy[j].correctJ;
+      
+      // Calculate the current positions
+      const posIdx1 = tilesCopy[i].i * gridSize + tilesCopy[i].j;
+      const posIdx2 = tilesCopy[j].i * gridSize + tilesCopy[j].j;
+      
+      // Count inversions (where tiles are out of natural order)
+      if (tileIdx1 > tileIdx2 && posIdx1 < posIdx2) {
+        inversions++;
+      }
+    }
+  }
+  
+  // For odd-sized grids, the puzzle is solvable if inversions is even
+  // For even-sized grids, we also need to consider the blank position
+  let blankRow = 0;
+  for (let tile of tilesCopy) {
+    if (tile.isBlank) {
+      blankRow = tile.i;
+      break;
+    }
+  }
+  
+  let solvable;
+  if (gridSize % 2 === 1) {
+    // Odd grid size
+    solvable = inversions % 2 === 0;
+  } else {
+    // Even grid size
+    solvable = (inversions + blankRow) % 2 === 0;
+  }
+  
+  // If not solvable, swap any two non-blank tiles to make it solvable
+  if (!solvable) {
+    console.log("Adjusting puzzle to make it solvable");
+    // Find two non-blank tiles
+    let idx1 = -1, idx2 = -1;
+    for (let i = 0; i < tilesCopy.length; i++) {
+      if (!tilesCopy[i].isBlank) {
+        if (idx1 === -1) {
+          idx1 = i;
+        } else {
+          idx2 = i;
+          break;
+        }
+      }
+    }
+    
+    // Swap them
+    if (idx1 !== -1 && idx2 !== -1) {
+      [tilesCopy[idx1].i, tilesCopy[idx2].i] = [tilesCopy[idx2].i, tilesCopy[idx1].i];
+      [tilesCopy[idx1].j, tilesCopy[idx2].j] = [tilesCopy[idx2].j, tilesCopy[idx1].j];
+    }
+  }
+  
+  // Apply the shuffled positions to the actual tiles array
+  tiles = tilesCopy;
+  
+  // Update blank position
+  for (let tile of tiles) {
+    if (tile.isBlank) {
+      blankPos = { i: tile.i, j: tile.j };
+      break;
+    }
+  }
+  
+  // Ensure we're not in solved state
+  checkSolution();
+  if (isSolved) {
+    console.log("Still solved after shuffle, making one more swap");
+    // Find two adjacent non-blank tiles
+    for (let i = 0; i < tiles.length; i++) {
+      if (!tiles[i].isBlank) {
+        for (let j = i + 1; j < tiles.length; j++) {
+          if (!tiles[j].isBlank) {
+            // Swap them
+            [tiles[i].i, tiles[j].i] = [tiles[j].i, tiles[i].i];
+            [tiles[i].j, tiles[j].j] = [tiles[j].j, tiles[i].j];
+            break;
+          }
+        }
+        break;
+      }
+    }
+    // Force not solved
     isSolved = false;
   }
   

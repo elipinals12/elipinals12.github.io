@@ -113,12 +113,20 @@ function createUIElements() {
   // Create file input for custom image upload
   uploadButton = createFileInput(handleImageUpload);
   uploadButton.position(width/2 - 125, uiY + 120);
-  uploadButton.size(250, 24); // Wider but not taller
+  uploadButton.size(250, 30); // Consistent size
   uploadButton.style('color', '#ccc');
   uploadButton.style('background-color', '#333');
   uploadButton.style('border', '1px solid #555');
   uploadButton.style('border-radius', '4px');
-  uploadButton.style('padding', '4px');
+  uploadButton.style('padding', '4px 8px');
+  uploadButton.style('text-align', 'center');
+  // Fix Firefox appearance
+  uploadButton.style('-moz-appearance', 'button');
+  uploadButton.style('display', 'flex');
+  uploadButton.style('justify-content', 'center');
+  uploadButton.style('align-items', 'center');
+  uploadButton.style('font-family', 'sans-serif');
+  uploadButton.style('font-size', '14px');
   
   // Create upload label
   uploadLabel = createP('Upload Custom Image:');
@@ -501,40 +509,30 @@ function keyPressed() {
 
 // Update UI positioning for window resize
 function updateUIPositions() {
-  // Calculate smart spacing that adapts to window size
-  const minPuzzleUIGap = 50; // Minimum gap between puzzle and first UI element
-  const minElementGap = 30;  // Minimum gap between UI elements
+  // Calculate minimum spacing from bottom of puzzle to first UI element
+  const timerSpace = 30; // Space for timer text
+  const minSpacingAfterTimer = 40; // Space between timer and first UI control
   
-  // Base UI position with smart margin to ensure no overlap with puzzle
-  let uiY = puzzleY + puzzleWidth + minPuzzleUIGap;
+  // First calculate where the UI should start (after puzzle + timer + spacing)
+  let uiY = puzzleY + puzzleWidth + timerSpace + minSpacingAfterTimer;
+  
   let buttonWidth = 150;
   let buttonHeight = 40;
   let uiSpacing = 20;
+  let elementGap = 30; // Space between UI elements
   
-  // Calculate total needed height
-  let totalUIHeight = 200; // Approximate total height of all UI elements
-  
-  // Adjust UI positioning if window is too small
-  if (uiY + totalUIHeight > height - 20) {
-    // Reduce puzzle size to fit UI
-    puzzleWidth = min(puzzleWidth, height - totalUIHeight - puzzleY - 80);
-    tileSize = puzzleWidth / gridSize;
-    uiY = puzzleY + puzzleWidth + minPuzzleUIGap;
-  }
-  
-  // Position slider
+  // Position slider at the calculated position
   gridSizeSlider.position(width/2 - 100, uiY);
   
   // Position grid size label with adequate spacing above slider
-  let labelY = uiY - 30;
-  gridSizeLabel.position(width/2 - 100, labelY);
+  gridSizeLabel.position(width/2 - 100, uiY - 30);
   
   // Position reset button with spacing below slider
-  let resetY = uiY + minElementGap + 10;
+  let resetY = uiY + elementGap + 10;
   resetButton.position(width/2 - buttonWidth/2, resetY);
   
   // Position upload label with spacing below reset button
-  let uploadLabelY = resetY + buttonHeight + minElementGap;
+  let uploadLabelY = resetY + buttonHeight + elementGap;
   uploadLabel.position(width/2 - 100, uploadLabelY);
   
   // Position upload button with spacing below label
@@ -544,6 +542,26 @@ function updateUIPositions() {
   // Update splash screen buttons if visible
   defaultButton.position(width/2 - buttonWidth - uiSpacing, height/2 + 50);
   uploadImageButton.position(width/2 + uiSpacing, height/2 + 50);
+  
+  // Check if UI extends beyond window height and adjust puzzle size if needed
+  const lastElementBottom = uploadButtonY + 40; // Bottom of the last UI element
+  if (lastElementBottom > height - 20) {
+    // Calculate how much we need to reduce puzzle size
+    const reduction = lastElementBottom - (height - 20);
+    puzzleWidth = max(200, puzzleWidth - reduction);
+    tileSize = puzzleWidth / gridSize;
+    
+    // Recalculate positions with new puzzle size
+    uiY = puzzleY + puzzleWidth + timerSpace + minSpacingAfterTimer;
+    
+    // Update all positions
+    gridSizeSlider.position(width/2 - 100, uiY);
+    gridSizeLabel.position(width/2 - 100, uiY - 30);
+    resetButton.position(width/2 - buttonWidth/2, uiY + elementGap + 10);
+    uploadLabelY = uiY + elementGap + buttonHeight + elementGap + 10;
+    uploadLabel.position(width/2 - 100, uploadLabelY);
+    uploadButton.position(width/2 - 125, uploadLabelY + 30);
+  }
 }
 
 // Handle window resize
@@ -701,19 +719,13 @@ function drawTimer() {
     displayTime = formatTime(elapsedTime);
   }
   
-  // Smart positioning for timer - calculate exactly where it should be
-  // to avoid overlap with both puzzle and grid size label
-  let minSpaceFromPuzzle = 30;
-  let minSpaceToGridLabel = 15;
+  // FIXED POSITIONING: Place timer at a fixed offset below the puzzle
+  // regardless of other UI elements - this ensures it never overlaps
+  let fixedTimerY = puzzleY + puzzleWidth + 30;
   
-  // Get grid label position
-  let gridLabelY = gridSizeLabel.position().y;
+  // Calculate bottom edge of puzzle
+  let puzzleBottom = puzzleY + puzzleWidth;
   
-  // Calculate position that ensures no overlap with puzzle or grid label
-  let idealPosition = puzzleY + puzzleWidth + minSpaceFromPuzzle;
-  let maxPosition = gridLabelY - minSpaceToGridLabel;
-  let timerY = min(idealPosition, maxPosition);
-  
-  // Display timer text
-  text(displayTime, width/2, timerY);
+  // Display timer text at a FIXED distance from the puzzle
+  text(displayTime, width/2, puzzleBottom + 30);
 }

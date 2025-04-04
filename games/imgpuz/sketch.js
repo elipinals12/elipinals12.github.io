@@ -112,13 +112,13 @@ function createUIElements() {
   
   // Create file input for custom image upload
   uploadButton = createFileInput(handleImageUpload);
-  uploadButton.position(width/2 - 150, uiY + 120);
-  uploadButton.size(300, 30); // Wider button to show more text
+  uploadButton.position(width/2 - 125, uiY + 120);
+  uploadButton.size(250, 24); // Wider but not taller
   uploadButton.style('color', '#ccc');
   uploadButton.style('background-color', '#333');
   uploadButton.style('border', '1px solid #555');
   uploadButton.style('border-radius', '4px');
-  uploadButton.style('padding', '8px');
+  uploadButton.style('padding', '4px');
   
   // Create upload label
   uploadLabel = createP('Upload Custom Image:');
@@ -312,74 +312,76 @@ function createTiles() {
 
 // Shuffle tiles ensuring puzzle is solvable
 function shuffleTiles(forceNewShuffle = false) {
-  // Set up variables for shuffling
-  let lastDir = null;
-  let isShuffled = false;
-  let shuffleAttempts = 0;
-  const MAX_SHUFFLE_ATTEMPTS = 10; // Maximum number of shuffle attempts
+  // Reset tiles to their initial positions first
+  resetTilePositions();
   
   // Ensure isSolved is false when starting to shuffle
   isSolved = false;
   
-  // For smaller grid sizes, we need more moves to ensure proper scrambling
-  let baseMoves = gridSize <= 2 ? 100 : gridSize * gridSize * 20;
+  // Perform a large number of random valid moves from the solved state
+  // This guarantees a solvable puzzle because we start from solved
+  // and only make valid moves
+  const numMoves = 1000; // Large number of random moves
+  let lastDir = null;
   
-  // Keep shuffling until we get a properly shuffled configuration
-  // or hit the maximum number of attempts
-  while (!isShuffled && shuffleAttempts < MAX_SHUFFLE_ATTEMPTS) {
-    // Reset positions to starting state for a clean shuffle
-    resetTilePositions();
+  // Execute random moves
+  for (let move = 0; move < numMoves; move++) {
+    let possibleDirs = [];
     
-    // Number of random moves - higher for smaller grids
-    const moves = baseMoves + (shuffleAttempts * 20); // Increase moves with each attempt
+    // Check which directions are valid
+    if (blankPos.i > 0) possibleDirs.push('UP');
+    if (blankPos.i < gridSize - 1) possibleDirs.push('DOWN');
+    if (blankPos.j > 0) possibleDirs.push('LEFT');
+    if (blankPos.j < gridSize - 1) possibleDirs.push('RIGHT');
     
-    // Perform random moves
-    for (let move = 0; move < moves; move++) {
-      let possibleDirs = [];
-      
-      // Check which directions are valid
-      if (blankPos.i > 0) possibleDirs.push('UP');
-      if (blankPos.i < gridSize - 1) possibleDirs.push('DOWN');
-      if (blankPos.j > 0) possibleDirs.push('LEFT');
-      if (blankPos.j < gridSize - 1) possibleDirs.push('RIGHT');
-      
-      // Filter out the opposite of the last direction to avoid undoing moves
-      if (lastDir) {
-        if (lastDir === 'UP') possibleDirs = possibleDirs.filter(dir => dir !== 'DOWN');
-        if (lastDir === 'DOWN') possibleDirs = possibleDirs.filter(dir => dir !== 'UP');
-        if (lastDir === 'LEFT') possibleDirs = possibleDirs.filter(dir => dir !== 'RIGHT');
-        if (lastDir === 'RIGHT') possibleDirs = possibleDirs.filter(dir => dir !== 'LEFT');
-      }
-      
-      // Choose a random direction
-      const dir = possibleDirs[floor(random(possibleDirs.length))];
-      
-      // Move the blank tile
-      if (dir === 'UP') moveTile(blankPos.i - 1, blankPos.j, false);
-      if (dir === 'DOWN') moveTile(blankPos.i + 1, blankPos.j, false);
-      if (dir === 'LEFT') moveTile(blankPos.i, blankPos.j - 1, false);
-      if (dir === 'RIGHT') moveTile(blankPos.i, blankPos.j + 1, false);
-      
-      lastDir = dir;
+    // Filter out the opposite of the last direction to avoid undoing moves
+    if (lastDir) {
+      if (lastDir === 'UP') possibleDirs = possibleDirs.filter(dir => dir !== 'DOWN');
+      if (lastDir === 'DOWN') possibleDirs = possibleDirs.filter(dir => dir !== 'UP');
+      if (lastDir === 'LEFT') possibleDirs = possibleDirs.filter(dir => dir !== 'RIGHT');
+      if (lastDir === 'RIGHT') possibleDirs = possibleDirs.filter(dir => dir !== 'LEFT');
     }
     
-    // Check if we're still in the solved state
-    checkSolution();
+    // Choose a random direction
+    const dir = possibleDirs[floor(random(possibleDirs.length))];
     
-    // If we're no longer in the solved state, or if we're forcing a new shuffle
-    // and have scrambled the puzzle enough
-    if (!isSolved || !forceNewShuffle) {
-      isShuffled = true;
-    } else {
-      // We're still in the solved state, try again with more moves
-      shuffleAttempts++;
-    }
+    // Move the blank tile
+    if (dir === 'UP') moveTile(blankPos.i - 1, blankPos.j, false);
+    if (dir === 'DOWN') moveTile(blankPos.i + 1, blankPos.j, false);
+    if (dir === 'LEFT') moveTile(blankPos.i, blankPos.j - 1, false);
+    if (dir === 'RIGHT') moveTile(blankPos.i, blankPos.j + 1, false);
+    
+    lastDir = dir;
   }
   
-  // If we hit max attempts and still haven't shuffled properly, force it for 2x2
-  if (!isShuffled && gridSize <= 3) {
-    console.log("Forcing unsolved state for small grid");
-    forceUnsolved();
+  // After all the moves, check if we accidentally ended up solved again
+  // (can happen with small grids or by random chance)
+  checkSolution();
+  
+  // If we ended up solved again, make one more move to ensure it's not solved
+  if (isSolved) {
+    let moveMade = false;
+    
+    // Try each direction until a valid move is made
+    if (blankPos.i > 0 && !moveMade) {
+      moveTile(blankPos.i - 1, blankPos.j, false);
+      moveMade = true;
+    }
+    if (blankPos.i < gridSize - 1 && !moveMade) {
+      moveTile(blankPos.i + 1, blankPos.j, false);
+      moveMade = true;
+    }
+    if (blankPos.j > 0 && !moveMade) {
+      moveTile(blankPos.i, blankPos.j - 1, false);
+      moveMade = true;
+    }
+    if (blankPos.j < gridSize - 1 && !moveMade) {
+      moveTile(blankPos.i, blankPos.j + 1, false);
+      moveMade = true;
+    }
+    
+    // Force isSolved to false
+    isSolved = false;
   }
   
   // Reset the game start time flag
@@ -397,57 +399,6 @@ function resetTilePositions() {
       blankPos = { i: tile.i, j: tile.j };
     }
   }
-}
-
-// Force the puzzle to be in an unsolved state (for 2x2 grids)
-function forceUnsolved() {
-  // For 2x2, just swap two adjacent tiles
-  if (gridSize === 2) {
-    // Find two non-blank tiles
-    let tileA = null;
-    let tileB = null;
-    
-    for (let tile of tiles) {
-      if (!tile.isBlank) {
-        if (tileA === null) {
-          tileA = tile;
-        } else if (tileB === null) {
-          tileB = tile;
-          break;
-        }
-      }
-    }
-    
-    // Swap their positions
-    if (tileA && tileB) {
-      const tempI = tileA.i;
-      const tempJ = tileA.j;
-      tileA.i = tileB.i;
-      tileA.j = tileB.j;
-      tileB.i = tempI;
-      tileB.j = tempJ;
-      
-      // Make sure it's not solved
-      isSolved = false;
-    }
-  } else {
-    // For 3x3, make a few random moves
-    for (let i = 0; i < 10; i++) {
-      const randomTileIndex = floor(random(tiles.length - 1)); // Exclude the last tile (blank)
-      const tile = tiles[randomTileIndex];
-      
-      // Try to swap with adjacent blank
-      if (isAdjacent(tile.i, tile.j, blankPos.i, blankPos.j)) {
-        moveTile(tile.i, tile.j, false);
-      }
-    }
-  }
-}
-
-// Check if two positions are adjacent
-function isAdjacent(i1, j1, i2, j2) {
-  return (Math.abs(i1 - i2) === 1 && j1 === j2) || 
-         (Math.abs(j1 - j2) === 1 && i1 === i2);
 }
 
 // Move a tile to the blank space
@@ -550,29 +501,45 @@ function keyPressed() {
 
 // Update UI positioning for window resize
 function updateUIPositions() {
-  // Calculate spacing to ensure elements don't overlap
-  // Base UI position with margin to ensure no overlap with puzzle
-  let uiY = puzzleY + puzzleWidth + 60; // Increased spacing from puzzle
+  // Calculate smart spacing that adapts to window size
+  const minPuzzleUIGap = 50; // Minimum gap between puzzle and first UI element
+  const minElementGap = 30;  // Minimum gap between UI elements
+  
+  // Base UI position with smart margin to ensure no overlap with puzzle
+  let uiY = puzzleY + puzzleWidth + minPuzzleUIGap;
   let buttonWidth = 150;
   let buttonHeight = 40;
   let uiSpacing = 20;
-  let elementSpacing = 70; // Increased spacing between UI elements
   
-  // Adjust UI Y position if window height is too small
-  let totalUIHeight = 280; // Approximate total height of all UI elements with increased spacing
+  // Calculate total needed height
+  let totalUIHeight = 200; // Approximate total height of all UI elements
+  
+  // Adjust UI positioning if window is too small
   if (uiY + totalUIHeight > height - 20) {
     // Reduce puzzle size to fit UI
-    puzzleWidth = min(puzzleWidth, height - totalUIHeight - puzzleY - 60);
+    puzzleWidth = min(puzzleWidth, height - totalUIHeight - puzzleY - 80);
     tileSize = puzzleWidth / gridSize;
-    uiY = puzzleY + puzzleWidth + 60;
+    uiY = puzzleY + puzzleWidth + minPuzzleUIGap;
   }
   
-  // Update UI positions with more spacing
+  // Position slider
   gridSizeSlider.position(width/2 - 100, uiY);
-  gridSizeLabel.position(width/2 - 100, uiY - 30);
-  resetButton.position(width/2 - buttonWidth/2, uiY + elementSpacing);
-  uploadLabel.position(width/2 - 100, uiY + elementSpacing*2);
-  uploadButton.position(width/2 - 150, uiY + elementSpacing*2 + 30); // Wider button positioning
+  
+  // Position grid size label with adequate spacing above slider
+  let labelY = uiY - 30;
+  gridSizeLabel.position(width/2 - 100, labelY);
+  
+  // Position reset button with spacing below slider
+  let resetY = uiY + minElementGap + 10;
+  resetButton.position(width/2 - buttonWidth/2, resetY);
+  
+  // Position upload label with spacing below reset button
+  let uploadLabelY = resetY + buttonHeight + minElementGap;
+  uploadLabel.position(width/2 - 100, uploadLabelY);
+  
+  // Position upload button with spacing below label
+  let uploadButtonY = uploadLabelY + 30;
+  uploadButton.position(width/2 - 125, uploadButtonY);
   
   // Update splash screen buttons if visible
   defaultButton.position(width/2 - buttonWidth - uiSpacing, height/2 + 50);
@@ -734,8 +701,18 @@ function drawTimer() {
     displayTime = formatTime(elapsedTime);
   }
   
-  // Position timer just below the puzzle with more spacing
-  let timerY = min(puzzleY + puzzleWidth + 40, gridSizeLabel.position().y - 20);
+  // Smart positioning for timer - calculate exactly where it should be
+  // to avoid overlap with both puzzle and grid size label
+  let minSpaceFromPuzzle = 30;
+  let minSpaceToGridLabel = 15;
+  
+  // Get grid label position
+  let gridLabelY = gridSizeLabel.position().y;
+  
+  // Calculate position that ensures no overlap with puzzle or grid label
+  let idealPosition = puzzleY + puzzleWidth + minSpaceFromPuzzle;
+  let maxPosition = gridLabelY - minSpaceToGridLabel;
+  let timerY = min(idealPosition, maxPosition);
   
   // Display timer text
   text(displayTime, width/2, timerY);

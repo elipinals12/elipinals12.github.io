@@ -16,8 +16,10 @@ let gameStarted = false; // Flag to track if game has started
 let firstMove = false; // Flag to track if first move has been made
 let startTime; // Time when the first move was made
 let elapsedTime = 0; // Elapsed time in milliseconds
-let timerFlashInterval; // Interval for flashing timer when solved
 let timerAlpha = 255; // Alpha value for timer flashing effect
+let solvedAlpha = 255; // Alpha value for solved text flashing effect
+let alphaDirection = -1; // Direction of alpha change (-1 decreasing, 1 increasing)
+let alphaChangeSpeed = 5; // Speed of alpha change for smooth flashing
 let splashScreen = true; // Flag to show splash screen
 let loadingScreen = false; // Flag to show loading screen
 let uploadButton; // File input element for uploading custom images
@@ -28,6 +30,7 @@ let gridSizeLabel; // Label to display current grid size
 let defaultButton; // Button to use default image
 let uploadImageButton; // Button to trigger file upload dialog
 let defaultImageLoaded = false; // Flag to track if default image loaded successfully
+let numShuffleMoves = 40; // Number of shuffle moves, dynamically updated based on grid size
 
 // p5.js preload function - runs before setup
 function preload() {
@@ -56,13 +59,17 @@ function setup() {
   
   // Calculate appropriate puzzle size based on screen dimensions
   // Ensure puzzle doesn't take up too much vertical space to leave room for UI
-  const maxPuzzleHeight = windowHeight * 0.6;
-  const maxPuzzleWidth = windowWidth * 0.8;
+  const maxPuzzleHeight = height * 0.6; // Reduced to make more room for top elements
+  const maxPuzzleWidth = width * 0.8;
   puzzleWidth = min(maxPuzzleWidth, maxPuzzleHeight);
   
-  // Center the puzzle
-  puzzleX = (windowWidth - puzzleWidth) / 2;
-  puzzleY = windowHeight * 0.1;
+  // Center the puzzle horizontally, position vertically with space for top elements
+  puzzleX = width / 2 - puzzleWidth / 2;
+  // Leave more space at the top for timer and "SOLVED!" text
+  puzzleY = height * 0.2;
+  
+  // Initialize numShuffleMoves based on default grid size
+  numShuffleMoves = 10 * (gridSize * gridSize);
   
   // Create UI elements
   createUIElements();
@@ -87,36 +94,35 @@ function createUIElements() {
   let buttonHeight = 40;
   let uiSpacing = 20;
   
+  // Create grid size label
+  gridSizeLabel = createP(`Grid Size: ${gridSize}x${gridSize}`);
+  gridSizeLabel.position(width/2 - 100, uiY);
+  gridSizeLabel.style('text-align', 'center');
+  gridSizeLabel.style('width', '200px');
+  gridSizeLabel.style('color', '#ccc');
+  
   // Create slider for grid size
-  gridSizeSlider = createSlider(2, 10, gridSize, 1);
-  gridSizeSlider.position(width/2 - 100, uiY);
+  gridSizeSlider = createSlider(2, 100, gridSize, 1);
+  gridSizeSlider.position(width/2 - 100, uiY + 30);
   gridSizeSlider.style('width', '200px');
   gridSizeSlider.style('background-color', '#444');
   gridSizeSlider.style('accent-color', '#0c9');
   gridSizeSlider.input(handleSliderChange);
   
-  // Create grid size label
-  gridSizeLabel = createP(`Grid Size: ${gridSize}x${gridSize}`);
-  gridSizeLabel.position(width/2 - 100, uiY - 30);
-  gridSizeLabel.style('text-align', 'center');
-  gridSizeLabel.style('width', '200px');
-  gridSizeLabel.style('color', '#ccc');
-  
-  // Create reset button
+  // Create reset button (Shuffle) - position side by side with upload button
   resetButton = createButton('Shuffle / Reset');
-  resetButton.position(width/2 - buttonWidth/2, uiY + 40);
+  resetButton.position(width/2 - buttonWidth - 10, uiY + 80);
   resetButton.size(buttonWidth, buttonHeight);
-  resetButton.style('background-color', '#333');
+  resetButton.style('background-color', '#333'); // Darker color for shuffle button
   resetButton.style('color', '#fff');
   resetButton.style('border', '1px solid #555');
   resetButton.style('border-radius', '4px');
   resetButton.style('cursor', 'pointer');
   resetButton.mousePressed(resetPuzzle);
   
-  // Create a real button for "Upload Custom Image" that will trigger file selection
-  // This button is identical to the other buttons visually
+  // Create a real button for "Upload Custom Image" - side by side with reset button
   let uploadButtonContainer = createDiv();
-  uploadButtonContainer.position(width/2 - buttonWidth/2, uiY + 100);
+  uploadButtonContainer.position(width/2 + 10, uiY + 80);
   uploadButtonContainer.size(buttonWidth, buttonHeight);
   uploadButtonContainer.style('position', 'relative');
   
@@ -124,7 +130,7 @@ function createUIElements() {
   uploadButtonVisible = createButton('Upload Custom Image');
   uploadButtonVisible.parent(uploadButtonContainer);
   uploadButtonVisible.size(buttonWidth, buttonHeight);
-  uploadButtonVisible.style('background-color', '#333');
+  uploadButtonVisible.style('background-color', '#1c6e8c'); // Blueish color for upload button
   uploadButtonVisible.style('color', '#fff');
   uploadButtonVisible.style('border', '1px solid #555');
   uploadButtonVisible.style('border-radius', '4px');
@@ -176,7 +182,7 @@ function createUIElements() {
   uploadImageButton = createButton('Upload Image');
   uploadImageButton.position(width/2 + uiSpacing, height/2 + 50);
   uploadImageButton.size(buttonWidth, buttonHeight);
-  uploadImageButton.style('background-color', '#333');
+  uploadImageButton.style('background-color', '#1c6e8c'); // Match the main upload button color
   uploadImageButton.style('color', '#fff');
   uploadImageButton.style('border', '1px solid #555');
   uploadImageButton.style('border-radius', '4px');
@@ -230,6 +236,14 @@ function useSplashOption(option) {
   // Hide splash buttons
   defaultButton.hide();
   uploadImageButton.hide();
+  
+  // Ensure the main upload button is visible after setup
+  // This allows users to upload a new image at any time
+  if (uploadButtonVisible) {
+    setTimeout(() => {
+      uploadButtonVisible.show();
+    }, 500);
+  }
 }
 
 // Handle image upload
@@ -253,6 +267,15 @@ function handleImageUpload(file) {
       uploadImageButton.show();
     }
   }
+  
+  // Always ensure the upload button is visible after loading
+  // This allows users to upload a new image at any time
+  if (uploadButtonVisible) {
+    uploadButtonVisible.show();
+  }
+  if (uploadButton) {
+    uploadButton.show();
+  }
 }
 
 // Handle slider change for grid size
@@ -264,6 +287,11 @@ function handleSliderChange() {
   if (newGridSize !== gridSize) {
     gridSize = newGridSize;
     gridSizeLabel.html(`Grid Size: ${gridSize}x${gridSize}`);
+    
+    // Update the number of shuffle moves based on grid size
+    // Formula: 10 * (gridSize^2)
+    numShuffleMoves = 10 * (gridSize * gridSize);
+    console.log(`Updated shuffle moves to ${numShuffleMoves} for ${gridSize}x${gridSize} grid`);
     
     // Reset puzzle with new grid size
     if (img) {
@@ -287,10 +315,10 @@ function initPuzzle(forceNewShuffle = false) {
   firstMove = false;
   elapsedTime = 0;
   
-  // Clear any existing timer flash interval
-  if (timerFlashInterval) {
-    clearInterval(timerFlashInterval);
-  }
+  // Reset alpha values
+  timerAlpha = 255;
+  solvedAlpha = 255;
+  alphaDirection = -1;
   
   // Create and shuffle tiles
   createTiles();
@@ -345,14 +373,21 @@ function shuffleTiles(forceNewShuffle = false) {
   // Ensure isSolved is false when starting to shuffle
   isSolved = false;
   
-  // Perform a large number of random valid moves from the solved state
+  // Perform random valid moves from the solved state
   // This guarantees a solvable puzzle because we start from solved
   // and only make valid moves
-  const numMoves = 1000; // Large number of random moves
+  
+  // Calculate number of moves based on grid size if not already set
+  if (numShuffleMoves <= 0) {
+    numShuffleMoves = 10 * (gridSize * gridSize);
+  }
+  
+  console.log(`Shuffling with ${numShuffleMoves} moves for ${gridSize}x${gridSize} grid`);
+  
   let lastDir = null;
   
   // Execute random moves
-  for (let move = 0; move < numMoves; move++) {
+  for (let move = 0; move < numShuffleMoves; move++) {
     let possibleDirs = [];
     
     // Check which directions are valid
@@ -485,15 +520,15 @@ function checkSolution() {
   if (allCorrect) {
     isSolved = true;
     
-    // Stop timer and start flashing effect
+    // Stop timer
     if (firstMove) {
       elapsedTime = millis() - startTime;
-      
-      // Set up timer flashing
-      timerFlashInterval = setInterval(() => {
-        timerAlpha = timerAlpha === 255 ? 128 : 255;
-      }, 500);
     }
+    
+    // Initialize alpha values for smooth flashing
+    timerAlpha = 255;
+    solvedAlpha = 255;
+    alphaDirection = -1;
   } else {
     // Make sure it's not solved if tiles are not in correct position
     isSolved = false;
@@ -528,72 +563,36 @@ function keyPressed() {
 
 // Update UI positioning for window resize
 function updateUIPositions() {
-  // Calculate minimum spacing from bottom of puzzle to first UI element
-  const timerSpace = 35; // Space for timer text
-  const minSpacingAfterTimer = 40; // Space between timer and first UI control
-  
-  // First calculate where the UI should start (after puzzle + timer + spacing)
-  let uiY = puzzleY + puzzleWidth + timerSpace + minSpacingAfterTimer;
-  
   let buttonWidth = 150;
   let buttonHeight = 40;
   let uiSpacing = 20;
-  let elementGap = 40; // Space between UI elements
   
-  // Position slider at the calculated position
-  gridSizeSlider.position(width/2 - 100, uiY);
+  // Position grid size label
+  let gridLabelY = puzzleY + puzzleWidth + 30;
+  gridSizeLabel.position(width/2 - 100, gridLabelY);
   
-  // Position grid size label with adequate spacing above slider
-  gridSizeLabel.position(width/2 - 100, uiY - 30);
+  // Position slider below label
+  let sliderY = gridLabelY + 30;
+  gridSizeSlider.position(width/2 - 100, sliderY);
   
-  // Position reset button with spacing below slider
-  let resetY = uiY + elementGap;
-  resetButton.position(width/2 - buttonWidth/2, resetY);
+  // Position buttons side by side below slider
+  let buttonsY = sliderY + 50;
+  resetButton.position(width/2 - buttonWidth - 10, buttonsY);
   
-  // Position upload button (container) with spacing below reset button
-  let uploadButtonY = resetY + buttonHeight + elementGap;
+  // Position upload button container
   try {
-    // This may fail initially before uploadButtonVisible is defined
     let uploadContainer = uploadButtonVisible.parent();
-    uploadContainer.position(width/2 - buttonWidth/2, uploadButtonY);
+    uploadContainer.position(width/2 + 10, buttonsY);
   } catch (e) {
-    // If error, try direct positioning (fallback)
+    // Fallback if error
     if (uploadButton) {
-      uploadButton.position(width/2 - buttonWidth/2, uploadButtonY);
+      uploadButton.position(width/2 + 10, buttonsY);
     }
   }
   
   // Update splash screen buttons if visible
   defaultButton.position(width/2 - buttonWidth - uiSpacing, height/2 + 50);
   uploadImageButton.position(width/2 + uiSpacing, height/2 + 50);
-  
-  // Check if UI extends beyond window height and adjust puzzle size if needed
-  const lastElementBottom = uploadButtonY + buttonHeight + 20; // Bottom of the last UI element + margin
-  if (lastElementBottom > height - 20) {
-    // Calculate how much we need to reduce puzzle size
-    const reduction = lastElementBottom - (height - 20);
-    puzzleWidth = max(200, puzzleWidth - reduction);
-    tileSize = puzzleWidth / gridSize;
-    
-    // Recalculate positions with new puzzle size
-    uiY = puzzleY + puzzleWidth + timerSpace + minSpacingAfterTimer;
-    
-    // Update all positions
-    gridSizeSlider.position(width/2 - 100, uiY);
-    gridSizeLabel.position(width/2 - 100, uiY - 30);
-    resetY = uiY + elementGap;
-    resetButton.position(width/2 - buttonWidth/2, resetY);
-    uploadButtonY = resetY + buttonHeight + elementGap;
-    
-    try {
-      let uploadContainer = uploadButtonVisible.parent();
-      uploadContainer.position(width/2 - buttonWidth/2, uploadButtonY);
-    } catch (e) {
-      if (uploadButton) {
-        uploadButton.position(width/2 - buttonWidth/2, uploadButtonY);
-      }
-    }
-  }
 }
 
 // Handle window resize
@@ -601,16 +600,13 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   
   // Recalculate puzzle dimensions
-  // Leave adequate space for UI elements (approx 250px)
-  const availableHeight = windowHeight - 250;
-  puzzleWidth = min(windowWidth * 0.8, availableHeight * 0.8);
+  const maxPuzzleHeight = height * 0.6; // Leave room for top UI
+  const maxPuzzleWidth = width * 0.7;
+  puzzleWidth = min(maxPuzzleWidth, maxPuzzleHeight);
   
-  // Ensure puzzle is not too small
-  puzzleWidth = max(puzzleWidth, 200);
-  
-  // Center the puzzle
-  puzzleX = (windowWidth - puzzleWidth) / 2;
-  puzzleY = max(windowHeight * 0.05, 20); // Ensure some minimum top margin
+  // Center the puzzle horizontally, position vertically with space for top elements
+  puzzleX = width / 2 - puzzleWidth / 2;
+  puzzleY = height * 0.2; // Fixed position with room for top elements
   
   // Update tile size
   if (gameStarted) {
@@ -638,8 +634,9 @@ function draw() {
   } else if (loadingScreen) {
     drawLoadingScreen();
   } else if (gameStarted) {
-    drawPuzzle();
-    drawTimer();
+    drawSolvedText(); // Draw "SOLVED!" text first if solved
+    drawTimer(); // Draw timer at the top
+    drawPuzzle(); // Draw the puzzle below
   }
 }
 
@@ -651,7 +648,7 @@ function drawSplashScreen() {
   
   textSize(20);
   fill(180); // Light text for dark mode
-  text("use the default image or upload your own?", width/2, height/2);
+  text("use the default image or upload your own", width/2, height/2);
 }
 
 // Draw loading screen
@@ -661,13 +658,77 @@ function drawLoadingScreen() {
   text("loading puzzle...", width/2, height/2);
 }
 
+// Draw the "SOLVED!" text at the top
+function drawSolvedText() {
+  if (isSolved) {
+    textSize(min(40, puzzleWidth/10));
+    
+    // Use smooth alpha transition for flashing effect
+    fill(0, 255, 150, solvedAlpha); // Brighter green for dark mode with alpha
+    
+    // Update alpha value for smooth flashing
+    updateFlashingAlpha();
+    
+    text("SOLVED!", width/2, puzzleY - 80); // Higher position with more gap from timer
+  }
+}
+
+// Draw the timer at the top
+function drawTimer() {
+  textSize(24);
+  
+  if (isSolved) {
+    // Flashing green timer for solved state with smooth alpha transition
+    fill(0, 255, 100, timerAlpha);
+  } else if (firstMove) {
+    // Regular timer during play
+    fill(220); // Light color for dark mode
+  } else {
+    // Timer not started yet
+    fill(150); // Medium light color for dark mode
+  }
+  
+  // Calculate current elapsed time
+  let displayTime;
+  if (firstMove && !isSolved) {
+    displayTime = formatTime(millis() - startTime);
+  } else {
+    displayTime = formatTime(elapsedTime);
+  }
+  
+  // Position timer at the top, below "SOLVED!" text if present
+  let timerY = puzzleY - 30;
+  
+  // Display timer text at the top
+  text(displayTime, width/2, timerY);
+}
+
+// Update alpha values for smooth flashing effect
+function updateFlashingAlpha() {
+  if (isSolved) {
+    // Change alpha value based on direction
+    timerAlpha += alphaDirection * alphaChangeSpeed;
+    solvedAlpha += alphaDirection * alphaChangeSpeed;
+    
+    // Reverse direction when reaching limits
+    if (timerAlpha <= 100 || timerAlpha >= 255) {
+      alphaDirection *= -1;
+    }
+    
+    // Ensure alpha stays within bounds
+    timerAlpha = constrain(timerAlpha, 100, 255);
+    solvedAlpha = constrain(solvedAlpha, 100, 255);
+  }
+}
+
 // Draw the puzzle
 function drawPuzzle() {
-  // Draw background for puzzle area
-  fill(50); // Darker background for puzzle area
+  // Draw background for puzzle area - completely black
+  fill(0); // Pure black background for puzzle area
   stroke(100); // Subtle border
-  strokeWeight(1);
+  strokeWeight(3);
   rect(puzzleX, puzzleY, puzzleWidth, puzzleWidth);
+  strokeWeight(0);
   
   if (isSolved) {
     // If solved, draw the complete image rather than tiles
@@ -692,11 +753,6 @@ function drawPuzzle() {
       cropSize           // Source height in the original image
     );
     pop();
-    
-    // "SOLVED!" text above the puzzle with dark mode friendly color
-    textSize(min(40, puzzleWidth/10));
-    fill(0, 255, 150); // Brighter green for dark mode
-    text("SOLVED!", puzzleX + puzzleWidth/2, puzzleY - 30); // Increased spacing
   } else {
     // Draw tiles when not solved
     for (let tile of tiles) {
@@ -726,38 +782,4 @@ function drawPuzzle() {
       }
     }
   }
-}
-
-// Draw the timer
-function drawTimer() {
-  textSize(24);
-  
-  if (isSolved) {
-    // Flashing green timer for solved state - brighter for dark mode
-    fill(0, 255, 100, timerAlpha);
-  } else if (firstMove) {
-    // Regular timer during play
-    fill(220); // Light color for dark mode
-  } else {
-    // Timer not started yet
-    fill(150); // Medium light color for dark mode
-  }
-  
-  // Calculate current elapsed time
-  let displayTime;
-  if (firstMove && !isSolved) {
-    displayTime = formatTime(millis() - startTime);
-  } else {
-    displayTime = formatTime(elapsedTime);
-  }
-  
-  // FIXED POSITIONING: Place timer at a fixed offset below the puzzle
-  // regardless of other UI elements - this ensures it never overlaps
-  let fixedTimerY = puzzleY + puzzleWidth + 30;
-  
-  // Calculate bottom edge of puzzle
-  let puzzleBottom = puzzleY + puzzleWidth;
-  
-  // Display timer text at a FIXED distance from the puzzle
-  text(displayTime, width/2, puzzleBottom + 30);
 }

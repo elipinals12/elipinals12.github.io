@@ -21,7 +21,7 @@ let timerAlpha = 255; // Alpha value for timer flashing effect
 let splashScreen = true; // Flag to show splash screen
 let loadingScreen = false; // Flag to show loading screen
 let uploadButton; // File input element for uploading custom images
-let uploadLabel; // Label for the file input
+let uploadButtonVisible; // Visible button for uploading
 let resetButton; // Button to reset/shuffle the puzzle
 let gridSizeSlider; // Slider to adjust grid size
 let gridSizeLabel; // Label to display current grid size
@@ -70,6 +70,9 @@ function setup() {
   // Initial UI visibility management
   setUIVisibility(false);
   
+  // Run window resize calculations immediately to set proper layout
+  windowResized();
+  
   // Ensure text is centered
   textAlign(CENTER, CENTER);
   // Default to CENTER image mode, but will switch to CORNER when needed
@@ -110,29 +113,46 @@ function createUIElements() {
   resetButton.style('cursor', 'pointer');
   resetButton.mousePressed(resetPuzzle);
   
-  // Create file input for custom image upload
-  uploadButton = createFileInput(handleImageUpload);
-  uploadButton.position(width/2 - buttonWidth/2, uiY + 100);
-  uploadButton.size(buttonWidth, buttonHeight);
-  uploadButton.style('color', '#ccc');
-  uploadButton.style('background-color', '#333');
-  uploadButton.style('border', '1px solid #555');
-  uploadButton.style('border-radius', '4px');
-  uploadButton.style('padding', '8px');
-  uploadButton.style('cursor', 'pointer');
+  // Create a real button for "Upload Custom Image" that will trigger file selection
+  // This button is identical to the other buttons visually
+  let uploadButtonContainer = createDiv();
+  uploadButtonContainer.position(width/2 - buttonWidth/2, uiY + 100);
+  uploadButtonContainer.size(buttonWidth, buttonHeight);
+  uploadButtonContainer.style('position', 'relative');
   
-  // Add a child element to display custom text
-  let uploadText = createSpan('Upload Custom Image');
-  uploadText.parent(uploadButton);
-  uploadText.style('color', '#fff');
-  uploadText.style('pointer-events', 'none');
-  uploadText.style('position', 'absolute');
-  uploadText.style('top', '50%');
-  uploadText.style('left', '50%');
-  uploadText.style('transform', 'translate(-50%, -50%)');
-  uploadText.style('z-index', '10');
-  uploadText.style('font-family', 'sans-serif');
-  uploadText.style('font-size', '14px');
+  // Create visible button
+  uploadButtonVisible = createButton('Upload Custom Image');
+  uploadButtonVisible.parent(uploadButtonContainer);
+  uploadButtonVisible.size(buttonWidth, buttonHeight);
+  uploadButtonVisible.style('background-color', '#333');
+  uploadButtonVisible.style('color', '#fff');
+  uploadButtonVisible.style('border', '1px solid #555');
+  uploadButtonVisible.style('border-radius', '4px');
+  uploadButtonVisible.style('cursor', 'pointer');
+  uploadButtonVisible.style('width', '100%');
+  uploadButtonVisible.style('height', '100%');
+  uploadButtonVisible.style('position', 'absolute');
+  uploadButtonVisible.style('top', '0');
+  uploadButtonVisible.style('left', '0');
+  uploadButtonVisible.style('z-index', '1');
+  
+  // Hidden file input behind the visible button
+  uploadButton = createFileInput(handleImageUpload);
+  uploadButton.parent(uploadButtonContainer);
+  uploadButton.size(buttonWidth, buttonHeight);
+  uploadButton.style('opacity', '0');
+  uploadButton.style('position', 'absolute');
+  uploadButton.style('top', '0');
+  uploadButton.style('left', '0');
+  uploadButton.style('width', '100%');
+  uploadButton.style('height', '100%');
+  uploadButton.style('cursor', 'pointer');
+  uploadButton.style('z-index', '2'); // Place above the visible button to receive clicks
+  
+  // Make the visible button click trigger the file input
+  uploadButtonVisible.mousePressed(() => {
+    uploadButton.elt.click();
+  });
   
   // Create splash screen buttons
   defaultButton = createButton('Use Default');
@@ -168,7 +188,7 @@ function createUIElements() {
 
 // Sets visibility of UI elements
 function setUIVisibility(visible) {
-  const elements = [gridSizeSlider, gridSizeLabel, resetButton, uploadButton];
+  const elements = [gridSizeSlider, gridSizeLabel, resetButton, uploadButton, uploadButtonVisible];
   for (let el of elements) {
     if (visible) {
       el.show();
@@ -509,7 +529,7 @@ function keyPressed() {
 // Update UI positioning for window resize
 function updateUIPositions() {
   // Calculate minimum spacing from bottom of puzzle to first UI element
-  const timerSpace = 35; // Increased space for timer text
+  const timerSpace = 35; // Space for timer text
   const minSpacingAfterTimer = 40; // Space between timer and first UI control
   
   // First calculate where the UI should start (after puzzle + timer + spacing)
@@ -518,7 +538,7 @@ function updateUIPositions() {
   let buttonWidth = 150;
   let buttonHeight = 40;
   let uiSpacing = 20;
-  let elementGap = 40; // Increased space between UI elements
+  let elementGap = 40; // Space between UI elements
   
   // Position slider at the calculated position
   gridSizeSlider.position(width/2 - 100, uiY);
@@ -530,9 +550,18 @@ function updateUIPositions() {
   let resetY = uiY + elementGap;
   resetButton.position(width/2 - buttonWidth/2, resetY);
   
-  // Position upload button with spacing below reset button
+  // Position upload button (container) with spacing below reset button
   let uploadButtonY = resetY + buttonHeight + elementGap;
-  uploadButton.position(width/2 - buttonWidth/2, uploadButtonY);
+  try {
+    // This may fail initially before uploadButtonVisible is defined
+    let uploadContainer = uploadButtonVisible.parent();
+    uploadContainer.position(width/2 - buttonWidth/2, uploadButtonY);
+  } catch (e) {
+    // If error, try direct positioning (fallback)
+    if (uploadButton) {
+      uploadButton.position(width/2 - buttonWidth/2, uploadButtonY);
+    }
+  }
   
   // Update splash screen buttons if visible
   defaultButton.position(width/2 - buttonWidth - uiSpacing, height/2 + 50);
@@ -552,17 +581,18 @@ function updateUIPositions() {
     // Update all positions
     gridSizeSlider.position(width/2 - 100, uiY);
     gridSizeLabel.position(width/2 - 100, uiY - 30);
-    resetButton.position(width/2 - buttonWidth/2, uiY + elementGap);
-    uploadButton.position(width/2 - buttonWidth/2, uiY + elementGap + buttonHeight + elementGap);
-  }
-  
-  // Reposition the overlay text for the file input if it exists
-  let uploadText = select('span', uploadButton);
-  if (uploadText) {
-    uploadText.style('position', 'absolute');
-    uploadText.style('top', '50%');
-    uploadText.style('left', '50%');
-    uploadText.style('transform', 'translate(-50%, -50%)');
+    resetY = uiY + elementGap;
+    resetButton.position(width/2 - buttonWidth/2, resetY);
+    uploadButtonY = resetY + buttonHeight + elementGap;
+    
+    try {
+      let uploadContainer = uploadButtonVisible.parent();
+      uploadContainer.position(width/2 - buttonWidth/2, uploadButtonY);
+    } catch (e) {
+      if (uploadButton) {
+        uploadButton.position(width/2 - buttonWidth/2, uploadButtonY);
+      }
+    }
   }
 }
 

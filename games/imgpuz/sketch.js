@@ -194,13 +194,29 @@ function createUIElements() {
 
 // Sets visibility of UI elements
 function setUIVisibility(visible) {
-  const elements = [gridSizeSlider, gridSizeLabel, resetButton, uploadButton, uploadButtonVisible];
+  const elements = [gridSizeSlider, gridSizeLabel, resetButton];
   for (let el of elements) {
     if (visible) {
       el.show();
     } else {
       el.hide();
     }
+  }
+  
+  // Always ensure upload button is visible if we're not in splash screen
+  if (!splashScreen && uploadButton && uploadButtonVisible) {
+    try {
+      let uploadContainer = uploadButtonVisible.parent();
+      uploadContainer.style('display', 'block');
+      uploadButtonVisible.show();
+      uploadButton.show();
+    } catch (e) {
+      console.log("Error showing upload button:", e);
+    }
+  } else if (!visible) {
+    // Hide upload components only if specifically asked to hide all UI
+    if (uploadButton) uploadButton.hide();
+    if (uploadButtonVisible) uploadButtonVisible.hide();
   }
   
   // Splash screen buttons
@@ -258,6 +274,20 @@ function handleImageUpload(file) {
       initPuzzle();
       loadingScreen = false;
       setUIVisibility(true);
+      
+      // Ensure the upload button is visible
+      if (uploadButtonVisible) {
+        try {
+          let uploadContainer = uploadButtonVisible.parent();
+          uploadContainer.style('display', 'block');
+          uploadButtonVisible.show();
+        } catch (e) {
+          console.log("Error showing upload button:", e);
+        }
+      }
+      if (uploadButton) {
+        uploadButton.show();
+      }
     });
   } else {
     alert('Please upload an image file (JPG, PNG, GIF, WebP).');
@@ -266,15 +296,6 @@ function handleImageUpload(file) {
       defaultButton.show();
       uploadImageButton.show();
     }
-  }
-  
-  // Always ensure the upload button is visible after loading
-  // This allows users to upload a new image at any time
-  if (uploadButtonVisible) {
-    uploadButtonVisible.show();
-  }
-  if (uploadButton) {
-    uploadButton.show();
   }
 }
 
@@ -729,6 +750,11 @@ function updateUIPositions() {
   try {
     let uploadContainer = uploadButtonVisible.parent();
     uploadContainer.position(width/2 + 10, buttonsY);
+    
+    // Make sure it's visible (fixes the "disappearing upload button" issue)
+    uploadContainer.style('display', 'block');
+    uploadButtonVisible.show();
+    uploadButton.show();
   } catch (e) {
     // Fallback if error
     if (uploadButton) {

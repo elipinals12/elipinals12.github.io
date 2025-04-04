@@ -120,40 +120,22 @@ function createUIElements() {
   resetButton.style('cursor', 'pointer');
   resetButton.mousePressed(resetPuzzle);
   
-  // Create a real button for "Upload Custom Image" - side by side with reset button
-  let uploadButtonContainer = createDiv();
-  uploadButtonContainer.position(width/2 + 10, uiY + 80);
-  uploadButtonContainer.size(buttonWidth, buttonHeight);
-  uploadButtonContainer.style('position', 'relative');
-  
-  // Create visible button
+  // Method 1: Create a visible button that will trigger file input
   uploadButtonVisible = createButton('Upload Custom Image');
-  uploadButtonVisible.parent(uploadButtonContainer);
+  uploadButtonVisible.position(width/2 + 10, uiY + 80);
   uploadButtonVisible.size(buttonWidth, buttonHeight);
   uploadButtonVisible.style('background-color', '#1c6e8c'); // Blueish color for upload button
   uploadButtonVisible.style('color', '#fff');
   uploadButtonVisible.style('border', '1px solid #555');
   uploadButtonVisible.style('border-radius', '4px');
   uploadButtonVisible.style('cursor', 'pointer');
-  uploadButtonVisible.style('width', '100%');
-  uploadButtonVisible.style('height', '100%');
-  uploadButtonVisible.style('position', 'absolute');
-  uploadButtonVisible.style('top', '0');
-  uploadButtonVisible.style('left', '0');
-  uploadButtonVisible.style('z-index', '1');
   
-  // Hidden file input behind the visible button
+  // Create file input element (hidden by default)
   uploadButton = createFileInput(handleImageUpload);
-  uploadButton.parent(uploadButtonContainer);
-  uploadButton.size(buttonWidth, buttonHeight);
+  uploadButton.position(-1000, -1000); // Position off-screen
   uploadButton.style('opacity', '0');
   uploadButton.style('position', 'absolute');
-  uploadButton.style('top', '0');
-  uploadButton.style('left', '0');
-  uploadButton.style('width', '100%');
-  uploadButton.style('height', '100%');
-  uploadButton.style('cursor', 'pointer');
-  uploadButton.style('z-index', '2'); // Place above the visible button to receive clicks
+  uploadButton.style('pointer-events', 'none'); // Disable direct interaction
   
   // Make the visible button click trigger the file input
   uploadButtonVisible.mousePressed(() => {
@@ -241,6 +223,9 @@ function useSplashOption(option) {
         initPuzzle();
         loadingScreen = false;
         setUIVisibility(true);
+        
+        // Explicitly show the upload button
+        showUploadButton();
       }, 500); // Short delay for visual feedback
     }
   } else if (option === 'upload') {
@@ -252,13 +237,21 @@ function useSplashOption(option) {
   // Hide splash buttons
   defaultButton.hide();
   uploadImageButton.hide();
-  
-  // Ensure the main upload button is visible after setup
-  // This allows users to upload a new image at any time
+}
+
+// Helper function to ensure upload button is visible
+function showUploadButton() {
   if (uploadButtonVisible) {
-    setTimeout(() => {
-      uploadButtonVisible.show();
-    }, 500);
+    try {
+      let uploadContainer = uploadButtonVisible.parent();
+      if (uploadContainer) {
+        uploadContainer.style('display', 'block');
+        uploadButtonVisible.style('display', 'block');
+        uploadButton.style('display', 'block');
+      }
+    } catch (e) {
+      console.log("Error in showUploadButton:", e);
+    }
   }
 }
 
@@ -275,19 +268,8 @@ function handleImageUpload(file) {
       loadingScreen = false;
       setUIVisibility(true);
       
-      // Ensure the upload button is visible
-      if (uploadButtonVisible) {
-        try {
-          let uploadContainer = uploadButtonVisible.parent();
-          uploadContainer.style('display', 'block');
-          uploadButtonVisible.show();
-        } catch (e) {
-          console.log("Error showing upload button:", e);
-        }
-      }
-      if (uploadButton) {
-        uploadButton.show();
-      }
+      // Explicitly show the upload button
+      showUploadButton();
     });
   } else {
     alert('Please upload an image file (JPG, PNG, GIF, WebP).');
@@ -809,6 +791,12 @@ function draw() {
     drawSolvedText(); // Draw "SOLVED!" text first if solved
     drawTimer(); // Draw timer at the top
     drawPuzzle(); // Draw the puzzle below
+    
+    // Try to ensure upload button is visible in each frame
+    // This addresses some browser-specific issues
+    if (frameCount % 60 === 0) { // Check every second
+      showUploadButton();
+    }
   }
 }
 
@@ -816,7 +804,7 @@ function draw() {
 function drawSplashScreen() {
   textSize(40);
   fill(200); // Light text for dark mode
-  text("welcome to imgpzl", width/2, height/2 - 50);
+  text("welcome to imgpuz", width/2, height/2 - 50);
   
   textSize(20);
   fill(180); // Light text for dark mode

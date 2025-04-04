@@ -53,7 +53,14 @@ function setup() {
   
   // Set default values
   img = defaultImg;
-  puzzleWidth = min(windowWidth * 0.8, windowHeight * 0.6);
+  
+  // Calculate appropriate puzzle size based on screen dimensions
+  // Ensure puzzle doesn't take up too much vertical space to leave room for UI
+  const maxPuzzleHeight = windowHeight * 0.6;
+  const maxPuzzleWidth = windowWidth * 0.8;
+  puzzleWidth = min(maxPuzzleWidth, maxPuzzleHeight);
+  
+  // Center the puzzle
   puzzleX = (windowWidth - puzzleWidth) / 2;
   puzzleY = windowHeight * 0.1;
   
@@ -65,6 +72,7 @@ function setup() {
   
   // Ensure text is centered
   textAlign(CENTER, CENTER);
+  // Default to CENTER image mode, but will switch to CORNER when needed
   imageMode(CENTER);
 }
 
@@ -80,6 +88,8 @@ function createUIElements() {
   gridSizeSlider = createSlider(2, 10, gridSize, 1);
   gridSizeSlider.position(width/2 - 100, uiY);
   gridSizeSlider.style('width', '200px');
+  gridSizeSlider.style('background-color', '#444');
+  gridSizeSlider.style('accent-color', '#0c9');
   gridSizeSlider.input(handleSliderChange);
   
   // Create grid size label
@@ -87,38 +97,63 @@ function createUIElements() {
   gridSizeLabel.position(width/2 - 100, uiY - 30);
   gridSizeLabel.style('text-align', 'center');
   gridSizeLabel.style('width', '200px');
+  gridSizeLabel.style('color', '#ccc');
   
   // Create reset button
   resetButton = createButton('Shuffle / Reset');
   resetButton.position(width/2 - buttonWidth/2, uiY + 40);
   resetButton.size(buttonWidth, buttonHeight);
+  resetButton.style('background-color', '#333');
+  resetButton.style('color', '#fff');
+  resetButton.style('border', '1px solid #555');
+  resetButton.style('border-radius', '4px');
+  resetButton.style('cursor', 'pointer');
   resetButton.mousePressed(resetPuzzle);
   
   // Create file input for custom image upload
   uploadButton = createFileInput(handleImageUpload);
   uploadButton.position(width/2 - buttonWidth/2, uiY + 120);
   uploadButton.size(buttonWidth);
+  uploadButton.style('color', '#ccc');
+  uploadButton.style('background-color', '#333');
+  uploadButton.style('border', '1px solid #555');
+  uploadButton.style('border-radius', '4px');
+  uploadButton.style('padding', '8px');
   
   // Create upload label
   uploadLabel = createP('Upload Custom Image:');
   uploadLabel.position(width/2 - 100, uiY + 80);
   uploadLabel.style('text-align', 'center');
   uploadLabel.style('width', '200px');
+  uploadLabel.style('color', '#ccc');
   
   // Create splash screen buttons
   defaultButton = createButton('Use Default');
   defaultButton.position(width/2 - buttonWidth - uiSpacing, height/2 + 50);
   defaultButton.size(buttonWidth, buttonHeight);
+  defaultButton.style('background-color', '#333');
+  defaultButton.style('color', '#fff');
+  defaultButton.style('border', '1px solid #555');
+  defaultButton.style('border-radius', '4px');
+  defaultButton.style('cursor', 'pointer');
   defaultButton.mousePressed(() => {
     useSplashOption('default');
   });
   if (!defaultImageLoaded) {
     defaultButton.attribute('disabled', '');
+    defaultButton.style('background-color', '#222');
+    defaultButton.style('color', '#777');
+    defaultButton.style('cursor', 'not-allowed');
   }
   
   uploadImageButton = createButton('Upload Image');
   uploadImageButton.position(width/2 + uiSpacing, height/2 + 50);
   uploadImageButton.size(buttonWidth, buttonHeight);
+  uploadImageButton.style('background-color', '#333');
+  uploadImageButton.style('color', '#fff');
+  uploadImageButton.style('border', '1px solid #555');
+  uploadImageButton.style('border-radius', '4px');
+  uploadImageButton.style('cursor', 'pointer');
   uploadImageButton.mousePressed(() => {
     useSplashOption('upload');
   });
@@ -275,36 +310,67 @@ function shuffleTiles() {
   // First, perform a large number of random moves
   // This ensures the puzzle is always solvable
   let lastDir = null;
-  const moves = gridSize * gridSize * 20; // Number of random moves
   
-  for (let move = 0; move < moves; move++) {
-    let possibleDirs = [];
-    
-    // Check which directions are valid
-    if (blankPos.i > 0) possibleDirs.push('UP');
-    if (blankPos.i < gridSize - 1) possibleDirs.push('DOWN');
-    if (blankPos.j > 0) possibleDirs.push('LEFT');
-    if (blankPos.j < gridSize - 1) possibleDirs.push('RIGHT');
-    
-    // Filter out the opposite of the last direction to avoid undoing moves
-    if (lastDir) {
-      if (lastDir === 'UP') possibleDirs = possibleDirs.filter(dir => dir !== 'DOWN');
-      if (lastDir === 'DOWN') possibleDirs = possibleDirs.filter(dir => dir !== 'UP');
-      if (lastDir === 'LEFT') possibleDirs = possibleDirs.filter(dir => dir !== 'RIGHT');
-      if (lastDir === 'RIGHT') possibleDirs = possibleDirs.filter(dir => dir !== 'LEFT');
+  // Number of random moves - should be higher for smaller grids to ensure proper scrambling
+  const moves = gridSize * gridSize * (gridSize <= 2 ? 40 : 20);
+  
+  // Ensure isSolved is false when starting to shuffle
+  isSolved = false;
+  
+  // For 2x2 puzzles, explicitly check we don't accidentally end up in solved state
+  let totalShuffles = 0;
+  const maxShuffles = 100; // Safety limit
+  
+  do {
+    for (let move = 0; move < moves; move++) {
+      let possibleDirs = [];
+      
+      // Check which directions are valid
+      if (blankPos.i > 0) possibleDirs.push('UP');
+      if (blankPos.i < gridSize - 1) possibleDirs.push('DOWN');
+      if (blankPos.j > 0) possibleDirs.push('LEFT');
+      if (blankPos.j < gridSize - 1) possibleDirs.push('RIGHT');
+      
+      // Filter out the opposite of the last direction to avoid undoing moves
+      if (lastDir) {
+        if (lastDir === 'UP') possibleDirs = possibleDirs.filter(dir => dir !== 'DOWN');
+        if (lastDir === 'DOWN') possibleDirs = possibleDirs.filter(dir => dir !== 'UP');
+        if (lastDir === 'LEFT') possibleDirs = possibleDirs.filter(dir => dir !== 'RIGHT');
+        if (lastDir === 'RIGHT') possibleDirs = possibleDirs.filter(dir => dir !== 'LEFT');
+      }
+      
+      // Choose a random direction
+      const dir = possibleDirs[floor(random(possibleDirs.length))];
+      
+      // Move the blank tile
+      if (dir === 'UP') moveTile(blankPos.i - 1, blankPos.j, false);
+      if (dir === 'DOWN') moveTile(blankPos.i + 1, blankPos.j, false);
+      if (dir === 'LEFT') moveTile(blankPos.i, blankPos.j - 1, false);
+      if (dir === 'RIGHT') moveTile(blankPos.i, blankPos.j + 1, false);
+      
+      lastDir = dir;
     }
     
-    // Choose a random direction
-    const dir = possibleDirs[floor(random(possibleDirs.length))];
+    // Check if we're still in solved state (especially for 2x2)
+    let stillSolved = true;
+    for (let tile of tiles) {
+      if (tile.i !== tile.correctI || tile.j !== tile.correctJ) {
+        stillSolved = false;
+        break;
+      }
+    }
     
-    // Move the blank tile
-    if (dir === 'UP') moveTile(blankPos.i - 1, blankPos.j, false);
-    if (dir === 'DOWN') moveTile(blankPos.i + 1, blankPos.j, false);
-    if (dir === 'LEFT') moveTile(blankPos.i, blankPos.j - 1, false);
-    if (dir === 'RIGHT') moveTile(blankPos.i, blankPos.j + 1, false);
-    
-    lastDir = dir;
-  }
+    // If still solved and it's a small grid, try shuffling again
+    if (stillSolved && gridSize <= 3) {
+      totalShuffles++;
+    } else {
+      // We've successfully shuffled, so exit the loop
+      break;
+    }
+  } while (totalShuffles < maxShuffles);
+  
+  // Ensure isSolved is updated
+  checkSolution();
   
   // Reset the game start time flag
   firstMove = false;
@@ -354,23 +420,31 @@ function moveTile(i, j, isUserMove = true) {
 function checkSolution() {
   if (isSolved) return; // Already solved
   
+  // Check each tile's position to see if it matches its correct position
+  let allCorrect = true;
   for (let tile of tiles) {
     if (tile.i !== tile.correctI || tile.j !== tile.correctJ) {
-      return; // At least one tile is out of place
+      allCorrect = false;
+      break; // At least one tile is out of place
     }
   }
   
-  // If we get here, puzzle is solved
-  isSolved = true;
-  
-  // Stop timer and start flashing effect
-  if (firstMove) {
-    elapsedTime = millis() - startTime;
+  // If all tiles are in correct position, puzzle is solved
+  if (allCorrect) {
+    isSolved = true;
     
-    // Set up timer flashing
-    timerFlashInterval = setInterval(() => {
-      timerAlpha = timerAlpha === 255 ? 128 : 255;
-    }, 500);
+    // Stop timer and start flashing effect
+    if (firstMove) {
+      elapsedTime = millis() - startTime;
+      
+      // Set up timer flashing
+      timerFlashInterval = setInterval(() => {
+        timerAlpha = timerAlpha === 255 ? 128 : 255;
+      }, 500);
+    }
+  } else {
+    // Make sure it's not solved if tiles are not in correct position
+    isSolved = false;
   }
 }
 
@@ -402,17 +476,29 @@ function keyPressed() {
 
 // Update UI positioning for window resize
 function updateUIPositions() {
-  let uiY = puzzleY + puzzleWidth + 30;
+  // Calculate spacing to ensure elements don't overlap
+  // Base UI position with margin to ensure no overlap with puzzle
+  let uiY = puzzleY + puzzleWidth + 40;
   let buttonWidth = 150;
   let buttonHeight = 40;
   let uiSpacing = 20;
+  let elementSpacing = 60; // Space between UI elements
+  
+  // Adjust UI Y position if window height is too small
+  let totalUIHeight = 200; // Approximate total height of all UI elements
+  if (uiY + totalUIHeight > height - 20) {
+    // Reduce puzzle size to fit UI
+    puzzleWidth = min(puzzleWidth, height - totalUIHeight - puzzleY - 60);
+    tileSize = puzzleWidth / gridSize;
+    uiY = puzzleY + puzzleWidth + 40;
+  }
   
   // Update UI positions
   gridSizeSlider.position(width/2 - 100, uiY);
   gridSizeLabel.position(width/2 - 100, uiY - 30);
-  resetButton.position(width/2 - buttonWidth/2, uiY + 40);
-  uploadButton.position(width/2 - buttonWidth/2, uiY + 120);
-  uploadLabel.position(width/2 - 100, uiY + 80);
+  resetButton.position(width/2 - buttonWidth/2, uiY + elementSpacing);
+  uploadLabel.position(width/2 - 100, uiY + elementSpacing*2);
+  uploadButton.position(width/2 - buttonWidth/2, uiY + elementSpacing*2 + 30);
   
   // Update splash screen buttons if visible
   defaultButton.position(width/2 - buttonWidth - uiSpacing, height/2 + 50);
@@ -424,9 +510,16 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   
   // Recalculate puzzle dimensions
-  puzzleWidth = min(windowWidth * 0.8, windowHeight * 0.6);
+  // Leave adequate space for UI elements (approx 250px)
+  const availableHeight = windowHeight - 250;
+  puzzleWidth = min(windowWidth * 0.8, availableHeight * 0.8);
+  
+  // Ensure puzzle is not too small
+  puzzleWidth = max(puzzleWidth, 200);
+  
+  // Center the puzzle
   puzzleX = (windowWidth - puzzleWidth) / 2;
-  puzzleY = windowHeight * 0.1;
+  puzzleY = max(windowHeight * 0.05, 20); // Ensure some minimum top margin
   
   // Update tile size
   if (gameStarted) {
@@ -446,7 +539,7 @@ function formatTime(ms) {
 
 // p5.js draw function - runs continuously
 function draw() {
-  background(240);
+  background(30); // Dark background
   
   // Handle different screens
   if (splashScreen) {
@@ -462,60 +555,85 @@ function draw() {
 // Draw splash screen
 function drawSplashScreen() {
   textSize(40);
-  fill(0);
+  fill(200); // Light text for dark mode
   text("welcome to imgpzl", width/2, height/2 - 50);
   
   textSize(20);
+  fill(180); // Light text for dark mode
   text("use the default image or upload your own?", width/2, height/2);
 }
 
 // Draw loading screen
 function drawLoadingScreen() {
   textSize(24);
-  fill(0);
+  fill(200); // Light text for dark mode
   text("loading puzzle...", width/2, height/2);
 }
 
 // Draw the puzzle
 function drawPuzzle() {
   // Draw background for puzzle area
-  fill(200);
-  noStroke();
+  fill(50); // Darker background for puzzle area
+  stroke(100); // Subtle border
+  strokeWeight(1);
   rect(puzzleX, puzzleY, puzzleWidth, puzzleWidth);
   
-  // Draw tiles
-  for (let tile of tiles) {
-    if (!tile.isBlank || isSolved) { // Show the blank tile if puzzle is solved
-      // Calculate position on canvas
-      let x = puzzleX + tile.j * tileSize;
-      let y = puzzleY + tile.i * tileSize;
-      
-      // Draw image tile
-      image(
-        img,
-        x + tileSize/2,  // Center x position of the target rectangle
-        y + tileSize/2,  // Center y position of the target rectangle
-        tileSize,        // Width of the target rectangle
-        tileSize,        // Height of the target rectangle
-        tile.sx,         // Source x position in the original image
-        tile.sy,         // Source y position in the original image
-        tile.sw,         // Source width in the original image
-        tile.sh          // Source height in the original image
-      );
-    }
-  }
-  
-  // If solved, draw overlay and text
   if (isSolved) {
-    // Semi-transparent green overlay
-    fill(0, 200, 0, 80);
-    noStroke();
-    rect(puzzleX, puzzleY, puzzleWidth, puzzleWidth);
+    // If solved, draw the complete image rather than tiles
+    push();
+    imageMode(CORNER);
     
-    // "SOLVED!" text
-    textSize(min(80, puzzleWidth/6));
-    fill(255);
-    text("SOLVED!", puzzleX + puzzleWidth/2, puzzleY + puzzleWidth/2);
+    // Calculate crop dimensions to get a square from the center of the image
+    let cropSize = min(img.width, img.height);
+    let cropX = (img.width - cropSize) / 2;
+    let cropY = (img.height - cropSize) / 2;
+    
+    // Draw the complete image in the puzzle area
+    image(
+      img,
+      puzzleX,           // X position of puzzle area
+      puzzleY,           // Y position of puzzle area
+      puzzleWidth,       // Width of puzzle area
+      puzzleWidth,       // Height of puzzle area
+      cropX,             // Source x position in the original image
+      cropY,             // Source y position in the original image
+      cropSize,          // Source width in the original image
+      cropSize           // Source height in the original image
+    );
+    pop();
+    
+    // "SOLVED!" text above the puzzle with dark mode friendly color
+    textSize(min(40, puzzleWidth/10));
+    fill(0, 255, 150); // Brighter green for dark mode
+    text("SOLVED!", puzzleX + puzzleWidth/2, puzzleY - 20);
+  } else {
+    // Draw tiles when not solved
+    for (let tile of tiles) {
+      if (!tile.isBlank) { // Don't draw the blank tile
+        // Calculate position on canvas
+        let x = puzzleX + tile.j * tileSize;
+        let y = puzzleY + tile.i * tileSize;
+        
+        // For Firefox compatibility, ensure we're using CORNER mode for image drawing
+        push();
+        imageMode(CORNER);
+        
+        // Draw image tile
+        image(
+          img,
+          x,                // X position in CORNER mode
+          y,                // Y position in CORNER mode
+          tileSize,         // Width of the target rectangle
+          tileSize,         // Height of the target rectangle
+          tile.sx,          // Source x position in the original image
+          tile.sy,          // Source y position in the original image
+          tile.sw,          // Source width in the original image
+          tile.sh           // Source height in the original image
+        );
+        
+        pop();
+      }
+    }
   }
 }
 
@@ -524,14 +642,14 @@ function drawTimer() {
   textSize(24);
   
   if (isSolved) {
-    // Flashing green timer for solved state
-    fill(0, 150, 0, timerAlpha);
+    // Flashing green timer for solved state - brighter for dark mode
+    fill(0, 255, 100, timerAlpha);
   } else if (firstMove) {
     // Regular timer during play
-    fill(0);
+    fill(220); // Light color for dark mode
   } else {
     // Timer not started yet
-    fill(100);
+    fill(150); // Medium light color for dark mode
   }
   
   // Calculate current elapsed time
@@ -542,6 +660,9 @@ function drawTimer() {
     displayTime = formatTime(elapsedTime);
   }
   
+  // Position timer just below the puzzle with adequate spacing
+  let timerY = min(puzzleY + puzzleWidth + 25, gridSizeLabel.position().y - 10);
+  
   // Display timer text
-  text(displayTime, width/2, puzzleY + puzzleWidth + 15);
+  text(displayTime, width/2, timerY);
 }

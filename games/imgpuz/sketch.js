@@ -4,7 +4,7 @@
 // Global variables
 let img; // Stores the current image
 let defaultImages = []; // Array to store all default image options
-let imageNames = ["realtree.jpg", "mc.png", "aiwinner.png"]; // Array of image filenames - easily expandable
+let imageNames = ["realtree.jpg", "mc.png", "aiwinner.jpg"]; // Array of image filenames - easily expandable
 let imageLoaded = []; // Array to track if images loaded successfully
 let tiles = []; // Array to store puzzle tiles
 let gridSize = 4; // Default grid size (4x4)

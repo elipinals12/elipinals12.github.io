@@ -30,6 +30,7 @@ let resetButton; // Button to reset/shuffle the puzzle
 let gridSizeInput; // Input field for grid size
 let gridSizeLabel; // Label to display current grid size
 let uploadImageButton; // Button to trigger file upload dialog
+let backButton; // Back button to return to splash screen
 // Image loading flags tracked in the imageLoaded array
 let numShuffleMoves = 40; // Number of shuffle moves, dynamically updated based on grid size
 
@@ -104,17 +105,17 @@ function createUIElements() {
  let buttonHeight = 40;
  let uiSpacing = 20;
  
- // Create grid size label
- gridSizeLabel = createP(`Grid Size: ${gridSize}×${gridSize}`);
+ // Create grid size label with proper vertical spacing
+ gridSizeLabel = createP(`grid size: ${gridSize}×${gridSize}`);
  gridSizeLabel.position(width/2 - 100, uiY);
  gridSizeLabel.style('text-align', 'center');
  gridSizeLabel.style('width', '200px');
  gridSizeLabel.style('color', '#ccc');
- gridSizeLabel.style('margin-bottom', '5px');
+ gridSizeLabel.style('margin-bottom', '25px'); // Increased margin
  
- // Create number input for grid size
+ // Create number input for grid size with more vertical space
  gridSizeInput = createInput(gridSize.toString(), 'number');
- gridSizeInput.position(width/2 - 40, uiY + 30);
+ gridSizeInput.position(width/2 - 40, uiY + 50); // Increased vertical position
  gridSizeInput.size(80, 30);
  gridSizeInput.style('text-align', 'center');
  gridSizeInput.style('background-color', '#333');
@@ -124,11 +125,15 @@ function createUIElements() {
  gridSizeInput.attribute('min', '2');
  gridSizeInput.attribute('max', '100');
  gridSizeInput.attribute('step', '1');
- gridSizeInput.input(handleGridSizeInput);
+ 
+ // Fix input behavior by using event listeners instead of p5's input()
+ gridSizeInput.elt.addEventListener('input', function() {
+   handleGridSizeInput(this.value);
+ });
  
  // Create reset button (Shuffle) - position side by side with upload button
- resetButton = createButton('Shuffle / Reset');
- resetButton.position(width/2 - buttonWidth - 10, uiY + 80);
+ resetButton = createButton('shuffle / reset');
+ resetButton.position(width/2 - buttonWidth - 10, uiY + 100); // More space below input
  resetButton.size(buttonWidth, buttonHeight);
  resetButton.style('background-color', '#333'); // Darker color for shuffle button
  resetButton.style('color', '#fff');
@@ -138,8 +143,8 @@ function createUIElements() {
  resetButton.mousePressed(resetPuzzle);
  
  // Method 1: Create a visible button that will trigger file input
- uploadButtonVisible = createButton('Upload Custom Image');
- uploadButtonVisible.position(width/2 + 10, uiY + 80);
+ uploadButtonVisible = createButton('upload custom image');
+ uploadButtonVisible.position(width/2 + 10, uiY + 100); // Aligned with reset button
  uploadButtonVisible.size(buttonWidth, buttonHeight);
  uploadButtonVisible.style('background-color', '#1c6e8c'); // Blueish color for upload button
  uploadButtonVisible.style('color', '#fff');
@@ -160,7 +165,7 @@ function createUIElements() {
  });
  
  // Create splash screen upload button
- uploadImageButton = createButton('Upload Custom Image');
+ uploadImageButton = createButton('upload custom image');
  uploadImageButton.position(width/2 - buttonWidth/2, height * 0.7);
  uploadImageButton.size(buttonWidth, buttonHeight);
  uploadImageButton.style('background-color', '#1c6e8c'); // Match the main upload button color
@@ -171,12 +176,28 @@ function createUIElements() {
  uploadImageButton.mousePressed(() => {
    useSplashOption('upload');
  });
+ 
+ // Create back button to return to splash screen
+ backButton = createButton('back to images');
+ backButton.position(width/2 - buttonWidth/2, uiY + 150); // Below other buttons
+ backButton.size(buttonWidth, buttonHeight);
+ backButton.style('background-color', '#444');
+ backButton.style('color', '#fff');
+ backButton.style('border', '1px solid #555');
+ backButton.style('border-radius', '4px');
+ backButton.style('cursor', 'pointer');
+ backButton.mousePressed(() => {
+   // Return to splash screen
+   splashScreen = true;
+   gameStarted = false;
+   setUIVisibility(false);
+ });
 }
 
 // Sets visibility of UI elements
 function setUIVisibility(visible) {
- // Include uploadButtonVisible in the array of UI elements
- const elements = [gridSizeInput, gridSizeLabel, resetButton, uploadButtonVisible];
+ // Include uploadButtonVisible and backButton in the array of UI elements
+ const elements = [gridSizeInput, gridSizeLabel, resetButton, uploadButtonVisible, backButton];
  for (let el of elements) {
    if (visible) {
      el.show();
@@ -260,14 +281,14 @@ function handleImageUpload(file) {
    }, 
    // Error callback for uploaded image
    () => {
-     alert('Error loading the image. Please try a different format (JPG, PNG, GIF, WebP).');
+     alert('error loading the image. please try a different format (jpg, png, gif, webp).');
      loadingScreen = false;
      if (splashScreen) {
        uploadImageButton.show();
      }
    });
  } else {
-   alert('Please upload an image file (JPG, PNG, GIF, WebP).');
+   alert('please upload an image file (jpg, png, gif, webp).');
    // If no valid file selected and we're on splash screen, show upload button again
    if (splashScreen) {
      uploadImageButton.show();
@@ -276,22 +297,17 @@ function handleImageUpload(file) {
 }
 
 // Handle number input change for grid size
-function handleGridSizeInput() {
- // Get new grid size from input field
- let newValue = parseInt(gridSizeInput.value());
+function handleGridSizeInput(value) {
+ // Get new grid size from input value
+ let newValue = parseInt(value);
  
  // Ensure value is within valid range
  let newGridSize = constrain(newValue, 2, 100);
  
- // Update input field if value was constrained
- if (newValue !== newGridSize) {
-   gridSizeInput.value(newGridSize);
- }
- 
- // Only reset if grid size actually changed
- if (newGridSize !== gridSize) {
+ // Only reset if grid size actually changed and is valid
+ if (!isNaN(newGridSize) && newGridSize !== gridSize) {
    gridSize = newGridSize;
-   gridSizeLabel.html(`Grid Size: ${gridSize}×${gridSize}`);
+   gridSizeLabel.html(`grid size: ${gridSize}×${gridSize}`);
    
    // Update the number of shuffle moves based on grid size
    numShuffleMoves = 10 * (gridSize * gridSize);
@@ -328,11 +344,6 @@ function initPuzzle(forceNewShuffle = false) {
 
 // Create tiles from the image
 function createTiles() {
- // Create a temporary graphics buffer to process the image
- let cropSize = min(img.width, img.height);
- let cropX = (img.width - cropSize) / 2;
- let cropY = (img.height - cropSize) / 2;
- 
  // Create tiles array
  tiles = [];
  for (let i = 0; i < gridSize; i++) {
@@ -347,6 +358,11 @@ function createTiles() {
          isBlank: true
        });
      } else {
+       // Calculate crop dimensions to get a square from the center of the image
+       let cropSize = min(img.width, img.height);
+       let cropX = (img.width - cropSize) / 2;
+       let cropY = (img.height - cropSize) / 2;
+       
        // Calculate source coordinates in the original image
        let sx = cropX + (j * cropSize / gridSize);
        let sy = cropY + (i * cropSize / gridSize);
@@ -717,16 +733,19 @@ function updateUIPositions() {
  let gridLabelY = puzzleY + puzzleWidth + 30;
  gridSizeLabel.position(width/2 - 100, gridLabelY);
  
- // Position number input below label
- let inputY = gridLabelY + 30;
+ // Position number input below label with more space
+ let inputY = gridLabelY + 50; // Increased space
  gridSizeInput.position(width/2 - 40, inputY);
  
- // Position buttons side by side below input
- let buttonsY = inputY + 50;
+ // Position buttons with more space below input
+ let buttonsY = inputY + 60; // Increased space
  resetButton.position(width/2 - buttonWidth - 10, buttonsY);
  
  // Position upload button directly
  uploadButtonVisible.position(width/2 + 10, buttonsY);
+ 
+ // Position back button
+ backButton.position(width/2 - buttonWidth/2, buttonsY + 60);
  
  // Update splash screen upload button
  uploadImageButton.position(width/2 - buttonWidth/2, height * 0.7);
@@ -830,17 +849,24 @@ function drawSplashScreen() {
    if (imageLoaded[i]) {
      imageMode(CENTER);
      
-     // Better square cropping
-     const imgWidth = defaultImages[i].width;
-     const imgHeight = defaultImages[i].height;
-     const imgRatio = min(thumbnailSize / imgWidth, thumbnailSize / imgHeight);
+     // Properly crop images to square from center
+     const img = defaultImages[i];
+     const cropSize = min(img.width, img.height);
+     const cropX = (img.width - cropSize) / 2;
+     const cropY = (img.height - cropSize) / 2;
      
-     // Calculate dimensions to maintain aspect ratio within square
-     const displayWidth = imgWidth * imgRatio;
-     const displayHeight = imgHeight * imgRatio;
-     
-     // Draw image centered in thumbnail box
-     image(defaultImages[i], x, y, displayWidth, displayHeight);
+     // Draw image centered in thumbnail box, cropped to square
+     image(
+       img, 
+       x, 
+       y, 
+       thumbnailSize, 
+       thumbnailSize, 
+       cropX, 
+       cropY, 
+       cropSize, 
+       cropSize
+     );
      
      // Hover effect
      if (
@@ -862,7 +888,7 @@ function drawSplashScreen() {
      fill(150);
      noStroke();
      textSize(14);
-     text("Not loaded", x, y);
+     text("not loaded", x, y);
    }
  }
  
@@ -887,7 +913,7 @@ function drawSolvedText() {
    // Update alpha value for smooth flashing
    updateFlashingAlpha();
    
-   text("SOLVED!", width/2, puzzleY - 80); // Higher position with more gap from timer
+   text("solved!", width/2, puzzleY - 80); // Higher position with more gap from timer
  }
 }
 
@@ -983,6 +1009,17 @@ function drawPuzzle() {
        push();
        imageMode(CORNER);
        
+       // Get crop dimensions for the centered square portion of the image
+       let cropSize = min(img.width, img.height);
+       let cropX = (img.width - cropSize) / 2;
+       let cropY = (img.height - cropSize) / 2;
+       
+       // Calculate source coordinates in the original image based on centered crop
+       let sx = cropX + (tile.correctJ * cropSize / gridSize);
+       let sy = cropY + (tile.correctI * cropSize / gridSize);
+       let sw = cropSize / gridSize;
+       let sh = cropSize / gridSize;
+       
        // Draw image tile
        image(
          img,
@@ -990,10 +1027,10 @@ function drawPuzzle() {
          y,                // Y position in CORNER mode
          tileSize,         // Width of the target rectangle
          tileSize,         // Height of the target rectangle
-         tile.sx,          // Source x position in the original image
-         tile.sy,          // Source y position in the original image
-         tile.sw,          // Source width in the original image
-         tile.sh           // Source height in the original image
+         sx,               // Source x position in the original image
+         sy,               // Source y position in the original image
+         sw,               // Source width in the original image
+         sh                // Source height in the original image
        );
        
        pop();

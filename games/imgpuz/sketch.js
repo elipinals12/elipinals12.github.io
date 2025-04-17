@@ -4,7 +4,7 @@
 // Global variables
 let img; // Stores the current image
 let defaultImages = []; // Array to store all default image options
-let imageNames = ["realtree.jpg", "mc.png", "aiwinner.jpg", "adam.jpg"]; // Array of image filenames - easily expandable
+let imageNames = ["realtree.jpg", "mc.png", "aiwinner.jpg", "adam.jpg"]; // Added adam.jpg to options
 let imageLoaded = []; // Array to track if images loaded successfully
 let tiles = []; // Array to store puzzle tiles
 let gridSize = 4; // Default grid size (4x4)
@@ -38,7 +38,7 @@ function preload() {
   // Initialize the imageLoaded array with false values
   imageLoaded = new Array(imageNames.length).fill(false);
   
-  // Load all default images from the imageNames array
+  // Load all default images from the imageNames array - using ./ref path
   for (let i = 0; i < imageNames.length; i++) {
     defaultImages[i] = loadImage('./ref/' + imageNames[i], 
       // Success callback - using IIFE to capture the current index
@@ -206,6 +206,10 @@ function useSplashOption(option) {
     // If an image index was selected
     if (imageLoaded[option]) {
       img = defaultImages[option];
+      
+      // Make sure image is processed as a square before starting the puzzle
+      processSquareImage(img);
+      
       setTimeout(() => {
         initPuzzle();
         loadingScreen = false;
@@ -216,6 +220,13 @@ function useSplashOption(option) {
   
   // Hide splash buttons
   uploadImageButton.hide();
+}
+
+// Process image to ensure it's square (for thumbnail display and puzzle)
+function processSquareImage(image) {
+  // Nothing to do - the square cropping happens during display/tile creation
+  // This function is a placeholder if more processing is needed later
+  return image;
 }
 
 // Helper function to ensure upload button is visible
@@ -234,9 +245,21 @@ function handleImageUpload(file) {
     // Load the uploaded image
     loadImage(file.data, (loadedImg) => {
       img = loadedImg;
+      
+      // Make sure uploaded image is processed as a square 
+      processSquareImage(img);
+      
       initPuzzle();
       loadingScreen = false;
       setUIVisibility(true);
+    }, 
+    // Error callback for uploaded image
+    () => {
+      alert('Error loading the image. Please try a different format (JPG, PNG, GIF, WebP).');
+      loadingScreen = false;
+      if (splashScreen) {
+        uploadImageButton.show();
+      }
     });
   } else {
     alert('Please upload an image file (JPG, PNG, GIF, WebP).');
@@ -768,15 +791,30 @@ function drawSplashScreen() {
   fill(180); // Light text for dark mode
   text("select an image or upload your own", width/2, height/4 + 40);
   
-  // Display the three image options
+  // Display the image options
   const thumbnailSize = min(width * 0.2, 200); // Dynamic thumbnail size based on screen width
   const padding = thumbnailSize * 0.2; // Space between thumbnails
-  const startX = width/2 - ((thumbnailSize * defaultImages.length) + (padding * (defaultImages.length - 1))) / 2;
+  
+  // Calculate spacing based on number of images - allow for wrapping to multiple rows if needed
+  const maxImagesPerRow = min(4, defaultImages.length);
+  const imagesPerRow = min(maxImagesPerRow, Math.floor(width / (thumbnailSize + padding)));
+  const rows = Math.ceil(defaultImages.length / imagesPerRow);
   
   // Draw each image thumbnail
   for (let i = 0; i < defaultImages.length; i++) {
-    const x = startX + (i * (thumbnailSize + padding)) + thumbnailSize/2;
-    const y = height/2;
+    // Calculate position in grid layout
+    const row = Math.floor(i / imagesPerRow);
+    const col = i % imagesPerRow;
+    
+    // Calculate startX for this row
+    const rowImages = (i + imagesPerRow <= defaultImages.length) ? 
+      imagesPerRow : defaultImages.length - (row * imagesPerRow);
+    const rowWidth = (thumbnailSize * rowImages) + (padding * (rowImages - 1));
+    const startX = width/2 - rowWidth/2;
+    
+    // Calculate position for this image
+    const x = startX + (col * (thumbnailSize + padding)) + thumbnailSize/2;
+    const y = height/2 - (rows * (thumbnailSize + padding))/2 + row * (thumbnailSize + padding) + thumbnailSize/2;
     
     // Draw border for each image thumbnail - grayed out if image failed to load
     stroke(imageLoaded[i] ? 200 : 100);
@@ -788,6 +826,8 @@ function drawSplashScreen() {
     // Display image if loaded
     if (imageLoaded[i]) {
       imageMode(CENTER);
+      
+      // Calculate scaling to fit the thumbnail size as a square
       const imgRatio = min(thumbnailSize / defaultImages[i].width, thumbnailSize / defaultImages[i].height);
       const imgWidth = defaultImages[i].width * imgRatio;
       const imgHeight = defaultImages[i].height * imgRatio;

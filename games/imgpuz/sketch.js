@@ -34,6 +34,7 @@ let uploadImageButton; // Button to trigger file upload dialog
 let numShuffleMoves = 40; // Number of shuffle moves, dynamically updated based on grid size
 let galleryArea; // Area to display the image gallery
 let showingGallery = true; // Flag to show gallery at all times
+let galleryHeight = 150; // Height allocated for the gallery area
 
 // p5.js preload function - runs before setup
 function preload() {
@@ -70,7 +71,7 @@ function setup() {
  img = defaultImages[0];
  
  // Calculate appropriate puzzle size based on screen dimensions
- // Ensure puzzle doesn't take up too much vertical space to leave room for UI
+ // Ensure puzzle doesn't take up too much vertical space to leave room for UI and gallery
  const maxPuzzleHeight = height * 0.5; // Reduced for more space
  const maxPuzzleWidth = width * 0.7;
  puzzleWidth = min(maxPuzzleWidth, maxPuzzleHeight);
@@ -94,8 +95,8 @@ function setup() {
  
  // Ensure text is centered
  textAlign(CENTER, CENTER);
- // Default to CENTER image mode, but will switch to CORNER when needed
- imageMode(CENTER);
+ // Set to CORNER image mode by default for Firefox compatibility
+ imageMode(CORNER);
 }
 
 // Creates all UI elements
@@ -202,7 +203,10 @@ function createUIElements() {
  galleryArea.style('position', 'absolute');
  galleryArea.style('width', '100%');
  galleryArea.style('text-align', 'center');
- galleryArea.style('padding-top', '20px');
+ galleryArea.style('padding', '20px 0');
+ galleryArea.style('background-color', 'rgba(20, 20, 20, 0.7)'); // Semi-transparent background
+ galleryArea.style('border-top', '1px solid #444');
+ galleryArea.style('box-sizing', 'border-box');
 }
 
 // Sets visibility of UI elements
@@ -228,7 +232,12 @@ function setUIVisibility(visible) {
    galleryArea.hide(); // Hide gallery in splash screen (we draw it manually there)
  } else {
    uploadImageButton.hide();
-   galleryArea.show(); // Show gallery in all other screens
+   // Always show gallery in game mode
+   if (!loadingScreen) {
+     galleryArea.show();
+   } else {
+     galleryArea.hide();
+   }
  }
 }
 
@@ -253,6 +262,7 @@ function useSplashOption(option) {
        initPuzzle();
        loadingScreen = false;
        setUIVisibility(true);
+       updateGallery(); // Make sure gallery is updated
      }, 500); // Short delay for visual feedback
    }
  }
@@ -291,6 +301,7 @@ function handleImageUpload(file) {
      initPuzzle();
      loadingScreen = false;
      setUIVisibility(true);
+     updateGallery(); // Update gallery to highlight the custom image
    }, 
    // Error callback for uploaded image
    () => {
@@ -736,8 +747,10 @@ function updateUIPositions() {
  // Position upload button directly
  uploadButtonVisible.position(width/2 + 10, buttonsY);
  
- // Position gallery area at the bottom of the screen
- galleryArea.position(0, puzzleY + puzzleWidth + 170);
+ // Position gallery area at the bottom of the screen with fixed padding
+ const galleryTop = puzzleY + puzzleWidth + 170;
+ galleryArea.position(0, galleryTop);
+ galleryArea.style('height', galleryHeight + 'px');
  
  // Update splash screen upload button
  uploadImageButton.position(width/2 - buttonWidth/2, height * 0.7);
@@ -767,7 +780,8 @@ function updateGallery() {
  thumbContainer.style('justify-content', 'center');
  thumbContainer.style('gap', '15px');
  thumbContainer.style('margin', '0 auto');
- thumbContainer.style('max-width', '80%');
+ thumbContainer.style('max-width', '90%');
+ thumbContainer.style('padding', '0 20px');
  thumbContainer.parent(galleryArea);
  
  // Determine thumbnail size based on screen width
@@ -787,7 +801,7 @@ function updateGallery() {
    thumbDiv.style('overflow', 'hidden');
    thumbDiv.parent(thumbContainer);
    
-   // Create canvas for thumbnail
+   // Create canvas for thumbnail - this fixes Firefox issues by using CORNER mode consistently
    let thumbCanvas = createGraphics(thumbnailSize, thumbnailSize);
    
    // Draw image centered and cropped to square
@@ -797,6 +811,7 @@ function updateGallery() {
    const cropX = (imgWidth - cropSize) / 2;
    const cropY = (imgHeight - cropSize) / 2;
    
+   // Always use image() with CORNER mode
    thumbCanvas.image(
      defaultImages[i], 
      0, 
@@ -852,6 +867,7 @@ function updateGallery() {
    const cropX = (imgWidth - cropSize) / 2;
    const cropY = (imgHeight - cropSize) / 2;
    
+   // Always use image() with CORNER mode for Firefox compatibility
    thumbCanvas.image(
      img, 
      0, 
@@ -974,17 +990,18 @@ function drawSplashScreen() {
    const rowWidth = (thumbnailSize * rowImages) + (padding * (rowImages - 1));
    const startX = width/2 - rowWidth/2;
    
-   const x = startX + (col * (thumbnailSize + padding)) + thumbnailSize/2;
-   const y = height/2 - (rows * (thumbnailSize + padding + 20))/2 + row * (thumbnailSize + padding + 20) + thumbnailSize/2;
+   const x = startX + (col * (thumbnailSize + padding));
+   const y = height/2 - (rows * (thumbnailSize + padding + 20))/2 + row * (thumbnailSize + padding + 20);
    
    // Draw border
    stroke(imageLoaded[i] ? 200 : 100);
    strokeWeight(3);
    fill(20);
-   rect(x - thumbnailSize/2, y - thumbnailSize/2, thumbnailSize, thumbnailSize);
+   rect(x, y, thumbnailSize, thumbnailSize);
    
    if (imageLoaded[i]) {
-     imageMode(CENTER);
+     // Always use CORNER mode for Firefox compatibility
+     imageMode(CORNER);
      
      // Properly crop images to square from center
      const img = defaultImages[i];
@@ -992,7 +1009,7 @@ function drawSplashScreen() {
      const cropX = (img.width - cropSize) / 2;
      const cropY = (img.height - cropSize) / 2;
      
-     // Draw image centered in thumbnail box, cropped to square
+     // Draw image in thumbnail box, cropped to square
      image(
        img, 
        x, 
@@ -1007,15 +1024,15 @@ function drawSplashScreen() {
      
      // Hover effect
      if (
-       mouseX > x - thumbnailSize/2 && 
-       mouseX < x + thumbnailSize/2 && 
-       mouseY > y - thumbnailSize/2 && 
-       mouseY < y + thumbnailSize/2
+       mouseX > x && 
+       mouseX < x + thumbnailSize && 
+       mouseY > y && 
+       mouseY < y + thumbnailSize
      ) {
        noFill();
        stroke(0, 255, 150, 200);
        strokeWeight(5);
-       rect(x - thumbnailSize/2, y - thumbnailSize/2, thumbnailSize, thumbnailSize);
+       rect(x, y, thumbnailSize, thumbnailSize);
        
        if (mouseIsPressed) {
          useSplashOption(i);
@@ -1025,7 +1042,8 @@ function drawSplashScreen() {
      fill(150);
      noStroke();
      textSize(14);
-     text("not loaded", x, y);
+     textAlign(CENTER, CENTER);
+     text("not loaded", x + thumbnailSize/2, y + thumbnailSize/2);
    }
  }
  
@@ -1113,7 +1131,7 @@ function drawPuzzle() {
  
  if (isSolved) {
    // If solved, draw the complete image rather than tiles
-   push();
+   // Always use CORNER mode for Firefox compatibility
    imageMode(CORNER);
    
    // Calculate crop dimensions to get a square from the center of the image
@@ -1133,7 +1151,6 @@ function drawPuzzle() {
      cropSize,          // Source width in the original image
      cropSize           // Source height in the original image
    );
-   pop();
  } else {
    // Draw tiles when not solved
    for (let tile of tiles) {
@@ -1142,8 +1159,7 @@ function drawPuzzle() {
        let x = puzzleX + tile.j * tileSize;
        let y = puzzleY + tile.i * tileSize;
        
-       // For Firefox compatibility, ensure we're using CORNER mode for image drawing
-       push();
+       // Always use CORNER mode for Firefox compatibility
        imageMode(CORNER);
        
        // Get crop dimensions for the centered square portion of the image
@@ -1169,8 +1185,6 @@ function drawPuzzle() {
          sw,               // Source width in the original image
          sh                // Source height in the original image
        );
-       
-       pop();
      }
    }
  }

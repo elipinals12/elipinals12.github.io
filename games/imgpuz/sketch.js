@@ -3,7 +3,9 @@
 
 // Global variables
 let img; // Stores the current image
-let defaultImg; // Stores the default image
+let defaultImages = []; // Array to store all default image options
+let imageNames = ["realtree.jpg", "mc.png", "aiwinner.png"]; // Array of image filenames - easily expandable
+let imageLoaded = []; // Array to track if images loaded successfully
 let tiles = []; // Array to store puzzle tiles
 let gridSize = 4; // Default grid size (4x4)
 let tileSize; // Size of each tile (calculated based on canvas size and grid size)
@@ -27,25 +29,33 @@ let uploadButtonVisible; // Visible button for uploading
 let resetButton; // Button to reset/shuffle the puzzle
 let gridSizeSlider; // Slider to adjust grid size
 let gridSizeLabel; // Label to display current grid size
-let defaultButton; // Button to use default image
 let uploadImageButton; // Button to trigger file upload dialog
-let defaultImageLoaded = false; // Flag to track if default image loaded successfully
+// Image loading flags tracked in the imageLoaded array
 let numShuffleMoves = 40; // Number of shuffle moves, dynamically updated based on grid size
 
 // p5.js preload function - runs before setup
 function preload() {
-  // Try to load the default image
-  defaultImg = loadImage('./../../ref/realtree.jpg', 
-    // Success callback
-    () => { 
-      defaultImageLoaded = true;
-      console.log("Default image loaded successfully");
-    },
-    // Error callback
-    () => {
-      console.log("Failed to load default image");
-    }
-  );
+  // Initialize the imageLoaded array with false values
+  imageLoaded = new Array(imageNames.length).fill(false);
+  
+  // Load all default images from the imageNames array
+  for (let i = 0; i < imageNames.length; i++) {
+    defaultImages[i] = loadImage('./../../ref/' + imageNames[i], 
+      // Success callback - using IIFE to capture the current index
+      ((index) => {
+        return () => {
+          imageLoaded[index] = true;
+          console.log(`Image ${imageNames[index]} loaded successfully`);
+        };
+      })(i),
+      // Error callback
+      ((index) => {
+        return () => {
+          console.log(`Failed to load image ${imageNames[index]}`);
+        };
+      })(i)
+    );
+  }
 }
 
 // p5.js setup function - runs once at the beginning
@@ -54,8 +64,8 @@ function setup() {
   let canvas = createCanvas(windowWidth, windowHeight);
   canvas.style('display', 'block');
   
-  // Set default values
-  img = defaultImg;
+  // Default to first image (will be replaced when user selects one)
+  img = defaultImages[0];
   
   // Calculate appropriate puzzle size based on screen dimensions
   // Ensure puzzle doesn't take up too much vertical space to leave room for UI
@@ -101,10 +111,12 @@ function createUIElements() {
   gridSizeLabel.style('width', '200px');
   gridSizeLabel.style('color', '#ccc');
   
-  // Create slider for grid size
+  // Create slider for grid size - WIDER as requested
+  // Calculate the slider width based on screen size (50% of screen width with min and max limits)
+  const sliderWidth = constrain(width * 0.5, 300, 800);
   gridSizeSlider = createSlider(2, 100, gridSize, 1);
-  gridSizeSlider.position(width/2 - 100, uiY + 30);
-  gridSizeSlider.style('width', '200px');
+  gridSizeSlider.position(width/2 - sliderWidth/2, uiY + 30);
+  gridSizeSlider.style('width', `${sliderWidth}px`);
   gridSizeSlider.style('background-color', '#444');
   gridSizeSlider.style('accent-color', '#0c9');
   gridSizeSlider.input(handleSliderChange);
@@ -142,27 +154,9 @@ function createUIElements() {
     uploadButton.elt.click();
   });
   
-  // Create splash screen buttons
-  defaultButton = createButton('Use Default');
-  defaultButton.position(width/2 - buttonWidth - uiSpacing, height/2 + 50);
-  defaultButton.size(buttonWidth, buttonHeight);
-  defaultButton.style('background-color', '#333');
-  defaultButton.style('color', '#fff');
-  defaultButton.style('border', '1px solid #555');
-  defaultButton.style('border-radius', '4px');
-  defaultButton.style('cursor', 'pointer');
-  defaultButton.mousePressed(() => {
-    useSplashOption('default');
-  });
-  if (!defaultImageLoaded) {
-    defaultButton.attribute('disabled', '');
-    defaultButton.style('background-color', '#222');
-    defaultButton.style('color', '#777');
-    defaultButton.style('cursor', 'not-allowed');
-  }
-  
-  uploadImageButton = createButton('Upload Image');
-  uploadImageButton.position(width/2 + uiSpacing, height/2 + 50);
+  // Create splash screen upload button
+  uploadImageButton = createButton('Upload Custom Image');
+  uploadImageButton.position(width/2 - buttonWidth/2, height * 0.7);
   uploadImageButton.size(buttonWidth, buttonHeight);
   uploadImageButton.style('background-color', '#1c6e8c'); // Match the main upload button color
   uploadImageButton.style('color', '#fff');
@@ -193,10 +187,8 @@ function setUIVisibility(visible) {
   
   // Splash screen buttons
   if (splashScreen) {
-    defaultButton.show();
     uploadImageButton.show();
   } else {
-    defaultButton.hide();
     uploadImageButton.hide();
   }
 }
@@ -206,23 +198,23 @@ function useSplashOption(option) {
   splashScreen = false;
   loadingScreen = true;
   
-  if (option === 'default') {
-    if (defaultImageLoaded) {
-      img = defaultImg;
+  if (option === 'upload') {
+    // Trigger file input dialog
+    uploadButton.elt.click();
+    // The rest will be handled by handleImageUpload
+  } else if (typeof option === 'number' && option >= 0 && option < defaultImages.length) {
+    // If an image index was selected
+    if (imageLoaded[option]) {
+      img = defaultImages[option];
       setTimeout(() => {
         initPuzzle();
         loadingScreen = false;
         setUIVisibility(true);
       }, 500); // Short delay for visual feedback
     }
-  } else if (option === 'upload') {
-    // Trigger file input dialog
-    uploadButton.elt.click();
-    // The rest will be handled by handleImageUpload
   }
   
   // Hide splash buttons
-  defaultButton.hide();
   uploadImageButton.hide();
 }
 
@@ -248,9 +240,8 @@ function handleImageUpload(file) {
     });
   } else {
     alert('Please upload an image file (JPG, PNG, GIF, WebP).');
-    // If no valid file selected and we're on splash screen, show buttons again
+    // If no valid file selected and we're on splash screen, show upload button again
     if (splashScreen) {
-      defaultButton.show();
       uploadImageButton.show();
     }
   }
@@ -689,15 +680,16 @@ function keyPressed() {
 function updateUIPositions() {
   let buttonWidth = 150;
   let buttonHeight = 40;
-  let uiSpacing = 20;
   
   // Position grid size label
   let gridLabelY = puzzleY + puzzleWidth + 30;
   gridSizeLabel.position(width/2 - 100, gridLabelY);
   
-  // Position slider below label
+  // Position slider below label - WIDER slider as requested
+  const sliderWidth = constrain(width * 0.5, 300, 800);
   let sliderY = gridLabelY + 30;
-  gridSizeSlider.position(width/2 - 100, sliderY);
+  gridSizeSlider.position(width/2 - sliderWidth/2, sliderY);
+  gridSizeSlider.style('width', `${sliderWidth}px`);
   
   // Position buttons side by side below slider
   let buttonsY = sliderY + 50;
@@ -706,9 +698,8 @@ function updateUIPositions() {
   // Position upload button directly - no container reference
   uploadButtonVisible.position(width/2 + 10, buttonsY);
   
-  // Update splash screen buttons if visible
-  defaultButton.position(width/2 - buttonWidth - uiSpacing, height/2 + 50);
-  uploadImageButton.position(width/2 + uiSpacing, height/2 + 50);
+  // Update splash screen upload button
+  uploadImageButton.position(width/2 - buttonWidth/2, height * 0.7);
 }
 
 // Handle window resize
@@ -771,11 +762,66 @@ function draw() {
 function drawSplashScreen() {
   textSize(40);
   fill(200); // Light text for dark mode
-  text("welcome to imgpuz", width/2, height/2 - 50);
+  text("welcome to imgpuz", width/2, height/4);
   
   textSize(20);
   fill(180); // Light text for dark mode
-  text("use the default image or upload your own", width/2, height/2);
+  text("select an image or upload your own", width/2, height/4 + 40);
+  
+  // Display the three image options
+  const thumbnailSize = min(width * 0.2, 200); // Dynamic thumbnail size based on screen width
+  const padding = thumbnailSize * 0.2; // Space between thumbnails
+  const startX = width/2 - ((thumbnailSize * defaultImages.length) + (padding * (defaultImages.length - 1))) / 2;
+  
+  // Draw each image thumbnail
+  for (let i = 0; i < defaultImages.length; i++) {
+    const x = startX + (i * (thumbnailSize + padding)) + thumbnailSize/2;
+    const y = height/2;
+    
+    // Draw border for each image thumbnail - grayed out if image failed to load
+    stroke(imageLoaded[i] ? 200 : 100);
+    strokeWeight(3);
+    fill(20);
+    
+    rect(x - thumbnailSize/2, y - thumbnailSize/2, thumbnailSize, thumbnailSize);
+    
+    // Display image if loaded
+    if (imageLoaded[i]) {
+      imageMode(CENTER);
+      const imgRatio = min(thumbnailSize / defaultImages[i].width, thumbnailSize / defaultImages[i].height);
+      const imgWidth = defaultImages[i].width * imgRatio;
+      const imgHeight = defaultImages[i].height * imgRatio;
+      
+      image(defaultImages[i], x, y, imgWidth, imgHeight);
+      
+      // Add hover effect and click handler
+      if (
+        mouseX > x - thumbnailSize/2 && 
+        mouseX < x + thumbnailSize/2 && 
+        mouseY > y - thumbnailSize/2 && 
+        mouseY < y + thumbnailSize/2
+      ) {
+        // Highlight effect on hover
+        noFill();
+        stroke(0, 255, 150, 200);
+        strokeWeight(5);
+        rect(x - thumbnailSize/2, y - thumbnailSize/2, thumbnailSize, thumbnailSize);
+        
+        // Handle click
+        if (mouseIsPressed) {
+          useSplashOption(i);
+        }
+      }
+    } else {
+      // If image failed to load, show error text
+      fill(150);
+      noStroke();
+      textSize(14);
+      text("Not loaded", x, y);
+    }
+  }
+  
+  noStroke();
 }
 
 // Draw loading screen

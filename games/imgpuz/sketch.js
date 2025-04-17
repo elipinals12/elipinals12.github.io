@@ -943,7 +943,7 @@ function updateFlashingAlpha() {
 
 // Draw the puzzle
 function drawPuzzle() {
- // Draw background for puzzle area - completely black
+ // Draw background for puzzle area - completely black...
  fill(0); // Pure black background for puzzle area
  stroke(100); // Subtle border
  strokeWeight(3);

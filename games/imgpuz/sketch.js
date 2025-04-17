@@ -30,9 +30,10 @@ let resetButton; // Button to reset/shuffle the puzzle
 let gridSizeInput; // Input field for grid size
 let gridSizeLabel; // Label to display current grid size
 let uploadImageButton; // Button to trigger file upload dialog
-let backButton; // Back button to return to splash screen
 // Image loading flags tracked in the imageLoaded array
 let numShuffleMoves = 40; // Number of shuffle moves, dynamically updated based on grid size
+let galleryArea; // Area to display the image gallery
+let showingGallery = true; // Flag to show gallery at all times
 
 // p5.js preload function - runs before setup
 function preload() {
@@ -70,14 +71,14 @@ function setup() {
  
  // Calculate appropriate puzzle size based on screen dimensions
  // Ensure puzzle doesn't take up too much vertical space to leave room for UI
- const maxPuzzleHeight = height * 0.6; // Reduced to make more room for top elements
- const maxPuzzleWidth = width * 0.8;
+ const maxPuzzleHeight = height * 0.5; // Reduced for more space
+ const maxPuzzleWidth = width * 0.7;
  puzzleWidth = min(maxPuzzleWidth, maxPuzzleHeight);
  
  // Center the puzzle horizontally, position vertically with space for top elements
  puzzleX = width / 2 - puzzleWidth / 2;
  // Leave more space at the top for timer and "SOLVED!" text
- puzzleY = height * 0.2;
+ puzzleY = height * 0.15;
  
  // Initialize numShuffleMoves based on default grid size
  numShuffleMoves = 10 * (gridSize * gridSize);
@@ -126,9 +127,28 @@ function createUIElements() {
  gridSizeInput.attribute('max', '100');
  gridSizeInput.attribute('step', '1');
  
- // Fix input behavior by using event listeners instead of p5's input()
- gridSizeInput.elt.addEventListener('input', function() {
-   handleGridSizeInput(this.value);
+ // Remove any previous event listeners
+ if (gridSizeInput.elt.onchange) {
+   gridSizeInput.elt.onchange = null;
+ }
+ if (gridSizeInput.elt.oninput) {
+   gridSizeInput.elt.oninput = null;
+ }
+ if (gridSizeInput.elt.onkeydown) {
+   gridSizeInput.elt.onkeydown = null;
+ }
+ 
+ // Add normal HTML event listener for change - this allows normal input behavior
+ gridSizeInput.elt.addEventListener('change', function() {
+   let newValue = parseInt(this.value);
+   if (!isNaN(newValue) && newValue >= 2 && newValue <= 100) {
+     gridSize = newValue;
+     gridSizeLabel.html(`grid size: ${gridSize}×${gridSize}`);
+     numShuffleMoves = 10 * (gridSize * gridSize);
+     if (img) {
+       resetPuzzle(true);
+     }
+   }
  });
  
  // Create reset button (Shuffle) - position side by side with upload button
@@ -177,27 +197,18 @@ function createUIElements() {
    useSplashOption('upload');
  });
  
- // Create back button to return to splash screen
- backButton = createButton('back to images');
- backButton.position(width/2 - buttonWidth/2, uiY + 150); // Below other buttons
- backButton.size(buttonWidth, buttonHeight);
- backButton.style('background-color', '#444');
- backButton.style('color', '#fff');
- backButton.style('border', '1px solid #555');
- backButton.style('border-radius', '4px');
- backButton.style('cursor', 'pointer');
- backButton.mousePressed(() => {
-   // Return to splash screen
-   splashScreen = true;
-   gameStarted = false;
-   setUIVisibility(false);
- });
+ // Create gallery container div
+ galleryArea = createDiv('');
+ galleryArea.style('position', 'absolute');
+ galleryArea.style('width', '100%');
+ galleryArea.style('text-align', 'center');
+ galleryArea.style('padding-top', '20px');
 }
 
 // Sets visibility of UI elements
 function setUIVisibility(visible) {
- // Include uploadButtonVisible and backButton in the array of UI elements
- const elements = [gridSizeInput, gridSizeLabel, resetButton, uploadButtonVisible, backButton];
+ // Include uploadButtonVisible in the array of UI elements
+ const elements = [gridSizeInput, gridSizeLabel, resetButton, uploadButtonVisible];
  for (let el of elements) {
    if (visible) {
      el.show();
@@ -214,8 +225,10 @@ function setUIVisibility(visible) {
  // Splash screen buttons
  if (splashScreen) {
    uploadImageButton.show();
+   galleryArea.hide(); // Hide gallery in splash screen (we draw it manually there)
  } else {
    uploadImageButton.hide();
+   galleryArea.show(); // Show gallery in all other screens
  }
 }
 
@@ -292,30 +305,6 @@ function handleImageUpload(file) {
    // If no valid file selected and we're on splash screen, show upload button again
    if (splashScreen) {
      uploadImageButton.show();
-   }
- }
-}
-
-// Handle number input change for grid size
-function handleGridSizeInput(value) {
- // Get new grid size from input value
- let newValue = parseInt(value);
- 
- // Ensure value is within valid range
- let newGridSize = constrain(newValue, 2, 100);
- 
- // Only reset if grid size actually changed and is valid
- if (!isNaN(newGridSize) && newGridSize !== gridSize) {
-   gridSize = newGridSize;
-   gridSizeLabel.html(`grid size: ${gridSize}×${gridSize}`);
-   
-   // Update the number of shuffle moves based on grid size
-   numShuffleMoves = 10 * (gridSize * gridSize);
-   console.log(`Updated shuffle moves to ${numShuffleMoves} for ${gridSize}×${gridSize} grid`);
-   
-   // Reset puzzle with new grid size
-   if (img) {
-     resetPuzzle(true); // Force shuffle for small grid sizes
    }
  }
 }
@@ -707,6 +696,11 @@ function resetPuzzle(forceNewShuffle = false) {
 
 // Handle keyboard input
 function keyPressed() {
+ // Don't handle keyboard navigation when user is typing in the input field
+ if (document.activeElement === gridSizeInput.elt) {
+   return true; // Let the browser handle the key event
+ }
+ 
  if (!gameStarted || isSolved || loadingScreen || splashScreen) return;
  
  if (keyCode === UP_ARROW && blankPos.i < gridSize - 1) {
@@ -719,9 +713,7 @@ function keyPressed() {
    moveTile(blankPos.i, blankPos.j - 1);
  }
  
- // Ensure focus is not on any UI element to prevent arrow keys from affecting them
- document.activeElement.blur();
- return false; // Prevent default behavior
+ return false; // Prevent default behavior for game controls
 }
 
 // Update UI positioning for window resize
@@ -744,11 +736,156 @@ function updateUIPositions() {
  // Position upload button directly
  uploadButtonVisible.position(width/2 + 10, buttonsY);
  
- // Position back button
- backButton.position(width/2 - buttonWidth/2, buttonsY + 60);
+ // Position gallery area at the bottom of the screen
+ galleryArea.position(0, puzzleY + puzzleWidth + 170);
  
  // Update splash screen upload button
  uploadImageButton.position(width/2 - buttonWidth/2, height * 0.7);
+ 
+ // Update gallery in the gallery area
+ updateGallery();
+}
+
+// Update gallery of images
+function updateGallery() {
+ // Clear previous gallery
+ galleryArea.html('');
+ 
+ // Skip during splash screen as we draw gallery differently there
+ if (splashScreen) return;
+ 
+ // Add title
+ let galleryTitle = createP('select image:');
+ galleryTitle.style('color', '#ccc');
+ galleryTitle.style('margin', '0 0 10px 0');
+ galleryTitle.parent(galleryArea);
+ 
+ // Create flexbox container for thumbnails
+ let thumbContainer = createDiv('');
+ thumbContainer.style('display', 'flex');
+ thumbContainer.style('flex-wrap', 'wrap');
+ thumbContainer.style('justify-content', 'center');
+ thumbContainer.style('gap', '15px');
+ thumbContainer.style('margin', '0 auto');
+ thumbContainer.style('max-width', '80%');
+ thumbContainer.parent(galleryArea);
+ 
+ // Determine thumbnail size based on screen width
+ const thumbnailSize = min(width * 0.08, 80); // Smaller thumbnails
+ 
+ // Add each default image as a thumbnail
+ for (let i = 0; i < defaultImages.length; i++) {
+   if (!imageLoaded[i]) continue;
+   
+   let thumbDiv = createDiv('');
+   thumbDiv.style('width', thumbnailSize + 'px');
+   thumbDiv.style('height', thumbnailSize + 'px');
+   thumbDiv.style('position', 'relative');
+   thumbDiv.style('cursor', 'pointer');
+   thumbDiv.style('border', '2px solid ' + (img === defaultImages[i] ? '#0f0' : '#555'));
+   thumbDiv.style('border-radius', '4px');
+   thumbDiv.style('overflow', 'hidden');
+   thumbDiv.parent(thumbContainer);
+   
+   // Create canvas for thumbnail
+   let thumbCanvas = createGraphics(thumbnailSize, thumbnailSize);
+   
+   // Draw image centered and cropped to square
+   const imgWidth = defaultImages[i].width;
+   const imgHeight = defaultImages[i].height;
+   const cropSize = min(imgWidth, imgHeight);
+   const cropX = (imgWidth - cropSize) / 2;
+   const cropY = (imgHeight - cropSize) / 2;
+   
+   thumbCanvas.image(
+     defaultImages[i], 
+     0, 
+     0, 
+     thumbnailSize, 
+     thumbnailSize, 
+     cropX, 
+     cropY, 
+     cropSize, 
+     cropSize
+   );
+   
+   // Convert canvas to img element and add to div
+   let canvasURL = thumbCanvas.canvas.toDataURL();
+   let thumbImg = createImg(canvasURL, 'thumbnail');
+   thumbImg.style('width', '100%');
+   thumbImg.style('height', '100%');
+   thumbImg.style('object-fit', 'cover');
+   thumbImg.parent(thumbDiv);
+   
+   // Add click handler
+   thumbDiv.mousePressed(() => {
+     img = defaultImages[i];
+     // Update UI to show which image is selected
+     updateGallery();
+     // Reset/init puzzle with new image
+     resetPuzzle(true);
+   });
+   
+   // Clean up canvas to prevent memory leak
+   thumbCanvas.remove();
+ }
+ 
+ // If custom image is loaded and isn't one of the defaults
+ if (img && !defaultImages.includes(img)) {
+   let customThumbDiv = createDiv('');
+   customThumbDiv.style('width', thumbnailSize + 'px');
+   customThumbDiv.style('height', thumbnailSize + 'px');
+   customThumbDiv.style('position', 'relative');
+   customThumbDiv.style('cursor', 'pointer');
+   customThumbDiv.style('border', '2px solid #0f0'); // Green border for selected
+   customThumbDiv.style('border-radius', '4px');
+   customThumbDiv.style('overflow', 'hidden');
+   customThumbDiv.parent(thumbContainer);
+   
+   // Create canvas for thumbnail
+   let thumbCanvas = createGraphics(thumbnailSize, thumbnailSize);
+   
+   // Draw image centered and cropped to square
+   const imgWidth = img.width;
+   const imgHeight = img.height;
+   const cropSize = min(imgWidth, imgHeight);
+   const cropX = (imgWidth - cropSize) / 2;
+   const cropY = (imgHeight - cropSize) / 2;
+   
+   thumbCanvas.image(
+     img, 
+     0, 
+     0, 
+     thumbnailSize, 
+     thumbnailSize, 
+     cropX, 
+     cropY, 
+     cropSize, 
+     cropSize
+   );
+   
+   // Convert canvas to img element and add to div
+   let canvasURL = thumbCanvas.canvas.toDataURL();
+   let thumbImg = createImg(canvasURL, 'custom image');
+   thumbImg.style('width', '100%');
+   thumbImg.style('height', '100%');
+   thumbImg.style('object-fit', 'cover');
+   thumbImg.parent(customThumbDiv);
+   
+   // Add label for custom
+   let customLabel = createDiv('custom');
+   customLabel.style('position', 'absolute');
+   customLabel.style('bottom', '0');
+   customLabel.style('width', '100%');
+   customLabel.style('background', 'rgba(0,0,0,0.7)');
+   customLabel.style('color', 'white');
+   customLabel.style('font-size', '10px');
+   customLabel.style('text-align', 'center');
+   customLabel.parent(customThumbDiv);
+   
+   // Clean up canvas to prevent memory leak
+   thumbCanvas.remove();
+ }
 }
 
 // Handle window resize
@@ -756,13 +893,13 @@ function windowResized() {
  resizeCanvas(windowWidth, windowHeight);
  
  // Recalculate puzzle dimensions
- const maxPuzzleHeight = height * 0.6; // Leave room for top UI
+ const maxPuzzleHeight = height * 0.5; // Reduced for gallery at bottom
  const maxPuzzleWidth = width * 0.7;
  puzzleWidth = min(maxPuzzleWidth, maxPuzzleHeight);
  
  // Center the puzzle horizontally, position vertically with space for top elements
  puzzleX = width / 2 - puzzleWidth / 2;
- puzzleY = height * 0.2; // Fixed position with room for top elements
+ puzzleY = height * 0.15; // Fixed position with room for top elements
  
  // Update tile size
  if (gameStarted) {

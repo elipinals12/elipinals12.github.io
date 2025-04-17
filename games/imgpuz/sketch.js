@@ -40,7 +40,7 @@ function preload() {
   
   // Load all default images from the imageNames array
   for (let i = 0; i < imageNames.length; i++) {
-    defaultImages[i] = loadImage('./../../ref/' + imageNames[i], 
+    defaultImages[i] = loadImage('./ref/' + imageNames[i], 
       // Success callback - using IIFE to capture the current index
       ((index) => {
         return () => {

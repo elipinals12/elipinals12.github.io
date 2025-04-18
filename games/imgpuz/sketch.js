@@ -747,8 +747,12 @@ function updateUIPositions() {
  // Position upload button directly
  uploadButtonVisible.position(width/2 + 10, buttonsY);
  
- // Position gallery area at the bottom of the screen with fixed padding
- const galleryTop = puzzleY + puzzleWidth + 170;
+ // Calculate safe distance for gallery that ensures no overlap
+ // Add total UI height + safe padding
+ const uiTotalHeight = (buttonsY - gridLabelY) + buttonHeight + 50; // 50px extra padding
+ const galleryTop = puzzleY + puzzleWidth + uiTotalHeight;
+ 
+ // Position gallery area at the bottom of the screen with calculated padding
  galleryArea.position(0, galleryTop);
  galleryArea.style('height', galleryHeight + 'px');
  

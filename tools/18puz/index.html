@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>18 Solver</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      text-align: center;
+    }
+    input {
+      font-size: 24px;
+      padding: 10px;
+      margin: 20px;
+      width: 150px;
+      text-align: center;
+    }
+    #output {
+      margin-top: 20px;
+      max-width: 90%;
+      max-height: 60vh;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .solution {
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 5px;
+      min-width: 150px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <input type="text" id="digits" maxlength="4" placeholder="Enter 4 digits">
+  <div id="output"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/13.2.0/math.js"></script>
+  <script src="solver.js"></script>
+</body>
+</html>

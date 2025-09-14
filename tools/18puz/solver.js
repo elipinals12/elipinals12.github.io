@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const digits = input.split('').map(Number);
-    const solutions = findSolutions(digits, 18);
+    const solutions = findUniqueSolutions(digits, 18);
     
     if (solutions.length === 0) {
       outputDiv.innerHTML = '<div class="solution">No solutions found.</div>';
@@ -19,218 +19,197 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  function findSolutions(digits, target) {
-    // Cache stores all possible values from each set of digits
-    // Key: sorted array of digits (with multiplicities)
-    // Value: Map of (value -> simplest expression)
-    const cache = new Map();
+  function findUniqueSolutions(digits, target) {
+    // Global map to track unique computational structures
+    const seenStructures = new Map();
+    const validSolutions = [];
     
-    // Build all possible expressions recursively
-    const allExpressions = getAllExpressions(digits);
-    
-    // Filter and deduplicate
-    const uniqueSolutions = new Map();
-    for (const [value, expr] of allExpressions) {
-      if (Math.abs(value - target) < 0.0001) {
-        // Create a canonical key for this expression
-        const key = getCanonicalKey(expr, value);
-        if (!uniqueSolutions.has(key) || expr.length < uniqueSolutions.get(key).length) {
-          uniqueSolutions.set(key, expr);
+    // Generate all possible ways to combine the digits
+    generateAllCombinations(digits, (value, expr, structure) => {
+      if (Math.abs(value - target) < 0.0001 && isFinite(value)) {
+        // Only add if we haven't seen this exact structure
+        if (!seenStructures.has(structure)) {
+          seenStructures.set(structure, expr);
+          validSolutions.push(expr);
         }
       }
-    }
+    });
     
-    // Sort results
-    return Array.from(uniqueSolutions.values()).sort((a, b) => {
+    return validSolutions.sort((a, b) => {
       if (a.length !== b.length) return a.length - b.length;
       return a.localeCompare(b);
     });
   }
 
-  function getAllExpressions(digits) {
-    const results = [];
+  function generateAllCombinations(digits, callback) {
+    const n = digits.length;
+    // Cache for each subset of digits
+    const cache = new Map();
     
-    // Base case: single digit
-    if (digits.length === 1) {
-      results.push([digits[0], digits[0].toString()]);
-      return results;
-    }
-    
-    // Try all ways to split into two groups
-    for (let mask = 1; mask < (1 << digits.length) - 1; mask++) {
-      const group1 = [];
-      const group2 = [];
+    function getCombinations(mask) {
+      const key = mask.toString();
+      if (cache.has(key)) return cache.get(key);
       
-      for (let i = 0; i < digits.length; i++) {
+      const results = [];
+      const digitsInMask = [];
+      for (let i = 0; i < n; i++) {
         if (mask & (1 << i)) {
-          group1.push(digits[i]);
-        } else {
-          group2.push(digits[i]);
+          digitsInMask.push(digits[i]);
         }
       }
       
-      // Get all expressions for each group
-      const exprs1 = getAllExpressions(group1);
-      const exprs2 = getAllExpressions(group2);
-      
-      // Combine them with all operations
-      for (const [val1, expr1] of exprs1) {
-        for (const [val2, expr2] of exprs2) {
-          // Addition
-          results.push([val1 + val2, buildExpr(expr1, expr2, '+')]);
+      if (digitsInMask.length === 1) {
+        // Base case: single digit
+        const d = digitsInMask[0];
+        results.push({
+          value: d,
+          expr: d.toString(),
+          structure: `N${d}`
+        });
+      } else {
+        // Try all non-empty splits
+        for (let sub = mask & (mask - 1); sub > 0; sub = (sub - 1) & mask) {
+          const other = mask ^ sub;
+          if (sub > other) continue; // Avoid duplicate splits
           
-          // Subtraction (both orders matter!)
-          results.push([val1 - val2, buildExpr(expr1, expr2, '-')]);
-          results.push([val2 - val1, buildExpr(expr2, expr1, '-')]);
+          const leftResults = getCombinations(sub);
+          const rightResults = getCombinations(other);
           
-          // Multiplication
-          results.push([val1 * val2, buildExpr(expr1, expr2, '*')]);
-          
-          // Division (both orders, check for zero)
-          if (val2 !== 0) {
-            results.push([val1 / val2, buildExpr(expr1, expr2, '/')]);
-          }
-          if (val1 !== 0) {
-            results.push([val2 / val1, buildExpr(expr2, expr1, '/')]);
+          for (const left of leftResults) {
+            for (const right of rightResults) {
+              // Addition (commutative - normalize)
+              if (left.structure <= right.structure) {
+                results.push({
+                  value: left.value + right.value,
+                  expr: makeExpr(left.expr, right.expr, '+'),
+                  structure: `(${left.structure}+${right.structure})`
+                });
+              } else {
+                results.push({
+                  value: left.value + right.value,
+                  expr: makeExpr(right.expr, left.expr, '+'),
+                  structure: `(${right.structure}+${left.structure})`
+                });
+              }
+              
+              // Multiplication (commutative - normalize)
+              if (left.structure <= right.structure) {
+                results.push({
+                  value: left.value * right.value,
+                  expr: makeExpr(left.expr, right.expr, '*'),
+                  structure: `(${left.structure}*${right.structure})`
+                });
+              } else {
+                results.push({
+                  value: left.value * right.value,
+                  expr: makeExpr(right.expr, left.expr, '*'),
+                  structure: `(${right.structure}*${left.structure})`
+                });
+              }
+              
+              // Subtraction (both orders)
+              results.push({
+                value: left.value - right.value,
+                expr: makeExpr(left.expr, right.expr, '-'),
+                structure: `(${left.structure}-${right.structure})`
+              });
+              
+              results.push({
+                value: right.value - left.value,
+                expr: makeExpr(right.expr, left.expr, '-'),
+                structure: `(${right.structure}-${left.structure})`
+              });
+              
+              // Division (both orders)
+              if (right.value !== 0) {
+                results.push({
+                  value: left.value / right.value,
+                  expr: makeExpr(left.expr, right.expr, '/'),
+                  structure: `(${left.structure}/${right.structure})`
+                });
+              }
+              
+              if (left.value !== 0) {
+                results.push({
+                  value: right.value / left.value,
+                  expr: makeExpr(right.expr, left.expr, '/'),
+                  structure: `(${right.structure}/${left.structure})`
+                });
+              }
+            }
           }
         }
       }
+      
+      // Deduplicate results for this mask based on EXPRESSION not structure
+      const seenExpr = new Set();
+      const unique = [];
+      for (const r of results) {
+        if (!seenExpr.has(r.expr)) {
+          seenExpr.add(r.expr);
+          unique.push(r);
+        }
+      }
+      
+      cache.set(key, unique);
+      return unique;
     }
     
-    return results;
+    // Get all combinations for the full set
+    const fullMask = (1 << n) - 1;
+    const allResults = getCombinations(fullMask);
+    
+    // Deduplicate again before reporting
+    const finalSeen = new Set();
+    for (const r of allResults) {
+      if (!finalSeen.has(r.expr)) {
+        finalSeen.add(r.expr);
+        callback(r.value, r.expr, r.structure);
+      }
+    }
   }
 
-  function buildExpr(left, right, op) {
-    // Add parentheses only when necessary
+  function makeExpr(left, right, op) {
+    const prec = {'+': 1, '-': 1, '*': 2, '/': 2};
+    
+    // Determine if we need parentheses
     const leftNeedsParens = needsParens(left, op, false);
     const rightNeedsParens = needsParens(right, op, true);
     
-    const leftExpr = leftNeedsParens ? `(${left})` : left;
-    const rightExpr = rightNeedsParens ? `(${right})` : right;
+    const l = leftNeedsParens ? `(${left})` : left;
+    const r = rightNeedsParens ? `(${right})` : right;
     
-    return `${leftExpr}${op}${rightExpr}`;
+    return `${l}${op}${r}`;
   }
 
   function needsParens(expr, parentOp, isRight) {
-    // Single number never needs parens
     if (/^\d+$/.test(expr)) return false;
     
-    // Find the main operator
-    const mainOp = findMainOp(expr);
-    if (!mainOp) return false;
-    
+    // Find main operator
+    let depth = 0;
+    let mainOp = null;
     const prec = {'+': 1, '-': 1, '*': 2, '/': 2};
     
-    // Lower precedence needs parens
+    for (let i = expr.length - 1; i >= 0; i--) {
+      if (expr[i] === ')') depth++;
+      else if (expr[i] === '(') depth--;
+      else if (depth === 0 && prec[expr[i]]) {
+        mainOp = expr[i];
+        break;
+      }
+    }
+    
+    if (!mainOp) return false;
+    
+    // Need parens if lower precedence
     if (prec[mainOp] < prec[parentOp]) return true;
     
     // Right operand of - or / needs parens if same precedence
-    if (isRight && prec[mainOp] === prec[parentOp] && (parentOp === '-' || parentOp === '/')) {
+    if (isRight && prec[mainOp] === prec[parentOp] && 
+        (parentOp === '-' || parentOp === '/')) {
       return true;
     }
     
     return false;
-  }
-
-  function findMainOp(expr) {
-    let depth = 0;
-    let mainOp = null;
-    let minPrec = 999;
-    const prec = {'+': 1, '-': 1, '*': 2, '/': 2};
-    
-    for (let i = expr.length - 1; i >= 0; i--) {
-      if (expr[i] === ')') depth++;
-      else if (expr[i] === '(') depth--;
-      else if (depth === 0 && prec[expr[i]] !== undefined) {
-        if (prec[expr[i]] <= minPrec) {
-          minPrec = prec[expr[i]];
-          mainOp = expr[i];
-        }
-      }
-    }
-    
-    return mainOp;
-  }
-
-  function getCanonicalKey(expr, value) {
-    // Create a key that identifies mathematically equivalent expressions
-    // We'll use a combination of the value and a normalized structure
-    
-    // Parse expression into a tree
-    const tree = parseToTree(expr);
-    
-    // Get canonical form of tree
-    const canonical = treeToCanonical(tree);
-    
-    // Include value to handle floating point equivalences
-    return `${canonical}|${value.toFixed(6)}`;
-  }
-
-  function parseToTree(expr) {
-    // Remove outer parens if they exist
-    expr = expr.trim();
-    while (expr.startsWith('(') && expr.endsWith(')') && matchingParen(expr, 0) === expr.length - 1) {
-      expr = expr.slice(1, -1);
-    }
-    
-    // Find main operator
-    let mainOpPos = -1;
-    let mainOp = null;
-    let depth = 0;
-    let minPrec = 999;
-    const prec = {'+': 1, '-': 1, '*': 2, '/': 2};
-    
-    for (let i = expr.length - 1; i >= 0; i--) {
-      if (expr[i] === ')') depth++;
-      else if (expr[i] === '(') depth--;
-      else if (depth === 0 && prec[expr[i]] !== undefined) {
-        if (prec[expr[i]] <= minPrec) {
-          minPrec = prec[expr[i]];
-          mainOp = expr[i];
-          mainOpPos = i;
-        }
-      }
-    }
-    
-    if (mainOpPos === -1) {
-      // Just a number
-      return { type: 'num', value: parseInt(expr) };
-    }
-    
-    // Split and recursively parse
-    const left = parseToTree(expr.slice(0, mainOpPos));
-    const right = parseToTree(expr.slice(mainOpPos + 1));
-    
-    return { type: 'op', op: mainOp, left, right };
-  }
-
-  function matchingParen(expr, start) {
-    let depth = 1;
-    for (let i = start + 1; i < expr.length; i++) {
-      if (expr[i] === '(') depth++;
-      else if (expr[i] === ')') {
-        depth--;
-        if (depth === 0) return i;
-      }
-    }
-    return -1;
-  }
-
-  function treeToCanonical(tree) {
-    if (tree.type === 'num') {
-      return `N${tree.value}`;
-    }
-    
-    const leftCanon = treeToCanonical(tree.left);
-    const rightCanon = treeToCanonical(tree.right);
-    
-    // For commutative ops, sort operands
-    if (tree.op === '+' || tree.op === '*') {
-      const sorted = [leftCanon, rightCanon].sort();
-      return `(${tree.op}:${sorted[0]},${sorted[1]})`;
-    }
-    
-    // For non-commutative ops, preserve order
-    return `(${tree.op}:${leftCanon},${rightCanon})`;
   }
 });

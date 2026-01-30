@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Fractal Void - WebGPU</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; overflow: hidden; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+    #info {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      color: #fff; font: 14px monospace; opacity: 0.7; text-align: center;
+      text-shadow: 0 0 10px #f0f, 0 0 20px #0ff;
+    }
+    #error {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      color: #f44; font: 20px monospace; text-align: center; display: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="info">move mouse to warp • click to change colors • scroll to zoom</div>
+  <div id="error">WebGPU not supported<br>Try Chrome/Edge 113+</div>
+<script>
+const shader = `
+struct Uniforms {
+  resolution: vec2f,
+  time: f32,
+  mode: f32,
+  mouse: vec2f,
+  zoom: f32,
+  _pad: f32,
+}
+@group(0) @binding(0) var<uniform> u: Uniforms;
+
+const PI = 3.14159265359;
+
+fn rot2(a: f32) -> mat2x2f {
+  let c = cos(a); let s = sin(a);
+  return mat2x2f(c, -s, s, c);
+}
+
+fn palette(t: f32, mode: f32) -> vec3f {
+  let m = i32(mode) % 5;
+  var a: vec3f; var b: vec3f; var c: vec3f; var d: vec3f;
+  if m == 0 {
+    a = vec3f(0.5, 0.5, 0.5); b = vec3f(0.5, 0.5, 0.5);
+    c = vec3f(1.0, 1.0, 1.0); d = vec3f(0.0, 0.33, 0.67);
+  } else if m == 1 {
+    a = vec3f(0.5, 0.5, 0.5); b = vec3f(0.5, 0.5, 0.5);
+    c = vec3f(1.0, 1.0, 0.5); d = vec3f(0.8, 0.9, 0.3);
+  } else if m == 2 {
+    a = vec3f(0.5, 0.5, 0.5); b = vec3f(0.5, 0.5, 0.5);
+    c = vec3f(1.0, 0.7, 0.4); d = vec3f(0.0, 0.15, 0.2);
+  } else if m == 3 {
+    a = vec3f(0.8, 0.5, 0.4); b = vec3f(0.2, 0.4, 0.2);
+    c = vec3f(2.0, 1.0, 1.0); d = vec3f(0.0, 0.25, 0.25);
+  } else {
+    a = vec3f(0.5, 0.5, 0.5); b = vec3f(0.5, 0.5, 0.5);
+    c = vec3f(2.0, 1.0, 0.0); d = vec3f(0.5, 0.2, 0.25);
+  }
+  return a + b * cos(2.0 * PI * (c * t + d));
+}
+
+fn sdBox(p: vec3f, b: vec3f) -> f32 {
+  let q = abs(p) - b;
+  return length(max(q, vec3f(0.0))) + min(max(q.x, max(q.y, q.z)), 0.0);
+}
+
+fn map(pos: vec3f) -> vec2f {
+  var p = pos;
+  let t = u.time * 0.25;
+  let mx = (u.mouse - 0.5) * 2.0;
+  
+  // Rotate space
+  var xy = p.xy * rot2(t * 0.2 + mx.x * 0.5);
+  p = vec3f(xy.x, xy.y, p.z);
+  var xz = vec2f(p.x, p.z) * rot2(t * 0.15 + mx.y * 0.5);
+  p = vec3f(xz.x, p.y, xz.y);
+  
+  // Infinite repetition
+  let rep = 3.5;
+  let id = floor(p / rep);
+  p = (p % vec3f(rep)) - 0.5 * rep;
+  
+  // Simple fractal fold (reduced iterations for performance)
+  for (var i = 0; i < 3; i++) {
+    p = abs(p);
+    if p.x < p.y { p = vec3f(p.y, p.x, p.z); }
+    if p.x < p.z { p = vec3f(p.z, p.y, p.x); }
+    p = p * 1.4 - vec3f(0.8 + 0.2 * sin(t));
+    xy = p.xy * rot2(0.5);
+    p = vec3f(xy.x, xy.y, p.z);
+  }
+  
+  let d = sdBox(p, vec3f(0.4)) * 0.3;
+  return vec2f(d, dot(id, vec3f(1.0, 7.0, 13.0)));
+}
+
+@vertex
+fn vs(@builtin(vertex_index) i: u32) -> @builtin(position) vec4f {
+  let pos = array(vec2f(-1,-1), vec2f(3,-1), vec2f(-1,3));
+  return vec4f(pos[i], 0, 1);
+}
+
+@fragment
+fn fs(@builtin(position) fc: vec4f) -> @location(0) vec4f {
+  let uv = (fc.xy - 0.5 * u.resolution) / min(u.resolution.x, u.resolution.y);
+  let t = u.time;
+  let mx = (u.mouse - 0.5) * 2.0;
+  
+  // Camera
+  let camDist = 4.0 * u.zoom;
+  let ro = vec3f(
+    sin(t * 0.2) * camDist,
+    cos(t * 0.15) * camDist * 0.3,
+    t * 1.5
+  );
+  let ta = ro + vec3f(0.0, 0.0, 3.0);
+  
+  // Camera matrix
+  let ww = normalize(ta - ro);
+  let uu = normalize(cross(ww, vec3f(0, 1, 0)));
+  let vv = cross(uu, ww);
+  let rd = normalize(uv.x * uu + uv.y * vv + 1.8 * ww);
+  
+  // Single-pass raymarch (optimized)
+  var depth = 0.0;
+  var glow = 0.0;
+  var matId = 0.0;
+  var steps = 0;
+  
+  for (var i = 0; i < 60; i++) {
+    let p = ro + rd * depth;
+    let res = map(p);
+    let d = res.x;
+    matId = res.y;
+    
+    glow += 0.015 / (0.05 + d * d);
+    
+    if d < 0.002 || depth > 30.0 { break; }
+    depth += d;
+    steps = i;
+  }
+  
+  var col = vec3f(0.0);
+  
+  if depth < 30.0 {
+    let p = ro + rd * depth;
+    
+    // Fast normal via tetrahedron technique
+    let e = vec2f(0.002, -0.002);
+    let n = normalize(
+      e.xyy * map(p + e.xyy).x +
+      e.yyx * map(p + e.yyx).x +
+      e.yxy * map(p + e.yxy).x +
+      e.xxx * map(p + e.xxx).x
+    );
+    
+    // Simple lighting
+    let light = normalize(vec3f(sin(t), 1.0, cos(t)));
+    let diff = max(dot(n, light), 0.0) * 0.7 + 0.3;
+    let spec = pow(max(dot(reflect(-light, n), -rd), 0.0), 16.0);
+    
+    // Color from palette
+    let matCol = palette(matId * 0.05 + depth * 0.03 + t * 0.15, u.mode);
+    col = matCol * diff + vec3f(1.0) * spec * 0.3;
+    
+    // Fog
+    col *= exp(-depth * 0.08);
+  }
+  
+  // Add glow
+  let glowCol = palette(t * 0.1 + glow * 0.1, u.mode);
+  col += glowCol * glow * 0.015;
+  
+  // Chromatic aberration (cheap post-process version)
+  let aberration = length(uv) * 0.008;
+  col.r = col.r * (1.0 + aberration);
+  col.b = col.b * (1.0 - aberration);
+  
+  // Simple post-processing
+  col = pow(col, vec3f(0.85));
+  col *= 1.0 - 0.4 * dot(uv, uv); // Vignette
+  col = clamp(col, vec3f(0.0), vec3f(1.0));
+  
+  return vec4f(col, 1.0);
+}
+`;
+
+async function main() {
+  const canvas = document.getElementById('c');
+  const error = document.getElementById('error');
+  
+  if (!navigator.gpu) {
+    error.style.display = 'block';
+    return;
+  }
+  
+  const adapter = await navigator.gpu.requestAdapter();
+  if (!adapter) {
+    error.style.display = 'block';
+    return;
+  }
+  
+  const device = await adapter.requestDevice();
+  const ctx = canvas.getContext('webgpu');
+  const format = navigator.gpu.getPreferredCanvasFormat();
+  
+  let mouse = { x: 0.5, y: 0.5 };
+  let targetMouse = { x: 0.5, y: 0.5 };
+  let mode = 0;
+  let zoom = 1.0;
+  
+  canvas.addEventListener('mousemove', e => {
+    targetMouse.x = e.clientX / window.innerWidth;
+    targetMouse.y = 1.0 - e.clientY / window.innerHeight;
+  });
+  
+  canvas.addEventListener('click', () => { mode = (mode + 1) % 5; });
+  
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    zoom = Math.max(0.3, Math.min(3.0, zoom + e.deltaY * 0.001));
+  }, { passive: false });
+  
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    targetMouse.x = e.touches[0].clientX / window.innerWidth;
+    targetMouse.y = 1.0 - e.touches[0].clientY / window.innerHeight;
+  }, { passive: false });
+  
+  canvas.addEventListener('touchend', () => { mode = (mode + 1) % 5; });
+
+  function resize() {
+    // Lower resolution for better performance on laptops
+    const dpr = Math.min(window.devicePixelRatio, 1.5) * 0.75;
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    ctx.configure({ device, format, alphaMode: 'opaque' });
+  }
+  
+  resize();
+  window.addEventListener('resize', resize);
+  
+  const module = device.createShaderModule({ code: shader });
+  
+  const pipeline = device.createRenderPipeline({
+    layout: 'auto',
+    vertex: { module, entryPoint: 'vs' },
+    fragment: { module, entryPoint: 'fs', targets: [{ format }] },
+    primitive: { topology: 'triangle-list' }
+  });
+  
+  const uniformBuffer = device.createBuffer({
+    size: 32,
+    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+  });
+  
+  const bindGroup = device.createBindGroup({
+    layout: pipeline.getBindGroupLayout(0),
+    entries: [{ binding: 0, resource: { buffer: uniformBuffer } }]
+  });
+  
+  const uniformData = new Float32Array(8);
+  
+  function frame(time) {
+    // Smooth mouse movement
+    mouse.x += (targetMouse.x - mouse.x) * 0.08;
+    mouse.y += (targetMouse.y - mouse.y) * 0.08;
+    
+    uniformData[0] = canvas.width;
+    uniformData[1] = canvas.height;
+    uniformData[2] = time * 0.001;
+    uniformData[3] = mode;
+    uniformData[4] = mouse.x;
+    uniformData[5] = mouse.y;
+    uniformData[6] = zoom;
+    device.queue.writeBuffer(uniformBuffer, 0, uniformData);
+    
+    const encoder = device.createCommandEncoder();
+    const pass = encoder.beginRenderPass({
+      colorAttachments: [{
+        view: ctx.getCurrentTexture().createView(),
+        loadOp: 'clear',
+        storeOp: 'store'
+      }]
+    });
+    
+    pass.setPipeline(pipeline);
+    pass.setBindGroup(0, bindGroup);
+    pass.draw(3);
+    pass.end();
+    device.queue.submit([encoder.finish()]);
+    
+    requestAnimationFrame(frame);
+  }
+  
+  requestAnimationFrame(frame);
+}
+
+main();
+</script>
+</body>
+</html>

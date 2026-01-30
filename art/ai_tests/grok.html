@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trippy WebGPU Art - Laptop Optimized</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: black; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <script type="module">
+        async function main() {
+            if (!navigator.gpu) {
+                alert('Your browser does not support WebGPU. Try Chrome Canary or similar.');
+                return;
+            }
+
+            const adapter = await navigator.gpu.requestAdapter();
+            if (!adapter) {
+                alert('No GPU adapter found.');
+                return;
+            }
+            const device = await adapter.requestDevice();
+
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('webgpu');
+            const format = navigator.gpu.getPreferredCanvasFormat();
+            context.configure({ device, format, alphaMode: 'premultiplied' });
+
+            // Full-screen triangle vertex shader
+            const vertexShader = `
+                @vertex
+                fn main(@builtin(vertex_index) vertexIndex: u32) -> @builtin(position) vec4<f32> {
+                    var positions = array<vec2<f32>, 3>(
+                        vec2<f32>(-1.0, -1.0),
+                        vec2<f32>(3.0, -1.0),
+                        vec2<f32>(-1.0, 3.0)
+                    );
+                    return vec4<f32>(positions[vertexIndex], 0.0, 1.0);
+                }
+            `;
+
+            // Optimized trippy fragment shader: reduced complexity for laptop performance
+            const fragmentShader = `
+                struct Uniforms {
+                    time: f32,
+                    resolution: vec2<f32>,
+                    mouse: vec2<f32>,
+                };
+
+                @group(0) @binding(0) var<uniform> uniforms: Uniforms;
+
+                // Simplified noise functions
+                fn hash(p: vec2<f32>) -> f32 {
+                    var q = vec3<f32>(dot(p, vec2<f32>(127.1, 311.7)), dot(p, vec2<f32>(269.5, 183.3)), dot(p, vec2<f32>(419.2, 371.9)));
+                    return fract(sin(q.x + q.y + q.z) * 43758.5453);
+                }
+
+                fn noise(p: vec2<f32>) -> f32 {
+                    let i = floor(p);
+                    let f = fract(p);
+                    let u = f * f * (3.0 - 2.0 * f);
+                    return mix(mix(hash(i + vec2<f32>(0.0, 0.0)), hash(i + vec2<f32>(1.0, 0.0)), u.x),
+                               mix(hash(i + vec2<f32>(0.0, 1.0)), hash(i + vec2<f32>(1.0, 1.0)), u.x), u.y);
+                }
+
+                fn fbm(p: vec2<f32>) -> f32 {
+                    var res = 0.0;
+                    var amp = 0.5;
+                    var freq = 1.0;
+                    for (var i = 0u; i < 4u; i = i + 1u) {  // Reduced octaves from 6 to 4
+                        res = res + amp * noise(p * freq);
+                        amp = amp * 0.5;
+                        freq = freq * 2.0;
+                    }
+                    return res;
+                }
+
+                // SDF functions
+                fn sdSphere(p: vec3<f32>, r: f32) -> f32 {
+                    return length(p) - r;
+                }
+
+                fn sdTorus(p: vec3<f32>, t: vec2<f32>) -> f32 {
+                    let q = vec2<f32>(length(p.xz) - t.x, p.y);
+                    return length(q) - t.y;
+                }
+
+                fn sdBox(p: vec3<f32>, b: vec3<f32>) -> f32 {
+                    let q = abs(p) - b;
+                    return length(max(q, vec3<f32>(0.0))) + min(max(q.x, max(q.y, q.z)), 0.0);
+                }
+
+                // Simplified twist
+                fn twist(p: vec3<f32>, k: f32) -> vec3<f32> {
+                    let c = cos(k * p.y);
+                    let s = sin(k * p.y);
+                    let mat = mat2x2<f32>(c, -s, s, c);
+                    return vec3<f32>(mat * p.xz, p.y);
+                }
+
+                // Optimized scene SDF: fewer operations, no infinite repetition for perf
+                fn sceneSDF(p: vec3<f32>) -> f32 {
+                    var pos = p;
+                    let time = uniforms.time * 0.5;
+
+                    // Apply twist
+                    let twistFactor = 1.0 + uniforms.mouse.x * 1.0 + sin(time * 0.3);  // Reduced mouse influence range
+                    pos = twist(pos, twistFactor);
+
+                    // Morphing shapes - removed some complexity
+                    let morph = sin(time) * 0.5 + 0.5;
+                    let sphere = sdSphere(pos, 1.0 + fbm(pos.xy * 0.5 + time) * 0.2);  // Reduced noise amplitude
+                    let torus = sdTorus(pos + vec3<f32>(sin(time), cos(time), 0.0), vec2<f32>(1.5, 0.3));
+                    let box = sdBox(pos * (1.0 + morph * 0.5), vec3<f32>(0.8));  // Simplified
+
+                    var d = min(sphere, torus);
+                    d = min(d, box);
+
+                    // Reduced noise displacement
+                    d = d - fbm(pos.xz + time * 0.5) * 0.05;  // Lower frequency and amplitude
+
+                    return d;
+                }
+
+                // Normal calculation - unchanged but called less due to fewer steps
+                fn normal(p: vec3<f32>) -> vec3<f32> {
+                    let eps = 0.002;  // Slightly larger eps for faster computation
+                    return normalize(vec3<f32>(
+                        sceneSDF(p + vec3<f32>(eps, 0.0, 0.0)) - sceneSDF(p - vec3<f32>(eps, 0.0, 0.0)),
+                        sceneSDF(p + vec3<f32>(0.0, eps, 0.0)) - sceneSDF(p - vec3<f32>(0.0, eps, 0.0)),
+                        sceneSDF(p + vec3<f32>(0.0, 0.0, eps)) - sceneSDF(p - vec3<f32>(0.0, 0.0, eps))
+                    ));
+                }
+
+                // Ray marching with reduced steps and max dist
+                fn rayMarch(ro: vec3<f32>, rd: vec3<f32>) -> vec2<f32> {
+                    var t = 0.0;
+                    var steps = 0u;
+                    let maxSteps = 64u;  // Reduced from 128
+                    let maxDist = 20.0;  // Reduced from 50
+                    let minDist = 0.002;  // Slightly higher threshold
+
+                    for (steps = 0u; steps < maxSteps; steps = steps + 1u) {
+                        let p = ro + t * rd;
+                        let d = sceneSDF(p);
+                        if (d < minDist) {
+                            return vec2<f32>(t, f32(steps));
+                        }
+                        if (t > maxDist) {
+                            break;
+                        }
+                        t = t + d;  // Less conservative step for speed
+                    }
+                    return vec2<f32>(maxDist, f32(steps));
+                }
+
+                // Simplified shading
+                fn shade(p: vec3<f32>, n: vec3<f32>, steps: f32) -> vec3<f32> {
+                    let time = uniforms.time;
+
+                    // Base color simplified
+                    var col = vec3<f32>(fbm(p.xy + time), fbm(p.yz + time), fbm(p.zx + time * 0.5));
+                    col = sin(col * 3.14 + time) * 0.5 + 0.5;  // Reduced frequency
+
+                    // Lighting
+                    let lightDir = normalize(vec3<f32>(sin(time), cos(time), 1.0));
+                    let diff = max(dot(n, lightDir), 0.0);
+                    col = col * (0.3 + 0.7 * diff);  // Adjusted for simpler calc
+
+                    // Simplified fog
+                    let fog = steps / 64.0;
+                    col = mix(col, vec3<f32>(0.1, 0.2, 0.4), fog * 0.5);
+
+                    return col;
+                }
+
+                @fragment
+                fn main(@builtin(position) coord: vec4<f32>) -> @location(0) vec4<f32> {
+                    let uv = (coord.xy / uniforms.resolution.xy) * 2.0 - 1.0;
+                    let aspect = uniforms.resolution.x / uniforms.resolution.y;
+                    let mouse = uniforms.mouse * 2.0 - 1.0;
+
+                    // Camera with reduced movement range
+                    let ro = vec3<f32>(mouse.x * 3.0, mouse.y * 3.0, -4.0 - sin(uniforms.time * 0.2) * 1.0);  // Closer camera, less oscillation
+                    let ta = vec3<f32>(0.0, 0.0, 0.0);
+                    let ww = normalize(ta - ro);
+                    let uu = normalize(cross(ww, vec3<f32>(0.0, 1.0, 0.0)));
+                    let vv = cross(uu, ww);
+                    let rd = normalize(uv.x * uu * aspect + uv.y * vv + 1.2 * ww);  // Adjusted FOV for less rays
+
+                    let res = rayMarch(ro, rd);
+                    let t = res.x;
+                    let steps = res.y;
+
+                    if (t < 20.0) {
+                        let p = ro + t * rd;
+                        let n = normal(p);
+                        let col = shade(p, n, steps);
+                        return vec4<f32>(col, 1.0);
+                    } else {
+                        // Simplified background
+                        let bg = vec3<f32>(0.5 + 0.5 * sin(uniforms.time + uv.x), 0.5 + 0.5 * cos(uniforms.time + uv.y), 0.5);
+                        return vec4<f32>(bg * 0.2, 1.0);
+                    }
+                }
+            `;
+
+            const pipeline = device.createRenderPipeline({
+                layout: 'auto',
+                vertex: {
+                    module: device.createShaderModule({ code: vertexShader }),
+                    entryPoint: 'main',
+                },
+                fragment: {
+                    module: device.createShaderModule({ code: fragmentShader }),
+                    entryPoint: 'main',
+                    targets: [{ format }],
+                },
+                primitive: { topology: 'triangle-list' },
+            });
+
+            // Uniforms
+            const uniformBuffer = device.createBuffer({
+                size: 16, // Aligned
+                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            });
+
+            const bindGroup = device.createBindGroup({
+                layout: pipeline.getBindGroupLayout(0),
+                entries: [{ binding: 0, resource: { buffer: uniformBuffer } }],
+            });
+
+            // Resize with downscaling for perf on laptops
+            function resize() {
+                canvas.width = Math.min(window.innerWidth, 1024) / 1.5;  // Cap and downscale resolution
+                canvas.height = Math.min(window.innerHeight, 768) / 1.5;
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            // Mouse
+            let mouseX = 0.5;
+            let mouseY = 0.5;
+            canvas.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX / canvas.width;
+                mouseY = 1.0 - e.clientY / canvas.height;
+            });
+
+            // Animation
+            let startTime = performance.now();
+            function render() {
+                const time = (performance.now() - startTime) / 1000;
+
+                const uniformData = new Float32Array([
+                    time,
+                    canvas.width, canvas.height,
+                    mouseX, mouseY,
+                    0, 0, 0
+                ]);
+                device.queue.writeBuffer(uniformBuffer, 0, uniformData);
+
+                const commandEncoder = device.createCommandEncoder();
+                const textureView = context.getCurrentTexture().createView();
+                const renderPass = commandEncoder.beginRenderPass({
+                    colorAttachments: [{
+                        view: textureView,
+                        clearValue: { r: 0, g: 0, b: 0, a: 1 },
+                        loadOp: 'clear',
+                        storeOp: 'store',
+                    }],
+                });
+                renderPass.setPipeline(pipeline);
+                renderPass.setBindGroup(0, bindGroup);
+                renderPass.draw(3);
+                renderPass.end();
+
+                device.queue.submit([commandEncoder.finish()]);
+
+                requestAnimationFrame(render);
+            }
+            render();
+        }
+
+        main();
+    </script>
+</body>
+</html>

@@ -34,12 +34,13 @@
     .btn {
       position: relative;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
+      gap: 0.5rem;
       border: none;
       border-radius: clamp(12px, 2vw, 24px);
       cursor: pointer;
-      font-size: clamp(1.5rem, 5vw, 3.5rem);
       font-weight: 700;
       letter-spacing: 0.05em;
       text-transform: uppercase;
@@ -66,6 +67,19 @@
 
     .btn:active {
       transform: scale(0.98);
+    }
+
+    .title {
+      font-size: clamp(1.3rem, 4vw, 2.8rem);
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    .sub {
+      font-size: clamp(0.6rem, 1.5vw, 0.95rem);
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      opacity: 0.6;
     }
 
     .grok {
@@ -119,10 +133,22 @@
 </head>
 <body>
   <div class="container">
-    <a href="grok.html" class="btn grok">Grok</a>
-    <a href="claude.html" class="btn claude">Claude</a>
-    <a href="gemini.html" class="btn gemini">Gemini</a>
-    <a href="gpt.html" class="btn gpt">GPT</a>
+    <a href="grok.html" class="btn grok">
+      <span class="title">Hypershift Nebula</span>
+      <span class="sub">Grok | 6 prompts | 318 lines</span>
+    </a>
+    <a href="claude.html" class="btn claude">
+      <span class="title">Fractal Void</span>
+      <span class="sub">Claude | 4 prompts | 440 lines</span>
+    </a>
+    <a href="gemini.html" class="btn gemini">
+      <span class="title">Neon Genesis</span>
+      <span class="sub">Gemini | 10 prompts | 285 lines</span>
+    </a>
+    <a href="gpt.html" class="btn gpt">
+      <span class="title">Parallax Without Permission</span>
+      <span class="sub">GPT | 22 prompts | 82 lines</span>
+    </a>
   </div>
 </body>
 </html>

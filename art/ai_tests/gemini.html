@@ -2,315 +2,284 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebGPU Neon Swarm (Laptop Optimized)</title>
+    <title>Neon Genesis - Gemini's Art</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #000; }
-        canvas { display: block; width: 100vw; height: 100vh; touch-action: none; }
+        body { margin: 0; background: #000; overflow: hidden; }
+        canvas { display: block; width: 100vw; height: 100vh; }
         #ui {
-            position: absolute; top: 10px; left: 10px; color: #ff0055;
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0,0,0,0.8); padding: 12px; 
-            border: 1px solid #ff0055; border-radius: 4px;
+            position: absolute; bottom: 20px; left: 20px;
+            color: #0ff; font-family: monospace; font-size: 14px;
             pointer-events: none; user-select: none;
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+            text-shadow: 0 0 5px #0ff;
         }
-        h3 { margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 2px; }
-        p { margin: 2px 0; font-size: 12px; color: #fff; opacity: 0.8; }
-        #fps { color: #00ff00; font-weight: bold; }
+        .k { border: 1px solid #0ff; padding: 2px 6px; border-radius: 4px; }
     </style>
 </head>
 <body>
     <div id="ui">
-        <h3>Cyber Swarm</h3>
-        <p>Move Mouse: Gravity Well</p>
-        <p>Click: Shockwave</p>
-        <p>Status: <span id="fps">Loading GPU...</span></p>
+        DIMENSION: <span id="d-val">1</span><br><br>
+        <span class="k">↑</span> <span class="k">↓</span> : SHIFT REALITY<br>
+        MOUSE : WARP FIELD<br>
+        CLICK : IMPLODE
     </div>
-    <canvas id="canvas"></canvas>
-
-    <script type="text/wgsl" id="shader-code">
-    
-    struct Particle {
-        pos : vec3f,
-        vel : vec3f,
-    };
-
-    struct SimParams {
-        mouse : vec2f,  // -1 to 1
-        time : f32,
-        click : f32,
-        aspect : f32,
-    };
-
-    @group(0) @binding(0) var<uniform> params : SimParams;
-    @group(0) @binding(1) var<storage, read_write> particles : array<Particle>;
-
-    // --- COMPUTE: PHYSICS ---
-    @compute @workgroup_size(64)
-    fn computeMain(@builtin(global_invocation_id) global_id : vec3u) {
-        let idx = global_id.x;
-        if (idx >= arrayLength(&particles)) { return; }
-
-        var p = particles[idx];
-        
-        // 1. "Curl Noise" style movement (The Trippy Part)
-        // We use sin/cos layers to create a turbulent river feeling
-        let t = params.time * 0.8;
-        let scale = 0.8;
-        
-        // Complex vector field math
-        let dx = sin(p.pos.y * scale + t) + sin(p.pos.z * scale * 1.2);
-        let dy = sin(p.pos.x * scale - t) + cos(p.pos.z * scale * 0.5);
-        let dz = cos(p.pos.x * scale * 1.5) + sin(p.pos.y * scale);
-
-        let flow = vec3f(dx, dy, dz);
-
-        // 2. Mouse Physics
-        // Project mouse to a 3D line at Z=0 for interaction
-        let mousePos3D = vec3f(params.mouse.x * params.aspect * 25.0, params.mouse.y * 25.0, 0.0);
-        let diff = mousePos3D - p.pos;
-        let distSq = dot(diff, diff);
-        let dist = sqrt(distSq);
-        let dir = normalize(diff);
-
-        // Attraction (Gravity)
-        let attract = 30.0 / (dist + 1.0);
-        
-        // Repulsion (Click Shockwave)
-        let shock = params.click * 150.0 / (distSq + 0.5);
-
-        // 3. Integrate
-        p.vel = p.vel * 0.94 + flow * 0.008 + (dir * attract * 0.005) - (dir * shock * 0.1);
-        p.pos += p.vel;
-
-        // 4. Bounds (Teleport logic for infinite room)
-        let limit = 40.0;
-        if (p.pos.x > limit) { p.pos.x -= limit*2.0; }
-        if (p.pos.x < -limit) { p.pos.x += limit*2.0; }
-        if (p.pos.y > limit) { p.pos.y -= limit*2.0; }
-        if (p.pos.y < -limit) { p.pos.y += limit*2.0; }
-        if (p.pos.z > 20.0) { p.pos.z -= 60.0; } // Depth cycle
-        if (p.pos.z < -40.0) { p.pos.z += 60.0; }
-
-        particles[idx] = p;
-    }
-
-    // --- VERTEX: SHAPE & COLOR ---
-    struct VertexOutput {
-        @builtin(position) position : vec4f,
-        @location(0) color : vec4f,
-    };
-
-    @vertex
-    fn vertexMain(@builtin(vertex_index) vIdx : u32, @builtin(instance_index) iIdx : u32) -> VertexOutput {
-        let p = particles[iIdx];
-
-        // OPTIMIZATION: Manual 3D Projection
-        // We don't use a matrix library to save JS weight.
-        let camZ = 50.0;
-        let viewZ = camZ - p.pos.z;
-        let scale = 1.0 / viewZ; // Perspective scale
-        
-        // Equilateral Triangle Offsets (Optimization: 3 verts instead of 6 for a quad)
-        // 0: top, 1: bottom-right, 2: bottom-left
-        var pos = vec2f(0.0, 0.0);
-        if (vIdx == 0u) { pos = vec2f(0.0, 1.0); }
-        if (vIdx == 1u) { pos = vec2f(0.866, -0.5); }
-        if (vIdx == 2u) { pos = vec2f(-0.866, -0.5); }
-
-        // Size pulses with speed
-        let speed = length(p.vel);
-        let size = (150.0 * scale) * (0.5 + speed * 2.0); 
-
-        // Final Screen Position
-        let aspect = params.aspect;
-        let screenX = (p.pos.x * scale + pos.x * size * 0.002) / aspect;
-        let screenY = (p.pos.y * scale + pos.y * size * 0.002);
-
-        // Coloring
-        // Mix colors based on Position and Speed
-        let hue = sin(p.pos.z * 0.1 + params.time) * 0.5 + 0.5;
-        let r = hue; 
-        let g = speed * 0.8; // Fast = Green/Bright
-        let b = 1.0 - hue;
-        let alpha = clamp(1.0 - (viewZ / 80.0), 0.0, 1.0); // Fade distant particles
-
-        var out : VertexOutput;
-        out.position = vec4f(screenX, screenY, 0.0, 1.0);
-        out.color = vec4f(r, g, b, alpha);
-        return out;
-    }
-
-    @fragment
-    fn fragmentMain(@location(0) color : vec4f) -> @location(0) vec4f {
-        // Just return the calculated color (Fastest)
-        return color;
-    }
-    </script>
+    <canvas id="c"></canvas>
 
     <script>
-        // CONFIG
-        const PARTICLE_COUNT = 40000; // Optimized for Laptops
-        const WORKGROUP_SIZE = 64;
+    // --- SHADER 1: PHYSICS (Compute - Read/Write) ---
+    const SHADER_COMPUTE = `
+        struct Uniforms {
+            mouse: vec2f,
+            time: f32,
+            click: f32,
+            aspect: f32,
+            dim: f32,
+        };
+        struct Particle {
+            pos: vec4f, 
+            vel: vec4f,
+        };
+        @group(0) @binding(0) var<uniform> u: Uniforms;
+        @group(0) @binding(1) var<storage, read_write> p: array<Particle>;
 
-        async function start() {
-            const canvas = document.getElementById('canvas');
-            const fpsElem = document.getElementById('fps');
-
-            if (!navigator.gpu) {
-                fpsElem.innerText = "WebGPU not enabled/supported";
-                return;
-            }
-
-            const adapter = await navigator.gpu.requestAdapter();
-            if (!adapter) { fpsElem.innerText = "No GPU adapter"; return; }
+        @compute @workgroup_size(64)
+        fn main(@builtin(global_invocation_id) id: vec3u) {
+            let i = id.x;
+            if (i >= arrayLength(&p)) { return; }
             
-            const device = await adapter.requestDevice();
-            const ctx = canvas.getContext('webgpu');
-            const format = navigator.gpu.getPreferredCanvasFormat();
+            var part = p[i];
+            let t = u.time;
 
-            ctx.configure({ device, format, alphaMode: 'premultiplied' });
-
-            // DATA SETUP
-            const pData = new Float32Array(PARTICLE_COUNT * 8); // 8 floats per particle
-            for(let i=0; i<PARTICLE_COUNT; i++) {
-                let ii = i*8;
-                pData[ii+0] = (Math.random()-0.5) * 60; // x
-                pData[ii+1] = (Math.random()-0.5) * 60; // y
-                pData[ii+2] = (Math.random()-0.5) * 40; // z
-                // vel = 0
+            // --- DIMENSION MATH ---
+            var force = vec3f(0.0);
+            
+            // Dim 1: The Swarm
+            if (u.dim < 0.5) {
+                force = vec3f(sin(part.pos.y*0.2 + t), cos(part.pos.x*0.2 - t), sin(part.pos.z*0.1));
+            } 
+            // Dim 2: The Spiral
+            else if (u.dim < 1.5) {
+                let r = length(part.pos.xy);
+                let a = atan2(part.pos.y, part.pos.x);
+                force = vec3f(cos(a+t + part.pos.z*0.1), sin(a+t + part.pos.z*0.1), 0.0);
+                force *= (r + 1.0) * 0.1;
+            } 
+            // Dim 3: The Rain
+            else {
+                force = vec3f(0.0, -2.0, 0.0);
+                if (part.pos.y < -30.0) { 
+                    part.pos.y = 30.0; 
+                    part.vel = vec4f(0.0); 
+                }
             }
 
-            const pBuffer = device.createBuffer({
-                size: pData.byteLength,
-                usage: GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-                mappedAtCreation: true
-            });
-            new Float32Array(pBuffer.getMappedRange()).set(pData);
-            pBuffer.unmap();
+            // Mouse Interaction
+            let m = vec3f(u.mouse.x * 40.0 * u.aspect, u.mouse.y * 40.0, 0.0);
+            let d = m - part.pos.xyz;
+            let dist = length(d);
+            let dir = normalize(d);
+            
+            // Integrate
+            part.vel += vec4f(force * 0.01, 0.0);
+            part.vel += vec4f(dir * (10.0 / (dist+1.0)) * 0.01, 0.0); // Attract
+            part.vel -= vec4f(dir * (u.click * 100.0 / (dist+0.1)) * 0.1, 0.0); // Repel
+            part.vel *= 0.96; // Friction
+            
+            part.pos += part.vel;
 
-            const uBuffer = device.createBuffer({
-                size: 32, // Uniform buffer size
-                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-            });
-
-            // PIPELINE SETUP
-            const module = device.createShaderModule({ 
-                code: document.getElementById('shader-code').textContent 
-            });
-
-            const bindGroupLayout = device.createBindGroupLayout({
-                entries: [
-                    { binding: 0, visibility: GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX, buffer: { type: 'uniform' } },
-                    { binding: 1, visibility: GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX, buffer: { type: 'storage' } }
-                ]
-            });
-
-            const computePipeline = device.createComputePipeline({
-                layout: device.createPipelineLayout({ bindGroupLayouts: [bindGroupLayout] }),
-                compute: { module, entryPoint: 'computeMain' }
-            });
-
-            const renderPipeline = device.createRenderPipeline({
-                layout: device.createPipelineLayout({ bindGroupLayouts: [bindGroupLayout] }),
-                vertex: { module, entryPoint: 'vertexMain' },
-                fragment: { 
-                    module, 
-                    entryPoint: 'fragmentMain', 
-                    targets: [{ 
-                        format,
-                        blend: { // Additive Glow
-                            color: { srcFactor: 'src-alpha', dstFactor: 'one', operation: 'add' },
-                            alpha: { srcFactor: 'zero', dstFactor: 'one', operation: 'add' }
-                        }
-                    }] 
-                },
-                primitive: { topology: 'triangle-list' }
-            });
-
-            const bindGroup = device.createBindGroup({
-                layout: bindGroupLayout,
-                entries: [
-                    { binding: 0, resource: { buffer: uBuffer } },
-                    { binding: 1, resource: { buffer: pBuffer } }
-                ]
-            });
-
-            // INPUT
-            let mouse = { x: 0, y: 0 };
-            let click = 0;
-            window.onmousemove = e => {
-                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-            };
-            window.onmousedown = () => click = 1;
-            window.onmouseup = () => click = 0;
-
-            // RESIZE (Laptop Optimization: Cap pixel ratio)
-            function resize() {
-                // Force 1:1 pixel mapping. Keeps it fast on Retina screens.
-                // CSS handles the upscaling.
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+            // Bounds
+            let b = 50.0;
+            if (part.pos.x > b) { part.pos.x = -b; } if (part.pos.x < -b) { part.pos.x = b; }
+            if (u.dim < 1.5) {
+                if (part.pos.y > b) { part.pos.y = -b; } if (part.pos.y < -b) { part.pos.y = b; }
             }
-            window.onresize = resize;
-            resize();
+            if (part.pos.z > 20.0) { part.pos.z = -50.0; } if (part.pos.z < -50.0) { part.pos.z = 20.0; }
 
-            // LOOP
-            let time = 0;
-            let lastTime = performance.now();
-            let frameCount = 0;
+            p[i] = part;
+        }
+    `;
 
-            function frame() {
-                let now = performance.now();
-                let dt = (now - lastTime) / 1000;
-                lastTime = now;
-                time += dt;
+    // --- SHADER 2: VISUALS (Vertex - Read Only) ---
+    const SHADER_RENDER = `
+        struct Uniforms {
+            mouse: vec2f,
+            time: f32,
+            click: f32,
+            aspect: f32,
+            dim: f32,
+        };
+        struct Particle {
+            pos: vec4f,
+            vel: vec4f,
+        };
+        @group(0) @binding(0) var<uniform> u: Uniforms;
+        @group(0) @binding(1) var<storage, read> p: array<Particle>; // READ ONLY!
 
-                // FPS Counter
-                frameCount++;
-                if(frameCount % 60 === 0) fpsElem.innerText = `Active | ${(1/dt).toFixed(0)} FPS`;
+        struct VSOut {
+            @builtin(position) pos: vec4f,
+            @location(0) color: vec4f,
+        };
 
-                // Update Uniforms
-                const uData = new Float32Array([
-                    mouse.x, mouse.y, 
-                    time, 
-                    click, 
-                    canvas.width / canvas.height, // Aspect
-                    0, 0, 0 
-                ]);
-                device.queue.writeBuffer(uBuffer, 0, uData);
+        @vertex
+        fn vs(@builtin(vertex_index) vIdx: u32, @builtin(instance_index) iIdx: u32) -> VSOut {
+            let part = p[iIdx];
+            
+            // Camera
+            let z = 60.0 - part.pos.z;
+            let scale = 1.0 / max(z, 0.1);
+            let size = 120.0 * scale;
 
-                const cmd = device.createCommandEncoder();
+            // Triangle
+            var c = vec2f(0.0, -0.5);
+            if (vIdx == 1u) { c = vec2f(0.5, 0.5); }
+            if (vIdx == 2u) { c = vec2f(-0.5, 0.5); }
 
-                // 1. Compute
-                const cp = cmd.beginComputePass();
-                cp.setPipeline(computePipeline);
-                cp.setBindGroup(0, bindGroup);
-                cp.dispatchWorkgroups(Math.ceil(PARTICLE_COUNT / WORKGROUP_SIZE));
-                cp.end();
+            let sx = (part.pos.x * scale + c.x * size * 0.015) / u.aspect;
+            let sy = part.pos.y * scale + c.y * size * 0.015;
 
-                // 2. Render
-                const rp = cmd.beginRenderPass({
-                    colorAttachments: [{
-                        view: ctx.getCurrentTexture().createView(),
-                        clearValue: { r: 0.05, g: 0.0, b: 0.1, a: 1 }, // Deep purple BG
-                        loadOp: 'clear', storeOp: 'store'
-                    }]
-                });
-                rp.setPipeline(renderPipeline);
-                rp.setBindGroup(0, bindGroup);
-                rp.draw(3, PARTICLE_COUNT); // 3 vertices per particle (triangle)
-                rp.end();
+            var out: VSOut;
+            out.pos = vec4f(sx, sy, 0.0, 1.0);
+            
+            // Color Logic
+            let spd = length(part.vel.xyz);
+            var col = vec3f(0.0);
 
-                device.queue.submit([cmd.finish()]);
-                requestAnimationFrame(frame);
-            }
-            requestAnimationFrame(frame);
+            if (u.dim < 0.5) { col = vec3f(0.0, 1.0, 1.0); } // Cyan
+            else if (u.dim < 1.5) { col = vec3f(1.0, 0.2, 0.5); } // Hot Pink
+            else { col = vec3f(0.2, 1.0, 0.2); } // Matrix Green
+
+            out.color = vec4f(col * (0.5 + spd * 2.0), 1.0);
+            return out;
         }
 
-        start();
+        @fragment
+        fn fs(@location(0) color: vec4f) -> @location(0) vec4f {
+            return color;
+        }
+    `;
+
+    async function init() {
+        const cvs = document.getElementById('c');
+        const dVal = document.getElementById('d-val');
+        
+        if (!navigator.gpu) return alert("WebGPU not enabled in browser.");
+        const adapter = await navigator.gpu.requestAdapter();
+        if (!adapter) return alert("No GPU adapter found.");
+        const device = await adapter.requestDevice();
+        
+        const ctx = cvs.getContext('webgpu');
+        const fmt = navigator.gpu.getPreferredCanvasFormat();
+        
+        // SETUP CANVAS (Opaque)
+        ctx.configure({ device, format: fmt, alphaMode: 'opaque' });
+
+        // BUFFERS
+        const COUNT = 40000;
+        const pData = new Float32Array(COUNT * 8); // 8 floats (pos4 + vel4)
+        for(let i=0; i<COUNT*8; i++) pData[i] = (Math.random()-0.5)*50;
+
+        const bufP = device.createBuffer({
+            size: pData.byteLength,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+            mappedAtCreation: true
+        });
+        new Float32Array(bufP.getMappedRange()).set(pData);
+        bufP.unmap();
+
+        // UNIFORM BUFFER (Aligned to 32 bytes)
+        const bufU = device.createBuffer({
+            size: 32, 
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+        });
+
+        // PIPELINE 1: COMPUTE
+        const modC = device.createShaderModule({ code: SHADER_COMPUTE });
+        const pipeC = device.createComputePipeline({
+            layout: 'auto',
+            compute: { module: modC, entryPoint: 'main' }
+        });
+
+        // PIPELINE 2: RENDER
+        const modR = device.createShaderModule({ code: SHADER_RENDER });
+        const pipeR = device.createRenderPipeline({
+            layout: 'auto',
+            vertex: { module: modR, entryPoint: 'vs' },
+            fragment: { module: modR, entryPoint: 'fs', targets: [{ format: fmt }] },
+            primitive: { topology: 'triangle-list' }
+        });
+
+        // BIND GROUPS (The Fix: Separate Bind Groups for separate Pipelines)
+        const bgC = device.createBindGroup({
+            layout: pipeC.getBindGroupLayout(0),
+            entries: [
+                { binding: 0, resource: { buffer: bufU } },
+                { binding: 1, resource: { buffer: bufP } }
+            ]
+        });
+
+        const bgR = device.createBindGroup({
+            layout: pipeR.getBindGroupLayout(0),
+            entries: [
+                { binding: 0, resource: { buffer: bufU } },
+                { binding: 1, resource: { buffer: bufP } }
+            ]
+        });
+
+        // STATE & INPUT
+        let state = { x: 0, y: 0, c: 0, dim: 0 };
+        window.onmousemove = e => {
+            state.x = (e.clientX / window.innerWidth) * 2 - 1;
+            state.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        };
+        window.onmousedown = () => state.c = 1;
+        window.onmouseup = () => state.c = 0;
+        window.onkeydown = e => {
+            if(e.key === "ArrowUp") state.dim = (state.dim + 1) % 3;
+            if(e.key === "ArrowDown") state.dim = (state.dim - 1 + 3) % 3;
+            dVal.innerText = state.dim + 1;
+        };
+
+        const resize = () => { cvs.width = window.innerWidth; cvs.height = window.innerHeight; };
+        window.onresize = resize;
+        resize();
+
+        // LOOP
+        const start = performance.now();
+        function frame() {
+            const t = (performance.now() - start) * 0.001;
+            
+            // Update Uniforms
+            device.queue.writeBuffer(bufU, 0, new Float32Array([
+                state.x, state.y, t, state.c, cvs.width/cvs.height, state.dim, 0, 0
+            ]));
+
+            const enc = device.createCommandEncoder();
+
+            // Compute Pass
+            const passC = enc.beginComputePass();
+            passC.setPipeline(pipeC);
+            passC.setBindGroup(0, bgC);
+            passC.dispatchWorkgroups(Math.ceil(COUNT / 64));
+            passC.end();
+
+            // Render Pass
+            const passR = enc.beginRenderPass({
+                colorAttachments: [{
+                    view: ctx.getCurrentTexture().createView(),
+                    clearValue: { r: 0, g: 0, b: 0, a: 1 },
+                    loadOp: 'clear', storeOp: 'store'
+                }]
+            });
+            passR.setPipeline(pipeR);
+            passR.setBindGroup(0, bgR);
+            passR.draw(3, COUNT);
+            passR.end();
+
+            device.queue.submit([enc.finish()]);
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+    }
+    init();
     </script>
 </body>
 </html>

@@ -1,232 +1,82 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Trippy WebGPU Art — Single File</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Parallax Without Permission - GPT's Art</title>
 <style>
-  html,body{height:100%;margin:0;background:#000}
-  canvas{display:block;width:100vw;height:100vh}
-  #hint{position:fixed;left:12px;top:12px;color:#eee;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;font-size:12px;opacity:.7}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+canvas{width:100vw;height:100vh;display:block}
+#hint{position:fixed;bottom:10px;left:10px;color:#888;font-family:sans-serif;font-size:12px;user-select:none}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-<div id="hint">Drag to rotate • Scroll to zoom • Click to pause</div>
+<div id="hint">Drag mouse = parallax • Up/Down = depth layers</div>
 <script type="module">
-// Trippy WebGPU — single-file
 const canvas = document.getElementById('c');
-if (!navigator.gpu) {
-  document.body.innerHTML = '<div style="color:#fff;padding:20px;font-family:sans-serif">WebGPU not supported in your browser. Use a recent Chromium/Chrome/Edge with WebGPU enabled.</div>';
-  throw new Error('No WebGPU');
-}
-const adapter = await navigator.gpu.requestAdapter();
+if (!navigator.gpu) throw new Error('No WebGPU');
+
+const adapter = await navigator.gpu.requestAdapter({ powerPreference:'low-power' });
 const device = await adapter.requestDevice();
 const context = canvas.getContext('webgpu');
-function resize() {
-  const dpr = Math.max(1, window.devicePixelRatio || 1);
-  canvas.width = Math.floor(innerWidth * Math.min(dpr, 1.5));
-  canvas.height = Math.floor(innerHeight * Math.min(dpr, 1.5));
-}
-window.addEventListener('resize', resize);
-resize();
 const format = navigator.gpu.getPreferredCanvasFormat();
-context.configure({ device, format, alphaMode: 'opaque' });
 
-// WGSL shaders -------------------------------------------------------------
-const wgsl = `
-struct U {
-  time : f32;
-  mouse : vec2<f32>;
-  res : vec2<f32>;
-  camRad: f32;
-};
-@group(0) @binding(0) var<uniform> u : U;
+let w=innerWidth, h=innerHeight;
+function resize(){ canvas.width=w; canvas.height=h; context.configure({device,format,alphaMode:'opaque'}); }
+addEventListener('resize',()=>{w=innerWidth;h=innerHeight;resize();});
+resize();
 
-struct VSOut { @builtin(position) pos : vec4<f32>; @location(0) uv : vec2<f32>; };
+let mx=0,my=0,layers=4;
+canvas.addEventListener('pointermove',e=>{ if(e.buttons){ mx+=(e.movementX)/w; my+=(e.movementY)/h; }});
+addEventListener('keydown',e=>{ if(e.key==='ArrowUp') layers=Math.min(10,layers+1); if(e.key==='ArrowDown') layers=Math.max(1,layers-1); });
 
-@vertex fn vs_main(@builtin(vertex_index) vi : u32) -> VSOut {
-  var pos = array<vec2<f32>,3>(vec2<f32>(-1.0,-1.0), vec2<f32>(3.0,-1.0), vec2<f32>(-1.0,3.0));
-  var o : VSOut;
-  o.pos = vec4<f32>(pos[vi], 0.0, 1.0);
-  o.uv = (pos[vi] + vec2<f32>(1.0,1.0)) * 0.5;
-  return o;
+const uniform = device.createBuffer({ size:16, usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST });
+
+const shader = device.createShaderModule({code:`
+@vertex fn vs(@builtin(vertex_index)i:u32)->@builtin(position) vec4<f32>{
+  var p=array<vec2<f32>,3>(vec2(-1,-1),vec2(3,-1),vec2(-1,3));
+  return vec4(p[i],0,1);
 }
-
-// small palette helper
-fn palette(t: f32) -> vec3<f32> {
-  return 0.5 + 0.5 * vec3<f32>(
-    sin(6.28318 * (t + 0.0)),
-    sin(6.28318 * (t + 0.33)),
-    sin(6.28318 * (t + 0.66))
-  );
-}
-
-// soft noise using sin wave layers (cheap and trippy)
-fn snoise(p: vec3<f32>) -> f32 {
-  var f = 0.0;
-  var amp = 0.5;
-  var freq = 1.0;
-  for (var i = 0u; i < 5u; i = i + 1u) {
-    f = f + amp * sin(dot(vec3<f32>(freq), p) + freq * 0.37);
-    freq = freq * 1.9;
-    amp = amp * 0.5;
-    p = p * 1.3;
+@group(0) @binding(0) var<uniform> u:vec4<f32>; // mx my layers time
+@fragment fn fs(@builtin(position) p:vec4<f32>)->@location(0) vec4<f32>{
+  let uv=(p.xy/vec2<f32>(f32(${w}),f32(${h})))*2.0-1.0;
+  var col=vec3<f32>(0.0);
+  for(var i=0;i<10;i++){
+    if(f32(i)>=u.z){ break; }
+    let d=f32(i)/u.z;
+    let shift=uv + vec2<f32>(u.x,u.y)*d*1.5;
+    let r=length(shift);
+    let c=0.5+0.5*cos(8.0*r - u.w*2.0 + d*4.0);
+    col += vec3<f32>(c*(1.0-d), c*(0.5+d), c);
   }
-  return f;
-}
+  col/=u.z;
+  return vec4(col,1.0);
+}`});
 
-fn map(p: vec3<f32>) -> f32 {
-  // base sphere
-  var d = length(p) - 1.0;
-  // add layered procedural ripples + wobble by time
-  let n = snoise(p + vec3<f32>(0.0, 0.0, u.time * 0.6));
-  d = d + 0.45 * n;
-  return d;
-}
-
-fn estimateNormal(p: vec3<f32>) -> vec3<f32> {
-  let e = 0.0015;
-  return normalize(vec3<f32>(
-    map(p + vec3<f32>(e,0,0)) - map(p - vec3<f32>(e,0,0)),
-    map(p + vec3<f32>(0,e,0)) - map(p - vec3<f32>(0,e,0)),
-    map(p + vec3<f32>(0,0,e)) - map(p - vec3<f32>(0,0,e))
-  ));
-}
-
-fn softShadow(ro: vec3<f32>, rd: vec3<f32>, mint: f32, maxt: f32) -> f32 {
-  var res = 1.0;
-  var t = mint;
-  for (var i = 0u; i < 16u; i = i + 1u) {
-    let h = map(ro + rd * t);
-    if (h < 0.0001) { return 0.0; }
-    res = min(res, 8.0 * h / t);
-    t = t + clamp(h, 0.02, 0.2);
-    if (t > maxt) { break; }
-  }
-  return clamp(res, 0.0, 1.0);
-}
-
-@fragment fn fs_main(@location(0) uv : vec2<f32>) -> @location(0) vec4<f32> {
-  // normalized coords
-  let p = (uv * u.res - 0.5 * u.res) / min(u.res.x, u.res.y);
-  // camera
-  let t = u.time;
-  let ro = vec3<f32>(0.0, 0.0, 3.5 + u.camRad);
-  // mouse drives rotation
-  let ang = (u.mouse - 0.5) * vec2<f32>(6.28318, 3.14159);
-  // build camera rotation
-  let ca = cos(ang.x); let sa = sin(ang.x);
-  let cb = cos(ang.y); let sb = sin(ang.y);
-  let look = normalize(vec3<f32>(p.x, p.y, -1.0));
-  // rotate look by X and Y
-  var dir = look;
-  dir = normalize(vec3<f32>(dir.x * ca - dir.z * sa, dir.y, dir.x * sa + dir.z * ca));
-  dir = normalize(vec3<f32>(dir.x, dir.y * cb - dir.z * sb, dir.y * sb + dir.z * cb));
-
-  // raymarch
-  var total = 0.0;
-  var dist = 0.0;
-  var hit = false;
-  var pos = vec3<f32>(0.0);
-  var rd = dir;
-  var maxDist = 8.0;
-  var tcur = 0.0;
-  for (var i = 0u; i < 64u; i = i + 1u) {
-    let pcur = ro + rd * tcur;
-    let d = map(pcur);
-    if (d < 0.001) { hit = true; pos = pcur; break; }
-    tcur = tcur + clamp(d, 0.01, 0.45);
-    if (tcur > maxDist) { break; }
-  }
-
-  var col = vec3<f32>(0.0);
-  if (hit) {
-    let nrm = estimateNormal(pos);
-    let light = normalize(vec3<f32>(-0.5, 0.8, -0.6));
-    let dif = max(dot(nrm, light), 0.0);
-    let sh = softShadow(pos + nrm * 0.001, light, 0.02, 3.0);
-    let spec = pow(max(dot(reflect(-light, nrm), normalize(ro - pos)), 0.0), 32.0);
-    // color driven by surface noise and time
-    let surf = 0.5 + 0.5 * snoise(pos * 2.0 + vec3<f32>(0.0, t*0.8, 0.0));
-    col = palette(surf + t * 0.07) * (0.4 * dif * sh + 0.2) + spec * vec3<f32>(1.0);
-  } else {
-    // background - trippy starfield
-    let bgt = 0.5 + 0.5 * sin(u.time * 0.6 + uv.xyx * 12.0);
-    col = palette(bgt.x + 0.2 * snoise(vec3<f32>(p.x*2.0, p.y*2.0, u.time*0.2)));
-  }
-  // vignette
-  let v = smoothstep(0.8, 0.0, length(p) * 1.2);
-  col = mix(vec3<f32>(0.02,0.01,0.03), col, v);
-
-  // tone & gamma
-  col = pow(col, vec3<f32>(0.9));
-  return vec4<f32>(col, 1.0);
-}
-`;
-
-// pipeline -----------------------------------------------------------------
-const shaderModule = device.createShaderModule({ code: wgsl });
 const pipeline = device.createRenderPipeline({
-  layout: 'auto',
-  vertex: { module: shaderModule, entryPoint: 'vs_main' },
-  fragment: { module: shaderModule, entryPoint: 'fs_main', targets: [{ format }] },
-  primitive: { topology: 'triangle-list', cullMode: 'none' }
+  layout:'auto',
+  vertex:{ module:shader, entryPoint:'vs' },
+  fragment:{ module:shader, entryPoint:'fs', targets:[{format}] },
+  primitive:{ topology:'triangle-list' }
 });
 
-// uniforms
-const uniformSize = 4 * (1 + 2 + 2 + 1); // time + mouse(vec2) + res(vec2) + camRad
-const uniformBuffer = device.createBuffer({
-  size: 64,
-  usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-});
-const bindGroup = device.createBindGroup({
-  layout: pipeline.getBindGroupLayout(0),
-  entries: [{ binding: 0, resource: { buffer: uniformBuffer } }]
-});
+const bindGroup = device.createBindGroup({ layout:pipeline.getBindGroupLayout(0), entries:[{ binding:0, resource:{ buffer:uniform } }] });
 
-// interaction state
-let mouse = {x:0.5, y:0.5};
-let camRad = 0.0;
-let paused = false;
-let tStart = performance.now();
-
-canvas.addEventListener('pointermove', (e) => {
-  if (e.buttons === 1) {
-    mouse.x = e.clientX / innerWidth;
-    mouse.y = 1.0 - e.clientY / innerHeight;
-  }
-});
-canvas.addEventListener('wheel', (e) => { e.preventDefault(); camRad = Math.min(Math.max(camRad + e.deltaY * 0.0015, -2.0), 6.0); }, {passive:false});
-canvas.addEventListener('pointerdown', (e) => { if (e.button === 0) paused = !paused; });
-
-// draw loop
-function updateUniforms(time) {
-  // pack into Float32Array: [time, mouse.x, mouse.y, res.x, res.y, camRad]
-  const arr = new Float32Array([time, mouse.x, mouse.y, canvas.width, canvas.height, camRad]);
-  device.queue.writeBuffer(uniformBuffer, 0, arr.buffer, arr.byteOffset, arr.byteLength);
-}
-
-function frame(now) {
-  const time = ((now - tStart) * 0.001);
-  if (!paused) updateUniforms(time);
-
-  const commandEncoder = device.createCommandEncoder();
-  const textureView = context.getCurrentTexture().createView();
-  const pass = commandEncoder.beginRenderPass({ colorAttachments: [{ view: textureView, clearValue: { r: 0, g: 0, b: 0, a: 1 }, loadOp: 'clear', storeOp: 'store' }] });
+let t0=performance.now();
+function frame(){
+  const t=(performance.now()-t0)*0.001;
+  device.queue.writeBuffer(uniform,0,new Float32Array([mx,my,layers,t]));
+  const enc=device.createCommandEncoder();
+  const pass=enc.beginRenderPass({ colorAttachments:[{ view:context.getCurrentTexture().createView(), loadOp:'clear', storeOp:'store', clearValue:{r:0,g:0,b:0,a:1} }] });
   pass.setPipeline(pipeline);
-  pass.setBindGroup(0, bindGroup);
-  pass.draw(3, 1, 0, 0);
+  pass.setBindGroup(0,bindGroup);
+  pass.draw(3);
   pass.end();
-  device.queue.submit([commandEncoder.finish()]);
-
+  device.queue.submit([enc.finish()]);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-
-// initial uniforms
-updateUniforms(0.0);
-
 </script>
 </body>
 </html>

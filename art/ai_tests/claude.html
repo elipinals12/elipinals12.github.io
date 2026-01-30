@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Fractal Void - WebGPU</title>
+  <title>Fractal Void - Claude's Art</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #000; overflow: hidden; }
@@ -12,6 +12,13 @@
       color: #fff; font: 14px monospace; opacity: 0.7; text-align: center;
       text-shadow: 0 0 10px #f0f, 0 0 20px #0ff;
     }
+    #dimension {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      color: #fff; font: 24px monospace; opacity: 0; text-align: center;
+      text-shadow: 0 0 20px #0ff, 0 0 40px #f0f;
+      transition: opacity 0.3s;
+    }
+    #dimension.show { opacity: 1; }
     #error {
       position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
       color: #f44; font: 20px monospace; text-align: center; display: none;
@@ -20,7 +27,8 @@
 </head>
 <body>
   <canvas id="c"></canvas>
-  <div id="info">move mouse to warp • click to change colors • scroll to zoom</div>
+  <div id="dimension">DIMENSION 1</div>
+  <div id="info">mouse: orbit • scroll: zoom • click: colors • ↑↓: shift dimension</div>
   <div id="error">WebGPU not supported<br>Try Chrome/Edge 113+</div>
 <script>
 const shader = `
@@ -30,7 +38,7 @@ struct Uniforms {
   mode: f32,
   mouse: vec2f,
   zoom: f32,
-  _pad: f32,
+  dimension: f32,
 }
 @group(0) @binding(0) var<uniform> u: Uniforms;
 
@@ -68,34 +76,141 @@ fn sdBox(p: vec3f, b: vec3f) -> f32 {
   return length(max(q, vec3f(0.0))) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
-fn map(pos: vec3f) -> vec2f {
+fn sdOct(p: vec3f, s: f32) -> f32 {
+  let q = abs(p);
+  return (q.x + q.y + q.z - s) * 0.577;
+}
+
+// Dimension 0: Folded boxes
+fn map0(pos: vec3f, t: f32) -> vec2f {
   var p = pos;
-  let t = u.time * 0.25;
-  let mx = (u.mouse - 0.5) * 2.0;
-  
-  // Rotate space
-  var xy = p.xy * rot2(t * 0.2 + mx.x * 0.5);
+  var xy = p.xy * rot2(t * 0.3);
   p = vec3f(xy.x, xy.y, p.z);
-  var xz = vec2f(p.x, p.z) * rot2(t * 0.15 + mx.y * 0.5);
+  var xz = vec2f(p.x, p.z) * rot2(t * 0.2);
   p = vec3f(xz.x, p.y, xz.y);
   
-  // Infinite repetition
-  let rep = 3.5;
+  let rep = 4.0;
   let id = floor(p / rep);
   p = (p % vec3f(rep)) - 0.5 * rep;
   
-  // Simple fractal fold (reduced iterations for performance)
   for (var i = 0; i < 3; i++) {
     p = abs(p);
     if p.x < p.y { p = vec3f(p.y, p.x, p.z); }
     if p.x < p.z { p = vec3f(p.z, p.y, p.x); }
-    p = p * 1.4 - vec3f(0.8 + 0.2 * sin(t));
-    xy = p.xy * rot2(0.5);
+    p = p * 1.5 - vec3f(1.0 + 0.3 * sin(t * 2.0 + f32(i)));
+    xy = p.xy * rot2(0.5 + t * 0.1);
     p = vec3f(xy.x, xy.y, p.z);
   }
   
-  let d = sdBox(p, vec3f(0.4)) * 0.3;
+  return vec2f(sdBox(p, vec3f(0.5)) * 0.25, dot(id, vec3f(1.0, 7.0, 13.0)));
+}
+
+// Dimension 1: Menger sponge
+fn map1(pos: vec3f, t: f32) -> vec2f {
+  var p = pos;
+  var xy = p.xy * rot2(t * 0.2);
+  p = vec3f(xy.x, xy.y, p.z);
+  
+  var d = sdBox(p, vec3f(2.0));
+  var s = 1.0;
+  
+  for (var i = 0; i < 4; i++) {
+    let a = (p * s % 2.0) - 1.0;
+    s *= 3.0;
+    let r = abs(1.0 - 3.0 * abs(a));
+    let da = max(r.x, r.y);
+    let db = max(r.y, r.z);
+    let dc = max(r.z, r.x);
+    let c = (min(da, min(db, dc)) - 1.0) / s;
+    d = max(d, c);
+  }
+  
+  return vec2f(d, s);
+}
+
+// Dimension 2: Sierpinski tetrahedron
+fn map2(pos: vec3f, t: f32) -> vec2f {
+  var p = pos;
+  var xz = vec2f(p.x, p.z) * rot2(t * 0.25);
+  p = vec3f(xz.x, p.y, xz.y);
+  
+  let scale = 2.0;
+  let offset = vec3f(1.0, 1.0, 1.0);
+  
+  for (var i = 0; i < 8; i++) {
+    if p.x + p.y < 0.0 { p = vec3f(-p.y, -p.x, p.z); }
+    if p.x + p.z < 0.0 { p = vec3f(-p.z, p.y, -p.x); }
+    if p.y + p.z < 0.0 { p = vec3f(p.x, -p.z, -p.y); }
+    p = p * scale - offset * (scale - 1.0);
+  }
+  
+  return vec2f(length(p) * pow(scale, -8.0) - 0.01, 1.0);
+}
+
+// Dimension 3: Infinite spheres
+fn map3(pos: vec3f, t: f32) -> vec2f {
+  var p = pos;
+  var xy = p.xy * rot2(t * 0.15);
+  p = vec3f(xy.x, xy.y, p.z);
+  
+  let rep = 2.5 + 0.5 * sin(t);
+  let id = floor(p / rep);
+  p = (p % vec3f(rep)) - 0.5 * rep;
+  
+  let r = 0.8 + 0.3 * sin(dot(id, vec3f(1.0, 2.0, 3.0)) + t);
+  let sphere = length(p) - r;
+  let box = sdBox(p, vec3f(0.5));
+  let d = mix(sphere, box, sin(t * 0.5) * 0.5 + 0.5);
+  
   return vec2f(d, dot(id, vec3f(1.0, 7.0, 13.0)));
+}
+
+// Dimension 4: Octahedral kaleidoscope
+fn map4(pos: vec3f, t: f32) -> vec2f {
+  var p = pos;
+  
+  for (var i = 0; i < 5; i++) {
+    p = abs(p);
+    if p.x < p.y { p = vec3f(p.y, p.x, p.z); }
+    if p.x < p.z { p = vec3f(p.z, p.y, p.x); }
+    if p.y < p.z { p = vec3f(p.x, p.z, p.y); }
+    
+    p = p * 1.8 - vec3f(1.2 + 0.2 * sin(t + f32(i)));
+    var xy = p.xy * rot2(t * 0.1 + f32(i) * 0.5);
+    p = vec3f(xy.x, xy.y, p.z);
+  }
+  
+  return vec2f(sdOct(p, 1.0) * 0.1, length(p));
+}
+
+// Dimension 5: Twisted columns
+fn map5(pos: vec3f, t: f32) -> vec2f {
+  var p = pos;
+  let twist = p.y * 0.5 + t;
+  var xz = vec2f(p.x, p.z) * rot2(twist);
+  p = vec3f(xz.x, p.y, xz.y);
+  
+  let rep = 3.0;
+  let id = floor(vec2f(p.x, p.z) / rep);
+  let px = (p.x % rep) - 0.5 * rep;
+  let pz = (p.z % rep) - 0.5 * rep;
+  
+  let col = length(vec2f(px, pz)) - 0.5 - 0.2 * sin(p.y * 2.0 + t * 3.0);
+  let d = max(col, abs(p.y) - 4.0);
+  
+  return vec2f(d, dot(id, vec2f(1.0, 7.0)));
+}
+
+fn map(pos: vec3f) -> vec2f {
+  let t = u.time * 0.2;
+  let dim = i32(u.dimension) % 6;
+  
+  if dim == 0 { return map0(pos, t); }
+  if dim == 1 { return map1(pos, t); }
+  if dim == 2 { return map2(pos, t); }
+  if dim == 3 { return map3(pos, t); }
+  if dim == 4 { return map4(pos, t); }
+  return map5(pos, t);
 }
 
 @vertex
@@ -110,46 +225,42 @@ fn fs(@builtin(position) fc: vec4f) -> @location(0) vec4f {
   let t = u.time;
   let mx = (u.mouse - 0.5) * 2.0;
   
-  // Camera
-  let camDist = 4.0 * u.zoom;
-  let ro = vec3f(
-    sin(t * 0.2) * camDist,
-    cos(t * 0.15) * camDist * 0.3,
-    t * 1.5
-  );
-  let ta = ro + vec3f(0.0, 0.0, 3.0);
+  // Camera orbits
+  let camDist = u.zoom;
+  let camAngleX = t * 0.1 + mx.x * PI;
+  let camAngleY = mx.y * 0.8;
   
-  // Camera matrix
+  let ro = vec3f(
+    sin(camAngleX) * cos(camAngleY) * camDist,
+    sin(camAngleY) * camDist,
+    cos(camAngleX) * cos(camAngleY) * camDist
+  );
+  
+  let ta = vec3f(0.0);
   let ww = normalize(ta - ro);
   let uu = normalize(cross(ww, vec3f(0, 1, 0)));
   let vv = cross(uu, ww);
-  let rd = normalize(uv.x * uu + uv.y * vv + 1.8 * ww);
+  let rd = normalize(uv.x * uu + uv.y * vv + 1.5 * ww);
   
-  // Single-pass raymarch (optimized)
+  // Raymarch
   var depth = 0.0;
   var glow = 0.0;
   var matId = 0.0;
-  var steps = 0;
   
   for (var i = 0; i < 60; i++) {
     let p = ro + rd * depth;
     let res = map(p);
     let d = res.x;
     matId = res.y;
-    
-    glow += 0.015 / (0.05 + d * d);
-    
-    if d < 0.002 || depth > 30.0 { break; }
+    glow += 0.02 / (0.05 + d * d);
+    if d < 0.001 || depth > 40.0 { break; }
     depth += d;
-    steps = i;
   }
   
   var col = vec3f(0.0);
   
-  if depth < 30.0 {
+  if depth < 40.0 {
     let p = ro + rd * depth;
-    
-    // Fast normal via tetrahedron technique
     let e = vec2f(0.002, -0.002);
     let n = normalize(
       e.xyy * map(p + e.xyy).x +
@@ -158,40 +269,43 @@ fn fs(@builtin(position) fc: vec4f) -> @location(0) vec4f {
       e.xxx * map(p + e.xxx).x
     );
     
-    // Simple lighting
-    let light = normalize(vec3f(sin(t), 1.0, cos(t)));
-    let diff = max(dot(n, light), 0.0) * 0.7 + 0.3;
+    let light = normalize(vec3f(1.0, 1.0, 1.0));
+    let diff = max(dot(n, light), 0.0) * 0.6 + 0.4;
     let spec = pow(max(dot(reflect(-light, n), -rd), 0.0), 16.0);
     
-    // Color from palette
-    let matCol = palette(matId * 0.05 + depth * 0.03 + t * 0.15, u.mode);
-    col = matCol * diff + vec3f(1.0) * spec * 0.3;
-    
-    // Fog
-    col *= exp(-depth * 0.08);
+    let matCol = palette(matId * 0.05 + depth * 0.02 + t * 0.1, u.mode);
+    col = matCol * diff + vec3f(1.0) * spec * 0.4;
+    col *= exp(-depth * 0.05);
   }
   
-  // Add glow
-  let glowCol = palette(t * 0.1 + glow * 0.1, u.mode);
-  col += glowCol * glow * 0.015;
+  let glowCol = palette(t * 0.1, u.mode);
+  col += glowCol * glow * 0.012;
   
-  // Chromatic aberration (cheap post-process version)
-  let aberration = length(uv) * 0.008;
-  col.r = col.r * (1.0 + aberration);
-  col.b = col.b * (1.0 - aberration);
+  let ab = length(uv) * 0.01;
+  col.r *= (1.0 + ab);
+  col.b *= (1.0 - ab);
   
-  // Simple post-processing
   col = pow(col, vec3f(0.85));
-  col *= 1.0 - 0.4 * dot(uv, uv); // Vignette
+  col *= 1.0 - 0.35 * dot(uv, uv);
   col = clamp(col, vec3f(0.0), vec3f(1.0));
   
   return vec4f(col, 1.0);
 }
 `;
 
+const dimNames = [
+  "FOLDED VOID",
+  "MENGER REALM", 
+  "SIERPINSKI SPACE",
+  "INFINITE SPHERES",
+  "KALEIDOSCOPE",
+  "TWISTED COLUMNS"
+];
+
 async function main() {
   const canvas = document.getElementById('c');
   const error = document.getElementById('error');
+  const dimDisplay = document.getElementById('dimension');
   
   if (!navigator.gpu) {
     error.style.display = 'block';
@@ -211,7 +325,16 @@ async function main() {
   let mouse = { x: 0.5, y: 0.5 };
   let targetMouse = { x: 0.5, y: 0.5 };
   let mode = 0;
-  let zoom = 1.0;
+  let zoom = 8.0;
+  let dimension = 0;
+  let dimTimeout;
+  
+  function showDimension() {
+    dimDisplay.textContent = dimNames[dimension];
+    dimDisplay.classList.add('show');
+    clearTimeout(dimTimeout);
+    dimTimeout = setTimeout(() => dimDisplay.classList.remove('show'), 2000);
+  }
   
   canvas.addEventListener('mousemove', e => {
     targetMouse.x = e.clientX / window.innerWidth;
@@ -222,8 +345,20 @@ async function main() {
   
   canvas.addEventListener('wheel', e => {
     e.preventDefault();
-    zoom = Math.max(0.3, Math.min(3.0, zoom + e.deltaY * 0.001));
+    zoom = Math.max(2.0, Math.min(20.0, zoom + e.deltaY * 0.01));
   }, { passive: false });
+  
+  window.addEventListener('keydown', e => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      dimension = (dimension + 1) % 6;
+      showDimension();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      dimension = (dimension - 1 + 6) % 6;
+      showDimension();
+    }
+  });
   
   canvas.addEventListener('touchmove', e => {
     e.preventDefault();
@@ -234,7 +369,6 @@ async function main() {
   canvas.addEventListener('touchend', () => { mode = (mode + 1) % 5; });
 
   function resize() {
-    // Lower resolution for better performance on laptops
     const dpr = Math.min(window.devicePixelRatio, 1.5) * 0.75;
     canvas.width = Math.floor(window.innerWidth * dpr);
     canvas.height = Math.floor(window.innerHeight * dpr);
@@ -266,7 +400,6 @@ async function main() {
   const uniformData = new Float32Array(8);
   
   function frame(time) {
-    // Smooth mouse movement
     mouse.x += (targetMouse.x - mouse.x) * 0.08;
     mouse.y += (targetMouse.y - mouse.y) * 0.08;
     
@@ -277,6 +410,7 @@ async function main() {
     uniformData[4] = mouse.x;
     uniformData[5] = mouse.y;
     uniformData[6] = zoom;
+    uniformData[7] = dimension;
     device.queue.writeBuffer(uniformBuffer, 0, uniformData);
     
     const encoder = device.createCommandEncoder();

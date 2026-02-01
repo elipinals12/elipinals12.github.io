@@ -7,9 +7,11 @@ move atlib to its own domain - BOOOOOOOOOO.....oml chose atlib.boo, coincidence?
 verify smaller and larger browser size works for all applications
 
 LEADERBOARD, i think best route is google sheets api - DONE!!!!! not for all
+	FIX EXPOSED API KEY, FIX STABILITY
 
 build link list ui from ground its disgusting - FIX MAIN PAGE
 	this includes fixing golda.ml
 
 count lines:
 dir -Recurse -Include *.* -Exclude *p5.js*,*p5.dom*,*p5.sound*,*png,*git*,*jpg* | Get-Content | Measure-Object -Line
+

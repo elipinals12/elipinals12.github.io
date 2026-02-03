@@ -4,79 +4,118 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QR Code Generator</title>
-  <link rel="icon" href="../../ref/Disc_Plain_blue_dark.png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: system-ui, sans-serif;
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 30px 20px;
-      background: #fafafa;
+      justify-content: center;
+      padding: 3vh 3vw;
+      background: #000;
+      gap: 3vh;
+      overflow: hidden;
     }
-    textarea {
-      width: 100%;
-      max-width: 500px;
-      height: 120px;
-      padding: 16px;
-      font-size: 1.1rem;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      resize: none;
-      background: white;
+    #text {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      color: #fff;
+      background: transparent;
+      border: 3px solid #000080;
+      padding: 0.4em 0.6em;
+      text-align: center;
+      outline: none;
+      width: 90vw;
+      max-width: 700px;
+      border-radius: 8px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
     }
-    textarea:focus { outline: none; border-color: #333; }
-    textarea::placeholder { color: #aaa; }
+    #text:empty::before {
+      content: 'Type here...';
+      color: #555;
+    }
     #qrcode {
-      margin-top: 30px;
-      padding: 20px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: min(3vw, 20px);
+      background: #fff;
+      border: 3px solid #000080;
+      border-radius: 8px;
+      line-height: 0;
+      flex-shrink: 0;
     }
-    #qrcode img, #qrcode canvas { display: block; }
-    .hint {
-      margin-top: 20px;
-      color: #999;
-      font-size: 0.85rem;
+    #qrcode img, #qrcode canvas { 
+      display: block;
+      width: min(80vw, 60vh, 450px);
+      height: min(80vw, 60vh, 450px);
+    }
+    .empty #qrcode { opacity: 0.3; }
+
+    @media (max-aspect-ratio: 1/1) {
+      #qrcode img, #qrcode canvas { 
+        width: min(85vw, 50vh, 400px);
+        height: min(85vw, 50vh, 400px);
+      }
+    }
+
+    @media (min-aspect-ratio: 3/2) {
+      body { flex-direction: row; gap: 4vw; }
+      #text { width: 40vw; max-width: 500px; }
+      #qrcode img, #qrcode canvas { 
+        width: min(40vw, 70vh, 500px);
+        height: min(40vw, 70vh, 500px);
+      }
     }
   </style>
 </head>
-<body>
-  <textarea id="text" placeholder="Type anything..." autofocus></textarea>
+<body class="empty">
+  <div id="text" contenteditable="true" spellcheck="false"></div>
   <div id="qrcode"></div>
-  <p class="hint">QR updates as you type!</p>
 
   <script>
     const input = document.getElementById('text');
     const container = document.getElementById('qrcode');
-    let qr = null;
     let timeout = null;
+
+    function adjustFontSize() {
+      const len = input.textContent.length;
+      let size;
+      if (len < 20) size = 3;
+      else if (len < 40) size = 2.6;
+      else if (len < 70) size = 2.2;
+      else if (len < 120) size = 1.8;
+      else size = 1.5;
+      input.style.fontSize = `clamp(1.5rem, ${size}vw + 1rem, ${size}rem)`;
+    }
 
     function generate(text) {
       container.innerHTML = '';
-      if (!text) return;
-      qr = new QRCode(container, {
-        text: text,
-        width: 280,
-        height: 280,
+      document.body.classList.toggle('empty', !text);
+      new QRCode(container, {
+        text: text || ' ',
+        width: 500,
+        height: 500,
         colorDark: '#000000',
         colorLight: '#ffffff'
       });
     }
 
     input.addEventListener('input', () => {
+      adjustFontSize();
       clearTimeout(timeout);
       timeout = setTimeout(() => {
-        generate(input.value.trim());
-      }, 150);
+        generate(input.textContent.trim());
+      }, 100);
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') e.preventDefault();
     });
 
     generate('');
-    input.value = '';
+    adjustFontSize();
   </script>
 </body>
 </html>

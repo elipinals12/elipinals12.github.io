@@ -5,12 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      touch-action: none;
-    }
+    html, body { width: 100%; height: 100%; overflow: hidden; touch-action: none; }
     body {
       display: flex;
       justify-content: center;
@@ -19,56 +14,37 @@
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
       font-family: 'Segoe UI', sans-serif;
     }
-    #game-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: min(15px, 3vw);
-      padding: 10px;
-    }
-    #stats {
-      display: flex;
-      gap: min(30px, 5vw);
-      color: #fff;
-      font-size: clamp(14px, 4vw, 18px);
-    }
-    .stat { 
-      background: rgba(255,255,255,0.1);
-      padding: 8px min(20px, 4vw);
-      border-radius: 8px;
-      white-space: nowrap;
-    }
+    #game-container { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: min(12px, 2.5vw); padding: 15px; width: 100%; max-width: 500px; }
+    #instructions { color: #fff; font-size: clamp(12px, 3.5vw, 16px); text-align: center; opacity: 0.9; padding: 0 10px; }
+    #instructions span { color: #ffd700; font-weight: bold; }
+    #stats { display: flex; justify-content: center; gap: min(20px, 4vw); color: #fff; font-size: clamp(13px, 3.5vw, 17px); width: 100%; }
+    .stat { background: rgba(255,255,255,0.1); padding: 8px min(16px, 3vw); border-radius: 8px; white-space: nowrap; }
     .stat span { font-weight: bold; color: #ffd700; }
     #timer.flashing { animation: flash 0.5s infinite; }
-    @keyframes flash {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
+    @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    #game { display: flex; justify-content: center; align-items: center; }
     #reset-btn {
-      padding: 10px min(25px, 5vw);
-      font-size: clamp(14px, 4vw, 16px);
-      background: #e74c3c;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-      opacity: 0;
-      pointer-events: none;
+      padding: 10px min(25px, 5vw); font-size: clamp(14px, 3.5vw, 16px);
+      background: #e74c3c; color: white; border: none; border-radius: 8px;
+      cursor: pointer; transition: all 0.2s; opacity: 0; pointer-events: none;
+      margin-top: 5px;
     }
     #reset-btn.visible { opacity: 1; pointer-events: auto; }
     #reset-btn:hover { background: #c0392b; transform: scale(1.05); }
-    #game canvas { display: block; }
+    #reset-counter { color: rgba(255,255,255,0.5); font-size: clamp(11px, 2.5vw, 13px); margin-top: 5px; }
+    #game canvas { display: block; border-radius: 12px; }
   </style>
 </head>
 <body>
   <div id="game-container">
+    <div id="instructions">Help the <span>yellow block</span> escape through the exit!</div>
     <div id="stats">
       <div class="stat" id="timer">Time: <span>00:00.000</span></div>
       <div class="stat">Moves: <span id="moves">0</span></div>
     </div>
     <div id="game"></div>
     <button id="reset-btn">Reset</button>
+    <div id="reset-counter"></div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
   <script>
@@ -76,453 +52,477 @@ const COLS = 4, ROWS = 5;
 let CELL, BOARD_W, BOARD_H, PAD;
 
 function calcSizes() {
-  const maxW = window.innerWidth - 40;
-  const maxH = window.innerHeight - 140;
-  const cellByW = Math.floor(maxW / COLS);
-  const cellByH = Math.floor(maxH / (ROWS + 0.6));
-  CELL = Math.min(cellByW, cellByH, 80);
-  BOARD_W = COLS * CELL;
-  BOARD_H = ROWS * CELL;
-  PAD = Math.max(20, CELL * 0.4);
+  const maxW = window.innerWidth - 40, maxH = window.innerHeight - 180;
+  CELL = Math.min(Math.floor(maxW / COLS), Math.floor(maxH / (ROWS + 0.8)), 80);
+  BOARD_W = COLS * CELL; BOARD_H = ROWS * CELL;
+  PAD = Math.max(20, CELL * 0.35);
 }
 
 const initialPieces = [
-  { id: 'A', x: 0, y: 0, w: 1, h: 2, type: 'tall' },
-  { id: 'B', x: 1, y: 0, w: 2, h: 2, type: 'main' },
-  { id: 'C', x: 3, y: 0, w: 1, h: 2, type: 'tall' },
-  { id: 'D', x: 1, y: 2, w: 2, h: 1, type: 'wide' },
-  { id: 'E', x: 0, y: 3, w: 1, h: 2, type: 'tall' },
-  { id: 'F', x: 1, y: 3, w: 1, h: 1, type: 'small' },
-  { id: 'G', x: 2, y: 3, w: 1, h: 1, type: 'small' },
-  { id: 'H', x: 3, y: 3, w: 1, h: 2, type: 'tall' },
-  { id: 'I', x: 1, y: 4, w: 1, h: 1, type: 'small' },
-  { id: 'J', x: 2, y: 4, w: 1, h: 1, type: 'small' },
+  { id: 'A', x: 0, y: 0, w: 1, h: 2, type: 'tall', face: 'worried' },
+  { id: 'B', x: 1, y: 0, w: 2, h: 2, type: 'main', face: 'determined' },
+  { id: 'C', x: 3, y: 0, w: 1, h: 2, type: 'tall', face: 'sleepy' },
+  { id: 'D', x: 1, y: 2, w: 2, h: 1, type: 'wide', face: 'focused' },
+  { id: 'E', x: 0, y: 3, w: 1, h: 2, type: 'tall', face: 'surprised' },
+  { id: 'F', x: 1, y: 3, w: 1, h: 1, type: 'small', face: 'grumpy' },
+  { id: 'G', x: 2, y: 3, w: 1, h: 1, type: 'small', face: 'happy' },
+  { id: 'H', x: 3, y: 3, w: 1, h: 2, type: 'tall', face: 'chill' },
+  { id: 'I', x: 1, y: 4, w: 1, h: 1, type: 'small', face: 'confused' },
+  { id: 'J', x: 2, y: 4, w: 1, h: 1, type: 'small', face: 'cheeky' },
 ];
 
 const colors = { main: 0xFFD700, tall: 0x3498db, wide: 0x9b59b6, small: 0x2ecc71 };
 
 let app, boardContainer, piecesContainer, confettiContainer;
 let pieces = [], moves = 0, timerStart = null, timerInterval = null, gameWon = false, grid = [];
+let resetCount = 0;
+let dragState = null; // global drag state
+
+const EXIT_AREA = 50;
 
 async function init() {
   calcSizes();
-  
   app = new PIXI.Application({ 
-    width: BOARD_W + PAD * 2, 
-    height: BOARD_H + PAD * 2 + CELL * 0.6,
-    backgroundColor: 0x0f0f23, 
-    antialias: true,
-    resolution: window.devicePixelRatio || 1,
-    autoDensity: true
+    width: BOARD_W + PAD * 2, height: BOARD_H + PAD + EXIT_AREA,
+    backgroundColor: 0x0f0f23, antialias: true,
+    resolution: window.devicePixelRatio || 1, autoDensity: true
   });
   document.getElementById('game').appendChild(app.view);
-
   boardContainer = new PIXI.Container();
-  boardContainer.x = PAD;
-  boardContainer.y = PAD;
+  boardContainer.x = PAD; boardContainer.y = PAD * 0.5;
   app.stage.addChild(boardContainer);
-  
   drawBoard();
-  
   piecesContainer = new PIXI.Container();
   boardContainer.addChild(piecesContainer);
-  
   confettiContainer = new PIXI.Container();
   app.stage.addChild(confettiContainer);
-  
   app.stage.eventMode = 'static';
   app.stage.hitArea = app.screen;
-
-  resetGame();
-  document.getElementById('reset-btn').addEventListener('click', resetGame);
   
+  // Global drag handlers (added once)
+  app.stage.on('pointermove', onDragMove);
+  app.stage.on('pointerup', onDragEnd);
+  app.stage.on('pointerupoutside', onDragEnd);
+  
+  resetGame();
+  document.getElementById('reset-btn').addEventListener('click', () => resetGame(true));
   window.addEventListener('resize', debounce(handleResize, 250));
 }
 
-function debounce(fn, ms) {
-  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+function onDragMove(e) {
+  if (!dragState) return;
+  const { piece: c, startPx, railPos, pathTaken } = dragState;
+  dragState.lastPx = { x: e.global.x, y: e.global.y };
+  
+  const targetPx = railPos.x * CELL + (e.global.x - startPx.x);
+  const targetPy = railPos.y * CELL + (e.global.y - startPx.y);
+  const dx = Math.round((targetPx - railPos.x * CELL) / CELL);
+  const dy = Math.round((targetPy - railPos.y * CELL) / CELL);
+  
+  if (dx !== 0 || dy !== 0) {
+    const stepX = dx !== 0 ? Math.sign(dx) : 0;
+    const stepY = dy !== 0 ? Math.sign(dy) : 0;
+    const tryDirs = Math.abs(dx) >= Math.abs(dy) ? [[stepX, 0], [0, stepY]] : [[0, stepY], [stepX, 0]];
+    
+    for (const [sx, sy] of tryDirs) {
+      if (sx === 0 && sy === 0) continue;
+      const moveResult = canMoveWithPush(c.pieceData, railPos.x, railPos.y, sx, sy);
+      if (moveResult.canMove) {
+        clearFromGrid(c.pieceData, railPos.x, railPos.y);
+        for (const p of moveResult.toPush) {
+          clearFromGrid(p.pieceData, p.pieceData.x, p.pieceData.y);
+          p.pieceData.x += sx; p.pieceData.y += sy;
+          addToGrid(p.pieceData, p.pieceData.x, p.pieceData.y);
+          p.x = p.pieceData.x * CELL; p.y = p.pieceData.y * CELL;
+        }
+        dragState.railPos = { x: railPos.x + sx, y: railPos.y + sy };
+        pathTaken.push({ x: dragState.railPos.x, y: dragState.railPos.y, pushed: moveResult.toPush.length });
+        addToGrid(c.pieceData, dragState.railPos.x, dragState.railPos.y);
+        dragState.startPx = { x: e.global.x, y: e.global.y };
+        break;
+      }
+    }
+  }
+  
+  let visualX = dragState.railPos.x * CELL, visualY = dragState.railPos.y * CELL;
+  const offsetX = e.global.x - dragState.startPx.x, offsetY = e.global.y - dragState.startPx.y;
+  const canLeft = canMoveWithPush(c.pieceData, dragState.railPos.x, dragState.railPos.y, -1, 0).canMove;
+  const canRight = canMoveWithPush(c.pieceData, dragState.railPos.x, dragState.railPos.y, 1, 0).canMove;
+  const canUp = canMoveWithPush(c.pieceData, dragState.railPos.x, dragState.railPos.y, 0, -1).canMove;
+  const canDown = canMoveWithPush(c.pieceData, dragState.railPos.x, dragState.railPos.y, 0, 1).canMove;
+  
+  if (offsetX < 0 && canLeft) visualX += Math.max(offsetX, -CELL * 0.4);
+  else if (offsetX > 0 && canRight) visualX += Math.min(offsetX, CELL * 0.4);
+  if (offsetY < 0 && canUp) visualY += Math.max(offsetY, -CELL * 0.4);
+  else if (offsetY > 0 && canDown) visualY += Math.min(offsetY, CELL * 0.4);
+  
+  c.x = visualX; c.y = visualY;
 }
+
+function onDragEnd() {
+  if (!dragState) return;
+  const { piece: c, origStartPx, startGrid, railPos, lastPx, startTime, pathTaken } = dragState;
+  const FLICK_TH = CELL * 0.15, TAP_TH = CELL * 0.12, TAP_TIME = 250;
+  
+  c.cursor = 'grab';
+  
+  const elapsed = Date.now() - startTime;
+  const totalDx = lastPx.x - origStartPx.x, totalDy = lastPx.y - origStartPx.y;
+  const dist = Math.sqrt(totalDx * totalDx + totalDy * totalDy);
+  const cellsMoved = pathTaken.length - 1;
+  const pushedCount = pathTaken.reduce((sum, p) => sum + (p.pushed || 0), 0);
+  
+  dragState = null;
+  
+  if (dist < TAP_TH && elapsed < TAP_TIME && cellsMoved === 0) {
+    const validMoves = getValidSingleMoves(c.pieceData, startGrid.x, startGrid.y);
+    if (validMoves.length === 1) {
+      const m = validMoves[0];
+      executeSingleMove(c, startGrid.x, startGrid.y, m.x - startGrid.x, m.y - startGrid.y);
+      return;
+    }
+    c.x = startGrid.x * CELL; c.y = startGrid.y * CELL;
+    return;
+  }
+  
+  if (dist > FLICK_TH && dist < CELL * 0.9 && elapsed < 300 && cellsMoved === 0) {
+    const dir = Math.abs(totalDx) > Math.abs(totalDy) ? { x: Math.sign(totalDx), y: 0 } : { x: 0, y: Math.sign(totalDy) };
+    executeFlickMove(c, startGrid.x, startGrid.y, dir.x, dir.y);
+    return;
+  }
+  
+  if (cellsMoved > 0) {
+    c.pieceData.x = railPos.x; c.pieceData.y = railPos.y;
+    c.x = railPos.x * CELL; c.y = railPos.y * CELL;
+    moves += cellsMoved + pushedCount;
+    document.getElementById('moves').textContent = moves;
+    document.getElementById('reset-btn').classList.add('visible');
+    if (!timerStart) startTimer();
+    if (c.pieceData.type === 'main') {
+      updateMainFace(c);
+      if (c.pieceData.y >= ROWS - 1) winGame(c);
+    }
+  } else {
+    c.x = startGrid.x * CELL; c.y = startGrid.y * CELL;
+  }
+}
+
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 
 function handleResize() {
   if (gameWon) return;
   calcSizes();
-  app.renderer.resize(BOARD_W + PAD * 2, BOARD_H + PAD * 2 + CELL * 0.6);
-  boardContainer.removeChildren();
-  drawBoard();
+  app.renderer.resize(BOARD_W + PAD * 2, BOARD_H + PAD + EXIT_AREA);
+  boardContainer.x = PAD; boardContainer.y = PAD * 0.5;
+  boardContainer.removeChildren(); drawBoard();
   boardContainer.addChild(piecesContainer);
-  
-  pieces.forEach(p => {
-    const d = p.pieceData;
-    p.x = d.x * CELL;
-    p.y = d.y * CELL;
-    redrawPiece(p);
-  });
-}
-
-function redrawPiece(c) {
-  const d = c.pieceData;
-  const w = d.w * CELL - 6, h = d.h * CELL - 6;
-  const color = colors[d.type];
-  
-  while (c.children.length > 0) c.removeChildAt(0);
-  
-  const shadow = new PIXI.Graphics();
-  shadow.beginFill(0x000000, 0.3);
-  shadow.drawRoundedRect(6, 6, w, h, 8);
-  shadow.endFill();
-  c.addChild(shadow);
-
-  const body = new PIXI.Graphics();
-  body.beginFill(color);
-  body.drawRoundedRect(3, 3, w, h, 8);
-  body.endFill();
-  c.addChild(body);
-
-  const hl = new PIXI.Graphics();
-  hl.beginFill(0xffffff, 0.25);
-  hl.drawRoundedRect(6, 6, w - 6, h / 3, 6);
-  hl.endFill();
-  c.addChild(hl);
-
-  if (d.type === 'main') {
-    const face = new PIXI.Container();
-    face.x = w / 2 + 3;
-    face.y = h / 2 + 3;
-    
-    const eyeSize = Math.max(5, CELL * 0.09);
-    const eyeSpacing = CELL * 0.23;
-    
-    const lEye = new PIXI.Graphics();
-    lEye.beginFill(0x000000);
-    lEye.drawCircle(-eyeSpacing, -eyeSize * 1.7, eyeSize);
-    lEye.endFill();
-    face.addChild(lEye);
-    
-    const rEye = new PIXI.Graphics();
-    rEye.beginFill(0x000000);
-    rEye.drawCircle(eyeSpacing, -eyeSize * 1.7, eyeSize);
-    rEye.endFill();
-    face.addChild(rEye);
-    
-    const mouth = new PIXI.Graphics();
-    mouth.lineStyle(Math.max(3, CELL * 0.05), 0x000000);
-    mouth.moveTo(-eyeSpacing, eyeSize * 2);
-    mouth.lineTo(eyeSpacing, eyeSize * 2);
-    c.mouth = mouth;
-    face.addChild(mouth);
-    c.face = face;
-    c.addChild(face);
-  }
+  pieces.forEach(p => { p.x = p.pieceData.x * CELL; p.y = p.pieceData.y * CELL; redrawPiece(p); });
 }
 
 function drawBoard() {
   const bg = new PIXI.Graphics();
-  bg.beginFill(0x2d2d44);
-  bg.drawRoundedRect(-10, -10, BOARD_W + 20, BOARD_H + 20, 10);
-  bg.endFill();
+  bg.beginFill(0x2d2d44); bg.drawRoundedRect(-10, -10, BOARD_W + 20, BOARD_H + 20, 10); bg.endFill();
   boardContainer.addChild(bg);
-
-  const gridLines = new PIXI.Graphics();
-  gridLines.lineStyle(1, 0x3d3d5c);
-  for (let i = 0; i <= COLS; i++) { gridLines.moveTo(i * CELL, 0); gridLines.lineTo(i * CELL, BOARD_H); }
-  for (let i = 0; i <= ROWS; i++) { gridLines.moveTo(0, i * CELL); gridLines.lineTo(BOARD_W, i * CELL); }
-  boardContainer.addChild(gridLines);
-
-  const walls = new PIXI.Graphics();
-  walls.lineStyle(Math.max(4, CELL * 0.07), 0x8b7355);
+  const gl = new PIXI.Graphics(); gl.lineStyle(1, 0x3d3d5c);
+  for (let i = 0; i <= COLS; i++) { gl.moveTo(i * CELL, 0); gl.lineTo(i * CELL, BOARD_H); }
+  for (let i = 0; i <= ROWS; i++) { gl.moveTo(0, i * CELL); gl.lineTo(BOARD_W, i * CELL); }
+  boardContainer.addChild(gl);
+  const walls = new PIXI.Graphics(); walls.lineStyle(Math.max(4, CELL * 0.07), 0x8b7355);
   walls.moveTo(0, 0); walls.lineTo(BOARD_W, 0);
   walls.moveTo(0, 0); walls.lineTo(0, BOARD_H);
   walls.moveTo(BOARD_W, 0); walls.lineTo(BOARD_W, BOARD_H);
   walls.moveTo(0, BOARD_H); walls.lineTo(CELL, BOARD_H);
   walls.moveTo(CELL * 3, BOARD_H); walls.lineTo(BOARD_W, BOARD_H);
   boardContainer.addChild(walls);
-
   const exit = new PIXI.Graphics();
-  exit.beginFill(0x27ae60);
-  exit.drawRoundedRect(CELL + 5, BOARD_H - 5, CELL * 2 - 10, 15, 3);
-  exit.endFill();
+  exit.beginFill(0x27ae60); exit.drawRoundedRect(CELL + 5, BOARD_H - 5, CELL * 2 - 10, 15, 3); exit.endFill();
   boardContainer.addChild(exit);
-  
-  const fontSize = Math.max(10, CELL * 0.18);
-  const exitText = new PIXI.Text('▼ EXIT ▼', { fontSize, fill: 0x27ae60, fontWeight: 'bold' });
-  exitText.x = CELL * 2 - exitText.width / 2;
-  exitText.y = BOARD_H + 8;
+  const exitText = new PIXI.Text('▼ EXIT ▼', { fontSize: Math.max(10, CELL * 0.18), fill: 0x27ae60, fontWeight: 'bold' });
+  exitText.x = CELL * 2 - exitText.width / 2; exitText.y = BOARD_H + 8;
   boardContainer.addChild(exitText);
+}
+
+function drawFace(c, face, w, h) {
+  const f = new PIXI.Container(); f.x = w / 2 + 3; f.y = h / 2 + 3;
+  const es = Math.max(3, CELL * 0.07), esp = Math.min(w, h) * 0.15, lw = Math.max(2, CELL * 0.035);
+  const lE = new PIXI.Graphics(), rE = new PIXI.Graphics();
+  if (face === 'sleepy') {
+    lE.lineStyle(lw, 0x000000); lE.moveTo(-esp - es, 0); lE.lineTo(-esp + es, 0);
+    rE.lineStyle(lw, 0x000000); rE.moveTo(esp - es, 0); rE.lineTo(esp + es, 0);
+  } else if (face === 'cheeky') {
+    lE.beginFill(0x000000); lE.drawCircle(-esp, -es * 0.5, es); lE.endFill();
+    rE.lineStyle(lw, 0x000000); rE.moveTo(esp - es, -es); rE.lineTo(esp + es, 0); rE.moveTo(esp - es, 0); rE.lineTo(esp + es, -es);
+  } else {
+    const sc = face === 'surprised' ? 1.4 : 1;
+    lE.beginFill(0x000000); lE.drawCircle(-esp, -es * 0.5, es * sc); lE.endFill();
+    rE.beginFill(0x000000); rE.drawCircle(esp, -es * 0.5, es * sc); rE.endFill();
+  }
+  f.addChild(lE); f.addChild(rE);
+  if (face === 'worried') {
+    const lB = new PIXI.Graphics(), rB = new PIXI.Graphics();
+    lB.lineStyle(lw, 0x000000); lB.moveTo(-esp - es, -es * 2.8); lB.lineTo(-esp + es, -es * 2);
+    rB.lineStyle(lw, 0x000000); rB.moveTo(esp + es, -es * 2.8); rB.lineTo(esp - es, -es * 2);
+    f.addChild(lB); f.addChild(rB);
+  }
+  if (face === 'grumpy') {
+    const lB = new PIXI.Graphics(), rB = new PIXI.Graphics();
+    lB.lineStyle(lw, 0x000000); lB.moveTo(-esp - es, -es * 2); lB.lineTo(-esp + es, -es * 2.8);
+    rB.lineStyle(lw, 0x000000); rB.moveTo(esp + es, -es * 2); rB.lineTo(esp - es, -es * 2.8);
+    f.addChild(lB); f.addChild(rB);
+  }
+  const m = new PIXI.Graphics(); m.lineStyle(lw, 0x000000);
+  const my = es * 2.5;
+  if (face === 'happy' || face === 'chill' || face === 'cheeky') m.arc(0, my - es, esp * 0.7, 0.2, Math.PI - 0.2);
+  else if (face === 'worried' || face === 'grumpy') m.arc(0, my + es * 1.5, esp * 0.6, Math.PI + 0.3, -0.3);
+  else if (face === 'surprised') { m.beginFill(0x000000); m.drawEllipse(0, my, es * 0.8, es * 1.2); m.endFill(); }
+  else if (face === 'confused') { m.moveTo(-esp * 0.4, my); m.bezierCurveTo(-esp * 0.1, my - es * 0.8, esp * 0.1, my + es * 0.8, esp * 0.4, my); }
+  else m.moveTo(-esp * 0.5, my), m.lineTo(esp * 0.5, my);
+  f.addChild(m);
+  c.face = f; c.mouth = m; c.faceParams = { es, esp, lw, my };
+  c.addChild(f);
+}
+
+function updateMainFace(c) {
+  if (!c.mouth || c.pieceData.type !== 'main') return;
+  const { esp, lw, my, es } = c.faceParams, y = c.pieceData.y;
+  c.mouth.clear(); c.mouth.lineStyle(lw, 0x000000);
+  if (y >= 3) c.mouth.arc(0, my - es * 0.7, esp * 0.8, 0.15, Math.PI - 0.15);
+  else if (y >= 2) c.mouth.arc(0, my - es * 0.3, esp * 0.5, 0.3, Math.PI - 0.3);
+  else if (y >= 1) c.mouth.moveTo(-esp * 0.5, my), c.mouth.lineTo(esp * 0.5, my);
+  else c.mouth.arc(0, my + es, esp * 0.5, Math.PI + 0.3, -0.3);
+}
+
+function redrawPiece(c) {
+  const d = c.pieceData, w = d.w * CELL - 6, h = d.h * CELL - 6;
+  while (c.children.length) c.removeChildAt(0);
+  const sh = new PIXI.Graphics(); sh.beginFill(0x000000, 0.3); sh.drawRoundedRect(6, 6, w, h, 8); sh.endFill(); c.addChild(sh);
+  const bd = new PIXI.Graphics(); bd.beginFill(colors[d.type]); bd.drawRoundedRect(3, 3, w, h, 8); bd.endFill(); c.addChild(bd);
+  const hl = new PIXI.Graphics(); hl.beginFill(0xffffff, 0.25); hl.drawRoundedRect(6, 6, w - 6, h / 3, 6); hl.endFill(); c.addChild(hl);
+  drawFace(c, d.face, w, h);
+  if (d.type === 'main') updateMainFace(c);
 }
 
 function createPiece(data) {
   const c = new PIXI.Container();
-  c.x = data.x * CELL;
-  c.y = data.y * CELL;
+  c.x = data.x * CELL; c.y = data.y * CELL;
   c.pieceData = { ...data };
-  c.eventMode = 'static';
-  c.cursor = 'grab';
-
+  c.eventMode = 'static'; c.cursor = 'grab';
   redrawPiece(c);
 
-  let dragging = false, dragStart = {}, origPos = {};
-
-  c.on('pointerdown', (e) => {
-    if (gameWon) return;
-    dragging = true;
+  c.on('pointerdown', e => {
+    if (gameWon || dragState) return;
     c.cursor = 'grabbing';
-    dragStart = { x: e.global.x, y: e.global.y };
-    origPos = { x: c.x, y: c.y };
+    dragState = {
+      piece: c,
+      startPx: { x: e.global.x, y: e.global.y },
+      origStartPx: { x: e.global.x, y: e.global.y },
+      lastPx: { x: e.global.x, y: e.global.y },
+      startGrid: { x: c.pieceData.x, y: c.pieceData.y },
+      railPos: { x: c.pieceData.x, y: c.pieceData.y },
+      pathTaken: [{ x: c.pieceData.x, y: c.pieceData.y }],
+      startTime: Date.now()
+    };
     piecesContainer.addChild(c);
   });
 
-  app.stage.on('pointermove', (e) => {
-    if (!dragging) return;
-    c.x = origPos.x + (e.global.x - dragStart.x);
-    c.y = origPos.y + (e.global.y - dragStart.y);
-  });
-
-  const endDrag = () => {
-    if (!dragging) return;
-    dragging = false;
-    c.cursor = 'grab';
-    
-    const newGX = Math.round(c.x / CELL);
-    const newGY = Math.round(c.y / CELL);
-    const oldGX = origPos.x / CELL;
-    const oldGY = origPos.y / CELL;
-    
-    const path = findPath(c.pieceData, oldGX, oldGY, newGX, newGY);
-    
-    if (path && path.length > 0) {
-      const finalPos = path[path.length - 1];
-      c.x = finalPos.x * CELL;
-      c.y = finalPos.y * CELL;
-      
-      clearFromGrid(c.pieceData, oldGX, oldGY);
-      addToGrid(c.pieceData, finalPos.x, finalPos.y);
-      c.pieceData.x = finalPos.x;
-      c.pieceData.y = finalPos.y;
-      
-      moves += path.length;
-      document.getElementById('moves').textContent = moves;
-      document.getElementById('reset-btn').classList.add('visible');
-      if (!timerStart) startTimer();
-      
-      if (c.pieceData.type === 'main' && finalPos.y >= ROWS - 1) {
-        winGame(c);
-      }
-    } else {
-      c.x = origPos.x;
-      c.y = origPos.y;
-    }
-  };
-
-  app.stage.on('pointerup', endDrag);
-  app.stage.on('pointerupoutside', endDrag);
   return c;
 }
 
-function findPath(piece, startX, startY, endX, endY) {
-  if (startX === endX && startY === endY) return null;
+function canMoveWithPush(piece, px, py, dx, dy) {
+  const nx = px + dx, ny = py + dy;
+  if (nx < 0 || ny < 0 || nx + piece.w > COLS) return { canMove: false, toPush: [] };
+  if (piece.type === 'main') {
+    if (nx !== 1 && ny + piece.h > ROWS) return { canMove: false, toPush: [] };
+    if (nx === 1 && ny + piece.h > ROWS + 1) return { canMove: false, toPush: [] };
+  } else if (ny + piece.h > ROWS) return { canMove: false, toPush: [] };
   
-  clearFromGrid(piece, startX, startY);
+  clearFromGrid(piece, px, py);
   
-  const queue = [{ x: startX, y: startY, path: [] }];
-  const visited = new Set();
-  visited.add(`${startX},${startY}`);
-  
-  const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]];
-  let result = null;
-  
-  while (queue.length > 0) {
-    const { x: cx, y: cy, path } = queue.shift();
-    
-    for (const [dx, dy] of directions) {
-      const nx = cx + dx, ny = cy + dy;
-      const key = `${nx},${ny}`;
-      
-      if (visited.has(key)) continue;
-      if (!isValidPosition(piece, nx, ny)) continue;
-      
-      const newPath = [...path, { x: nx, y: ny }];
-      
-      if (nx === endX && ny === endY) {
-        result = newPath;
-        break;
-      }
-      
-      if (newPath.length < 10) {
-        visited.add(key);
-        queue.push({ x: nx, y: ny, path: newPath });
+  // Check if space is free
+  let blocked = false;
+  const blockers = new Set();
+  for (let x = 0; x < piece.w && !blocked; x++) {
+    for (let y = 0; y < piece.h && !blocked; y++) {
+      const cx = nx + x, cy = ny + y;
+      if (cy >= 0 && cy < ROWS && grid[cy] && grid[cy][cx]) {
+        const bp = pieces.find(p => p.pieceData.id === grid[cy][cx]);
+        if (bp) blockers.add(bp);
       }
     }
-    
-    if (result) break;
   }
   
-  addToGrid(piece, startX, startY);
+  addToGrid(piece, px, py);
   
-  return result;
+  if (blockers.size === 0) return { canMove: true, toPush: [] };
+  
+  // Try pushing
+  const toPush = Array.from(blockers);
+  for (const bp of toPush) {
+    const bx = bp.pieceData.x + dx, by = bp.pieceData.y + dy;
+    if (bx < 0 || by < 0 || bx + bp.pieceData.w > COLS || by + bp.pieceData.h > ROWS) {
+      return { canMove: false, toPush: [] };
+    }
+    clearFromGrid(bp.pieceData, bp.pieceData.x, bp.pieceData.y);
+    let canPush = true;
+    for (let x = 0; x < bp.pieceData.w && canPush; x++) {
+      for (let y = 0; y < bp.pieceData.h && canPush; y++) {
+        const cx = bx + x, cy = by + y;
+        if (cy < ROWS && grid[cy] && grid[cy][cx] && grid[cy][cx] !== piece.id) canPush = false;
+      }
+    }
+    addToGrid(bp.pieceData, bp.pieceData.x, bp.pieceData.y);
+    if (!canPush) return { canMove: false, toPush: [] };
+  }
+  
+  return { canMove: true, toPush };
 }
 
-function isValidPosition(piece, x, y) {
-  if (x < 0 || y < 0 || x + piece.w > COLS) return false;
-  
-  if (piece.type === 'main') {
-    if (x !== 1 && y + piece.h > ROWS) return false;
-    if (x === 1 && y + piece.h > ROWS + 1) return false;
-  } else {
-    if (y + piece.h > ROWS) return false;
+function getValidSingleMoves(piece, px, py) {
+  const dirs = [[0,1],[0,-1],[1,0],[-1,0]], valid = [];
+  for (const [dx, dy] of dirs) {
+    if (canMoveWithPush(piece, px, py, dx, dy).canMove) valid.push({ x: px + dx, y: py + dy });
   }
+  return valid;
+}
+
+function executeSingleMove(c, px, py, dx, dy) {
+  const result = canMoveWithPush(c.pieceData, px, py, dx, dy);
+  if (!result.canMove) return;
   
-  for (let px = 0; px < piece.w; px++) {
-    for (let py = 0; py < piece.h; py++) {
-      const cx = x + px, cy = y + py;
-      if (cy < ROWS && grid[cy] && grid[cy][cx]) {
-        return false;
-      }
+  clearFromGrid(c.pieceData, px, py);
+  for (const p of result.toPush) {
+    clearFromGrid(p.pieceData, p.pieceData.x, p.pieceData.y);
+    p.pieceData.x += dx; p.pieceData.y += dy;
+    addToGrid(p.pieceData, p.pieceData.x, p.pieceData.y);
+    p.x = p.pieceData.x * CELL; p.y = p.pieceData.y * CELL;
+  }
+  c.pieceData.x = px + dx; c.pieceData.y = py + dy;
+  addToGrid(c.pieceData, c.pieceData.x, c.pieceData.y);
+  c.x = c.pieceData.x * CELL; c.y = c.pieceData.y * CELL;
+  
+  moves += 1 + result.toPush.length;
+  document.getElementById('moves').textContent = moves;
+  document.getElementById('reset-btn').classList.add('visible');
+  if (!timerStart) startTimer();
+  if (c.pieceData.type === 'main') {
+    updateMainFace(c);
+    if (c.pieceData.y >= ROWS - 1) winGame(c);
+  }
+}
+
+function executeFlickMove(c, px, py, dx, dy) {
+  let cx = px, cy = py, totalMoves = 0, totalPushed = 0;
+  
+  for (let i = 0; i < 2; i++) {
+    const result = canMoveWithPush(c.pieceData, cx, cy, dx, dy);
+    if (!result.canMove) break;
+    
+    clearFromGrid(c.pieceData, cx, cy);
+    for (const p of result.toPush) {
+      clearFromGrid(p.pieceData, p.pieceData.x, p.pieceData.y);
+      p.pieceData.x += dx; p.pieceData.y += dy;
+      addToGrid(p.pieceData, p.pieceData.x, p.pieceData.y);
+      p.x = p.pieceData.x * CELL; p.y = p.pieceData.y * CELL;
+      totalPushed++;
     }
+    cx += dx; cy += dy;
+    addToGrid(c.pieceData, cx, cy);
+    totalMoves++;
   }
-  return true;
+  
+  if (totalMoves === 0) {
+    c.x = px * CELL; c.y = py * CELL;
+    return;
+  }
+  
+  c.pieceData.x = cx; c.pieceData.y = cy;
+  c.x = cx * CELL; c.y = cy * CELL;
+  moves += totalMoves + totalPushed;
+  document.getElementById('moves').textContent = moves;
+  document.getElementById('reset-btn').classList.add('visible');
+  if (!timerStart) startTimer();
+  if (c.pieceData.type === 'main') {
+    updateMainFace(c);
+    if (c.pieceData.y >= ROWS - 1) winGame(c);
+  }
 }
 
 function clearFromGrid(piece, x, y) {
-  for (let px = 0; px < piece.w; px++) {
-    for (let py = 0; py < piece.h; py++) {
-      if (y + py < ROWS) grid[y + py][x + px] = null;
-    }
-  }
+  for (let px = 0; px < piece.w; px++)
+    for (let py = 0; py < piece.h; py++)
+      if (y + py >= 0 && y + py < ROWS) grid[y + py][x + px] = null;
 }
 
 function addToGrid(piece, x, y) {
-  for (let px = 0; px < piece.w; px++) {
-    for (let py = 0; py < piece.h; py++) {
-      if (y + py < ROWS) grid[y + py][x + px] = piece.id;
-    }
-  }
+  for (let px = 0; px < piece.w; px++)
+    for (let py = 0; py < piece.h; py++)
+      if (y + py >= 0 && y + py < ROWS) grid[y + py][x + px] = piece.id;
 }
 
 function buildGrid() {
   grid = Array(ROWS).fill(null).map(() => Array(COLS).fill(null));
-  pieces.forEach(p => {
-    const d = p.pieceData;
-    addToGrid(d, d.x, d.y);
-  });
+  pieces.forEach(p => addToGrid(p.pieceData, p.pieceData.x, p.pieceData.y));
 }
 
-function startTimer() {
-  timerStart = Date.now();
-  timerInterval = setInterval(updateTimer, 10);
-}
+function startTimer() { timerStart = Date.now(); timerInterval = setInterval(updateTimer, 10); }
 
 function updateTimer() {
   const el = Date.now() - timerStart;
-  const m = Math.floor(el / 60000), s = Math.floor((el % 60000) / 1000), ms = el % 1000;
   document.getElementById('timer').querySelector('span').textContent = 
-    `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(ms).padStart(3,'0')}`;
+    `${String(Math.floor(el / 60000)).padStart(2,'0')}:${String(Math.floor((el % 60000) / 1000)).padStart(2,'0')}.${String(el % 1000).padStart(3,'0')}`;
 }
 
-function winGame(mainPiece) {
-  gameWon = true;
-  clearInterval(timerInterval);
+function winGame(mp) {
+  gameWon = true; clearInterval(timerInterval);
   document.getElementById('timer').classList.add('flashing');
-  
   const exitY = ROWS * CELL + 20;
-  
-  const escapeAnim = () => {
-    mainPiece.y += 4;
-    if (mainPiece.y < exitY) {
-      requestAnimationFrame(escapeAnim);
-    } else {
-      mainPiece.y = exitY;
-      
-      if (mainPiece.mouth) {
-        mainPiece.mouth.clear();
-        const eyeSpacing = CELL * 0.23;
-        mainPiece.mouth.lineStyle(Math.max(3, CELL * 0.05), 0x000000);
-        mainPiece.mouth.arc(0, CELL * 0.1, eyeSpacing, 0, Math.PI);
-      }
-      
-      let spinProgress = 0;
-      const spin = () => {
-        spinProgress += 0.08;
-        mainPiece.rotation = spinProgress * Math.PI * 2;
-        if (spinProgress < 2) {
-          requestAnimationFrame(spin);
-        } else {
-          mainPiece.rotation = 0;
-          startGlow();
-        }
-      };
-      spin();
-      
-      for (let i = 0; i < 120; i++) setTimeout(() => createConfetti(), i * 15);
+  const esc = () => { mp.y += 4; if (mp.y < exitY) requestAnimationFrame(esc); else { mp.y = exitY; onEscaped(); } };
+  esc();
+  const w = mp.pieceData.w * CELL - 6, h = mp.pieceData.h * CELL - 6;
+  mp.pivot.set(w / 2 + 3, h / 2 + 3); mp.x += w / 2 + 3; mp.y += h / 2 + 3;
+  function onEscaped() {
+    if (mp.mouth) {
+      const { esp, lw, my, es } = mp.faceParams;
+      mp.mouth.clear(); mp.mouth.lineStyle(lw * 1.5, 0x000000);
+      mp.mouth.arc(0, my - es, esp, 0.1, Math.PI - 0.1);
     }
-  };
-  escapeAnim();
-  
-  const w = mainPiece.pieceData.w * CELL - 6;
-  const h = mainPiece.pieceData.h * CELL - 6;
-  mainPiece.pivot.set(w / 2 + 3, h / 2 + 3);
-  mainPiece.x += w / 2 + 3;
-  mainPiece.y += h / 2 + 3;
-  
-  function startGlow() {
-    let glowPhase = 0;
-    const glow = () => {
+    let sp = 0;
+    const spin = () => { sp += 0.08; mp.rotation = sp * Math.PI * 2; if (sp < 2) requestAnimationFrame(spin); else { mp.rotation = 0; glow(); } };
+    spin();
+    // Continuous confetti
+    const confettiLoop = () => {
       if (!gameWon) return;
-      glowPhase += 0.12;
-      mainPiece.scale.set(1 + Math.sin(glowPhase) * 0.06);
-      mainPiece.alpha = 0.85 + Math.sin(glowPhase) * 0.15;
-      requestAnimationFrame(glow);
+      createConfetti();
+      setTimeout(confettiLoop, 50);
     };
-    glow();
+    confettiLoop();
   }
+  function glow() { let p = 0; const g = () => { if (!gameWon) return; p += 0.12; mp.scale.set(1 + Math.sin(p) * 0.06); mp.alpha = 0.85 + Math.sin(p) * 0.15; requestAnimationFrame(g); }; g(); }
 }
 
 function createConfetti() {
-  const conf = new PIXI.Graphics();
-  const color = [0xff6b6b, 0x4ecdc4, 0xffe66d, 0x95e1d3, 0xf38181, 0xaa96da, 0xffd700][Math.floor(Math.random() * 7)];
-  conf.beginFill(color);
-  const size = Math.max(6, CELL * 0.12);
-  conf.drawRect(0, 0, size, size);
-  conf.endFill();
-  conf.x = Math.random() * app.screen.width;
-  conf.y = -20;
-  conf.vx = (Math.random() - 0.5) * 10;
-  conf.vy = Math.random() * 4 + 3;
-  conf.rotation = Math.random() * Math.PI * 2;
-  conf.vr = (Math.random() - 0.5) * 0.3;
-  confettiContainer.addChild(conf);
-  
-  const fall = () => {
-    conf.x += conf.vx;
-    conf.y += conf.vy;
-    conf.vy += 0.15;
-    conf.rotation += conf.vr;
-    if (conf.y < app.screen.height + 50) requestAnimationFrame(fall);
-    else confettiContainer.removeChild(conf);
-  };
+  const cf = new PIXI.Graphics(), col = [0xff6b6b, 0x4ecdc4, 0xffe66d, 0x95e1d3, 0xf38181, 0xaa96da, 0xffd700][Math.floor(Math.random() * 7)];
+  cf.beginFill(col); cf.drawRect(0, 0, Math.max(6, CELL * 0.12), Math.max(6, CELL * 0.12)); cf.endFill();
+  cf.x = Math.random() * app.screen.width; cf.y = -20;
+  cf.vx = (Math.random() - 0.5) * 10; cf.vy = Math.random() * 4 + 3;
+  cf.rotation = Math.random() * Math.PI * 2; cf.vr = (Math.random() - 0.5) * 0.3;
+  confettiContainer.addChild(cf);
+  const fall = () => { cf.x += cf.vx; cf.y += cf.vy; cf.vy += 0.15; cf.rotation += cf.vr; if (cf.y < app.screen.height + 50) requestAnimationFrame(fall); else confettiContainer.removeChild(cf); };
   fall();
 }
 
-function resetGame() {
-  gameWon = false;
-  moves = 0;
-  timerStart = null;
-  clearInterval(timerInterval);
-  
+function resetGame(isUserReset = false) {
+  if (isUserReset) {
+    resetCount++;
+    document.getElementById('reset-counter').textContent = `Resets: ${resetCount}`;
+  }
+  gameWon = false; moves = 0; timerStart = null; clearInterval(timerInterval);
   document.getElementById('moves').textContent = '0';
   document.getElementById('timer').querySelector('span').textContent = '00:00.000';
   document.getElementById('timer').classList.remove('flashing');
   document.getElementById('reset-btn').classList.remove('visible');
-  
-  piecesContainer.removeChildren();
-  confettiContainer.removeChildren();
-  pieces = [];
-  
-  initialPieces.forEach(data => {
-    const piece = createPiece(JSON.parse(JSON.stringify(data)));
-    pieces.push(piece);
-    piecesContainer.addChild(piece);
-  });
-  
+  piecesContainer.removeChildren(); confettiContainer.removeChildren(); pieces = [];
+  initialPieces.forEach(d => { const p = createPiece(JSON.parse(JSON.stringify(d))); pieces.push(p); piecesContainer.addChild(p); });
   buildGrid();
 }
 

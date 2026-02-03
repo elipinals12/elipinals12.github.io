@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Generator</title>
+  <link rel="icon" href="../../ref/Disc_Plain_blue_dark.png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px;
+      background: #fafafa;
+    }
+    textarea {
+      width: 100%;
+      max-width: 500px;
+      height: 120px;
+      padding: 16px;
+      font-size: 1.1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      resize: none;
+      background: white;
+    }
+    textarea:focus { outline: none; border-color: #333; }
+    textarea::placeholder { color: #aaa; }
+    #qrcode {
+      margin-top: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    #qrcode img, #qrcode canvas { display: block; }
+    .hint {
+      margin-top: 20px;
+      color: #999;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <textarea id="text" placeholder="Type anything..." autofocus></textarea>
+  <div id="qrcode"></div>
+  <p class="hint">QR updates as you type</p>
+
+  <script>
+    const input = document.getElementById('text');
+    const container = document.getElementById('qrcode');
+    let qr = null;
+    let timeout = null;
+
+    function generate(text) {
+      container.innerHTML = '';
+      if (!text) return;
+      qr = new QRCode(container, {
+        text: text,
+        width: 280,
+        height: 280,
+        colorDark: '#000000',
+        colorLight: '#ffffff'
+      });
+    }
+
+    input.addEventListener('input', () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        generate(input.value.trim());
+      }, 150);
+    });
+
+    generate('Hello World');
+    input.value = 'Hello World';
+  </script>
+</body>
+</html>

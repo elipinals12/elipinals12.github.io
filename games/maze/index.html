@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html oncontextmenu="return false;">
+  <head>
+    <title>Maze Maker</title>
+    <link rel="icon" href="../../ref/Disc_Plain_blue_dark.png">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <style>
+      #timer {
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        font-family: 'Courier New', monospace; font-size: 28px; color: #0f0;
+        background: rgba(0,0,0,0.7); padding: 10px 25px; border-radius: 8px;
+        border: 2px solid #0f0; display: none; z-index: 100;
+      }
+      #timer.flash { animation: flash 0.5s ease-in-out infinite; }
+      @keyframes flash { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+      #status { 
+        position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+        font-family: sans-serif; font-size: 14px; color: #aaa; display: none; 
+      }
+    </style>
+    <script src="p5.js"></script>
+    <script src="p5.dom.js"></script>
+    <script src="p5.sound.js"></script>
+    <script src="maker.js"></script>
+    <script src="sketch.js"></script>
+  </head>
+  <body bgcolor=#262626>
+    <div id="timer">00:00.000</div>
+    <div id="status">Cross the green line to start!</div>
+  </body>
+</html>

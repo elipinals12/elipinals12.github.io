@@ -6,7 +6,6 @@ function makeIndex(hor, ver) {
     }
 }
 
-
 function Cell(hor, ver) {
     this.hor = hor;
     this.ver = ver;
@@ -20,14 +19,12 @@ function Cell(hor, ver) {
 
         noStroke();
         fill(60, 200, 50);
-        //rect(x + 8, y + 8, wid - 16, wid - 16);
         ellipse(x + wid / 2, y + wid / 2, 15, 15);
     }
 
     this.makeWalls = function () {
         var x = hor * wid;
         var y = ver * wid;
-
 
         this.checkNeighbors = function () {
             var neighbors = [];
@@ -84,7 +81,6 @@ function Cell(hor, ver) {
     }
 }
 
-
 function removeWalls(a, b) {
     var x = a.hor - b.hor;
     if (x === 1) {
@@ -94,7 +90,6 @@ function removeWalls(a, b) {
         a.walls[1] = false;
         b.walls[3] = false;
     }
-
 
     var y = a.ver - b.ver;
     if (y === 1) {
@@ -112,19 +107,11 @@ function wikiSteps() {
     }
 
     current.visited = true;
-    //current.highlight();
-    // step 1 on wiki
     var next = current.checkNeighbors();
     if (next) {
         next.visited = true;
-
-        // step 2
         stack.push(current);
-
-        // step 3 on wiki
         removeWalls(current, next);
-
-        // step 4 on wiki
         current = next;
     } else if (stack.length > 0) {
         dead = stack.pop();
@@ -132,7 +119,10 @@ function wikiSteps() {
         current = dead;
         dead.dead = true;
         deadend.dead = true;
-    } else {
-        
+    } else if (!mazeGenerated) {
+        // Maze is done generating
+        mazeGenerated = true;
+        document.getElementById('timer').style.display = 'block';
+        document.getElementById('status').style.display = 'block';
     }
 }

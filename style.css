@@ -165,24 +165,21 @@ h2 {
 }
 
 /* Default link styles (desktop) */
-.nonmainpageslink:link {
+.nonmainpageslink {
   text-decoration: none;
-  color: #9400BB;
+  color: transparent;
+  transition: color 0.2s;
 }
 
 .nonmainpageslink:visited {
-  text-decoration: none;
-  color: #9400BB;
+  color: transparent;
 }
 
-.nonmainpageslink:hover {
+.nonmainpageslink:hover,
+.nonmainpageslink:active,
+.nonmainpageslink:focus {
   text-decoration: underline;
-  color: black;
-}
-
-.nonmainpageslink:active {
-  text-decoration: underline;
-  color: black;
+  color: #9400BB !important;
 }
 
 /* ========== MOBILE STYLES (600px and below) ========== */
@@ -198,9 +195,10 @@ h2 {
   }
 
   .timages {
-    width: 85vw;
-    max-width: 350px;
+    width: 90vw;
+    max-width: 400px;
     padding: 10px;
+    margin-top: 15vh;
   }
 
   .golda {
@@ -221,23 +219,5 @@ h2 {
     height: 30px;
   }
 
-  .nonmainpageslink:link {
-    text-decoration: none;
-    color: rgba(148, 0, 187, 0.5);
-  }
 
-  .nonmainpageslink:visited {
-    text-decoration: none;
-    color: rgba(148, 0, 187, 0.5);
-  }
-
-  .nonmainpageslink:hover {
-    text-decoration: underline;
-    color: #9400BB;
-  }
-
-  .nonmainpageslink:active {
-    text-decoration: underline;
-    color: #9400BB;
-  }
 }

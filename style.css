@@ -116,8 +116,6 @@ img:hover {
 
 h2 {
   background-image: url(https://media4.giphy.com/media/l3vRbTrGdpZrjjco8/giphy.gif);
-  background-size: cover;
-  background-position: center;
   color: white;
   -moz-background-clip: text;
   -webkit-background-clip: text;

@@ -5,11 +5,11 @@
 // maybe have something to sense if the browser is slowing down, then remove dots 
 //      maybe the dots shouldnt even fall if ^ works. 
 
-let desc = "! ! ! semester ends ! ! !";
-let hyear = 2024;
-let hmonth = 12; // 1-12
-let hday = 12;
-let hhour = 8; // 1-24
+let desc = "! ! ! turn 24 ! ! !";
+let hyear = 2026;
+let hmonth = 9; // 1-12
+let hday = 13;
+let hhour = 2; // 1-24
 
 let redHeight = 140;
 var mss, secs, mins, hrs, dys, wks, mnts;

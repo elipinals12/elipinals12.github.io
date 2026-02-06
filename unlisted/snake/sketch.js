@@ -98,6 +98,8 @@ class Snake {
             } else if (ydir == -1) {
                 headys[i] -= cellsize;
             }
+            headxs[i] = constrain(headxs[i], 0, cols * cellsize);
+            headys[i] = constrain(headys[i], 0, rows * cellsize);
         }
     }
 

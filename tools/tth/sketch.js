@@ -5,14 +5,14 @@
 // maybe have something to sense if the browser is slowing down, then remove dots 
 //      maybe the dots shouldnt even fall if ^ works. 
 
-let desc = "! ! ! turn 24 ! ! !";
-let hyear = 2026;
-let hmonth = 9; // 1-12
+let desc = "! ! ! turn 25 ! ! !";
+let hyear = 2027;
+let hmonth = 8; // 0-11?
 let hday = 13;
 let hhour = 2; // 1-24
 
 let redHeight = 140;
-var mss, secs, mins, hrs, dys, wks, mnts;
+var mss, secs, mins, hrs, dys, wks, mnts, yrs;
 var now, heaven;
 var prog;
 let timeHeights = [];
@@ -39,14 +39,7 @@ function setup() {
 
 function draw() {
     background(0);
-
-    setTotals();
-
-    writeStuff();
-
-    // OLDprogBar();
-    progBar();
-
+    
     noStroke();
     fill(255);
 
@@ -66,6 +59,15 @@ function draw() {
         // if (dusts[i].y > height + 10) { dusts[i].y = barrior - 10; } // LOOP
         if (dusts[i].y > height + 2) dusts.splice(i, 1);
     }
+    
+    setTotals();
+
+    writeStuff();
+
+    // OLDprogBar();
+    progBar();
+
+
 
     // secflat = secs - floor(secs) < .02;
 
@@ -90,12 +92,13 @@ function setTotals() {
     now = new Date();
 
     mss = heaven.getTime() - now.getTime();
-    secs = mss / 1000;
+    secs = floor(mss / 1000);
     mins = floor(secs / 60);
     hrs = floor(secs / 60 / 60);
     dys = floor(secs / 60 / 60 / 24);
     wks = floor(secs / 60 / 60 / 24 / 7);
     mnts = floor(secs / 60 / 60 / 24 / 30);
+    yrs = floor(secs / 60 / 60 / 24 / 30 / 12);
 }
 
 function writeStuff() {
@@ -118,16 +121,17 @@ function writeStuff() {
 
 function writeFullTimeLeft() {
     let fullDateString =
-    mnts + " months, " +
-    dys % 30 + " days, " +
+        yrs + " years, " +
+        mnts % 12 + " months, " +
+        dys % 30 + " days, " +
         hrs % 24 + " hours, " +
         mins % 60 + " minutes, " +
         floor(secs % 60) + " seconds"
-    text(fullDateString + " left", 2, timeHeights[5] + 20);
+    text(fullDateString + " left", 2, timeHeights[6] + 20);
 
     stroke(255);
     strokeWeight(2);
-    barrior = timeHeights[5] + 40;
+    barrior = timeHeights[6] + 40;
     line(0, barrior, width, barrior);
 }
 
@@ -304,7 +308,7 @@ function windowResized() {
     var cnv = createCanvas(window.innerWidth - 2, window.innerHeight - 2);
     cnv.position((windowWidth - width) / 2, (windowHeight - height) / 2);
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 7; i++) {
         timeHeights.push(41 + 17 * i);
     }
     timeHeights.push(123);
@@ -337,6 +341,9 @@ function writeNiceText() {
     if (mnts > 0) {
         text("months:", textX, timeHeights[5]);
     }
+    if (yrs > 0) {
+        text("years:", textX, timeHeights[6]);
+    }
 
     fill(0, 200, 255);    
     if (secs > 0) {
@@ -356,6 +363,9 @@ function writeNiceText() {
     }
     if (mnts > 0) {
         text(nfc(mnts), numsX, timeHeights[5]);
+    }
+    if (yrs > 0) {
+        text(nfc(yrs), numsX, timeHeights[6]);
     }
 }
 

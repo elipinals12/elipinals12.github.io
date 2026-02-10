@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Strawberry's Journey</title>
+<!-- 
+AUDIO FILES REQUIRED:
+Place these MP3 files in the same folder as this HTML file:
+- Level13.mp3 (Background music for Levels 1-3)
+- Level4.mp3 (Background music for Level 4)
+- Level5.mp3 (Background music for Levels 5-6)
+- BAD.mp3 (Bad berry alarm sound)
+- Splat!.mp3 (Berry falling on ground)
+- crash.mp3 (Crash into car/building)
+- Popo.mp3 (Police siren)
+- Arrest.mp3 (Arrested screen)
+- Yum!.mp3 (Ending - eating strawberry)
+- Cha.mp3 (Level 6 - placing berries on shelf)
+-->
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{overflow:hidden;background:#000;display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;font-family:Arial,sans-serif}
@@ -12,9 +26,18 @@ canvas{display:block;position:absolute}
 #lt{margin-top:2%;font-size:clamp(14px,3vmin,26px);font-weight:bold;color:#fff;text-shadow:2px 2px 4px rgba(0,0,0,.8)}
 #ib{pointer-events:auto;position:absolute;bottom:5%;left:50%;transform:translateX(-50%);width:80%;max-width:480px;padding:clamp(6px,1.5vmin,14px);font-size:clamp(12px,2.2vmin,20px);border:3px solid #4CAF50;border-radius:10px;display:none;background:#fff;z-index:200}
 #ft{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);font-size:clamp(14px,3vmin,26px);font-weight:bold;color:#FF6B6B;text-shadow:2px 2px 4px rgba(0,0,0,.8);display:none;z-index:300}
+#startScreen{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;pointer-events:auto}
+#startBtn{padding:20px 60px;font-size:32px;font-weight:bold;background:#4CAF50;color:#fff;border:none;border-radius:15px;cursor:pointer;box-shadow:0 6px 0 #2E7D32;transition:all 0.1s}
+#startBtn:hover{background:#66BB6A;transform:translateY(-2px)}
+#startBtn:active{transform:translateY(4px);box-shadow:0 2px 0 #2E7D32}
+#startTitle{font-size:48px;color:#fff;margin-bottom:30px;text-shadow:3px 3px 6px rgba(0,0,0,0.8)}
 </style>
 </head>
 <body>
+<div id="startScreen">
+  <div id="startTitle">🍓 Strawberry's Journey 🍓</div>
+  <button id="startBtn">Click to Start!</button>
+</div>
 <div id="ui"><div id="lt">Level 1: Plant the Seeds</div></div>
 <input type="text" id="ib" placeholder="Type something nice...">
 <div id="ft"></div>
@@ -26,6 +49,87 @@ let sc=1,mx=0,my=0,ticks=[];
 const lt=document.getElementById('lt'),ib=document.getElementById('ib'),ft=document.getElementById('ft');
 const keys={};
 let inputFocused=false;
+
+// Audio System
+const sounds={};
+const music={};
+let currentMusic=null;
+
+function loadSound(name,file,loop=false){
+  const audio=new Audio(file);
+  audio.preload='auto';
+  if(loop)audio.loop=true;
+  sounds[name]=audio;
+}
+
+function loadMusic(name,file){
+  const audio=new Audio(file);
+  audio.preload='auto';
+  audio.loop=true;
+  audio.volume=0.5;
+  music[name]=audio;
+}
+
+function playSound(name){
+  if(sounds[name]){
+    const s=sounds[name].cloneNode();
+    s.volume=0.6;
+    s.play().catch(e=>console.log('Audio play failed:',e));
+  }
+}
+
+function stopSound(name){
+  if(sounds[name]){
+    sounds[name].pause();
+    sounds[name].currentTime=0;
+  }
+}
+
+function loopSound(name){
+  if(sounds[name]){
+    sounds[name].currentTime=0;
+    sounds[name].volume=0.6;
+    sounds[name].play().catch(e=>console.log('Audio play failed:',e));
+  }
+}
+
+function playMusic(name){
+  if(currentMusic){
+    currentMusic.pause();
+    currentMusic.currentTime=0;
+  }
+  if(music[name]){
+    currentMusic=music[name];
+    currentMusic.play().catch(e=>console.log('Music play failed:',e));
+  }
+}
+
+function stopMusic(){
+  if(currentMusic){
+    currentMusic.pause();
+    currentMusic.currentTime=0;
+  }
+}
+
+// Load all sounds
+loadMusic('level13','Level13.mp3');
+loadMusic('level4','Level4.mp3');
+loadMusic('level5','Level5.mp3');
+loadSound('bad','BAD.mp3');
+loadSound('splat','Splat!.mp3');
+loadSound('crash','crash.mp3');
+loadSound('popo','Popo.mp3',true);
+loadSound('arrest','Arrest.mp3');
+loadSound('yum','Yum!.mp3');
+loadSound('cha','Cha.mp3');
+
+// Start screen handler
+let gameStarted=false;
+document.getElementById('startBtn').addEventListener('click',()=>{
+  document.getElementById('startScreen').style.display='none';
+  gameStarted=true;
+  startL1();
+});
 ib.addEventListener('focus',()=>inputFocused=true);
 ib.addEventListener('blur',()=>inputFocused=false);
 window.addEventListener('keydown',e=>{if(inputFocused)return;keys[e.key]=true;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(e.key))e.preventDefault();});
@@ -95,6 +199,7 @@ let moundPos=[];
 function startL1(){
   ticks=[];moundPos=[];
   lt.textContent='Level 1: Plant the Seeds';ib.style.display='none';ft.style.display='none';
+  playMusic('level13');
   let seeds=[],dropped=0,rot=0,alpha=1,gone=false,trans=false;
   const targetXs=[660,840,1020];
   const click=e=>{if(gone||trans)return;const r=C.getBoundingClientRect(),cx=(e.clientX-r.left)/sc,cy=(e.clientY-r.top)/sc;
@@ -210,6 +315,7 @@ function startL3(){
 
 function startL4(){
   ticks=[];lt.textContent='Level 4: Sort the Strawberries';ib.style.display='none';ft.style.display='none';
+  playMusic('level4');
   const bY=380,bH=140,wb={x:80,y:580,w:140,h:160},kb={x:1210,y:bY,w:130,h:bH};
   let bs=[],proc=0,drag=null,doff={x:0,y:0},ns=0,trans=false,alarmTimer=0,beltSpeed=1.4,splats=[],hasDragged=false;
   function badBerry(cx,cy,t){
@@ -219,14 +325,14 @@ function startL4(){
     else{X.fillStyle='#DD4444';X.beginPath();X.ellipse(0,0,s*.45,s*.6,0,0,Math.PI*2);X.fill();X.strokeStyle='#FFC107';X.lineWidth=5;X.lineCap='round';X.beginPath();X.moveTo(-s*.35,s*.1);X.quadraticCurveTo(-s*.1,-s*.2,s*.1,0);X.quadraticCurveTo(s*.25,s*.15,s*.4,s*.05);X.stroke();X.fillStyle='#FFD54F';X.beginPath();X.arc(s*.4,s*.05,6,0,Math.PI*2);X.fill();X.fillStyle='#fff';X.beginPath();X.arc(s*.38,0,3,0,Math.PI*2);X.fill();X.beginPath();X.arc(s*.44,0,3,0,Math.PI*2);X.fill();X.fillStyle='#000';X.beginPath();X.arc(s*.39,0,1.5,0,Math.PI*2);X.fill();X.beginPath();X.arc(s*.45,0,1.5,0,Math.PI*2);X.fill();X.fillStyle='#4CAF50';X.beginPath();X.ellipse(0,-s*.6,s*.18,s*.12,0,0,Math.PI*2);X.fill();}
     X.restore();
   }
-  function triggerAlarm(){alarmTimer=120;proc=0;beltSpeed=1.4;}
+  function triggerAlarm(){alarmTimer=120;proc=0;beltSpeed=1.4;playSound('bad');}
   function chk(){if(proc>=40&&!trans){trans=true;C.removeEventListener('mousedown',dn);C.removeEventListener('mousemove',mv);C.removeEventListener('mouseup',up);setTimeout(startL5,800);}}
   const dn=e=>{const r=C.getBoundingClientRect(),cx=(e.clientX-r.left)/sc,cy=(e.clientY-r.top)/sc;for(let i=bs.length-1;i>=0;i--){const b=bs[i];if(Math.abs(cx-b.x)<35&&Math.abs(cy-b.y)<45){drag=b;doff.x=b.x-cx;doff.y=b.y-cy;hasDragged=false;b.belt=false;break;}}};
   const mv=e=>{if(!drag)return;hasDragged=true;const r=C.getBoundingClientRect();drag.x=(e.clientX-r.left)/sc+doff.x;drag.y=(e.clientY-r.top)/sc+doff.y;};
   const up=()=>{if(!drag)return;const b=drag;drag=null;
     if(b.x>wb.x&&b.x<wb.x+wb.w&&b.y>wb.y&&b.y<wb.y+wb.h){bs=bs.filter(v=>v!==b);if(b.bad){proc++;}else{proc=Math.max(0,proc-3);}}
     else if(b.x>kb.x&&b.x<kb.x+kb.w&&b.y>kb.y&&b.y<kb.y+kb.h){bs=bs.filter(v=>v!==b);if(b.bad){triggerAlarm();}else{proc++;}}
-    else{splats.push({x:b.x,y:b.y+40,a:1});bs=bs.filter(v=>v!==b);}
+    else{splats.push({x:b.x,y:b.y+40,a:1});bs=bs.filter(v=>v!==b);playSound('splat');}
     chk();};
   C.addEventListener('mousedown',dn);C.addEventListener('mousemove',mv);C.addEventListener('mouseup',up);
   ticks.push(()=>{
@@ -257,12 +363,13 @@ function startL4(){
 
 function startL5(){
   ticks=[];lt.textContent='Level 5: Deliver to Store';ib.style.display='none';ft.style.display='none';
-  let tx=95,ty=800,cars=[],trans=false,truckDir=0;
+  playMusic('level5');
+  let tx=90,ty=790,cars=[],trans=false,truckDir=0;
   const rw=80,hR=[60,240,420,600,780],vR=[80,400,720,1040,1360];
   let explosions=[],restarting=false,restartTimer=0,restartMsg='';
-  const factoryZone={x:30,y:700,w:170,h:180};
+  const factoryZone={x:20,y:690,w:200,h:210};
   const groceryZone={x:1360,y:10,w:190,h:140};
-  function inFactory(x,y){return x>factoryZone.x-30&&x<factoryZone.x+factoryZone.w+30&&y>factoryZone.y-30&&y<factoryZone.y+factoryZone.h+30;}
+  function inFactory(x,y){return x>factoryZone.x-40&&x<factoryZone.x+factoryZone.w+40&&y>factoryZone.y-40&&y<factoryZone.y+factoryZone.h+40;}
   const allIntersections=[];
   for(const vx of vR)for(const hy of hR){allIntersections.push({x:vx+rw/2,y:hy+rw/2});}
   const validForLights=allIntersections.filter(p=>!inFactory(p.x,p.y)&&!(p.x>1350&&p.y<160));
@@ -313,10 +420,16 @@ function startL5(){
   }
   function explodeAndRestart(ex,ey,msg='CRASH!'){
     if(restarting)return;restarting=true;restartMsg=msg;
+    stopSound('popo');
+    if(msg==='ARRESTED!'){
+      playSound('arrest');
+    }else{
+      playSound('crash');
+    }
     const parts=[];for(let i=0;i<30;i++){const a=Math.random()*Math.PI*2,sp=2+Math.random()*5;parts.push({x:ex,y:ey,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:4+Math.random()*8,c:['#FF6B00','#FFD600','#FF3D00','#795548','#9E9E9E'][Math.floor(Math.random()*5)],life:1});}
     explosions.push({particles:parts});restartTimer=100;
   }
-  function fullRestart(){restarting=false;policeActive=false;tx=95;ty=800;truckDir=0;initBlds();initCars();}
+  function fullRestart(){restarting=false;policeActive=false;tx=90;ty=790;truckDir=0;initBlds();initCars();playMusic('level5');}
   ticks.push(()=>{
     if(trans)return;
     X.fillStyle='#4A7C4A';X.fillRect(0,0,W,H);
@@ -374,11 +487,13 @@ function startL5(){
       nx=Math.max(0,Math.min(W-70,nx));ny=Math.max(0,Math.min(H-50,ny));
       const hitBld=hitsBuilding(nx,ny,70,45);
       if(hitBld&&!inFactory(tx,ty)){hitBld.alive=false;explodeAndRestart(nx+35,ny+22);}
-      else if(onRoad(nx+10,ny+10)&&onRoad(nx+60,ny+10)&&onRoad(nx+10,ny+35)&&onRoad(nx+60,ny+35)){tx=nx;ty=ny;}
-      else if(inFactory(nx,ny)){tx=nx;ty=ny;}
+      else if(onRoad(nx+15,ny+15)&&onRoad(nx+55,ny+15)&&onRoad(nx+15,ny+30)&&onRoad(nx+55,ny+30)){tx=nx;ty=ny;}
+      else if(inFactory(nx,ny)||inFactory(nx+70,ny)||inFactory(nx,ny+45)||inFactory(nx+70,ny+45)){tx=nx;ty=ny;}
       if(!inFactory(tx,ty)&&!policeActive){
         lights.forEach(l=>{if(l.state==='red'&&Math.hypot(tx+35-l.x,ty+22-l.y)<42){
           policeActive=true;
+          stopMusic();
+          loopSound('popo');
           const edges=[{x:50,y:450},{x:1500,y:450},{x:800,y:50},{x:800,y:850}];
           const sorted=edges.sort((a,b)=>Math.hypot(b.x-(tx+35),b.y-(ty+22))-Math.hypot(a.x-(tx+35),a.y-(ty+22)));
           const spawn=sorted[0];
@@ -419,6 +534,7 @@ function startL6(){
   const dn=e=>{if(custState!=='wait')return;const r=C.getBoundingClientRect(),cx=(e.clientX-r.left)/sc,cy=(e.clientY-r.top)/sc;for(let i=pails.length-1;i>=0;i--){const p=pails[i];if(!p.placed&&cx>p.x&&cx<p.x+100&&cy>p.y&&cy<p.y+80){drag=p;doff.x=p.x-cx;doff.y=p.y-cy;break;}}};
   const mv=e=>{if(!drag)return;const r=C.getBoundingClientRect();drag.x=(e.clientX-r.left)/sc+doff.x;drag.y=(e.clientY-r.top)/sc+doff.y;};
   const up=()=>{if(!drag)return;if(drag.x>sz.x-30&&drag.x<sz.x+sz.w&&drag.y>sz.y-20&&drag.y<sz.y+sz.h&&!drag.placed){drag.placed=true;drag.x=sz.x+15+pc*125;drag.y=sz.y+20;pc++;
+    playSound('cha');
     if(pc>=3){custState='walkIn';custTarget=sz.x+15;C.removeEventListener('mousedown',dn);C.removeEventListener('mousemove',mv);C.removeEventListener('mouseup',up);}
   }else if(!drag.placed){drag.x=drag.ox;drag.y=drag.oy;}drag=null;};
   C.addEventListener('mousedown',dn);C.addEventListener('mousemove',mv);C.addEventListener('mouseup',up);
@@ -471,7 +587,7 @@ function startEnd(){
   let sx=800,sy=720,dragging=false,doff={x:0,y:0},eaten=false,yumA=0;
   const dn=e=>{if(eaten)return;const r=C.getBoundingClientRect(),cx=(e.clientX-r.left)/sc,cy=(e.clientY-r.top)/sc;if(Math.hypot(cx-sx,cy-sy)<55){dragging=true;doff.x=sx-cx;doff.y=sy-cy;}};
   const mv=e=>{if(!dragging)return;const r=C.getBoundingClientRect();sx=(e.clientX-r.left)/sc+doff.x;sy=(e.clientY-r.top)/sc+doff.y;};
-  const up=()=>{if(!dragging)return;dragging=false;if(Math.hypot(sx-800,sy-460)<190){eaten=true;}else{sx=800;sy=720;}};
+  const up=()=>{if(!dragging)return;dragging=false;if(Math.hypot(sx-800,sy-460)<190){eaten=true;playSound('yum');stopMusic();}else{sx=800;sy=720;}};
   C.addEventListener('mousedown',dn);C.addEventListener('mousemove',mv);C.addEventListener('mouseup',up);
   ticks.push(()=>{
     X.fillStyle='#FFF3E0';X.fillRect(0,0,W,H);
@@ -503,7 +619,6 @@ function startEnd(){
     else{yumA=Math.min(1,yumA+.015);X.globalAlpha=yumA;X.fillStyle='#4CAF50';X.font='bold 100px Arial';X.textAlign='center';X.fillText('YUM!',800,170);X.font='bold 28px Arial';X.fillStyle='#555';X.fillText("Thanks for playing Strawberry's Journey!",800,790);X.textAlign='left';X.globalAlpha=1;}
   });
 }
-startL1();
 </script>
 </body>
 </html>

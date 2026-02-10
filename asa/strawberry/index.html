@@ -1,3 +1,23 @@
+
+Conversation opened. 1 read message.
+
+Skip to content
+Using Gmail with screen readers
+2 of 4,594
+please update at your earliest convience
+Inbox
+Summarize this email
+Asa Colby Weinstein
+	
+AttachmentsMon, Feb 9, 10:38 PM (11 hours ago)
+	
+	
+to me
+please update at your earliest convience
+ One attachment
+  •  Scanned by Gmail
+	
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -252,7 +272,7 @@ function startL3(){
   ib.style.display='block';ib.value='';ft.style.display='none';setTimeout(()=>ib.focus(),100);
   const bp=[{x:500,y:580},{x:700,y:580},{x:900,y:580}],trX=1200,trY=610;
   let aff=0,px=-80,st='enter',hb=false,bx=0,by=0,tc=0,target=15,trans=false,personHappy=true;
-  let pending=0,restTimer=0;
+  let pending=0,restTimer=0,notNiceCount=0,showBubble=false,bubbleTimer=0;
   const usedSentences=new Set();
   const nice=['great','love','awesome','wonderful','amazing','fantastic','brilliant','excellent','good','nice','kind','sweet','thank','beautiful','proud','incredible','perfect','best','hero','strong','super','cool','rock','brave','star','shine','champion','outstanding','wow','like','yummy','well','delicious','splendid','magnificent','superb','marvelous','glorious','terrific','spectacular','phenomenal','exceptional','remarkable','fabulous','impressive','admire','respect','appreciate','grateful','blessed','treasure','adore','cherish','dear','precious','worthy','talented','genius','skilled','capable','powerful','unstoppable','legendary','epic','fire','goat','king','queen','boss','master','ace','top','rad','lit','dope','sick','fresh','prime','elite','clutch','beast','solid','legend'];
   const negators=['not','don\'t','dont','never','no','isn\'t','isnt','aren\'t','arent','hate','bad','ugly','stupid','dumb','worst','terrible','horrible','awful','suck','lame','trash','garbage','pathetic','useless','worthless','mediocre','boring','lazy','slow','weak','fail','loser','idiot','fool','jerk','mean','rude','gross','nasty','yuck','ew','bleh','meh','nah','nope','neither','nobody','nothing','nowhere','hardly','barely','scarcely'];
@@ -268,10 +288,15 @@ function startL3(){
       const normalized=t.replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,' ').trim();
       const isRepeat=usedSentences.has(normalized);
       const isNice=t.length>3&&nice.some(w=>t.includes(w))&&!hasNeg&&!isRepeat;
-      if(isNice){ft.style.display='none';usedSentences.add(normalized);ib.value='';personHappy=true;
+      if(isNice){ft.style.display='none';usedSentences.add(normalized);ib.value='';personHappy=true;notNiceCount=0;showBubble=false;
         if(st==='idle'){st='go';aff++;}
         else{pending++;if(pending>=2){pending=0;st='rest';restTimer=600;}}
-      }else{personHappy=false;ft.textContent=isRepeat?"you already said that!":"nice or nothin'";ft.style.display='block';ib.value='';setTimeout(()=>ft.style.display='none',2000);}
+      }else{personHappy=false;notNiceCount++;
+        if(notNiceCount>=2){showBubble=true;bubbleTimer=240;}
+        else{ft.textContent=isRepeat?"you already said that!":"nice or nothin'";}
+        if(notNiceCount<2){ft.style.display='block';setTimeout(()=>ft.style.display='none',2000);}
+        ib.value='';
+      }
     }
   };
   ib.addEventListener('keypress',kp);
@@ -296,6 +321,37 @@ function startL3(){
       X.restore();
     }
     if(hb)berry(bx,by,12);
+    // Speech bubble
+    if(showBubble&&bubbleTimer>0){
+      bubbleTimer--;
+      const bubX=px+20,bubY=540;
+      X.save();
+      X.fillStyle='#fff';
+      X.strokeStyle='#333';
+      X.lineWidth=3;
+      // Bubble
+      X.beginPath();
+      X.roundRect(bubX-120,bubY-50,240,60,10);
+      X.fill();
+      X.stroke();
+      // Pointer triangle
+      X.beginPath();
+      X.moveTo(bubX-10,bubY+10);
+      X.lineTo(bubX,bubY+30);
+      X.lineTo(bubX+10,bubY+10);
+      X.closePath();
+      X.fill();
+      X.stroke();
+      // Text
+      X.fillStyle='#333';
+      X.font='bold 18px Arial';
+      X.textAlign='center';
+      X.fillText('I get paid by',bubX,bubY-28);
+      X.fillText('compliments!',bubX,bubY-5);
+      X.textAlign='left';
+      X.restore();
+      if(bubbleTimer<=0)showBubble=false;
+    }
     X.fillStyle='#fff';X.font='bold 22px Arial';X.textAlign='center';X.fillText(`${tc}/${target}`,trX,trY-60);
     if(pending>0&&st!=='rest'){X.fillStyle='rgba(255,255,100,0.9)';X.font='bold 18px Arial';X.fillText(`Queued: ${pending}`,trX,trY-85);}
     if(st==='rest'){X.fillStyle='rgba(255,200,100,0.9)';X.font='bold 20px Arial';X.fillText('Resting...',px,595);}
@@ -521,7 +577,10 @@ function startL5(){
     X.fillStyle='#1976D2';X.fillRect(55,10,22,30);X.fillStyle='rgba(200,230,255,0.7)';X.fillRect(58,13,16,12);X.fillStyle='#333';X.beginPath();X.arc(15,47,8,0,Math.PI*2);X.fill();X.beginPath();X.arc(55,47,8,0,Math.PI*2);X.fill();
     X.restore();
     X.fillStyle='rgba(255,255,255,0.5)';X.font='16px Arial';X.textAlign='center';X.fillText('Arrow keys to drive. Obey red lights!',800,H-15);X.textAlign='left';
-    if(!restarting&&tx>1370&&ty<140){trans=true;setTimeout(startL6,600);}
+    if(!restarting&&tx>1370&&ty<140){
+      if(policeActive){stopSound('popo');}
+      trans=true;setTimeout(startL6,600);
+    }
   });
 }
 
@@ -622,3 +681,6 @@ function startEnd(){
 </script>
 </body>
 </html>
+
+index.html
+Displaying index.html.

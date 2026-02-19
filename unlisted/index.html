@@ -49,7 +49,7 @@ const nav = document.getElementById('folders');
 folders.forEach(folder => {
     const a = document.createElement('a');
     a.href = encodeURIComponent(folder) + '/';
-    a.textContent = folder + '/';
+    a.textContent = folder;
     nav.appendChild(a);
 });
 </script>

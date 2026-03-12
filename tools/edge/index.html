@@ -95,7 +95,7 @@ footer{text-align:center;padding:.7rem;font-size:.46rem;color:var(--mute);border
   <div class="panel eth" id="pETH"><div class="status">⏳ loading...</div></div>
 </div>
 
-<footer>CoinGecko public API · auto-refresh every 5 min · $250 BTC steps · $20 ETH steps · not financial advice</footer>
+<footer>Binance public API · auto-refresh every 5 min · $250 BTC steps · $20 ETH steps · not financial advice</footer>
 
 <script>
 // ── MATH ──────────────────────────────
@@ -134,25 +134,22 @@ const fpc = p => (p * 100).toFixed(1) + '%';
 // ── STATE ──────────────────────────────
 const D = { BTC: null, ETH: null, busy: false };
 
-// ── FETCH — CoinGecko, no API key needed ──
-async function fetchCoin(id, sym, step) {
-  // current price + 24h/1h changes
-  const sp = await fetch(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd&include_24hr_change=true&include_1hr_change=true`
-  ).then(r => { if (!r.ok) throw new Error(`CoinGecko ${r.status}`); return r.json(); });
+// ── FETCH — Binance public API, no key, real CORS ──
+async function fetchCoin(bsym, sym, step) {
+  const [klines, ticker] = await Promise.all([
+    fetch(`https://api.binance.com/api/v3/klines?symbol=${bsym}&interval=1h&limit=49`)
+      .then(r => { if (!r.ok) throw new Error(`Binance ${r.status}`); return r.json(); }),
+    fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${bsym}`)
+      .then(r => { if (!r.ok) throw new Error(`Binance ticker ${r.status}`); return r.json(); })
+  ]);
 
-  const price  = sp[id].usd;
-  const ch24   = (sp[id].usd_24h_change || 0) / 100;
-  const ch1h   = (sp[id].usd_1h_change  || 0) / 100;
+  const closes = klines.map(k => parseFloat(k[4]));
+  const price  = parseFloat(ticker.lastPrice);
+  const ch24   = parseFloat(ticker.priceChangePercent) / 100;
+  const ch1h   = closes.length >= 2 ? (closes[closes.length-1] / closes[closes.length-2] - 1) : 0;
 
-  // hourly candles for volatility (2 days of hourly data)
-  const mc = await fetch(
-    `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=2&interval=hourly`
-  ).then(r => { if (!r.ok) throw new Error(`CoinGecko chart ${r.status}`); return r.json(); });
-
-  const prices = mc.prices.map(p => p[1]);
   const rets = [];
-  for (let i = 1; i < prices.length; i++) rets.push(Math.log(prices[i] / prices[i - 1]));
+  for (let i = 1; i < closes.length; i++) rets.push(Math.log(closes[i] / closes[i-1]));
 
   const rv  = rvol(rets);
   const ew  = ewmaVol(rets);
@@ -163,10 +160,9 @@ async function fetchCoin(id, sym, step) {
   nxt.setMinutes(60, 0, 0);
   const T = Math.max((nxt - now) / 3600000, 0.001);
 
-  // strikes: snap to nearest step, 7 above and 7 below
   const base = Math.round(price / step) * step;
   const strikes = [];
-  for (let i = -7; i <= 7; i++) strikes.push(+(base + i * step).toFixed(sym === 'ETH' ? 0 : 0));
+  for (let i = -7; i <= 7; i++) strikes.push(base + i * step);
 
   return { sym, price, ch1h, ch24, vol: { rv, ew, ft, ens }, T, strikes, step };
 }
@@ -238,8 +234,8 @@ async function refresh() {
   });
   try {
     const [b, e] = await Promise.all([
-      fetchCoin('bitcoin',  'BTC', 250),
-      fetchCoin('ethereum', 'ETH',  20)
+      fetchCoin('BTCUSDT', 'BTC', 250),
+      fetchCoin('ETHUSDT', 'ETH',  20)
     ]);
     D.BTC = b; D.ETH = e;
     renderPanel(b, 'pBTC');

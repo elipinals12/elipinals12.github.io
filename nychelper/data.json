@@ -120,7 +120,7 @@
         { "org": "New York Cares",        "note": "Coat drives & clothing",        "addr": "307 W 38th St",           "phone": "(212) 228-5000", "url": "https://www.newyorkcares.org" },
         { "org": "Salvation Army",        "note": "Clothing & household goods",    "phone": "1-800-728-7825",                                    "url": "https://www.salvationarmyusa.org" },
         { "org": "DonateNYC",             "note": "Hygiene kits citywide",                                            "url": "https://www.donatenyc.gov" },
-        { "org": "The HopeLine",          "note": "Diapers & baby essentials",                                        "url": "https://www.thehopeline.com/diapers/" }
+        { "org": "The HopeLine",          "note": "Diapers & baby essentials",                                        "url": "https://thehopeline.org/services/diapers/" }
       ]
     },
     {

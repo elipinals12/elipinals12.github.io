@@ -477,7 +477,12 @@ function render() {
   `).join('');
 }
 
-function tog(i) { open = open === i ? null : i; render(); }
+function tog(i) {
+  const scrollY = window.scrollY;
+  open = open === i ? null : i;
+  render();
+  window.scrollTo({ top: scrollY, behavior: 'instant' });
+}
 
 // ── CATEGORY PILLS ────────────────────────────────────────────────
 function rebuildPills() {

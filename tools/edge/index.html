@@ -77,7 +77,7 @@ footer{text-align:center;padding:.7rem;font-size:.46rem;color:var(--mute);border
   <div style="display:flex;align-items:center;gap:.7rem">
     <span class="dot" id="dot"></span>
     <span class="upd" id="upd">—</span>
-    <button class="rbtn" id="rbtn" onclick="refresh()">↻ LOAD</button>
+    <button class="rbtn" id="rbtn" onclick="refresh()">↻</button>
   </div>
 </div>
 
@@ -91,8 +91,8 @@ footer{text-align:center;padding:.7rem;font-size:.46rem;color:var(--mute);border
 </div>
 
 <div class="main">
-  <div class="panel btc" id="pBTC"><div class="status">press ↻ LOAD</div></div>
-  <div class="panel eth" id="pETH"><div class="status">press ↻ LOAD</div></div>
+  <div class="panel btc" id="pBTC"><div class="status">⏳ loading...</div></div>
+  <div class="panel eth" id="pETH"><div class="status">⏳ loading...</div></div>
 </div>
 
 <footer>CoinGecko public API · auto-refresh every 5 min · $250 BTC steps · $20 ETH steps · not financial advice</footer>
@@ -271,6 +271,7 @@ setInterval(refresh, 5 * 60 * 1000);
 
 setInterval(tick, 1000);
 tick();
+refresh();
 </script>
 </body>
 </html>

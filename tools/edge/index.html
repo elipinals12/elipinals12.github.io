@@ -3,81 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚡ Edge</title>
+<title>⚡ Prediction Edge</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#03030c;--c1:#080816;--c2:#0d0d20;
+  --bg:#03030c;--c1:#080816;--c2:#0d0d1f;
   --btc:#f7931a;--eth:#7b9ef0;
   --g:#00ffaa;--r:#ff2255;--y:#ffd600;--p:#c47eff;
-  --dim:#2a2a4a;--txt:#c8ccee;--mute:#3a3a5c;
+  --txt:#c8ccee;--mute:#3a3a5c;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--txt);font-family:'Space Mono',monospace;min-height:100vh;overflow-x:hidden}
+body{background:var(--bg);color:var(--txt);font-family:'Space Mono',monospace;min-height:100vh}
 
-/* TOP BAR */
-.top{display:flex;justify-content:space-between;align-items:center;padding:.65rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.04);gap:.5rem;flex-wrap:wrap}
-.logo{font-size:.75rem;font-weight:700;letter-spacing:4px;background:linear-gradient(90deg,var(--btc),var(--p),var(--eth));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.dot{display:inline-block;width:6px;height:6px;background:var(--g);border-radius:50%;box-shadow:0 0 7px var(--g);animation:bl 2s infinite}
-@keyframes bl{0%,100%{opacity:1}50%{opacity:.2}}
-.timer{font-size:1.4rem;font-weight:700;color:var(--y);letter-spacing:3px;font-variant-numeric:tabular-nums;text-shadow:0 0 18px rgba(255,214,0,.3)}
-.timer.hot{color:var(--r);text-shadow:0 0 18px rgba(255,34,85,.5);animation:bl .6s infinite}
-.rbtn{background:none;border:1px solid var(--mute);color:var(--mute);padding:.3rem .8rem;border-radius:20px;font-family:inherit;font-size:.6rem;cursor:pointer;letter-spacing:1px;transition:all .2s}
+.top{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap;gap:.5rem}
+.logo{font-size:.7rem;font-weight:700;letter-spacing:4px;background:linear-gradient(90deg,var(--btc),var(--p),var(--eth));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.timer{font-size:1.4rem;font-weight:700;color:var(--y);letter-spacing:3px;font-variant-numeric:tabular-nums}
+.timer.hot{color:var(--r);animation:pu .6s infinite}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.3}}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--mute)}
+.dot.live{background:var(--g);box-shadow:0 0 7px var(--g);animation:pu 2s infinite}
+.rbtn{background:none;border:1px solid var(--mute);color:var(--mute);padding:.28rem .8rem;border-radius:20px;font-family:inherit;font-size:.6rem;cursor:pointer;transition:all .2s;letter-spacing:1px}
 .rbtn:hover{border-color:var(--p);color:var(--p)}
-.upd{font-size:.55rem;color:var(--mute)}
+.rbtn:disabled{opacity:.4;cursor:wait}
+.upd{font-size:.52rem;color:var(--mute)}
 
-/* LEGEND */
-.legend{display:flex;align-items:center;justify-content:center;gap:1.5rem;padding:.5rem 1rem;border-bottom:1px solid rgba(255,255,255,.03);flex-wrap:wrap}
-.leg{display:flex;align-items:center;gap:.4rem;font-size:.55rem;color:var(--mute);letter-spacing:1px}
-.leg-dot{width:9px;height:9px;border-radius:3px}
+.leg{display:flex;gap:1rem;justify-content:center;padding:.35rem 1rem;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.03)}
+.li{font-size:.48rem;color:var(--mute);display:flex;align-items:center;gap:.3rem;letter-spacing:.8px}
+.ld{width:8px;height:8px;border-radius:2px}
 
-/* MAIN GRID */
-.main{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:1rem;max-width:1600px;margin:0 auto}
-@media(max-width:780px){.main{grid-template-columns:1fr;padding:.7rem}}
+.main{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:1rem;max-width:1400px;margin:0 auto}
+@media(max-width:700px){.main{grid-template-columns:1fr}}
 
-/* COIN PANEL */
-.panel{background:var(--c1);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.04)}
-.panel-hdr{padding:.8rem 1rem;display:flex;justify-content:space-between;align-items:center;position:relative}
-.panel-hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px}
-.panel.btc .panel-hdr::after{background:linear-gradient(90deg,transparent,var(--btc),transparent)}
-.panel.eth .panel-hdr::after{background:linear-gradient(90deg,transparent,var(--eth),transparent)}
-.coin-name{font-size:.65rem;letter-spacing:3px;color:var(--mute)}
-.coin-price{font-size:1.5rem;font-weight:700;letter-spacing:-1px}
-.panel.btc .coin-price{color:var(--btc);text-shadow:0 0 24px rgba(247,147,26,.25)}
-.panel.eth .coin-price{color:var(--eth);text-shadow:0 0 24px rgba(123,158,240,.25)}
-.coin-chg{font-size:.7rem;font-weight:700;padding:.15rem .5rem;border-radius:12px}
+.panel{background:var(--c1);border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+.ph{padding:.75rem 1rem;position:relative}
+.ph::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px}
+.btc .ph::after{background:linear-gradient(90deg,transparent,var(--btc),transparent)}
+.eth .ph::after{background:linear-gradient(90deg,transparent,var(--eth),transparent)}
+.pname{font-size:.58rem;letter-spacing:3px;color:var(--mute);margin-bottom:.2rem}
+.pprice{font-size:1.5rem;font-weight:700}
+.btc .pprice{color:var(--btc)}
+.eth .pprice{color:var(--eth)}
+.pchg{display:flex;gap:.4rem;margin-top:.3rem;flex-wrap:wrap}
+.chg{font-size:.62rem;font-weight:700;padding:.1rem .4rem;border-radius:8px}
 .up{background:rgba(0,255,170,.1);color:var(--g)}
 .dn{background:rgba(255,34,85,.1);color:var(--r)}
-.vol-row{display:flex;gap:.3rem;padding:.4rem 1rem;background:var(--c2);flex-wrap:wrap}
-.vol-chip{font-size:.55rem;color:var(--mute);padding:.15rem .5rem;border-radius:8px;background:rgba(255,255,255,.03);letter-spacing:.5px}
-.vol-chip span{color:var(--y)}
+.pvol{font-size:.5rem;color:var(--mute);margin-top:.3rem;letter-spacing:.3px}
 
-/* ROWS TABLE */
-.rows{padding:.4rem .7rem .8rem}
-.row-item{display:flex;align-items:center;gap:.6rem;padding:.35rem .2rem;border-bottom:1px solid rgba(255,255,255,.02);position:relative}
-.row-item.cur{background:rgba(255,255,255,.025);border-radius:8px;border-bottom:none;margin:2px 0}
-.strike-info{min-width:80px;flex-shrink:0}
-.s-price{font-size:.78rem;font-weight:700}
-.s-off{font-size:.55rem;margin-top:.1rem}
-/* BAR */
-.bar-wrap{flex:1;position:relative;height:18px}
-.bar-bg{width:100%;height:100%;border-radius:6px;position:relative;overflow:hidden}
-/* gradient from red (left=cheap=good for NO) through neutral to green (right=cheap=good for YES) 
-   but we color by model probability zone */
-.bar-fill{width:100%;height:100%;border-radius:6px}
-/* break-even tick */
-.be-line{position:absolute;top:-3px;bottom:-3px;width:2px;border-radius:1px;background:rgba(255,255,255,.85);box-shadow:0 0 5px rgba(255,255,255,.5);transform:translateX(-50%);pointer-events:none}
-/* labels under bar */
-.bar-labels{display:flex;justify-content:space-between;font-size:.48rem;color:var(--mute);margin-top:2px;padding:0 1px}
-/* probs */
-.probs{display:flex;flex-direction:column;align-items:flex-end;gap:.15rem;min-width:52px;flex-shrink:0}
-.p-above,.p-below{font-size:.7rem;font-weight:700;padding:.1rem .35rem;border-radius:5px}
-/* HOT badge */
-.hot-badge{position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:.52rem;font-weight:700;padding:.1rem .35rem;border-radius:20px;pointer-events:none}
+.strikes{padding:.5rem .7rem .8rem}
+.sh{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:.35rem;font-size:.47rem;color:var(--mute);letter-spacing:1px;padding:.0rem .2rem .3rem;text-align:center}
+.sh div:first-child{text-align:left}
+.sr{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:.35rem;align-items:center;padding:.28rem .2rem;border-radius:7px;margin-bottom:.15rem;position:relative}
+.sr:hover{background:rgba(255,255,255,.025)}
+.sr.cur{background:rgba(255,255,255,.04);outline:1px solid rgba(255,255,255,.08)}
+.sk{font-size:.75rem;font-weight:700}
+.soff{font-size:.47rem;margin-top:.05rem}
+.prob{display:block;font-size:.78rem;font-weight:700;padding:.15rem .35rem;border-radius:6px;text-align:center}
+.hot-tag{position:absolute;right:.15rem;top:50%;transform:translateY(-50%);font-size:.6rem}
 
-/* loading */
-.ld{text-align:center;padding:3rem 1rem;font-size:.65rem;color:var(--mute);letter-spacing:2px}
-footer{text-align:center;padding:1rem;font-size:.52rem;color:var(--mute);border-top:1px solid rgba(255,255,255,.03);line-height:2;letter-spacing:.5px}
+.status{text-align:center;padding:3rem 1rem;font-size:.65rem;color:var(--mute);letter-spacing:2px;line-height:2.4}
+.err-txt{color:var(--r)}
+
+footer{text-align:center;padding:.7rem;font-size:.46rem;color:var(--mute);border-top:1px solid rgba(255,255,255,.03);line-height:1.9}
 </style>
 </head>
 <body>
@@ -85,202 +71,206 @@ footer{text-align:center;padding:1rem;font-size:.52rem;color:var(--mute);border-
 <div class="top">
   <div class="logo">⚡ PREDICTION EDGE</div>
   <div style="text-align:center">
-    <div style="font-size:.5rem;color:var(--mute);letter-spacing:2px;margin-bottom:.2rem">CLOSES IN</div>
+    <div style="font-size:.44rem;color:var(--mute);letter-spacing:2px;margin-bottom:.1rem">CLOSES IN</div>
     <div class="timer" id="cd">--:--</div>
   </div>
-  <div style="display:flex;align-items:center;gap:.8rem">
-    <span class="dot"></span>
+  <div style="display:flex;align-items:center;gap:.7rem">
+    <span class="dot" id="dot"></span>
     <span class="upd" id="upd">—</span>
-    <button class="rbtn" onclick="refresh()">↻</button>
+    <button class="rbtn" id="rbtn" onclick="refresh()">↻ LOAD</button>
   </div>
 </div>
 
-<div class="legend">
-  <div class="leg"><div class="leg-dot" style="background:linear-gradient(90deg,#00ffaa,#44ee44)"></div>STRONG BUY ZONE</div>
-  <div class="leg"><div class="leg-dot" style="background:var(--y)"></div>FAIR VALUE</div>
-  <div class="leg"><div class="leg-dot" style="background:linear-gradient(90deg,#ff6633,#ff2255)"></div>AVOID / FADE</div>
-  <div class="leg" style="gap:.6rem"><div style="width:2px;height:10px;background:rgba(255,255,255,.8);border-radius:1px"></div>BREAK-EVEN</div>
+<div class="leg">
+  <div class="li"><div class="ld" style="background:#00ffaa"></div>90%+</div>
+  <div class="li"><div class="ld" style="background:#55ee33"></div>75–90%</div>
+  <div class="li"><div class="ld" style="background:#ccdd00"></div>60–75%</div>
+  <div class="li"><div class="ld" style="background:var(--y)"></div>50–60%</div>
+  <div class="li"><div class="ld" style="background:#ff8833"></div>35–50%</div>
+  <div class="li"><div class="ld" style="background:var(--r)"></div>&lt;35% — fade</div>
 </div>
 
 <div class="main">
-  <div class="panel btc" id="btcPanel"><div class="ld">⏳ BTC...</div></div>
-  <div class="panel eth" id="ethPanel"><div class="ld">⏳ ETH...</div></div>
+  <div class="panel btc" id="pBTC"><div class="status">press ↻ LOAD</div></div>
+  <div class="panel eth" id="pETH"><div class="status">press ↻ LOAD</div></div>
 </div>
 
-<footer>
-  Live via Binance · Auto-refresh 90s · Models: Realized · EWMA · Fat-Tail · Ensemble<br>
-  White line = break-even price. Buy contracts LEFT of white = value. Not financial advice.
-</footer>
+<footer>CoinGecko public API · auto-refresh every 5 min · $250 BTC steps · $20 ETH steps · not financial advice</footer>
 
 <script>
 // ── MATH ──────────────────────────────
-function normCDF(x){
-  const s=x>=0?1:-1,a=Math.abs(x)/Math.SQRT2;
-  const t=1/(1+.3275911*a);
-  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-a*a);
-  return .5*(1+s*y);
+function normCDF(x) {
+  const s = x >= 0 ? 1 : -1, a = Math.abs(x) / Math.SQRT2;
+  const t = 1 / (1 + 0.3275911 * a);
+  const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-a * a);
+  return 0.5 * (1 + s * y);
 }
-function pAbove(S,K,sig,T){
-  if(sig<=0||T<=0)return S>=K?1:0;
-  const d=(Math.log(S/K)+.5*sig*sig*T)/(sig*Math.sqrt(T));
-  return normCDF(d);
+function pAbove(S, K, sig, T) {
+  if (sig <= 0 || T <= 0) return S >= K ? 1 : 0;
+  return normCDF((Math.log(S / K) + 0.5 * sig * sig * T) / (sig * Math.sqrt(T)));
 }
-function rvol(r){const m=r.reduce((a,b)=>a+b,0)/r.length;return Math.sqrt(r.reduce((a,v)=>a+(v-m)**2,0)/r.length)}
-function ewma(r,l=.94){let v=r[0]**2;for(let i=1;i<r.length;i++)v=l*v+(1-l)*r[i]**2;return Math.sqrt(v)}
+function rvol(r) {
+  const m = r.reduce((a, b) => a + b, 0) / r.length;
+  return Math.sqrt(r.reduce((a, v) => a + (v - m) ** 2, 0) / r.length);
+}
+function ewmaVol(r, l = 0.94) {
+  let v = r[0] ** 2;
+  for (let i = 1; i < r.length; i++) v = l * v + (1 - l) * r[i] ** 2;
+  return Math.sqrt(v);
+}
 
-// ── STRIKE GENERATION ─────────────────
-// Tighter near the money, coarser further out
-function genStrikes(price){
-  const pcts=[-.05,-.035,-.025,-.018,-.012,-.008,-.005,-.003,-.0015,0,.0015,.003,.005,.008,.012,.018,.025,.035,.05];
-  return pcts.map(p=>({off:p,K:price*(1+p)}));
+function probColor(p) {
+  if (p >= 0.90) return { bg: 'rgba(0,255,170,.20)', c: '#00ffaa' };
+  if (p >= 0.75) return { bg: 'rgba(50,220,50,.16)', c: '#55ee33' };
+  if (p >= 0.60) return { bg: 'rgba(180,210,0,.15)', c: '#ccdd00' };
+  if (p >= 0.50) return { bg: 'rgba(255,200,0,.13)', c: '#ffd600' };
+  if (p >= 0.35) return { bg: 'rgba(255,100,30,.15)', c: '#ff8833' };
+  return { bg: 'rgba(255,34,85,.18)', c: '#ff2255' };
 }
 
-// ── COLOR HELPERS ─────────────────────
-// edgeColor: positive edge (model > contract) → green, negative → red
-function edgeGradient(modelP){
-  // Returns a CSS gradient for the bar — left=$0.01 (cheap), right=$0.99 (expensive)
-  // "Buying YES" at contract price c is good when c < modelP
-  // So left portion (c < modelP) is value, right portion is overpriced
-  const be=modelP; // break-even as fraction of bar width
-  // We blend: green on far left fading to yellow at break-even, then orange→red on right
-  const bePct=Math.round(be*100);
-  return`linear-gradient(90deg,
-    #00ffaa 0%,
-    #44ee44 ${Math.max(bePct-25,0)}%,
-    #aadd22 ${Math.max(bePct-12,0)}%,
-    #ffd600 ${bePct}%,
-    #ff8833 ${Math.min(bePct+15,100)}%,
-    #ff2255 100%)`;
-}
-function edgeColor(edge){
-  if(edge>=.18)return{bg:'rgba(0,255,170,.18)',c:'#00ffaa'};
-  if(edge>=.10)return{bg:'rgba(80,220,80,.14)',c:'#66ee44'};
-  if(edge>=.05)return{bg:'rgba(200,220,0,.12)',c:'#ccee22'};
-  if(edge>= -.03)return{bg:'rgba(255,214,0,.09)',c:'#ffd600'};
-  if(edge>= -.10)return{bg:'rgba(255,120,30,.12)',c:'#ff8833'};
-  return{bg:'rgba(255,34,85,.15)',c:'#ff2255'};
-}
-function offColor(off){return off>0?'var(--g)':off<0?'var(--r)':'var(--y)'}
-function fmtP(p){return price=>(price>9999?'$'+Math.round(price/1000)+'k':'$'+p.toLocaleString(undefined,{maximumFractionDigits:0}))}
-const fpc=p=>(p*100).toFixed(1)+'%';
-const fp2=p=>'$'+p.toFixed(2);
-const fp0=p=>p>999?'$'+Math.round(p).toLocaleString():'$'+p.toFixed(2);
+const fp  = n => n > 999 ? '$' + Math.round(n).toLocaleString() : '$' + n.toFixed(2);
+const fpc = p => (p * 100).toFixed(1) + '%';
 
 // ── STATE ──────────────────────────────
-const S={BTC:null,ETH:null,busy:false};
+const D = { BTC: null, ETH: null, busy: false };
 
-// ── API ────────────────────────────────
-async function loadCoin(sym){
-  const[kl,tk]=await Promise.all([
-    fetch(`https://api.binance.com/api/v3/klines?symbol=${sym}USDT&interval=1h&limit=49`).then(r=>r.json()),
-    fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${sym}USDT`).then(r=>r.json())
-  ]);
-  const closes=kl.map(k=>+k[4]);
-  const rets=[];
-  for(let i=1;i<closes.length;i++)rets.push(Math.log(closes[i]/closes[i-1]));
-  const cur=+tk.lastPrice,ch1h=closes.length>=2?(cur/closes[closes.length-2]-1):0,ch24=+tk.priceChangePercent/100;
-  const rv=rvol(rets),ew=ewma(rets),ft=rv*1.3,ens=(rv+ew+ft)/3;
-  const now=new Date(),nxt=new Date(now);nxt.setMinutes(60,0,0);
-  const T=Math.max((nxt-now)/3600000,.001);
-  return{sym,price:cur,ch1h,ch24,vol:{rv,ew,ft,ens},T};
+// ── FETCH — CoinGecko, no API key needed ──
+async function fetchCoin(id, sym, step) {
+  // current price + 24h/1h changes
+  const sp = await fetch(
+    `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd&include_24hr_change=true&include_1hr_change=true`
+  ).then(r => { if (!r.ok) throw new Error(`CoinGecko ${r.status}`); return r.json(); });
+
+  const price  = sp[id].usd;
+  const ch24   = (sp[id].usd_24h_change || 0) / 100;
+  const ch1h   = (sp[id].usd_1h_change  || 0) / 100;
+
+  // hourly candles for volatility (2 days of hourly data)
+  const mc = await fetch(
+    `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=2&interval=hourly`
+  ).then(r => { if (!r.ok) throw new Error(`CoinGecko chart ${r.status}`); return r.json(); });
+
+  const prices = mc.prices.map(p => p[1]);
+  const rets = [];
+  for (let i = 1; i < prices.length; i++) rets.push(Math.log(prices[i] / prices[i - 1]));
+
+  const rv  = rvol(rets);
+  const ew  = ewmaVol(rets);
+  const ft  = rv * 1.3;
+  const ens = (rv + ew + ft) / 3;
+
+  const now = new Date(), nxt = new Date(now);
+  nxt.setMinutes(60, 0, 0);
+  const T = Math.max((nxt - now) / 3600000, 0.001);
+
+  // strikes: snap to nearest step, 7 above and 7 below
+  const base = Math.round(price / step) * step;
+  const strikes = [];
+  for (let i = -7; i <= 7; i++) strikes.push(+(base + i * step).toFixed(sym === 'ETH' ? 0 : 0));
+
+  return { sym, price, ch1h, ch24, vol: { rv, ew, ft, ens }, T, strikes, step };
 }
 
-// ── RENDER ─────────────────────────────
-function renderPanel(d,panelId,cls){
-  const{sym,price,ch1h,ch24,vol,T}=d;
-  const icon=sym==='BTC'?'₿':'Ξ';
-  const c1=ch1h>=0,c24=ch24>=0;
-  const strikes=genStrikes(price);
+// ── RENDER ──────────────────────────────
+function renderPanel(d, pid) {
+  const { sym, price, ch1h, ch24, vol, T, strikes, step } = d;
+  const icon = sym === 'BTC' ? '₿' : 'Ξ';
 
-  const rows=strikes.map(({off,K})=>{
-    const pa=pAbove(price,K,vol.ens,T);
-    const pb=1-pa;
-    const grad=edgeGradient(pa);
-    const bePct=(pa*100).toFixed(1);
-    const offLbl=off===0?'NOW':(off>0?'+':''+(off*100).toFixed(2)+'%');
-    const offC=offColor(off);
-    const kFmt=fp0(K);
-    // Edge = what you gain if model is right, buying YES at break-even price
-    // Highlight rows where model strongly disagrees with 50/50 (pa far from 0.5)
-    const maxEdge=Math.max(pa-0.5,0.5-pa); // how opinionated model is
-    const isHot=maxEdge>=.25,isWarm=maxEdge>=.15;
-    const hotBadge=isHot?`<span class="hot-badge" style="background:rgba(0,255,170,.15);color:var(--g)">🔥 HOT</span>`:
-      isWarm?`<span class="hot-badge" style="background:rgba(255,214,0,.1);color:var(--y)">★</span>`:'';
-    const paEc=edgeColor(pa-.5);
-    const pbEc=edgeColor(pb-.5);
-    return`
-    <div class="row-item${off===0?' cur':''}">
-      <div class="strike-info">
-        <div class="s-price">${kFmt}</div>
-        <div class="s-off" style="color:${offC}">${off===0?'▶ current':(off>0?'▲ +':' ▼ ')+(Math.abs(off)*100).toFixed(2)+'%'}</div>
+  const rows = strikes.map(K => {
+    const pa = pAbove(price, K, vol.ens, T);
+    const pb = 1 - pa;
+    const isCur = Math.abs(K - price) < step * 0.6;
+    const best = Math.max(pa, pb);
+    const hot = best >= 0.82 ? '🔥' : best >= 0.67 ? '★' : '';
+    const ac = probColor(pa), bc = probColor(pb);
+    const offPct = ((K - price) / price * 100);
+    const offLbl = isCur ? '◀ here' : (offPct > 0 ? '▲ +' : '▼ ') + Math.abs(offPct).toFixed(2) + '%';
+    const offC = K > price ? 'var(--g)' : K < price ? 'var(--r)' : 'var(--y)';
+    return `<div class="sr${isCur ? ' cur' : ''}">
+      <div>
+        <div class="sk">${sym === 'BTC' ? '$' + Math.round(K).toLocaleString() : '$' + K.toLocaleString()}</div>
+        <div class="soff" style="color:${offC}">${offLbl}</div>
       </div>
-      <div class="bar-wrap">
-        <div class="bar-bg">
-          <div class="bar-fill" style="background:${grad}"></div>
-        </div>
-        <div class="be-line" style="left:${bePct}%"></div>
-        <div class="bar-labels"><span>$0.01</span><span>BUY ABOVE ▲</span><span>$0.99</span></div>
-      </div>
-      <div class="probs">
-        <div class="p-above" style="background:${paEc.bg};color:${paEc.c}">▲ ${fpc(pa)}</div>
-        <div class="p-below" style="background:${pbEc.bg};color:${pbEc.c}">▼ ${fpc(pb)}</div>
-      </div>
-      ${hotBadge}
+      <div><span class="prob" style="background:${ac.bg};color:${ac.c}">▲ ${fpc(pa)}</span></div>
+      <div><span class="prob" style="background:${bc.bg};color:${bc.c}">▼ ${fpc(pb)}</span></div>
+      ${hot ? `<span class="hot-tag">${hot}</span>` : ''}
     </div>`;
   }).join('');
 
-  document.getElementById(panelId).innerHTML=`
-    <div class="panel-hdr">
-      <div>
-        <div class="coin-name">${icon} ${sym}</div>
-        <div class="coin-price">${price>999?'$'+Math.round(price).toLocaleString():'$'+price.toFixed(2)}</div>
+  document.getElementById(pid).innerHTML = `
+    <div class="ph">
+      <div class="pname">${icon} ${sym === 'BTC' ? 'BITCOIN' : 'ETHEREUM'}</div>
+      <div class="pprice">${fp(price)}</div>
+      <div class="pchg">
+        <span class="chg ${ch1h >= 0 ? 'up' : 'dn'}">${ch1h >= 0 ? '▲' : '▼'}${(Math.abs(ch1h) * 100).toFixed(2)}% 1H</span>
+        <span class="chg ${ch24 >= 0 ? 'up' : 'dn'}">${ch24 >= 0 ? '▲' : '▼'}${(Math.abs(ch24) * 100).toFixed(2)}% 24H</span>
       </div>
-      <div style="text-align:right">
-        <div class="coin-chg ${c1?'up':'dn'}">${c1?'▲':'▼'} ${(Math.abs(ch1h)*100).toFixed(2)}% 1H</div>
-        <div style="margin-top:.3rem" class="coin-chg ${c24?'up':'dn'}">${c24?'▲':'▼'} ${(Math.abs(ch24)*100).toFixed(2)}% 24H</div>
-      </div>
+      <div class="pvol">RV ${(vol.rv*100).toFixed(3)}%  EWMA ${(vol.ew*100).toFixed(3)}%  FAT ${(vol.ft*100).toFixed(3)}%  ENS★ ${(vol.ens*100).toFixed(3)}%</div>
     </div>
-    <div class="vol-row">
-      <div class="vol-chip">RV <span>${(vol.rv*100).toFixed(3)}%</span></div>
-      <div class="vol-chip">EWMA <span>${(vol.ew*100).toFixed(3)}%</span></div>
-      <div class="vol-chip">FAT <span>${(vol.ft*100).toFixed(3)}%</span></div>
-      <div class="vol-chip" style="border-color:rgba(255,214,0,.15)">ENS ★ <span style="color:var(--y)">${(vol.ens*100).toFixed(3)}%</span></div>
-    </div>
-    <div class="rows">${rows}</div>`;
+    <div class="strikes">
+      <div class="sh"><div>STRIKE</div><div>▲ ABOVE</div><div>▼ BELOW</div></div>
+      ${rows}
+    </div>`;
 }
 
 // ── CLOCK ──────────────────────────────
-function tick(){
-  const now=new Date(),nxt=new Date(now);nxt.setMinutes(60,0,0);
-  const d=nxt-now,m=Math.floor(d/60000),s=Math.floor((d%60000)/1000);
-  const el=document.getElementById('cd');
-  el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-  el.className='timer'+(m<5?' hot':'');
-  const T=Math.max(d/3600000,.001);
-  if(S.BTC)S.BTC.T=T;if(S.ETH)S.ETH.T=T;
+function tick() {
+  const now = new Date(), nxt = new Date(now);
+  nxt.setMinutes(60, 0, 0);
+  const diff = nxt - now;
+  const m = Math.floor(diff / 60000), s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cd').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  document.getElementById('cd').className = 'timer' + (m < 5 ? ' hot' : '');
+  const T = Math.max(diff / 3600000, 0.001);
+  if (D.BTC) { D.BTC.T = T; D.ETH.T = T; }
 }
 
 // ── REFRESH ────────────────────────────
-async function refresh(){
-  if(S.busy)return;S.busy=true;
-  document.getElementById('upd').textContent='loading...';
-  try{
-    const[b,e]=await Promise.all([loadCoin('BTC'),loadCoin('ETH')]);
-    S.BTC=b;S.ETH=e;
-    renderPanel(b,'btcPanel','btc');
-    renderPanel(e,'ethPanel','eth');
-    document.getElementById('upd').textContent=new Date().toLocaleTimeString();
-  }catch(err){
-    document.getElementById('upd').textContent='⚠ error';
+async function refresh() {
+  if (D.busy) return;
+  D.busy = true;
+  const btn = document.getElementById('rbtn');
+  btn.disabled = true; btn.textContent = 'loading...';
+  document.getElementById('dot').className = 'dot';
+  document.getElementById('upd').textContent = 'fetching...';
+  ['pBTC','pETH'].forEach(id => {
+    document.getElementById(id).innerHTML = '<div class="status">⏳ contacting CoinGecko...</div>';
+  });
+  try {
+    const [b, e] = await Promise.all([
+      fetchCoin('bitcoin',  'BTC', 250),
+      fetchCoin('ethereum', 'ETH',  20)
+    ]);
+    D.BTC = b; D.ETH = e;
+    renderPanel(b, 'pBTC');
+    renderPanel(e, 'pETH');
+    document.getElementById('upd').textContent = 'updated ' + new Date().toLocaleTimeString();
+    document.getElementById('dot').className = 'dot live';
+  } catch(err) {
+    document.getElementById('upd').textContent = '⚠ ' + err.message;
+    ['pBTC','pETH'].forEach(id => {
+      document.getElementById(id).innerHTML =
+        `<div class="status"><span class="err-txt">⚠ ${err.message}</span><br><br>click ↻ LOAD to retry</div>`;
+    });
+    document.getElementById('dot').className = 'dot';
   }
-  S.busy=false;
+  btn.disabled = false; btn.textContent = '↻ RELOAD';
+  D.busy = false;
 }
 
-// Re-render every minute to update T
-setInterval(()=>{if(S.BTC)renderPanel(S.BTC,'btcPanel','btc');if(S.ETH)renderPanel(S.ETH,'ethPanel','eth')},60000);
-setInterval(tick,1000);
-setInterval(refresh,90000);
-refresh();tick();
+// re-render every minute to update T without refetch
+setInterval(() => {
+  const now = new Date(), nxt = new Date(now);
+  nxt.setMinutes(60, 0, 0);
+  const T = Math.max((nxt - now) / 3600000, 0.001);
+  if (D.BTC) { D.BTC.T = T; D.ETH.T = T; renderPanel(D.BTC,'pBTC'); renderPanel(D.ETH,'pETH'); }
+}, 60000);
+
+// full refetch every 5 min
+setInterval(refresh, 5 * 60 * 1000);
+
+setInterval(tick, 1000);
+tick();
 </script>
 </body>
 </html>

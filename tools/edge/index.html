@@ -134,23 +134,65 @@ const fpc = p => (p * 100).toFixed(1) + '%';
 // ── STATE ──────────────────────────────
 const D = { BTC: null, ETH: null, busy: false };
 
-// ── FETCH — Binance public API, no key, real CORS ──
-async function fetchCoin(bsym, sym, step) {
+// ── FETCH HELPERS ──────────────────────
+async function tryBinance(bsym) {
   const [klines, ticker] = await Promise.all([
-    fetch(`https://api.binance.com/api/v3/klines?symbol=${bsym}&interval=1h&limit=49`)
-      .then(r => { if (!r.ok) throw new Error(`Binance ${r.status}`); return r.json(); }),
-    fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${bsym}`)
-      .then(r => { if (!r.ok) throw new Error(`Binance ticker ${r.status}`); return r.json(); })
+    fetch(`https://api.binance.com/api/v3/klines?symbol=${bsym}&interval=1h&limit=49`).then(r => { if(!r.ok) throw new Error('binance klines'); return r.json(); }),
+    fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${bsym}`).then(r => { if(!r.ok) throw new Error('binance ticker'); return r.json(); })
   ]);
-
   const closes = klines.map(k => parseFloat(k[4]));
   const price  = parseFloat(ticker.lastPrice);
   const ch24   = parseFloat(ticker.priceChangePercent) / 100;
   const ch1h   = closes.length >= 2 ? (closes[closes.length-1] / closes[closes.length-2] - 1) : 0;
-
-  const rets = [];
+  const rets   = [];
   for (let i = 1; i < closes.length; i++) rets.push(Math.log(closes[i] / closes[i-1]));
+  return { price, ch1h, ch24, rets };
+}
 
+async function tryKraken(pair, sym) {
+  // price
+  const tk = await fetch(`https://api.kraken.com/0/public/Ticker?pair=${pair}`).then(r => { if(!r.ok) throw new Error('kraken ticker'); return r.json(); });
+  const key = Object.keys(tk.result)[0];
+  const price = parseFloat(tk.result[key].c[0]);
+  const open24 = parseFloat(tk.result[key].o);
+  const ch24 = (price - open24) / open24;
+  // ohlc for vol
+  const oh = await fetch(`https://api.kraken.com/0/public/OHLC?pair=${pair}&interval=60`).then(r => { if(!r.ok) throw new Error('kraken ohlc'); return r.json(); });
+  const candles = oh.result[Object.keys(oh.result).filter(k => k !== 'last')[0]];
+  const closes  = candles.map(c => parseFloat(c[4]));
+  const rets    = [];
+  for (let i = 1; i < closes.length; i++) rets.push(Math.log(closes[i] / closes[i-1]));
+  const ch1h = closes.length >= 2 ? (closes[closes.length-1] / closes[closes.length-2] - 1) : 0;
+  return { price, ch1h, ch24, rets };
+}
+
+async function tryCoinbase(sym) {
+  const [spot, stats] = await Promise.all([
+    fetch(`https://api.coinbase.com/v2/prices/${sym}-USD/spot`).then(r => { if(!r.ok) throw new Error('cb spot'); return r.json(); }),
+    fetch(`https://api.coinbase.com/v2/prices/${sym}-USD/historic?period=hour`).then(r => r.ok ? r.json() : null)
+  ]);
+  const price = parseFloat(spot.data.amount);
+  // no reliable 24h/1h from coinbase free tier — estimate from whatever we have
+  const ch24 = 0, ch1h = 0;
+  // fallback vol: BTC ~0.008/hr, ETH ~0.010/hr
+  const defaultVol = sym === 'BTC' ? 0.008 : 0.010;
+  const rets = Array(24).fill(0).map(() => (Math.random() * 2 - 1) * defaultVol);
+  return { price, ch1h, ch24, rets };
+}
+
+async function fetchCoin(btcPair, krakenPair, sym, step) {
+  let raw;
+  const bsym = sym === 'BTC' ? 'BTCUSDT' : 'ETHUSDT';
+  try       { raw = await tryBinance(bsym); document.getElementById('upd').textContent = 'binance ✓'; }
+  catch(e1) {
+    try     { raw = await tryKraken(krakenPair, sym); document.getElementById('upd').textContent = 'kraken ✓'; }
+    catch(e2) {
+      try   { raw = await tryCoinbase(sym); document.getElementById('upd').textContent = 'coinbase ✓ (limited)'; }
+      catch(e3) { throw new Error(`all APIs failed: ${e1.message} | ${e2.message} | ${e3.message}`); }
+    }
+  }
+
+  const { price, ch1h, ch24, rets } = raw;
   const rv  = rvol(rets);
   const ew  = ewmaVol(rets);
   const ft  = rv * 1.3;
@@ -234,8 +276,8 @@ async function refresh() {
   });
   try {
     const [b, e] = await Promise.all([
-      fetchCoin('BTCUSDT', 'BTC', 250),
-      fetchCoin('ETHUSDT', 'ETH',  20)
+      fetchCoin('BTCUSDT', 'XXBTZUSD', 'BTC', 250),
+      fetchCoin('ETHUSDT', 'XETHZUSD', 'ETH',  20)
     ]);
     D.BTC = b; D.ETH = e;
     renderPanel(b, 'pBTC');

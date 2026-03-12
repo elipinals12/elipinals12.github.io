@@ -1,0 +1,271 @@
+{
+  "jobListings": {
+    "entryLevel": [
+      { "org": "NYC Civic Corps",      "note": "Community & city service",  "url": "https://www.nyc.gov/site/opportunity/jobs-and-programs/civic-corps.page" },
+      { "org": "Goodwill NY/NJ",       "note": "Supported placements",      "url": "https://www.goodwillnynj.org/find-a-job" },
+      { "org": "NYC Jobs Portal",      "note": "City government openings",  "url": "https://www.nyc.gov/jobs/index.page" },
+      { "org": "Phipps Neighborhoods", "note": "Direct placement",          "url": "https://www.phipps.org/about/careers" },
+      { "org": "CAMBA",                "note": "Admin & community roles",   "url": "https://www.camba.org/about-camba/careers" },
+      { "org": "BronxWorks",           "note": "Multiple openings",         "url": "https://www.bronxworks.org/about/careers" }
+    ],
+    "healthcare": [
+      { "org": "Incare Home Health",           "note": "HHA positions",           "url": "https://www.incarehomecare.com/careers" },
+      { "org": "VNS Health",                   "note": "Home care & clinical",    "url": "https://careers.vnshealth.org" },
+      { "org": "RiverSpring Health",           "note": "CNA, HHA & support",      "url": "https://www.riverspringhealth.org/careers" },
+      { "org": "NYC Health + Hospitals",       "note": "Clinical & non-clinical", "url": "https://www.nychealthandhospitals.org/careers" },
+      { "org": "Sunnyside Community Services", "note": "Home health aide",        "url": "https://www.sunnysidecommservices.org/about-us/job-openings" },
+      { "org": "VNSNY",                        "note": "Home & community care",   "url": "https://www.vnsny.org/careers" }
+    ],
+    "food": [
+      { "org": "Kommissary",               "note": "Kitchen & food service",     "url": "https://www.kommissary.com/careers" },
+      { "org": "Grubhub",                  "note": "Delivery — flexible",        "url": "https://careers.grubhub.com" },
+      { "org": "Union Square Hospitality", "note": "Front & back of house",      "url": "https://careers.ushgnyc.com" },
+      { "org": "Compass Group",            "note": "Institutional food service", "url": "https://jobs.compass-usa.com" },
+      { "org": "Delaware North",           "note": "Venue & stadium service",    "url": "https://www.delawarenorth.com/careers" }
+    ],
+    "trades": [
+      { "org": "Helmets to Hardhats",    "note": "Veterans & community",      "url": "https://helmetstohardhats.org" },
+      { "org": "NYC Carpenters Council", "note": "Union apprenticeships",     "url": "https://nycdistrictcouncil.com/apprenticeship" },
+      { "org": "32BJ SEIU",             "note": "Building service union",    "url": "https://www.seiu32bj.org/join" },
+      { "org": "Laborers Local 79",     "note": "Construction & demolition", "url": "https://www.laborerslocal79.org/become-a-member" },
+      { "org": "NYC SBS Industrial",    "note": "Construction pipelines",    "url": "https://www.nyc.gov/site/sbs/industries/industrial-manufacturing.page" }
+    ]
+  },
+  "cards": [
+    {
+      "id": "jobs-apply",
+      "type": "job-listings",
+      "icon": "💼",
+      "title": "Apply for Jobs — Direct Employer Pages",
+      "sub": "Entry-level, healthcare, food service, trades — straight to hiring pages",
+      "tags": ["jobs", "work", "hiring", "hha", "cna", "construction", "food", "entry level", "trades"],
+      "cats": ["Jobs"],
+      "body": "",
+      "links": []
+    },
+    {
+      "id": "jobs-training",
+      "icon": "🎓",
+      "title": "Job Training & Workforce Programs",
+      "sub": "Free training, career centers, certifications across NYC",
+      "tags": ["training", "workforce", "career", "certificate", "per scholas", "cuny", "goodwill"],
+      "cats": ["Jobs"],
+      "body": "<strong>Walk-in centers:</strong><br>• <a href='https://www.nyc.gov/workforce1' target='_blank'>Workforce1</a> — <span class='addr'>Manhattan: 330 W 34th St | Bronx: 2396 Third Ave | Brooklyn: 9 Bond St | Queens: 168-25 Jamaica Ave | SI: 120 Stuyvesant Pl</span><br>• <a href='https://www.nypl.org/help/research-services/career-services' target='_blank'>NYPL Career Services</a> — all branches<br>• <a href='https://www.bronxworks.org' target='_blank'>BronxWorks</a> — <span class='addr'>60 E Tremont Ave, Bronx | ☎ (718) 293-3134</span><br>• African Communities Together — <span class='addr'>127 W 127th St</span><br><br><strong>Free training:</strong><br>• <a href='https://perscholas.org' target='_blank'>Per Scholas</a> — IT/tech — <span class='addr'>25 Broadway 12th Fl | 718 Mace Ave, Bronx</span><br>• <a href='https://www.brooklynworkforce.org' target='_blank'>Brooklyn Workforce Innovations</a> — <span class='addr'>621 Degraw St, Brooklyn</span><br>• <a href='https://www.mosholumontefiore.org' target='_blank'>Mosholu Montefiore</a> — <span class='addr'>3450 DeKalb Ave, Bronx</span><br>• <a href='https://www.camba.org' target='_blank'>CAMBA Workforce</a> — <span class='addr'>875 Atlantic Ave, Brooklyn</span>",
+      "links": [
+        ["Workforce1", "https://www.nyc.gov/workforce1"],
+        ["Jobs NYC", "https://www.jobs.nyc.gov/training"],
+        ["Per Scholas", "https://perscholas.org"]
+      ]
+    },
+    {
+      "id": "jobs-field",
+      "icon": "🔨",
+      "title": "Field-Specific Training",
+      "sub": "Security, HHA/CNA, Construction, Disability/IDD",
+      "tags": ["cna", "hha", "security", "construction", "disability", "idd", "access vr"],
+      "cats": ["Jobs"],
+      "body": "<strong>HHA / CNA:</strong><br>• <a href='https://www.health.ny.gov/facilities/home_care/docs/training_program_list.pdf' target='_blank'>NYS Free HHA Training List (PDF)</a><br>• <a href='https://www.mosholumontefiore.org' target='_blank'>Mosholu Montefiore CNA</a> — <span class='addr'>3450 DeKalb Ave, Bronx</span><br>• <a href='https://www.sunnysidecommservices.org' target='_blank'>Sunnyside Community Services HHA</a> — <span class='addr'>43-31 39th St, Queens</span><br><br><strong>Construction:</strong><br>• <a href='https://nycdistrictcouncil.com/apprenticeship' target='_blank'>NYC Carpenters Apprenticeship</a> — <span class='addr'>395 Hudson St</span><br><br><strong>Disability / IDD:</strong><br>• <a href='https://www.acces.nysed.gov' target='_blank'>Access VR</a> — apply online<br>• <a href='https://www.nyc.gov/site/mopd/programs/at-work.page' target='_blank'>NYC: AT WORK — MOPD</a> — <span class='addr'>100 Gold St, 2nd Fl</span><br>• <a href='https://opwdd.ny.gov/get-started/front-door' target='_blank'>OPWDD</a> — ☎ 1-866-946-9733",
+      "links": [
+        ["NYS HHA List", "https://www.health.ny.gov/facilities/home_care/docs/training_program_list.pdf"],
+        ["Access VR", "https://www.acces.nysed.gov"],
+        ["OPWDD", "https://opwdd.ny.gov"]
+      ]
+    },
+    {
+      "id": "food",
+      "icon": "🍎",
+      "title": "Food Support",
+      "sub": "Pantries, meal delivery, soup kitchens across NYC",
+      "tags": ["food", "pantry", "hunger", "meals", "snap", "delivery"],
+      "cats": ["Basic Needs"],
+      "body": "• <a href='https://www.foodhelpnyc.org' target='_blank'>Food Help NYC</a> — search by zip<br>• <a href='https://www.foodbanknyc.org/get-help/' target='_blank'>Food Bank NYC</a> — <span class='addr'>39 Broadway | ☎ (212) 566-7855</span><br>• <a href='https://www.stjohnsbread.org' target='_blank'>St. John's Bread & Life</a> — <span class='addr'>795 Lexington Ave, Brooklyn | ☎ (718) 574-0058</span><br>• <a href='https://www.glwd.org' target='_blank'>God's Love We Deliver</a> — serious illness — <span class='addr'>166 Ave of the Americas | ☎ (212) 294-8100</span><br>• <a href='https://www.coalitionforthehomeless.org/grand-central-food-program/' target='_blank'>Grand Central Food Program</a> — nightly routes from 8 Dey St<br>• <a href='https://yourpeer.nyc' target='_blank'>YourPeer</a> — food for unhoused people<br>• <a href='https://www.findhelp.org' target='_blank'>FindHelp.org</a> — search by zip<br><br><strong>SNAP:</strong> <a href='https://www.nyc.gov/accesshra' target='_blank'>Apply via ACCESS HRA</a> — avg ~$230/month",
+      "links": [
+        ["Food Help NYC", "https://www.foodhelpnyc.org"],
+        ["Food Bank NYC", "https://www.foodbanknyc.org"],
+        ["ACCESS HRA", "https://www.nyc.gov/accesshra"]
+      ]
+    },
+    {
+      "id": "clothing",
+      "icon": "👔",
+      "title": "Clothing & Hygiene",
+      "sub": "Free professional clothing, everyday wear, hygiene products",
+      "tags": ["clothing", "hygiene", "professional", "dress", "coat", "toiletries"],
+      "cats": ["Basic Needs"],
+      "body": "<strong>Professional Clothing:</strong><br>• <a href='https://www.dressforsuccess.org/affiliate/new-york-city/' target='_blank'>Dress for Success NYC</a> — women — <span class='addr'>32 E 31st St 7th Fl | ☎ (212) 532-1922</span><br>• <a href='https://www.bottomlesscloset.org' target='_blank'>Bottomless Closet</a> — women — <span class='addr'>445 W 45th St | ☎ (212) 563-1500</span><br>• <a href='https://www.careergear.org' target='_blank'>Career Gear</a> — men — <span class='addr'>15 W 39th St 4th Fl | ☎ (212) 577-6190</span><br><br><strong>Everyday & Weather:</strong><br>• <a href='https://www.bowery.org' target='_blank'>Bowery Mission</a> — <span class='addr'>227 Bowery | ☎ (212) 674-3456</span><br>• <a href='https://www.newyorkcares.org' target='_blank'>New York Cares</a> — coats — <span class='addr'>307 W 38th St | ☎ (212) 228-5000</span><br>• Salvation Army — ☎ 1-800-728-7825<br><br><strong>Hygiene:</strong><br>• <a href='https://www.donatenyc.gov' target='_blank'>DonateNYC</a> — hygiene kits citywide<br>• <a href='https://www.thehopeline.com/diapers/' target='_blank'>The HopeLine</a> — diapers & essentials",
+      "links": [
+        ["Dress for Success", "https://www.dressforsuccess.org/affiliate/new-york-city/"],
+        ["Career Gear", "https://www.careergear.org"],
+        ["New York Cares", "https://www.newyorkcares.org"]
+      ]
+    },
+    {
+      "id": "housing",
+      "icon": "🏠",
+      "title": "Housing & Shelter",
+      "sub": "Emergency shelter, supportive housing, vouchers, rental search",
+      "tags": ["housing", "shelter", "homeless", "voucher", "cityfheps", "rental", "eviction", "path", "afic"],
+      "cats": ["Housing"],
+      "body": "<strong>Emergency — Call 311 (24/7)</strong><br>• <a href='https://www.coalitionforthehomeless.org' target='_blank'>Coalition for the Homeless</a> ☎ 1-888-358-2384 — <span class='addr'>129 Fulton St</span><br><br><strong>DHS Intake Centers — all 24/7, ADA accessible, interpreters available:</strong><br><br>• <strong>PATH Office</strong> — families with children under 21, single pregnant women<br><span class='addr'>151 East 151st St, Bronx NY 10451 | ☎ (718) 503-6400 | All family members + ID required</span><br><br>• <strong>Adult Family Intake Center (AFIC)</strong> — married couples, domestic partners, adult families without children under 21<br><span class='addr'>400–430 East 30th St (at 1st Ave), Manhattan NY 10016 | ID + proof of family relationship</span><br><br>• <strong>30th Street Intake</strong> — single adult men (18+)<br><span class='addr'>400–430 East 30th St (at 1st Ave), Manhattan | ID helpful, not required</span><br><br>• <strong>Franklin Women's Shelter</strong> — single adult women (18+)<br><span class='addr'>1122 Franklin Ave, Bronx NY 10456 | ☎ (929) 281-2330 | ID helpful, not required</span><br><br><em style='font-size:.78rem;color:var(--muted);'>Transgender individuals may use the center matching their gender identity.</em><br><br><strong>Supportive Housing:</strong><br>• <a href='https://www.cucs.org' target='_blank'>CUCS Housing Resource Center</a> — <span class='addr'>2090 Adam Clayton Powell Jr Blvd | ☎ (212) 801-3300</span><br>• <a href='https://www.breakingground.org' target='_blank'>Breaking Ground</a> — <span class='addr'>505 Eighth Ave | ☎ (212) 951-6900</span><br><br><strong>Vouchers & Rental:</strong><br>• <a href='https://housingconnect.nyc.gov' target='_blank'>NYC Housing Lottery</a><br>• <a href='https://www.hpd.nyc.gov' target='_blank'>HPD Affordable Re-Rentals</a> — <span class='addr'>100 Gold St | ☎ (212) 863-8000</span><br>• <a href='https://streeteasy.com' target='_blank'>StreetEasy</a><br>• <a href='https://www.nyc.gov/homebase' target='_blank'>Homebase</a> — eviction prevention — call 311",
+      "links": [
+        ["311.nyc.gov", "https://311.nyc.gov"],
+        ["Housing Lottery", "https://housingconnect.nyc.gov"],
+        ["CUCS", "https://www.cucs.org"]
+      ]
+    },
+    {
+      "id": "benefits",
+      "icon": "📋",
+      "title": "Benefits Navigation",
+      "sub": "Medicaid, SNAP, cash assistance, HRA, SSA, energy help",
+      "tags": ["benefits", "medicaid", "snap", "hra", "cash assistance", "ssa", "hasa", "heap"],
+      "cats": ["Benefits"],
+      "body": "• <a href='https://www.nyc.gov/accesshra' target='_blank'>ACCESS HRA</a> — SNAP, Medicaid, cash assistance<br>• <a href='https://access.nyc.gov' target='_blank'>ACCESS NYC</a> — eligibility screener<br><br><strong>HRA offices:</strong><br><span class='addr'>Manhattan: 109 E 16th St | Brooklyn: 15 MetroTech | Bronx: 1916 Monterey Ave | Queens: 165-08 88th Ave | SI: 4 Teleport Dr</span><br><br>• <a href='https://www.ssa.gov' target='_blank'>SSA Benefits</a> — find office at ssa.gov<br>• HASA — ☎ (212) 971-0626<br>• <a href='https://otda.ny.gov/programs/heap/' target='_blank'>HEAP</a> — energy assistance<br>• <a href='https://yourpeer.nyc' target='_blank'>YourPeer</a> — benefit navigation tool",
+      "links": [
+        ["ACCESS HRA", "https://www.nyc.gov/accesshra"],
+        ["ACCESS NYC", "https://access.nyc.gov"],
+        ["YourPeer", "https://yourpeer.nyc"]
+      ]
+    },
+    {
+      "id": "childcare",
+      "icon": "👶",
+      "title": "Childcare & Family",
+      "sub": "Subsidized childcare, Pre-K, after school, family support",
+      "tags": ["childcare", "family", "kids", "prek", "afterschool", "voucher", "acs"],
+      "cats": ["Family"],
+      "body": "• <a href='https://www.myschools.nyc' target='_blank'>NYC MySchools</a> — Pre-K & school finder<br>• <a href='https://www.nyc.gov/acs' target='_blank'>ACS Childcare Voucher</a> — ☎ (718) 722-4646<br>• <a href='https://www.cdscny.org' target='_blank'>Child Development Support Corp</a> — <span class='addr'>352 Classon Ave, Brooklyn | ☎ (718) 398-5348</span><br>• <a href='https://www.daycarecouncil.org' target='_blank'>Day Care Council of NY</a> — <span class='addr'>12 W 21st St | ☎ (212) 206-7818</span><br>• <a href='https://www.universitysettlement.org' target='_blank'>University Settlement Child Care</a> — <span class='addr'>184 Eldridge St | ☎ (212) 674-9120</span><br>• <a href='https://www.nyc.gov/dycd' target='_blank'>COMPASS — DYCD After School</a><br>• <a href='https://www.sunnysidecommservices.org' target='_blank'>Sunnyside Community Services</a> — <span class='addr'>43-31 39th St, Queens</span>",
+      "links": [
+        ["ACS Childcare", "https://www.nyc.gov/acs"],
+        ["NYC MySchools", "https://www.myschools.nyc"],
+        ["COMPASS", "https://www.nyc.gov/dycd"]
+      ]
+    },
+    {
+      "id": "education",
+      "icon": "📚",
+      "title": "Education, ESL & GED",
+      "sub": "ESOL classes, GED/HSE, college access for all immigration statuses",
+      "tags": ["education", "esl", "esol", "ged", "hse", "english", "college", "undocumented", "tap", "cuny"],
+      "cats": ["Education"],
+      "body": "<strong>ESL / ESOL:</strong><br>• <a href='https://www.henrystreet.org' target='_blank'>Henry Street Settlement</a> — <span class='addr'>265 Henry St | ☎ (212) 766-9200</span><br>• <a href='https://www.internationalcenterny.org' target='_blank'>International Center</a> — ESOL, citizenship — <span class='addr'>50 W 23rd St | ☎ (212) 255-9555</span><br>• <a href='https://www.nypl.org' target='_blank'>NYPL</a> — free English at all branches<br>• <a href='https://www.bklynlibrary.org' target='_blank'>Brooklyn Public Library</a> — drop-in English<br><br><strong>GED / HSE:</strong><br>• <a href='https://www.mosholumontefiore.org' target='_blank'>Mosholu Montefiore</a> — <span class='addr'>3450 DeKalb Ave, Bronx | ☎ (718) 882-4000</span><br><br><strong>College access:</strong><br>• <a href='https://www.hesc.ny.gov/tap' target='_blank'>TAP Grant</a><br>• <a href='https://www.cuny.edu/undocumented' target='_blank'>CUNY Undocumented Programs</a> — <span class='addr'>205 E 42nd St | ☎ (646) 664-8000</span><br>• <a href='https://www.laguardia.edu' target='_blank'>LaGuardia Community College</a> — <span class='addr'>31-10 Thomson Ave, LIC | ☎ (718) 482-7200</span>",
+      "links": [
+        ["NYC Adult Ed", "https://www.nyc.gov/adulted"],
+        ["CUNY Undocumented", "https://www.cuny.edu/undocumented"],
+        ["TAP Grant", "https://www.hesc.ny.gov/tap"]
+      ]
+    },
+    {
+      "id": "legal",
+      "icon": "⚖️",
+      "title": "Legal Aid",
+      "sub": "Tenant rights, immigration, civil legal help, eviction defense",
+      "tags": ["legal", "tenant", "immigration", "eviction", "rights", "asylum"],
+      "cats": ["Legal"],
+      "body": "<strong>NYC has right to counsel for eviction — refer immediately.</strong><br><br>• <a href='https://legalaidnyc.org' target='_blank'>Legal Aid Society</a> — <span class='addr'>40 Worth St | ☎ (212) 577-3300</span><br>• <a href='https://www.nylag.org' target='_blank'>NYLAG</a> — <span class='addr'>100 William St | ☎ (212) 613-5000</span><br>• <a href='https://www.justfix.org' target='_blank'>JustFix</a> — tenant rights self-help<br>• <a href='https://www.maketheroad.org' target='_blank'>Make the Road NY</a> — <span class='addr'>301 Grove St, Brooklyn | 92-10 Roosevelt Ave, Queens</span><br>• <a href='https://www.hias.org' target='_blank'>HIAS NY</a> — immigration — <span class='addr'>411 Fifth Ave 6th Fl | ☎ (212) 967-4100</span><br>• <a href='https://www.irc.org' target='_blank'>IRC Asylum Seeker Programming</a> — <span class='addr'>One Metrotech North, Brooklyn | ☎ (718) 623-3000</span>",
+      "links": [
+        ["Legal Aid", "https://legalaidnyc.org"],
+        ["NYLAG", "https://www.nylag.org"],
+        ["JustFix", "https://www.justfix.org"]
+      ]
+    },
+    {
+      "id": "mentalhealth",
+      "icon": "🧠",
+      "title": "Mental Health & Peer Support",
+      "sub": "NYC Well, peer connectors, NAMI, warmlines, FQHCs",
+      "tags": ["mental health", "therapy", "peer", "wellness", "crisis", "warmline", "nami"],
+      "cats": ["Health"],
+      "body": "<strong>This org refers — does not provide therapy.</strong><br><br>• <a href='https://nycwell.cityofnewyork.us' target='_blank'>NYC Well</a> — free, 24/7 — <span class='addr'>☎ 1-888-NYC-WELL | Text WELL to 65173</span><br>• <a href='https://www.naminycmetro.org' target='_blank'>NAMI NYC Metro</a> — <span class='addr'>505 Eighth Ave Suite 1103 | ☎ (212) 684-3264</span><br>• <a href='https://findahealthcenter.hrsa.gov' target='_blank'>Find an FQHC</a> — sliding-scale therapy near you",
+      "links": [
+        ["NYC Well", "https://nycwell.cityofnewyork.us"],
+        ["NAMI NYC", "https://www.naminycmetro.org"],
+        ["Find FQHC", "https://findahealthcenter.hrsa.gov"]
+      ]
+    },
+    {
+      "id": "transit",
+      "icon": "🚌",
+      "title": "Transportation",
+      "sub": "Access-A-Ride, NEMT, transit support",
+      "tags": ["transportation", "transit", "access-a-ride", "nemt", "mobility", "disability"],
+      "cats": ["Getting Around"],
+      "body": "• <a href='https://access.nyc.gov' target='_blank'>Access-A-Ride</a> — <span class='addr'>Apply: 130 Livingston St, Brooklyn | ☎ 1-877-337-2017</span><br>• <a href='https://www.mas-transit.com' target='_blank'>MAS NEMT</a> — ☎ 1-800-533-3553<br>• <a href='https://www.nyc.gov/aging' target='_blank'>NYC Aging Transportation</a> — <span class='addr'>2 Lafayette St | ☎ (212) 244-6469</span>",
+      "links": [
+        ["Access-A-Ride", "https://access.nyc.gov"],
+        ["MAS NEMT", "https://www.mas-transit.com"],
+        ["NYC Aging", "https://www.nyc.gov/aging"]
+      ]
+    },
+    {
+      "id": "immigrant",
+      "icon": "🌐",
+      "title": "Immigrant & Community Support",
+      "sub": "MOIA, immigration coalitions, multilingual services",
+      "tags": ["immigrant", "undocumented", "asylum", "moia", "language", "migrant"],
+      "cats": ["Community"],
+      "body": "• <a href='https://www.nyc.gov/moia' target='_blank'>MOIA</a> — <span class='addr'>100 Gold St 2nd Fl | ☎ (212) 788-7654</span><br>• <a href='https://www.nyic.org' target='_blank'>NY Immigration Coalition</a> — <span class='addr'>131 W 33rd St | ☎ (212) 627-2227</span><br>• <a href='https://www.maketheroad.org' target='_blank'>Make the Road NY</a> — <span class='addr'>301 Grove St, Brooklyn | 92-10 Roosevelt Ave, Queens</span><br>• <a href='https://www.irc.org' target='_blank'>IRC Asylum</a> — <span class='addr'>One Metrotech North, Brooklyn | ☎ (718) 623-3000</span><br>• <a href='https://www.hias.org' target='_blank'>HIAS NY</a> — <span class='addr'>411 Fifth Ave 6th Fl | ☎ (212) 967-4100</span><br>• African Communities Together — <span class='addr'>127 W 127th St</span><br>• <a href='https://mixteca.org' target='_blank'>Mixteca</a> — <span class='addr'>218 Prospect Ave, Brooklyn | ☎ (718) 499-4351</span>",
+      "links": [
+        ["MOIA", "https://www.nyc.gov/moia"],
+        ["NY Immigration Coalition", "https://www.nyic.org"],
+        ["Make the Road", "https://www.maketheroad.org"]
+      ]
+    },
+    {
+      "id": "digital",
+      "icon": "💻",
+      "title": "Digital Access",
+      "sub": "Free internet, devices, digital literacy",
+      "tags": ["digital", "internet", "wifi", "computer", "device"],
+      "cats": ["Community"],
+      "body": "• <a href='https://www.nyc.gov/nycconnected' target='_blank'>NYC Connected</a> — free/low-cost internet<br>• <a href='https://www.fcc.gov/acp' target='_blank'>Affordable Connectivity Program</a> — up to $30/month<br>• <a href='https://www.nypl.org' target='_blank'>NYPL</a> — free computers & WiFi — <span class='addr'>Main: 476 Fifth Ave (42nd St)</span><br>• <a href='https://www.bklynlibrary.org' target='_blank'>Brooklyn Public Library</a> — <span class='addr'>Central: 10 Grand Army Plaza</span>",
+      "links": [
+        ["NYC Connected", "https://www.nyc.gov/nycconnected"],
+        ["ACP", "https://www.fcc.gov/acp"],
+        ["NYPL", "https://www.nypl.org"]
+      ]
+    },
+    {
+      "id": "anchors",
+      "icon": "🤝",
+      "title": "Community Anchor Orgs",
+      "sub": "Multi-service orgs across NYC — good MOU partners",
+      "tags": ["community", "anchor", "bronx", "brooklyn", "queens", "ymca", "settlement"],
+      "cats": ["Community"],
+      "body": "• <a href='https://www.bronxworks.org' target='_blank'>BronxWorks</a> — <span class='addr'>60 E Tremont Ave, Bronx | ☎ (718) 293-3134</span><br>• <a href='https://www.universitysettlement.org' target='_blank'>University Settlement</a> — <span class='addr'>184 Eldridge St | ☎ (212) 674-9120</span><br>• <a href='https://www.camba.org' target='_blank'>CAMBA</a> — <span class='addr'>875 Atlantic Ave, Brooklyn | ☎ (718) 287-0010</span><br>• <a href='https://www.fifthave.org' target='_blank'>Fifth Avenue Committee</a> — <span class='addr'>621 Degraw St, Brooklyn | ☎ (718) 237-2017</span><br>• <a href='https://www.sunnysidecommservices.org' target='_blank'>Sunnyside Community Services</a> — <span class='addr'>43-31 39th St, Queens | ☎ (718) 784-6173</span><br>• <a href='https://www.ymcanyc.org' target='_blank'>YMCA of Greater NY</a> — ☎ (212) 630-9600<br>• <a href='https://www.graceinstitute.org' target='_blank'>Grace Institute</a> — women's job training — <span class='addr'>1233 Second Ave | ☎ (212) 832-7605</span><br>• <a href='https://www.findhelp.org' target='_blank'>FindHelp.org</a> — search any service by zip",
+      "links": [
+        ["BronxWorks", "https://www.bronxworks.org"],
+        ["CAMBA", "https://www.camba.org"],
+        ["FindHelp.org", "https://www.findhelp.org"]
+      ]
+    },
+    {
+      "id": "funding",
+      "icon": "💰",
+      "title": "Grants & Funding",
+      "sub": "Who funds community coordination orgs in NYC",
+      "tags": ["grants", "funding", "donors", "foundations", "nonprofit"],
+      "cats": ["Operations"],
+      "body": "<strong>Foundation funders — LOI first:</strong><br>• <a href='https://robinhood.org' target='_blank'>Robin Hood Foundation</a><br>• Tiger Foundation — small community orgs<br>• <a href='https://www.nycommunitytrust.org' target='_blank'>New York Community Trust</a><br>• Altman Foundation — workforce + education<br><br><strong>Government:</strong> DYCD, NYC CEO, HRA contracts, Dept of Labor workforce grants<br><br><strong>Before approaching anyone:</strong> 10+ tracked outcomes, volunteer hours logged, clean governance.",
+      "links": [
+        ["Robin Hood", "https://robinhood.org"],
+        ["NY Community Trust", "https://www.nycommunitytrust.org"],
+        ["NYC Nonprofits", "https://www.nyc.gov/nonprofits"]
+      ]
+    },
+    {
+      "id": "volunteers",
+      "icon": "🧱",
+      "title": "Volunteer Operations",
+      "sub": "Structure, onboarding, tools for 50 volunteers",
+      "tags": ["volunteer", "coordination", "management", "onboarding", "team leads"],
+      "cats": ["Operations"],
+      "body": "• 4–6 team leads → 8–10 volunteers each<br>• Every volunteer: signed agreement, confidentiality acknowledgment, role description<br>• Log hours — 50 × 4 hrs/week = ~$6,200/week in-kind value<br><br>• <a href='https://www.techsoup.org' target='_blank'>TechSoup</a> — Google Workspace free for nonprofits<br>• <a href='https://airtable.com' target='_blank'>Airtable</a> — intake + referral tracking<br>• <a href='https://www.donatenyc.gov' target='_blank'>DonateNYC</a> — in-kind donations",
+      "links": [
+        ["TechSoup", "https://www.techsoup.org"],
+        ["Airtable", "https://airtable.com"],
+        ["DonateNYC", "https://www.donatenyc.gov"]
+      ]
+    }
+  ]
+}

@@ -40,7 +40,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Space Mono',monospace;mi
 .btc .ph::after{background:linear-gradient(90deg,transparent,var(--btc),transparent)}
 .eth .ph::after{background:linear-gradient(90deg,transparent,var(--eth),transparent)}
 .pname{font-size:.58rem;letter-spacing:3px;color:var(--mute);margin-bottom:.2rem}
-.pprice{font-size:1.5rem;font-weight:700}
+.pprice{font-size:2.4rem;font-weight:700;letter-spacing:-1px;line-height:1}
 .btc .pprice{color:var(--btc)}
 .eth .pprice{color:var(--eth)}
 .pchg{display:flex;gap:.4rem;margin-top:.3rem;flex-wrap:wrap}
@@ -70,6 +70,31 @@ footer{text-align:center;padding:.7rem;font-size:.46rem;color:var(--mute);border
 
 <div class="top">
   <div class="logo">⚡ PREDICTION EDGE</div>
+
+<!-- HOW TO USE -->
+<div style="max-width:1400px;margin:0 auto;padding:0 1rem 1.5rem">
+  <div style="background:#080816;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.2rem 1.4rem;font-size:.68rem;line-height:2;color:#8888aa">
+    <div style="font-size:.58rem;letter-spacing:3px;color:#3a3a5c;margin-bottom:.7rem">HOW TO USE THIS</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem">
+      <div>
+        <div style="color:#ffd600;font-weight:700;margin-bottom:.3rem">The contract price IS the probability</div>
+        Robinhood charges $0.62 for a contract? They think it's 62% likely. That number is your enemy or your friend depending on what our model says.
+      </div>
+      <div>
+        <div style="color:#00ffaa;font-weight:700;margin-bottom:.3rem">Where the edge is</div>
+        Look at a strike. Model says <span style="color:#00ffaa">74%</span> chance BTC closes above it. Go check Robinhood — if that contract costs <span style="color:#00ffaa">$0.52</span>, you have a <span style="color:#00ffaa">22¢ edge</span> per share. Buy it. If it costs $0.74, skip — already priced in.
+      </div>
+      <div>
+        <div style="color:#c47eff;font-weight:700;margin-bottom:.3rem">Green ≠ cheap</div>
+        The deep green rows (90%+) are priced at ~$0.90 on Robinhood. No edge there. The <span style="color:#c47eff">interesting rows are 60–80%</span> — Robinhood often misprices those because they're less obvious bets.
+      </div>
+      <div>
+        <div style="color:#ffd600;font-weight:700;margin-bottom:.3rem">Above or below?</div>
+        Check BOTH sides against Robinhood. ABOVE + BELOW always = $1.00 on RH. Model says ▲ 38% and RH charges $0.52 for ABOVE? Skip. But that means BELOW is $0.48 and model says 62% — <span style="color:#00ffaa">buy BELOW</span>. You're just finding whichever side RH is selling too cheap.
+      </div>
+    </div>
+  </div>
+</div>
   <div style="text-align:center">
     <div style="font-size:.44rem;color:var(--mute);letter-spacing:2px;margin-bottom:.1rem">CLOSES IN</div>
     <div class="timer" id="cd">--:--</div>
@@ -214,7 +239,7 @@ function renderPanel(d, pid) {
   const { sym, price, ch1h, ch24, vol, T, strikes, step } = d;
   const icon = sym === 'BTC' ? '₿' : 'Ξ';
 
-  const rows = strikes.map(K => {
+  const rows = [...strikes].sort((a,b) => b - a).map(K => {
     const pa = pAbove(price, K, vol.ens, T);
     const pb = 1 - pa;
     const isCur = Math.abs(K - price) < step * 0.6;

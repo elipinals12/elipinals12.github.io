@@ -15,3 +15,4 @@ build link list ui from ground its disgusting - FIX MAIN PAGE
 count lines:
 dir -Recurse -Include *.* -Exclude *p5.js*,*p5.dom*,*p5.sound*,*png,*git*,*jpg* | Get-Content | Measure-Object -Line
 
+everything mobile friendly

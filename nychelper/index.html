@@ -234,6 +234,40 @@ header p { color: var(--muted); margin-top: .4rem; font-size: .9rem; }
 
 .ca-btn:hover { background: var(--green); color: #000; border-color: var(--green); }
 
+/* ── Resource tiles ── */
+.res-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: .6rem;
+  margin-top: .8rem;
+}
+
+.res-card {
+  background: rgba(124,92,252,.07);
+  border: 1px solid rgba(124,92,252,.2);
+  border-radius: 10px;
+  padding: .75rem 1rem;
+  text-decoration: none;
+  display: block;
+  transition: all .18s;
+}
+
+.res-card:hover {
+  background: rgba(124,92,252,.18);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.res-card.no-link { cursor: default; }
+.res-card.no-link:hover { background: rgba(124,92,252,.07); border-color: rgba(124,92,252,.2); transform: none; }
+
+.rc-org  { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; }
+.rc-note { font-size: .76rem; color: var(--muted); margin-bottom: .35rem; }
+.rc-addr { font-size: .73rem; color: var(--muted); font-style: italic; }
+.rc-addr::before { content: '📍 '; font-style: normal; }
+.rc-phone { font-size: .73rem; color: #a78bfa; margin-top: .2rem; }
+.rc-phone::before { content: '☎ '; }
+
 .empty { text-align: center; color: var(--muted); padding: 3rem 0; }
 
 /* ── Modal ── */
@@ -420,10 +454,17 @@ function render() {
       </div>
       <div class="cbody ${open === d._i ? 'open' : ''}">
         ${d.body || ''}
-        ${(d.links || []).length
-          ? `<div class="links">${d.links.map(l =>
-              `<a class="lnk" href="${l[1]}" target="_blank" onclick="event.stopPropagation()">${l[0]}</a>`
-            ).join('')}</div>`
+        ${(d.resources || []).length
+          ? `<div class="res-grid">${d.resources.map(r => {
+              const tag = r.url ? 'a' : 'div';
+              const href = r.url ? `href="${r.url}" target="_blank" onclick="event.stopPropagation()"` : '';
+              return `<${tag} class="res-card${r.url ? '' : ' no-link'}" ${href}>
+                <div class="rc-org">${r.org}</div>
+                ${r.note  ? `<div class="rc-note">${r.note}</div>` : ''}
+                ${r.addr  ? `<div class="rc-addr">${r.addr}</div>` : ''}
+                ${r.phone ? `<div class="rc-phone">${r.phone}</div>` : ''}
+              </${tag}>`;
+            }).join('')}</div>`
           : ''}
         <div class="card-actions">
           <button class="ca-btn" onclick="openFeedback('${d.title.replace(/'/g, "\\'")}', event)">

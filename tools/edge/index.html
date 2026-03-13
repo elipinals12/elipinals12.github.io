@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚡ Prediction Edge</title>
+<title>⚡ Edge</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -15,326 +15,285 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--txt);font-family:'Space Mono',monospace;min-height:100vh}
 
-.top{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap;gap:.5rem}
-.logo{font-size:.7rem;font-weight:700;letter-spacing:4px;background:linear-gradient(90deg,var(--btc),var(--p),var(--eth));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.timer{font-size:1.4rem;font-weight:700;color:var(--y);letter-spacing:3px;font-variant-numeric:tabular-nums}
+.top{display:flex;justify-content:space-between;align-items:center;padding:.5rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);flex-wrap:wrap;gap:.4rem}
+.logo{font-size:.65rem;font-weight:700;letter-spacing:4px;background:linear-gradient(90deg,var(--btc),var(--p),var(--eth));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.timer{font-size:1.3rem;font-weight:700;color:var(--y);letter-spacing:3px;font-variant-numeric:tabular-nums}
 .timer.hot{color:var(--r);animation:pu .6s infinite}
 @keyframes pu{0%,100%{opacity:1}50%{opacity:.3}}
 .dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--mute)}
 .dot.live{background:var(--g);box-shadow:0 0 7px var(--g);animation:pu 2s infinite}
-.rbtn{background:none;border:1px solid var(--mute);color:var(--mute);padding:.28rem .8rem;border-radius:20px;font-family:inherit;font-size:.6rem;cursor:pointer;transition:all .2s;letter-spacing:1px}
+.rbtn{background:none;border:1px solid var(--mute);color:var(--mute);padding:.25rem .7rem;border-radius:20px;font-family:inherit;font-size:.58rem;cursor:pointer;transition:all .2s}
 .rbtn:hover{border-color:var(--p);color:var(--p)}
-.rbtn:disabled{opacity:.4;cursor:wait}
-.upd{font-size:.52rem;color:var(--mute)}
-
-.leg{display:flex;gap:1rem;justify-content:center;padding:.35rem 1rem;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.03)}
-.li{font-size:.48rem;color:var(--mute);display:flex;align-items:center;gap:.3rem;letter-spacing:.8px}
-.ld{width:8px;height:8px;border-radius:2px}
+.upd{font-size:.5rem;color:var(--mute)}
 
 .main{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:1rem;max-width:1400px;margin:0 auto}
 @media(max-width:700px){.main{grid-template-columns:1fr}}
 
 .panel{background:var(--c1);border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
-.ph{padding:.75rem 1rem;position:relative}
+
+/* PRICE HEADER */
+.ph{padding:.9rem 1rem .6rem;position:relative}
 .ph::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px}
 .btc .ph::after{background:linear-gradient(90deg,transparent,var(--btc),transparent)}
 .eth .ph::after{background:linear-gradient(90deg,transparent,var(--eth),transparent)}
-.pname{font-size:.58rem;letter-spacing:3px;color:var(--mute);margin-bottom:.2rem}
-.pprice{font-size:2.4rem;font-weight:700;letter-spacing:-1px;line-height:1}
+.pname{font-size:.55rem;letter-spacing:3px;color:var(--mute);margin-bottom:.25rem}
+.pprice{font-size:2.8rem;font-weight:700;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums}
 .btc .pprice{color:var(--btc)}
 .eth .pprice{color:var(--eth)}
-.pchg{display:flex;gap:.4rem;margin-top:.3rem;flex-wrap:wrap}
+.pchg{display:flex;gap:.4rem;margin-top:.35rem;align-items:center;flex-wrap:wrap}
 .chg{font-size:.62rem;font-weight:700;padding:.1rem .4rem;border-radius:8px}
 .up{background:rgba(0,255,170,.1);color:var(--g)}
 .dn{background:rgba(255,34,85,.1);color:var(--r)}
-.pvol{font-size:.5rem;color:var(--mute);margin-top:.3rem;letter-spacing:.3px}
+.pvol{font-size:.48rem;color:var(--mute);margin-top:.25rem}
 
-.strikes{padding:.5rem .7rem .8rem}
-.sh{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:.35rem;font-size:.47rem;color:var(--mute);letter-spacing:1px;padding:.0rem .2rem .3rem;text-align:center}
+/* SPARKLINE */
+.spark-wrap{padding:.2rem 1rem .5rem;background:var(--c2)}
+canvas.spark{width:100%;height:44px;display:block}
+
+/* STRIKES */
+.strikes{padding:.4rem .6rem .7rem}
+.sh{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:.3rem;font-size:.44rem;color:var(--mute);letter-spacing:1px;padding:.1rem .15rem .3rem;text-align:center}
 .sh div:first-child{text-align:left}
-.sr{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:.35rem;align-items:center;padding:.28rem .2rem;border-radius:7px;margin-bottom:.15rem;position:relative}
+.sr{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:.3rem;align-items:center;padding:.25rem .15rem;border-radius:6px;margin-bottom:.12rem;position:relative}
 .sr:hover{background:rgba(255,255,255,.025)}
 .sr.cur{background:rgba(255,255,255,.04);outline:1px solid rgba(255,255,255,.08)}
-.sk{font-size:.75rem;font-weight:700}
-.soff{font-size:.47rem;margin-top:.05rem}
-.prob{display:block;font-size:.78rem;font-weight:700;padding:.15rem .35rem;border-radius:6px;text-align:center}
-.hot-tag{position:absolute;right:.15rem;top:50%;transform:translateY(-50%);font-size:.6rem}
+.sk{font-size:.73rem;font-weight:700}
+.soff{font-size:.45rem;margin-top:.04rem}
+.prob{display:block;font-size:.76rem;font-weight:700;padding:.13rem .3rem;border-radius:5px;text-align:center}
+.hot-tag{position:absolute;right:.1rem;top:50%;transform:translateY(-50%);font-size:.58rem}
 
-.status{text-align:center;padding:3rem 1rem;font-size:.65rem;color:var(--mute);letter-spacing:2px;line-height:2.4}
-.err-txt{color:var(--r)}
-
-footer{text-align:center;padding:.7rem;font-size:.46rem;color:var(--mute);border-top:1px solid rgba(255,255,255,.03);line-height:1.9}
+.status{text-align:center;padding:3rem 1rem;font-size:.6rem;color:var(--mute);letter-spacing:2px;line-height:2.4}
+footer{text-align:center;padding:.6rem;font-size:.44rem;color:var(--mute);border-top:1px solid rgba(255,255,255,.03);line-height:1.8}
 </style>
 </head>
 <body>
 
 <div class="top">
   <div class="logo">⚡ PREDICTION EDGE</div>
-
-<!-- HOW TO USE -->
-<div style="max-width:1400px;margin:0 auto;padding:0 1rem 1.5rem">
-  <div style="background:#080816;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.2rem 1.4rem;font-size:.68rem;line-height:2;color:#8888aa">
-    <div style="font-size:.58rem;letter-spacing:3px;color:#3a3a5c;margin-bottom:.7rem">HOW TO USE THIS</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem">
-      <div>
-        <div style="color:#ffd600;font-weight:700;margin-bottom:.3rem">The contract price IS the probability</div>
-        Robinhood charges $0.62 for a contract? They think it's 62% likely. That number is your enemy or your friend depending on what our model says.
-      </div>
-      <div>
-        <div style="color:#00ffaa;font-weight:700;margin-bottom:.3rem">Where the edge is</div>
-        Look at a strike. Model says <span style="color:#00ffaa">74%</span> chance BTC closes above it. Go check Robinhood — if that contract costs <span style="color:#00ffaa">$0.52</span>, you have a <span style="color:#00ffaa">22¢ edge</span> per share. Buy it. If it costs $0.74, skip — already priced in.
-      </div>
-      <div>
-        <div style="color:#c47eff;font-weight:700;margin-bottom:.3rem">Green ≠ cheap</div>
-        The deep green rows (90%+) are priced at ~$0.90 on Robinhood. No edge there. The <span style="color:#c47eff">interesting rows are 60–80%</span> — Robinhood often misprices those because they're less obvious bets.
-      </div>
-      <div>
-        <div style="color:#ffd600;font-weight:700;margin-bottom:.3rem">Above or below?</div>
-        Check BOTH sides against Robinhood. ABOVE + BELOW always = $1.00 on RH. Model says ▲ 38% and RH charges $0.52 for ABOVE? Skip. But that means BELOW is $0.48 and model says 62% — <span style="color:#00ffaa">buy BELOW</span>. You're just finding whichever side RH is selling too cheap.
-      </div>
-    </div>
-  </div>
-</div>
   <div style="text-align:center">
-    <div style="font-size:.44rem;color:var(--mute);letter-spacing:2px;margin-bottom:.1rem">CLOSES IN</div>
+    <div style="font-size:.42rem;color:var(--mute);letter-spacing:2px;margin-bottom:.1rem">CLOSES IN</div>
     <div class="timer" id="cd">--:--</div>
   </div>
-  <div style="display:flex;align-items:center;gap:.7rem">
+  <div style="display:flex;align-items:center;gap:.6rem">
     <span class="dot" id="dot"></span>
     <span class="upd" id="upd">—</span>
-    <button class="rbtn" id="rbtn" onclick="refresh()">↻</button>
+    <button class="rbtn" onclick="fullRefresh()">↻</button>
   </div>
-</div>
-
-<div class="leg">
-  <div class="li"><div class="ld" style="background:#00ffaa"></div>90%+</div>
-  <div class="li"><div class="ld" style="background:#55ee33"></div>75–90%</div>
-  <div class="li"><div class="ld" style="background:#ccdd00"></div>60–75%</div>
-  <div class="li"><div class="ld" style="background:var(--y)"></div>50–60%</div>
-  <div class="li"><div class="ld" style="background:#ff8833"></div>35–50%</div>
-  <div class="li"><div class="ld" style="background:var(--r)"></div>&lt;35% — fade</div>
 </div>
 
 <div class="main">
-  <div class="panel btc" id="pBTC"><div class="status">⏳ loading...</div></div>
-  <div class="panel eth" id="pETH"><div class="status">⏳ loading...</div></div>
+  <div class="panel btc" id="pBTC"><div class="status">⏳</div></div>
+  <div class="panel eth" id="pETH"><div class="status">⏳</div></div>
 </div>
 
-<footer>Binance public API · auto-refresh every 5 min · $250 BTC steps · $20 ETH steps · not financial advice</footer>
+<footer>Binance · Kraken fallback · price every 5s · vol refresh 5min · $250 BTC / $20 ETH steps · not financial advice</footer>
 
 <script>
 // ── MATH ──────────────────────────────
-function normCDF(x) {
-  const s = x >= 0 ? 1 : -1, a = Math.abs(x) / Math.SQRT2;
-  const t = 1 / (1 + 0.3275911 * a);
-  const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-a * a);
-  return 0.5 * (1 + s * y);
+function normCDF(x){
+  const s=x>=0?1:-1,a=Math.abs(x)/Math.SQRT2,t=1/(1+.3275911*a);
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-a*a);
+  return .5*(1+s*y);
 }
-function pAbove(S, K, sig, T) {
-  if (sig <= 0 || T <= 0) return S >= K ? 1 : 0;
-  return normCDF((Math.log(S / K) + 0.5 * sig * sig * T) / (sig * Math.sqrt(T)));
+function pAbove(S,K,sig,T){
+  if(sig<=0||T<=0)return S>=K?1:0;
+  return normCDF((Math.log(S/K)+.5*sig*sig*T)/(sig*Math.sqrt(T)));
 }
-function rvol(r) {
-  const m = r.reduce((a, b) => a + b, 0) / r.length;
-  return Math.sqrt(r.reduce((a, v) => a + (v - m) ** 2, 0) / r.length);
-}
-function ewmaVol(r, l = 0.94) {
-  let v = r[0] ** 2;
-  for (let i = 1; i < r.length; i++) v = l * v + (1 - l) * r[i] ** 2;
-  return Math.sqrt(v);
+function rvol(r){const m=r.reduce((a,b)=>a+b,0)/r.length;return Math.sqrt(r.reduce((a,v)=>a+(v-m)**2,0)/r.length)}
+function ewmaVol(r,l=.94){let v=r[0]**2;for(let i=1;i<r.length;i++)v=l*v+(1-l)*r[i]**2;return Math.sqrt(v)}
+
+function probColor(p){
+  if(p>=.85)return{bg:'rgba(0,255,170,.18)',c:'#00ffaa'};
+  if(p>=.70)return{bg:'rgba(50,220,80,.15)',c:'#44ee55'};
+  if(p>=.58)return{bg:'rgba(160,210,0,.14)',c:'#aadd00'};
+  if(p>=.50)return{bg:'rgba(255,200,0,.12)',c:'#ffd600'};
+  if(p>=.38)return{bg:'rgba(255,110,30,.14)',c:'#ff8833'};
+  return{bg:'rgba(255,34,85,.17)',c:'#ff2255'};
 }
 
-function probColor(p) {
-  if (p >= 0.90) return { bg: 'rgba(0,255,170,.20)', c: '#00ffaa' };
-  if (p >= 0.75) return { bg: 'rgba(50,220,50,.16)', c: '#55ee33' };
-  if (p >= 0.60) return { bg: 'rgba(180,210,0,.15)', c: '#ccdd00' };
-  if (p >= 0.50) return { bg: 'rgba(255,200,0,.13)', c: '#ffd600' };
-  if (p >= 0.35) return { bg: 'rgba(255,100,30,.15)', c: '#ff8833' };
-  return { bg: 'rgba(255,34,85,.18)', c: '#ff2255' };
-}
-
-const fp  = n => n > 999 ? '$' + Math.round(n).toLocaleString() : '$' + n.toFixed(2);
-const fpc = p => (p * 100).toFixed(1) + '%';
+const fp=n=>n>999?'$'+Math.round(n).toLocaleString():'$'+n.toFixed(2);
+const fpc=p=>(p*100).toFixed(1)+'%';
 
 // ── STATE ──────────────────────────────
-const D = { BTC: null, ETH: null, busy: false };
+const D={
+  BTC:{price:null,ch1h:0,ch24:0,vol:null,history:[],strikes:[],step:250},
+  ETH:{price:null,ch1h:0,ch24:0,vol:null,history:[],strikes:[],step:20}
+};
 
-// ── FETCH HELPERS ──────────────────────
-async function tryBinance(bsym) {
-  const [klines, ticker] = await Promise.all([
-    fetch(`https://api.binance.com/api/v3/klines?symbol=${bsym}&interval=1h&limit=49`).then(r => { if(!r.ok) throw new Error('binance klines'); return r.json(); }),
-    fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${bsym}`).then(r => { if(!r.ok) throw new Error('binance ticker'); return r.json(); })
-  ]);
-  const closes = klines.map(k => parseFloat(k[4]));
-  const price  = parseFloat(ticker.lastPrice);
-  const ch24   = parseFloat(ticker.priceChangePercent) / 100;
-  const ch1h   = closes.length >= 2 ? (closes[closes.length-1] / closes[closes.length-2] - 1) : 0;
-  const rets   = [];
-  for (let i = 1; i < closes.length; i++) rets.push(Math.log(closes[i] / closes[i-1]));
-  return { price, ch1h, ch24, rets };
+// ── SPARKLINE ─────────────────────────
+function drawSpark(canvasId, prices, color){
+  const canvas=document.getElementById(canvasId);
+  if(!canvas||!prices.length)return;
+  const W=canvas.offsetWidth||canvas.clientWidth||300;
+  const H=44;
+  canvas.width=W*window.devicePixelRatio;
+  canvas.height=H*window.devicePixelRatio;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
+  ctx.clearRect(0,0,W,H);
+  const mn=Math.min(...prices),mx=Math.max(...prices),rng=mx-mn||1;
+  const x=i=>(i/(prices.length-1))*W;
+  const y=v=>H-4-((v-mn)/rng)*(H-8);
+  // fill
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,color+'44');
+  grad.addColorStop(1,color+'00');
+  ctx.beginPath();
+  ctx.moveTo(x(0),y(prices[0]));
+  for(let i=1;i<prices.length;i++)ctx.lineTo(x(i),y(prices[i]));
+  ctx.lineTo(x(prices.length-1),H);ctx.lineTo(0,H);ctx.closePath();
+  ctx.fillStyle=grad;ctx.fill();
+  // line
+  ctx.beginPath();
+  ctx.moveTo(x(0),y(prices[0]));
+  for(let i=1;i<prices.length;i++)ctx.lineTo(x(i),y(prices[i]));
+  ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();
+  // current dot
+  const lx=x(prices.length-1),ly=y(prices[prices.length-1]);
+  ctx.beginPath();ctx.arc(lx,ly,3,0,Math.PI*2);
+  ctx.fillStyle=color;ctx.fill();
 }
 
-async function tryKraken(pair, sym) {
-  // price
-  const tk = await fetch(`https://api.kraken.com/0/public/Ticker?pair=${pair}`).then(r => { if(!r.ok) throw new Error('kraken ticker'); return r.json(); });
-  const key = Object.keys(tk.result)[0];
-  const price = parseFloat(tk.result[key].c[0]);
-  const open24 = parseFloat(tk.result[key].o);
-  const ch24 = (price - open24) / open24;
-  // ohlc for vol
-  const oh = await fetch(`https://api.kraken.com/0/public/OHLC?pair=${pair}&interval=60`).then(r => { if(!r.ok) throw new Error('kraken ohlc'); return r.json(); });
-  const candles = oh.result[Object.keys(oh.result).filter(k => k !== 'last')[0]];
-  const closes  = candles.map(c => parseFloat(c[4]));
-  const rets    = [];
-  for (let i = 1; i < closes.length; i++) rets.push(Math.log(closes[i] / closes[i-1]));
-  const ch1h = closes.length >= 2 ? (closes[closes.length-1] / closes[closes.length-2] - 1) : 0;
-  return { price, ch1h, ch24, rets };
-}
+// ── RENDER PANEL ──────────────────────
+function renderPanel(sym){
+  const d=D[sym];
+  if(!d.price||!d.vol)return;
+  const pid='p'+sym;
+  const color=sym==='BTC'?'#f7931a':'#7b9ef0';
+  const icon=sym==='BTC'?'₿':'Ξ';
+  const {price,ch1h,ch24,vol,step}=d;
+  const now=new Date(),nxt=new Date(now);nxt.setMinutes(60,0,0);
+  const T=Math.max((nxt-now)/3600000,.001);
 
-async function tryCoinbase(sym) {
-  const [spot, stats] = await Promise.all([
-    fetch(`https://api.coinbase.com/v2/prices/${sym}-USD/spot`).then(r => { if(!r.ok) throw new Error('cb spot'); return r.json(); }),
-    fetch(`https://api.coinbase.com/v2/prices/${sym}-USD/historic?period=hour`).then(r => r.ok ? r.json() : null)
-  ]);
-  const price = parseFloat(spot.data.amount);
-  // no reliable 24h/1h from coinbase free tier — estimate from whatever we have
-  const ch24 = 0, ch1h = 0;
-  // fallback vol: BTC ~0.008/hr, ETH ~0.010/hr
-  const defaultVol = sym === 'BTC' ? 0.008 : 0.010;
-  const rets = Array(24).fill(0).map(() => (Math.random() * 2 - 1) * defaultVol);
-  return { price, ch1h, ch24, rets };
-}
+  const base=Math.round(price/step)*step;
+  const strikes=[];
+  for(let i=-7;i<=7;i++)strikes.push(base+i*step);
+  strikes.sort((a,b)=>b-a);
 
-async function fetchCoin(btcPair, krakenPair, sym, step) {
-  let raw;
-  const bsym = sym === 'BTC' ? 'BTCUSDT' : 'ETHUSDT';
-  try       { raw = await tryBinance(bsym); document.getElementById('upd').textContent = 'binance ✓'; }
-  catch(e1) {
-    try     { raw = await tryKraken(krakenPair, sym); document.getElementById('upd').textContent = 'kraken ✓'; }
-    catch(e2) {
-      try   { raw = await tryCoinbase(sym); document.getElementById('upd').textContent = 'coinbase ✓ (limited)'; }
-      catch(e3) { throw new Error(`all APIs failed: ${e1.message} | ${e2.message} | ${e3.message}`); }
-    }
-  }
-
-  const { price, ch1h, ch24, rets } = raw;
-  const rv  = rvol(rets);
-  const ew  = ewmaVol(rets);
-  const ft  = rv * 1.3;
-  const ens = (rv + ew + ft) / 3;
-
-  const now = new Date(), nxt = new Date(now);
-  nxt.setMinutes(60, 0, 0);
-  const T = Math.max((nxt - now) / 3600000, 0.001);
-
-  const base = Math.round(price / step) * step;
-  const strikes = [];
-  for (let i = -7; i <= 7; i++) strikes.push(base + i * step);
-
-  return { sym, price, ch1h, ch24, vol: { rv, ew, ft, ens }, T, strikes, step };
-}
-
-// ── RENDER ──────────────────────────────
-function renderPanel(d, pid) {
-  const { sym, price, ch1h, ch24, vol, T, strikes, step } = d;
-  const icon = sym === 'BTC' ? '₿' : 'Ξ';
-
-  const rows = [...strikes].sort((a,b) => b - a).map(K => {
-    const pa = pAbove(price, K, vol.ens, T);
-    const pb = 1 - pa;
-    const isCur = Math.abs(K - price) < step * 0.6;
-    const best = Math.max(pa, pb);
-    const hot = best >= 0.82 ? '🔥' : best >= 0.67 ? '★' : '';
-    const ac = probColor(pa), bc = probColor(pb);
-    const offPct = ((K - price) / price * 100);
-    const offLbl = isCur ? '◀ here' : (offPct > 0 ? '▲ +' : '▼ ') + Math.abs(offPct).toFixed(2) + '%';
-    const offC = K > price ? 'var(--g)' : K < price ? 'var(--r)' : 'var(--y)';
-    return `<div class="sr${isCur ? ' cur' : ''}">
+  const rows=strikes.map(K=>{
+    const pa=pAbove(price,K,vol.ens,T),pb=1-pa;
+    const isCur=Math.abs(K-price)<step*.6;
+    const best=Math.max(pa,pb);
+    const hot=best>=.82?'🔥':best>=.67?'★':'';
+    const ac=probColor(pa),bc=probColor(pb);
+    const offPct=(K-price)/price*100;
+    const offLbl=isCur?'◀ now':(offPct>0?'▲+':'▼')+Math.abs(offPct).toFixed(2)+'%';
+    const offC=K>price?'var(--g)':K<price?'var(--r)':'var(--y)';
+    return`<div class="sr${isCur?' cur':''}">
       <div>
-        <div class="sk">${sym === 'BTC' ? '$' + Math.round(K).toLocaleString() : '$' + K.toLocaleString()}</div>
+        <div class="sk">${sym==='BTC'?'$'+Math.round(K).toLocaleString():'$'+K.toLocaleString()}</div>
         <div class="soff" style="color:${offC}">${offLbl}</div>
       </div>
       <div><span class="prob" style="background:${ac.bg};color:${ac.c}">▲ ${fpc(pa)}</span></div>
       <div><span class="prob" style="background:${bc.bg};color:${bc.c}">▼ ${fpc(pb)}</span></div>
-      ${hot ? `<span class="hot-tag">${hot}</span>` : ''}
+      ${hot?`<span class="hot-tag">${hot}</span>`:''}
     </div>`;
   }).join('');
 
-  document.getElementById(pid).innerHTML = `
+  document.getElementById(pid).innerHTML=`
     <div class="ph">
-      <div class="pname">${icon} ${sym === 'BTC' ? 'BITCOIN' : 'ETHEREUM'}</div>
-      <div class="pprice">${fp(price)}</div>
+      <div class="pname">${icon} ${sym==='BTC'?'BITCOIN':'ETHEREUM'}</div>
+      <div class="pprice" id="price_${sym}">${fp(price)}</div>
       <div class="pchg">
-        <span class="chg ${ch1h >= 0 ? 'up' : 'dn'}">${ch1h >= 0 ? '▲' : '▼'}${(Math.abs(ch1h) * 100).toFixed(2)}% 1H</span>
-        <span class="chg ${ch24 >= 0 ? 'up' : 'dn'}">${ch24 >= 0 ? '▲' : '▼'}${(Math.abs(ch24) * 100).toFixed(2)}% 24H</span>
+        <span class="chg ${ch1h>=0?'up':'dn'}">${ch1h>=0?'▲':'▼'}${(Math.abs(ch1h)*100).toFixed(2)}% 1H</span>
+        <span class="chg ${ch24>=0?'up':'dn'}">${ch24>=0?'▲':'▼'}${(Math.abs(ch24)*100).toFixed(2)}% 24H</span>
       </div>
       <div class="pvol">RV ${(vol.rv*100).toFixed(3)}%  EWMA ${(vol.ew*100).toFixed(3)}%  FAT ${(vol.ft*100).toFixed(3)}%  ENS★ ${(vol.ens*100).toFixed(3)}%</div>
     </div>
+    <div class="spark-wrap"><canvas class="spark" id="spark_${sym}"></canvas></div>
     <div class="strikes">
       <div class="sh"><div>STRIKE</div><div>▲ ABOVE</div><div>▼ BELOW</div></div>
       ${rows}
     </div>`;
+
+  // draw spark after DOM insert
+  requestAnimationFrame(()=>drawSpark('spark_'+sym, d.history, color));
+}
+
+// ── FETCH PRICE ONLY (every 5s) ───────
+async function refreshPrice(){
+  for(const [sym,bsym,kpair] of [['BTC','BTCUSDT','XXBTZUSD'],['ETH','ETHUSDT','XETHZUSD']]){
+    try{
+      let price;
+      try{
+        const r=await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${bsym}`).then(r=>r.json());
+        price=parseFloat(r.price);
+      }catch{
+        const r=await fetch(`https://api.kraken.com/0/public/Ticker?pair=${kpair}`).then(r=>r.json());
+        const key=Object.keys(r.result)[0];
+        price=parseFloat(r.result[key].c[0]);
+      }
+      if(!isNaN(price)){
+        D[sym].price=price;
+        // update just the price text if panel already rendered
+        const el=document.getElementById('price_'+sym);
+        if(el) el.textContent=fp(price);
+        // re-render odds (T changes every second anyway)
+        if(D[sym].vol) renderPanel(sym);
+      }
+    }catch(e){}
+  }
+}
+
+// ── FULL FETCH (vol + history, every 5min) ──
+async function fullRefresh(){
+  document.getElementById('dot').className='dot';
+  document.getElementById('upd').textContent='loading...';
+  try{
+    await Promise.all([fetchFull('BTC','BTCUSDT','XXBTZUSD',250),fetchFull('ETH','ETHUSDT','XETHZUSD',20)]);
+    document.getElementById('dot').className='dot live';
+    document.getElementById('upd').textContent=new Date().toLocaleTimeString();
+  }catch(e){
+    document.getElementById('upd').textContent='⚠ '+e.message.slice(0,30);
+  }
+}
+
+async function fetchFull(sym,bsym,kpair,step){
+  let price,ch1h,ch24,rets,history;
+  try{
+    const [kl,tk]=await Promise.all([
+      fetch(`https://api.binance.com/api/v3/klines?symbol=${bsym}&interval=1h&limit=49`).then(r=>{if(!r.ok)throw new Error();return r.json();}),
+      fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${bsym}`).then(r=>{if(!r.ok)throw new Error();return r.json();})
+    ]);
+    const closes=kl.map(k=>parseFloat(k[4]));
+    history=closes;
+    price=parseFloat(tk.lastPrice);
+    ch24=parseFloat(tk.priceChangePercent)/100;
+    ch1h=closes.length>=2?(closes[closes.length-1]/closes[closes.length-2]-1):0;
+    rets=[];for(let i=1;i<closes.length;i++)rets.push(Math.log(closes[i]/closes[i-1]));
+  }catch{
+    const [oh,tk]=await Promise.all([
+      fetch(`https://api.kraken.com/0/public/OHLC?pair=${kpair}&interval=60`).then(r=>r.json()),
+      fetch(`https://api.kraken.com/0/public/Ticker?pair=${kpair}`).then(r=>r.json())
+    ]);
+    const key=Object.keys(tk.result)[0];
+    price=parseFloat(tk.result[key].c[0]);
+    const open24=parseFloat(tk.result[key].o);
+    ch24=(price-open24)/open24;
+    const candles=oh.result[Object.keys(oh.result).filter(k=>k!=='last')[0]];
+    const closes=candles.map(c=>parseFloat(c[4]));
+    history=closes;
+    ch1h=closes.length>=2?(closes[closes.length-1]/closes[closes.length-2]-1):0;
+    rets=[];for(let i=1;i<closes.length;i++)rets.push(Math.log(closes[i]/closes[i-1]));
+  }
+  const rv=rvol(rets),ew=ewmaVol(rets),ft=rv*1.3,ens=(rv+ew+ft)/3;
+  D[sym]={price,ch1h,ch24,vol:{rv,ew,ft,ens},history,step};
+  renderPanel(sym);
 }
 
 // ── CLOCK ──────────────────────────────
-function tick() {
-  const now = new Date(), nxt = new Date(now);
-  nxt.setMinutes(60, 0, 0);
-  const diff = nxt - now;
-  const m = Math.floor(diff / 60000), s = Math.floor((diff % 60000) / 1000);
-  document.getElementById('cd').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-  document.getElementById('cd').className = 'timer' + (m < 5 ? ' hot' : '');
-  const T = Math.max(diff / 3600000, 0.001);
-  if (D.BTC) { D.BTC.T = T; D.ETH.T = T; }
+function tick(){
+  const now=new Date(),nxt=new Date(now);nxt.setMinutes(60,0,0);
+  const d=nxt-now,m=Math.floor(d/60000),s=Math.floor((d%60000)/1000);
+  document.getElementById('cd').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  document.getElementById('cd').className='timer'+(m<5?' hot':'');
 }
 
-// ── REFRESH ────────────────────────────
-async function refresh() {
-  if (D.busy) return;
-  D.busy = true;
-  const btn = document.getElementById('rbtn');
-  btn.disabled = true; btn.textContent = 'loading...';
-  document.getElementById('dot').className = 'dot';
-  document.getElementById('upd').textContent = 'fetching...';
-  ['pBTC','pETH'].forEach(id => {
-    document.getElementById(id).innerHTML = '<div class="status">⏳ contacting CoinGecko...</div>';
-  });
-  try {
-    const [b, e] = await Promise.all([
-      fetchCoin('BTCUSDT', 'XXBTZUSD', 'BTC', 250),
-      fetchCoin('ETHUSDT', 'XETHZUSD', 'ETH',  20)
-    ]);
-    D.BTC = b; D.ETH = e;
-    renderPanel(b, 'pBTC');
-    renderPanel(e, 'pETH');
-    document.getElementById('upd').textContent = 'updated ' + new Date().toLocaleTimeString();
-    document.getElementById('dot').className = 'dot live';
-  } catch(err) {
-    document.getElementById('upd').textContent = '⚠ ' + err.message;
-    ['pBTC','pETH'].forEach(id => {
-      document.getElementById(id).innerHTML =
-        `<div class="status"><span class="err-txt">⚠ ${err.message}</span><br><br>click ↻ LOAD to retry</div>`;
-    });
-    document.getElementById('dot').className = 'dot';
-  }
-  btn.disabled = false; btn.textContent = '↻ RELOAD';
-  D.busy = false;
-}
-
-// re-render every minute to update T without refetch
-setInterval(() => {
-  const now = new Date(), nxt = new Date(now);
-  nxt.setMinutes(60, 0, 0);
-  const T = Math.max((nxt - now) / 3600000, 0.001);
-  if (D.BTC) { D.BTC.T = T; D.ETH.T = T; renderPanel(D.BTC,'pBTC'); renderPanel(D.ETH,'pETH'); }
-}, 60000);
-
-// full refetch every 5 min
-setInterval(refresh, 5 * 60 * 1000);
-
-setInterval(tick, 1000);
+setInterval(tick,1000);
+setInterval(refreshPrice,5000);
+setInterval(fullRefresh,5*60*1000);
 tick();
-refresh();
+fullRefresh();
 </script>
 </body>
 </html>

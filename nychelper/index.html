@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,608 +7,450 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
-  --bg: #f5f0eb;
-  --card: #ffffff;
-  --border: #e0d8d0;
-  --accent: #e07a5f;
-  --accent2: #f2cc8f;
-  --green: #81b29a;
-  --text: #3d405b;
-  --muted: #9a8f8f;
-  --yellow: #f2cc8f;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
-  --shadow-hover: 0 8px 28px rgba(224,122,95,.2), 0 3px 8px rgba(0,0,0,.06);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+:root[data-theme="light"] {
+  --bg: #f5f0eb; --card: #ffffff; --border: #e0d8d0;
+  --accent: #c9624a; --accent2: #d4a830; --green: #5a9478;
+  --text: #2a2d45; --muted: #5a5050;
+  --notice-bg: rgba(212,168,48,.12); --notice-border: rgba(212,168,48,.4); --notice-text: #4a3a08;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.07); --shadow-md: 0 4px 16px rgba(0,0,0,.09);
+  --shadow-hover: 0 8px 28px rgba(201,98,74,.22);
+  --res-bg: rgba(201,98,74,.07); --res-border: rgba(201,98,74,.2);
+  --job-bg: rgba(90,148,120,.07); --job-border: rgba(90,148,120,.25);
+  --link-color: #5a3fa0; --phone-color: #5a3fa0;
+  --tag-bg: rgba(201,98,74,.09); --tag-border: rgba(201,98,74,.22);
+  --btn-bg: rgba(90,148,120,.09);
+  --hotline-bg: linear-gradient(135deg,rgba(201,98,74,.1),rgba(212,168,48,.08));
+  --modal-bg: #fff; --modal-text: #2a2d45; --modal-muted: #5a5050;
 }
+:root[data-theme="dark"] {
+  --bg: #16161e; --card: #1f1f2e; --border: #2e2e42;
+  --accent: #e07a5f; --accent2: #f2cc8f; --green: #81b29a;
+  --text: #e8e4f0; --muted: #9a90b0;
+  --notice-bg: rgba(242,204,143,.08); --notice-border: rgba(242,204,143,.3); --notice-text: #d4b060;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.3); --shadow-md: 0 4px 16px rgba(0,0,0,.4);
+  --shadow-hover: 0 8px 28px rgba(224,122,95,.25);
+  --res-bg: rgba(224,122,95,.08); --res-border: rgba(224,122,95,.2);
+  --job-bg: rgba(129,178,154,.08); --job-border: rgba(129,178,154,.25);
+  --link-color: #a78bfa; --phone-color: #a78bfa;
+  --tag-bg: rgba(224,122,95,.1); --tag-border: rgba(224,122,95,.22);
+  --btn-bg: rgba(129,178,154,.1);
+  --hotline-bg: linear-gradient(135deg,rgba(224,122,95,.12),rgba(242,204,143,.08));
+  --modal-bg: #1f1f2e; --modal-text: #e8e4f0; --modal-muted: #9a90b0;
+}
+:root { --ease-spring: cubic-bezier(0.34,1.56,0.64,1); --ease-out: cubic-bezier(0.4,0,0.2,1); --font-scale: 1; }
+
+.skip-link {
+  position:absolute; top:-100%; left:1rem;
+  background:var(--accent); color:#fff;
+  padding:.5rem 1rem; border-radius:0 0 8px 8px;
+  font-size:.88rem; font-weight:700; text-decoration:none;
+  z-index:9999; transition:top .2s;
+}
+.skip-link:focus { top:0; }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+  background:var(--bg); color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  font-size:calc(1rem * var(--font-scale));
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  transition:background .3s,color .3s;
 }
-
-/* Animated ambient background */
 body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(224,122,95,.12) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 80%, rgba(129,178,154,.1)  0%, transparent 55%),
-    radial-gradient(ellipse at 50% 50%, rgba(242,204,143,.07) 0%, transparent 60%);
-  animation: bgPulse 14s ease-in-out infinite alternate;
+    radial-gradient(ellipse at 20% 20%,rgba(224,122,95,.1) 0%,transparent 55%),
+    radial-gradient(ellipse at 80% 80%,rgba(129,178,154,.08) 0%,transparent 55%);
+  animation:bgPulse 14s ease-in-out infinite alternate;
 }
+@keyframes bgPulse { 0%{opacity:.7;transform:scale(1)} 100%{opacity:1;transform:scale(1.04)} }
 
-@keyframes bgPulse {
-  0%   { opacity: .7; transform: scale(1); }
-  100% { opacity: 1;  transform: scale(1.05); }
-}
+.wrap { position:relative; z-index:1; max-width:780px; margin:0 auto; padding:2rem 1.2rem 5rem; }
 
-.wrap {
-  position: relative;
-  z-index: 1;
-  max-width: 780px;
-  margin: 0 auto;
-  padding: 2.5rem 1.2rem 5rem;
+/* ── Toolbar ── */
+.toolbar { display:flex; align-items:center; justify-content:flex-end; gap:.4rem; margin-bottom:1.2rem; flex-wrap:wrap; }
+.tb-btn {
+  display:inline-flex; align-items:center; gap:.3rem; padding:.32rem .7rem;
+  border-radius:8px; border:1.5px solid var(--border); background:var(--card);
+  color:var(--muted); font-size:.75rem; font-weight:600; cursor:pointer;
+  transition:all .2s var(--ease-out); white-space:nowrap;
 }
+.tb-btn:hover { border-color:var(--accent); color:var(--accent); }
+.tb-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.tb-btn svg { width:13px; height:13px; flex-shrink:0; }
+
+.lang-wrap { position:relative; }
+.lang-menu {
+  display:none; position:absolute; top:calc(100% + 4px); right:0;
+  background:var(--card); border:1.5px solid var(--border);
+  border-radius:10px; padding:.3rem; min-width:140px; z-index:100;
+  box-shadow:var(--shadow-md); flex-direction:column; gap:.1rem;
+}
+.lang-menu.open { display:flex; animation:fadeIn .15s ease; }
+.lang-opt {
+  padding:.4rem .75rem; border-radius:6px; font-size:.8rem; font-weight:500;
+  cursor:pointer; border:none; background:none; color:var(--text); text-align:left; transition:background .15s;
+}
+.lang-opt:hover { background:var(--res-bg); }
+.lang-opt.active { color:var(--accent); font-weight:700; }
+.lang-opt:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+
+.font-control { display:inline-flex; align-items:center; border:1.5px solid var(--border); border-radius:8px; overflow:hidden; background:var(--card); }
+.fc-btn { padding:.32rem .6rem; background:none; border:none; color:var(--muted); font-size:.82rem; font-weight:700; cursor:pointer; transition:all .15s; }
+.fc-btn:hover { background:var(--res-bg); color:var(--accent); }
+.fc-btn:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+.fc-label { padding:0 .4rem; font-size:.7rem; font-weight:600; color:var(--muted); user-select:none; border-left:1px solid var(--border); border-right:1px solid var(--border); line-height:2; }
 
 /* ── Header ── */
-header {
-  text-align: center;
-  margin-bottom: 2.2rem;
-  animation: fadeDown .6s var(--ease-out) both;
-}
-
+header { text-align:center; margin-bottom:1.8rem; animation:fadeDown .6s var(--ease-out) both; }
 header h1 {
-  font-size: clamp(1.8rem, 5vw, 2.6rem);
-  font-weight: 800;
-  letter-spacing: -.04em;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--green) 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradShift 7s ease infinite;
+  font-size:clamp(1.7rem,5vw,2.5rem); font-weight:800; letter-spacing:-.04em;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 50%,var(--green) 100%);
+  background-size:200% 200%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  animation:gradShift 7s ease infinite;
 }
+@keyframes gradShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
 
-@keyframes gradShift {
-  0%, 100% { background-position: 0% 50%; }
-  50%       { background-position: 100% 50%; }
-}
-
-header p { color: var(--muted); margin-top: .45rem; font-size: .88rem; }
-
-/* ── Hotline bar ── */
+/* ── Hotline ── */
 .hotline {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: .5rem 1.4rem;
-  background: linear-gradient(135deg, rgba(224,122,95,.1), rgba(242,204,143,.08));
-  border: 1px solid rgba(224,122,95,.3);
-  border-radius: 14px;
-  padding: .85rem 1.4rem;
-  margin-bottom: 1.6rem;
-  font-size: .82rem;
-  color: var(--accent);
-  animation: fadeDown .7s var(--ease-out) .1s both;
+  display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:.5rem 1.4rem;
+  background:var(--hotline-bg); border:1px solid rgba(224,122,95,.3); border-radius:14px;
+  padding:.8rem 1.4rem; margin-bottom:1.4rem; font-size:.82rem; color:var(--accent);
+  animation:fadeDown .7s var(--ease-out) .1s both;
 }
-
-.hotline-item {
-  display: flex;
-  align-items: center;
-  gap: .4rem;
-}
-
-.h-icon { width: 15px; height: 15px; flex-shrink: 0; }
+.hotline-item { display:flex; align-items:center; gap:.4rem; }
+.h-icon { width:15px; height:15px; flex-shrink:0; }
 
 /* ── Search ── */
-.search-wrap {
-  position: relative;
-  margin-bottom: 1rem;
-  animation: fadeDown .7s var(--ease-out) .15s both;
-}
-
+.search-wrap { position:relative; margin-bottom:1rem; animation:fadeDown .7s var(--ease-out) .15s both; }
 .search-wrap input {
-  width: 100%;
-  padding: .9rem 1.2rem .9rem 3.2rem;
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  color: var(--text);
-  font-size: .95rem;
-  outline: none;
-  box-shadow: var(--shadow-sm);
-  transition: border-color .25s, box-shadow .25s, transform .2s var(--ease-spring);
+  width:100%; padding:.9rem 1.2rem .9rem 3.2rem;
+  background:var(--card); border:1.5px solid var(--border); border-radius:14px;
+  color:var(--text); font-size:.95rem; outline:none; box-shadow:var(--shadow-sm);
+  transition:border-color .25s,box-shadow .25s,transform .2s var(--ease-spring);
 }
-
-.search-wrap input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(224,122,95,.13), var(--shadow-md);
-  transform: translateY(-1px);
+.search-wrap input:focus-visible {
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(224,122,95,.25),var(--shadow-md); transform:translateY(-1px);
 }
-
-.search-wrap input::placeholder { color: var(--muted); }
-
-.search-ico {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted);
-  width: 18px; height: 18px;
-  pointer-events: none;
-  transition: color .25s;
-}
-
-.search-wrap:focus-within .search-ico { color: var(--accent); }
+.search-wrap input::placeholder { color:var(--muted); }
+.search-ico { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--muted); width:18px; height:18px; pointer-events:none; transition:color .25s; }
+.search-wrap:focus-within .search-ico { color:var(--accent); }
 
 /* ── Pills ── */
-.pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .45rem;
-  margin-bottom: 1.3rem;
-  animation: fadeDown .7s var(--ease-out) .2s both;
-}
-
+.pills { display:flex; flex-wrap:wrap; gap:.45rem; margin-bottom:1.2rem; animation:fadeDown .7s var(--ease-out) .2s both; }
 .pill {
-  padding: .36rem .9rem;
-  border-radius: 999px;
-  border: 1.5px solid var(--border);
-  background: var(--card);
-  color: var(--muted);
-  cursor: pointer;
-  font-size: .78rem;
-  font-weight: 500;
-  box-shadow: var(--shadow-sm);
-  transition: all .22s var(--ease-out);
+  padding:.36rem .9rem; border-radius:999px; border:1.5px solid var(--border);
+  background:var(--card); color:var(--muted); cursor:pointer; font-size:.78rem; font-weight:600;
+  box-shadow:var(--shadow-sm); transition:all .22s var(--ease-out);
 }
+.pill:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
+.pill:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.pill[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:0 3px 14px rgba(224,122,95,.35); transform:translateY(-1px); }
 
-.pill:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(224,122,95,.15);
-}
-
-.pill.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-  box-shadow: 0 3px 14px rgba(224,122,95,.35);
-  transform: translateY(-1px);
-}
-
-/* ── Count ── */
-.count { color: var(--muted); font-size: .76rem; margin-bottom: .9rem; }
-
-/* ── Results ── */
-.results { display: flex; flex-direction: column; gap: .75rem; }
+.count { color:var(--muted); font-size:.76rem; margin-bottom:.9rem; font-weight:600; }
+.results { display:flex; flex-direction:column; gap:.75rem; }
 
 /* ── Card ── */
 .card {
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  padding: 1.1rem 1.3rem;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition:
-    border-color .22s,
-    box-shadow .25s,
-    transform .25s var(--ease-spring);
-  animation: fadeUp .4s var(--ease-out) both;
-  will-change: transform;
+  background:var(--card); border:1.5px solid var(--border); border-radius:14px;
+  padding:1.1rem 1.3rem; box-shadow:var(--shadow-sm);
+  transition:border-color .22s,box-shadow .25s,transform .25s var(--ease-spring);
+  animation:fadeUp .4s var(--ease-out) both;
 }
+.card:hover { border-color:var(--accent); box-shadow:var(--shadow-hover); transform:translateY(-3px); }
+.card:active { transform:translateY(-1px) scale(.997); }
+.card.is-open { border-color:var(--accent); box-shadow:var(--shadow-md); }
 
-.card:hover {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-3px);
-}
+.ctop { display:flex; gap:1rem; align-items:flex-start; cursor:pointer; }
+.ctop:focus-visible { outline:3px solid var(--accent); outline-offset:3px; border-radius:8px; }
 
-.card:active { transform: translateY(-1px) scale(.997); }
-
-.card.is-open {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-md);
-}
-
-/* ── Card header row ── */
-.ctop { display: flex; gap: 1rem; align-items: flex-start; }
-
-/* ── Icon box ── */
 .cicon-wrap {
-  width: 46px; height: 46px;
-  border-radius: 13px;
-  background: linear-gradient(135deg, rgba(224,122,95,.15), rgba(242,204,143,.22));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(224,122,95,.12);
-  transition: transform .3s var(--ease-spring), box-shadow .3s;
+  width:46px; height:46px; border-radius:13px;
+  background:linear-gradient(135deg,var(--res-bg),var(--job-bg));
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; color:var(--accent);
+  box-shadow:0 2px 8px rgba(224,122,95,.12);
+  transition:transform .3s var(--ease-spring),box-shadow .3s;
 }
+.card:hover .cicon-wrap { transform:scale(1.1) rotate(-5deg); box-shadow:0 5px 16px rgba(224,122,95,.25); }
 
-.card:hover .cicon-wrap {
-  transform: scale(1.12) rotate(-5deg);
-  box-shadow: 0 5px 16px rgba(224,122,95,.25);
-}
+.chev { margin-left:auto; flex-shrink:0; color:var(--muted); transition:transform .35s var(--ease-out),color .25s; padding-top:.1rem; }
+.card.is-open .chev { transform:rotate(180deg); color:var(--accent); }
+.chev svg { width:18px; height:18px; display:block; }
 
-/* ── Chevron ── */
-.chev {
-  margin-left: auto;
-  flex-shrink: 0;
-  color: var(--muted);
-  transition: transform .35s var(--ease-out), color .25s;
-  padding-top: .1rem;
-}
+.ctitle { font-weight:700; font-size:.95rem; margin-bottom:.15rem; }
+.csub { color:var(--muted); font-size:.8rem; line-height:1.55; }
+.ctags { display:flex; flex-wrap:wrap; gap:.3rem; margin-top:.55rem; }
+.tag { padding:.15rem .55rem; background:var(--tag-bg); border:1px solid var(--tag-border); border-radius:999px; font-size:.7rem; color:var(--accent); font-weight:500; }
 
-.card.is-open .chev { transform: rotate(180deg); color: var(--accent); }
-.chev svg { width: 18px; height: 18px; display: block; }
-
-/* ── Text ── */
-.ctitle { font-weight: 700; font-size: .95rem; margin-bottom: .15rem; }
-.csub   { color: var(--muted); font-size: .8rem; line-height: 1.55; }
-
-/* ── Tags ── */
-.ctags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .55rem; }
-
-.tag {
-  padding: .15rem .55rem;
-  background: rgba(224,122,95,.09);
-  border: 1px solid rgba(224,122,95,.2);
-  border-radius: 999px;
-  font-size: .7rem;
-  color: var(--accent);
-  font-weight: 500;
-  transition: background .2s, transform .2s var(--ease-spring);
-}
-
-.tag:hover { background: rgba(224,122,95,.18); transform: translateY(-1px); }
-
-/* ── Card body — smooth expand via grid trick ── */
-.cbody {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition:
-    grid-template-rows .38s var(--ease-out),
-    opacity .3s ease,
-    margin-top .3s ease;
-  opacity: 0;
-  margin-top: 0;
-}
-
-.cbody.open {
-  grid-template-rows: 1fr;
-  opacity: 1;
-  margin-top: .9rem;
-}
-
-.cbody-inner {
-  min-height: 0;
-  overflow: hidden;
-  padding-top: .9rem;
-  border-top: 1px solid var(--border);
-  font-size: .84rem;
-  line-height: 1.78;
-  color: var(--text);
-}
-
-.cbody a { color: #a78bfa; text-decoration: none; }
-.cbody a:hover { text-decoration: underline; }
-
-.addr { font-size: .76rem; color: var(--muted); font-style: italic; margin-left: .5rem; }
-.addr::before { content: '📍 '; font-style: normal; }
+/* ── Card body ── */
+.cbody { display:grid; grid-template-rows:0fr; transition:grid-template-rows .38s var(--ease-out),opacity .3s ease,margin-top .3s ease; opacity:0; margin-top:0; }
+.cbody.open { grid-template-rows:1fr; opacity:1; margin-top:.9rem; }
+.cbody-inner { min-height:0; overflow:hidden; padding-top:.9rem; border-top:1px solid var(--border); font-size:.84rem; line-height:1.78; color:var(--text); }
+.cbody a { color:var(--link-color); text-decoration:underline; }
+.cbody a:hover { opacity:.8; }
+.cbody a:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
 
 /* ── Notice ── */
-.notice {
-  background: rgba(242,204,143,.1);
-  border: 1px solid rgba(242,204,143,.35);
-  border-radius: 8px;
-  padding: .5rem .85rem;
-  font-size: .76rem;
-  color: var(--yellow);
-  margin-bottom: .7rem;
-}
-
-/* ── Job grid ── */
-.job-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: .55rem;
-  margin-top: .7rem;
-}
-
-.job-card {
-  background: rgba(129,178,154,.07);
-  border: 1px solid rgba(129,178,154,.25);
-  border-radius: 10px;
-  padding: .7rem .9rem;
-  text-decoration: none;
-  display: block;
-  transition: all .22s var(--ease-out);
-}
-
-.job-card:hover {
-  background: rgba(129,178,154,.2);
-  border-color: var(--green);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(129,178,154,.2);
-}
-
-.jc-org  { font-size: .86rem; font-weight: 600; color: var(--text); }
-.jc-note { font-size: .74rem; color: var(--muted); margin-top: .2rem; }
+.notice { background:var(--notice-bg); border:1px solid var(--notice-border); border-left:3px solid var(--accent2); border-radius:8px; padding:.5rem .85rem; font-size:.78rem; color:var(--notice-text); margin-bottom:.7rem; font-weight:500; }
 
 /* ── Section label ── */
-.section-label {
-  font-size: .74rem;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  margin: 1.1rem 0 .45rem;
-}
+.section-label { font-size:.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin:1.1rem 0 .45rem; }
 
-/* ── Links ── */
-.links { margin-top: .8rem; display: flex; flex-wrap: wrap; gap: .5rem; }
-
-.lnk {
-  padding: .3rem .8rem;
-  border-radius: 8px;
-  font-size: .76rem;
-  font-weight: 600;
-  text-decoration: none;
-  background: rgba(167,139,250,.1);
-  color: #a78bfa;
-  border: 1px solid rgba(167,139,250,.25);
-  transition: all .2s var(--ease-out);
-}
-
-.lnk:hover {
-  background: #a78bfa;
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(167,139,250,.3);
-}
-
-/* ── Card actions ── */
-.card-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-  margin-top: .85rem;
-  padding-top: .85rem;
-  border-top: 1px solid var(--border);
-}
-
-.ca-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  padding: .33rem .8rem;
-  border-radius: 8px;
-  font-size: .74rem;
-  font-weight: 600;
-  border: 1px solid rgba(129,178,154,.3);
-  cursor: pointer;
-  background: rgba(129,178,154,.08);
-  color: var(--green);
-  transition: all .2s var(--ease-out);
-}
-
-.ca-btn:hover {
-  background: var(--green);
-  color: #fff;
-  border-color: var(--green);
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(129,178,154,.3);
-}
-
-.ca-btn svg { width: 13px; height: 13px; }
+/* ── Job grid ── */
+.job-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:.55rem; margin-top:.7rem; }
+.job-card { background:var(--job-bg); border:1px solid var(--job-border); border-radius:10px; padding:.7rem .9rem; text-decoration:none; display:block; transition:all .22s var(--ease-out); }
+.job-card:hover { background:rgba(129,178,154,.2); border-color:var(--green); transform:translateY(-2px); }
+.job-card:focus-visible { outline:2px solid var(--green); outline-offset:2px; border-radius:10px; }
+.jc-org { font-size:.86rem; font-weight:600; color:var(--text); }
+.jc-note { font-size:.74rem; color:var(--muted); margin-top:.2rem; }
 
 /* ── Resource tiles ── */
-.res-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: .55rem;
-  margin-top: .8rem;
+.res-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:.55rem; margin-top:.8rem; }
+.res-card { background:var(--res-bg); border:1px solid var(--res-border); border-radius:10px; padding:.75rem 1rem; text-decoration:none; display:block; transition:all .22s var(--ease-out); }
+.res-card:hover { background:rgba(224,122,95,.15); border-color:var(--accent); transform:translateY(-2px); }
+.res-card:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:10px; }
+.res-card.no-link { cursor:default; }
+.res-card.no-link:hover { background:var(--res-bg); border-color:var(--res-border); transform:none; }
+.rc-org { font-size:.88rem; font-weight:700; color:var(--text); margin-bottom:.2rem; }
+.rc-note { font-size:.76rem; color:var(--muted); margin-bottom:.35rem; }
+.rc-addr { font-size:.73rem; color:var(--muted); font-style:italic; }
+.rc-phone { font-size:.73rem; color:var(--phone-color); margin-top:.2rem; }
+
+/* ── Card actions ── */
+.card-actions { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.85rem; padding-top:.85rem; border-top:1px solid var(--border); }
+.ca-btn {
+  display:inline-flex; align-items:center; gap:.35rem; padding:.33rem .8rem; border-radius:8px;
+  font-size:.74rem; font-weight:600; border:1px solid rgba(129,178,154,.3); cursor:pointer;
+  background:var(--btn-bg); color:var(--green); transition:all .2s var(--ease-out);
 }
+.ca-btn:hover { background:var(--green); color:#fff; border-color:var(--green); transform:translateY(-1px); }
+.ca-btn:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
+.ca-btn svg { width:13px; height:13px; }
 
-.res-card {
-  background: rgba(224,122,95,.06);
-  border: 1px solid rgba(224,122,95,.18);
-  border-radius: 10px;
-  padding: .75rem 1rem;
-  text-decoration: none;
-  display: block;
-  transition: all .22s var(--ease-out);
-}
-
-.res-card:hover {
-  background: rgba(224,122,95,.13);
-  border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(224,122,95,.15);
-}
-
-.res-card.no-link { cursor: default; }
-.res-card.no-link:hover { background: rgba(224,122,95,.06); border-color: rgba(224,122,95,.18); transform: none; box-shadow: none; }
-
-.rc-org   { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; }
-.rc-note  { font-size: .76rem; color: var(--muted); margin-bottom: .35rem; }
-.rc-addr  { font-size: .73rem; color: var(--muted); font-style: italic; }
-.rc-addr::before  { content: '📍 '; font-style: normal; }
-.rc-phone { font-size: .73rem; color: #a78bfa; margin-top: .2rem; }
-.rc-phone::before { content: '☎ '; }
-
-/* ── Empty ── */
-.empty { text-align: center; color: var(--muted); padding: 3.5rem 0; font-size: .9rem; }
+.empty { text-align:center; color:var(--muted); padding:3.5rem 0; font-size:.9rem; }
 
 /* ── Modal ── */
-.modal-bg {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.6);
-  backdrop-filter: blur(5px);
-  z-index: 200;
-  align-items: center; justify-content: center;
-  padding: 1rem;
+.modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(5px); z-index:200; align-items:center; justify-content:center; padding:1rem; }
+.modal-bg.open { display:flex; animation:fadeIn .25s ease; }
+.modal { background:var(--modal-bg); border:1px solid var(--border); border-radius:20px; padding:1.6rem; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; animation:scaleIn .32s var(--ease-spring) both; color:var(--modal-text); }
+.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.9rem; }
+.modal-header h2 { font-size:1.05rem; display:flex; align-items:center; gap:.45rem; }
+.modal-header h2 svg { width:18px; height:18px; color:var(--accent); }
+.modal-close { background:none; border:none; color:var(--muted); cursor:pointer; padding:.3rem .5rem; border-radius:8px; transition:all .18s; display:flex; align-items:center; }
+.modal-close:hover { background:var(--border); color:var(--text); }
+.modal-close:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.modal-close svg { width:16px; height:16px; }
+.hint { font-size:.78rem; color:var(--modal-muted); margin-bottom:1rem; line-height:1.55; }
+
+/* ── Print ── */
+@media print {
+  body::before,.toolbar,.hotline,.search-wrap,.pills,.count,.skip-link,.card-actions,.chev,.ctags { display:none !important; }
+  body { background:#fff !important; color:#000 !important; font-size:11pt; }
+  .wrap { max-width:100%; padding:0; }
+  header h1 { -webkit-text-fill-color:#222 !important; font-size:18pt; }
+  header p { color:#555 !important; }
+  .card { border:1px solid #ccc; border-radius:0; box-shadow:none; page-break-inside:avoid; padding:.6rem; margin-bottom:.5rem; animation:none; }
+  .cbody { display:block !important; opacity:1 !important; margin-top:.5rem !important; grid-template-rows:1fr !important; }
+  .cbody-inner { border-top:1px solid #ddd; overflow:visible; }
+  .res-grid,.job-grid { grid-template-columns:repeat(2,1fr); gap:.4rem; }
+  .res-card,.job-card { border:1px solid #ddd; border-radius:4px; background:#fafafa !important; }
+  .rc-org,.jc-org,.ctitle { color:#000 !important; }
+  .rc-note,.jc-note,.csub,.rc-addr,.rc-phone { color:#555 !important; }
+  .notice { background:#fffbe6 !important; border-color:#ccc !important; color:#333 !important; }
+  .modal-bg { display:none !important; }
 }
 
-.modal-bg.open { display: flex; animation: fadeIn .25s ease; }
-
-.modal {
-  background: #1a1a24;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 1.6rem;
-  width: 100%; max-width: 620px;
-  max-height: 90vh; overflow-y: auto;
-  animation: scaleIn .32s var(--ease-spring) both;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: .9rem;
-}
-
-.modal-header h2 { font-size: 1.05rem; display: flex; align-items: center; gap: .45rem; }
-.modal-header h2 svg { width: 18px; height: 18px; color: var(--accent); }
-
-.modal-close {
-  background: none; border: none;
-  color: var(--muted);
-  cursor: pointer;
-  padding: .3rem .5rem;
-  border-radius: 8px;
-  transition: all .18s;
-  display: flex; align-items: center;
-}
-
-.modal-close:hover { background: var(--border); color: var(--text); }
-.modal-close svg { width: 16px; height: 16px; }
-
-.hint { font-size: .78rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.55; }
-
-/* ── Keyframes ── */
-@keyframes fadeUp   { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-@keyframes fadeDown { from { opacity: 0; transform: translateY(-8px);  } to { opacity: 1; transform: none; } }
-@keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
-@keyframes scaleIn  { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes fadeUp   { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
+@keyframes fadeIn   { from{opacity:0} to{opacity:1} }
+@keyframes scaleIn  { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:none} }
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <div class="wrap">
+  <!-- ── Toolbar ── -->
+  <div class="toolbar" role="toolbar" aria-label="Display options">
+    <div class="font-control" role="group" aria-label="Text size">
+      <button class="fc-btn" onclick="changeFont(-0.1)" aria-label="Decrease text size">A−</button>
+      <span class="fc-label" aria-hidden="true" id="fontLabel">100%</span>
+      <button class="fc-btn" onclick="changeFont(+0.1)" aria-label="Increase text size">A+</button>
+    </div>
+    <button class="tb-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle dark mode" aria-pressed="false">
+      <svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      <span id="themeLabel">Dark mode</span>
+    </button>
+    <div class="lang-wrap" id="langWrap">
+      <button class="tb-btn" id="langBtn" onclick="toggleLangMenu()" aria-haspopup="listbox" aria-expanded="false" aria-label="Select language">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+        </svg>
+        <span id="langLabel">English</span>
+      </button>
+      <div class="lang-menu" id="langMenu" role="listbox" aria-label="Language options">
+        <button class="lang-opt active" role="option" aria-selected="true"  onclick="setLang('en')">🇺🇸 English</button>
+        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('es')">🇪🇸 Español</button>
+        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('zh')">🇨🇳 中文</button>
+        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('ht')">🇭🇹 Kreyòl</button>
+        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('bn')">🇧🇩 বাংলা</button>
+        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('ru')">🇷🇺 Русский</button>
+      </div>
+    </div>
+    <button class="tb-btn" onclick="window.print()" aria-label="Print or save as PDF">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9"/>
+        <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+      </svg>
+      Print / PDF
+    </button>
+  </div>
+
   <header>
-    <h1>🌍 NYC Community Resource Navigator</h1>
-    <p>Real links. Real addresses. Updated for NYC 2025–2026.</p>
+    <h1><span aria-hidden="true">🗽 </span><span id="h1text">NYC Resource Navigator</span></h1>
+    <p id="subtext">Real links. Real addresses. Updated for NYC 2025–2026.</p>
   </header>
 
-  <div class="hotline">
+  <div class="hotline" role="region" aria-label="Emergency contacts">
     <span class="hotline-item">
-      <svg class="h-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg class="h-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
         <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
       </svg>
-      <strong>Emergency Shelter: Call 311 (24/7)</strong>
+      <strong id="hl1">Emergency Shelter: Call 311 (24/7)</strong>
     </span>
     <span class="hotline-item">
-      <svg class="h-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg class="h-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.6 19.79 19.79 0 01.22 1 2 2 0 012.2.01h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.29 6.29l1.06-1.06a2 2 0 012.11-.45c.907.34 1.85.574 2.81.7a2 2 0 011.72 2z"/>
       </svg>
-      Coalition for the Homeless: <strong>1-888-358-2384</strong>
+      <span id="hl2">Coalition Hotline: <strong>1-888-358-2384</strong></span>
     </span>
     <span class="hotline-item">
-      <svg class="h-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg class="h-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
       </svg>
-      Mental Health: <strong>NYC Well 1-888-NYC-WELL</strong>
+      <span id="hl3">Mental Health: <strong>NYC Well 1-888-NYC-WELL</strong></span>
     </span>
   </div>
 
-  <div class="search-wrap">
-    <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-    <input type="text" id="search" placeholder="Search by need, resource, keyword..." oninput="render()">
+  <div id="main-content">
+    <div class="search-wrap" role="search">
+      <svg class="search-ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="search" id="search" placeholder="Search by need, resource, keyword…"
+        aria-label="Search resources" autocomplete="off" oninput="render()">
+    </div>
+    <div class="pills" id="pills" role="group" aria-label="Filter by category"></div>
+    <div class="count" id="count" aria-live="polite" aria-atomic="true"></div>
+    <div class="results" id="results" role="list"></div>
   </div>
-
-  <div class="pills" id="pills"></div>
-  <div class="count" id="count"></div>
-  <div class="results" id="results"></div>
 </div>
 
 <!-- Feedback Modal -->
-<div class="modal-bg" id="feedbackModal">
+<div class="modal-bg" id="feedbackModal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal">
     <div class="modal-header">
-      <h2>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <h2 id="modal-title">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
         Suggest an Update
       </h2>
-      <button class="modal-close" onclick="closeModal('feedbackModal')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <button class="modal-close" onclick="closeModal('feedbackModal')" aria-label="Close dialog">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
     </div>
-    <p class="hint">Report outdated info, wrong numbers, changed addresses, or suggest a new resource. We review all submissions.</p>
-    <iframe
-      src="https://docs.google.com/forms/d/e/1FAIpQLScseQ-VlGIuKw-d5dJl8rs_9WlwYY6XRwmEuyB3HeYvxycUXw/viewform?embedded=true"
-      width="100%" height="520" frameborder="0" marginheight="0" marginwidth="0"
-      title="Suggest an update">Loading form…</iframe>
+    <p class="hint">Report outdated info, wrong numbers, changed addresses, or suggest a new resource.</p>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScseQ-VlGIuKw-d5dJl8rs_9WlwYY6XRwmEuyB3HeYvxycUXw/viewform?embedded=true"
+      width="100%" height="520" frameborder="0" title="Suggest a resource update">Loading…</iframe>
   </div>
 </div>
 
 <script>
-let data  = [];
-let active = 'All';
-let open   = null;
+// ── SVG icons keyed by card id ────────────────────────────────────
+const ICONS = {
+  'jobs-apply':   `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>`,
+  'jobs-training':`<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
+  'jobs-field':   `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>`,
+  'food':         `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,
+  'clothing':     `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-.16 3.42l4.29 2.87a1 1 0 01.45.83V21a1 1 0 001 1h5.6a1 1 0 001-1V10.58a1 1 0 01.45-.83l4.29-2.87a2 2 0 00-.16-3.42z"/></svg>`,
+  'housing':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  'benefits':     `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`,
+  'childcare':    `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>`,
+  'education':    `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>`,
+  'legal':        `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M4 6l-2 8h4z"/><path d="M20 6l-2 8h4z"/><line x1="8" y1="21" x2="16" y2="21"/></svg>`,
+  'mentalhealth': `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+  'transit':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`,
+  'immigrant':    `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
+  'digital':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>`,
+  'anchors':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0020 0h-3"/></svg>`,
+  'funding':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`,
+  'volunteers':   `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+};
 
-const CHEVRON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+// ── Translations ──────────────────────────────────────────────────
+const T = {
+  en: { search:"Search by need, resource, keyword…", found:n=>`${n} resource${n!==1?'s':''} found`, empty:"No results — try a different search or category.", suggest:"Suggest Update", hl1:"Emergency Shelter: Call 311 (24/7)", hl2:"Coalition Hotline:", hl3:"Mental Health:", sub:"Real links. Real addresses. Updated for NYC 2025–2026.", darkOn:"Dark mode", darkOff:"Light mode" },
+  es: { search:"Buscar por necesidad, recurso, palabra clave…", found:n=>`${n} recurso${n!==1?'s':''} encontrado${n!==1?'s':''}`, empty:"Sin resultados — intente otra búsqueda.", suggest:"Sugerir actualización", hl1:"Refugio de emergencia: Llame al 311 (24/7)", hl2:"Línea directa:", hl3:"Salud mental:", sub:"Links reales. Direcciones reales. Actualizado para NYC 2025–2026.", darkOn:"Modo oscuro", darkOff:"Modo claro" },
+  zh: { search:"按需求、资源、关键字搜索…", found:n=>`找到 ${n} 个资源`, empty:"无结果 — 请尝试其他搜索。", suggest:"建议更新", hl1:"紧急收容所：拨打 311（24/7）", hl2:"联盟热线：", hl3:"心理健康：", sub:"真实链接。真实地址。已更新至 NYC 2025–2026。", darkOn:"深色模式", darkOff:"浅色模式" },
+  ht: { search:"Chèche pa bezwen, resous, mo kle…", found:n=>`${n} resous jwenn`, empty:"Pa gen rezilta — eseye rechèch diferan.", suggest:"Sijere mizajou", hl1:"Abri ijans: Rele 311 (24/7)", hl2:"Liy koalisyon:", hl3:"Sante mantal:", sub:"Lyen reyèl. Adrès reyèl. Mete ajou pou NYC 2025–2026.", darkOn:"Mòd fènwa", darkOff:"Mòd klè" },
+  bn: { search:"প্রয়োজন, সম্পদ, কীওয়ার্ড দিয়ে খুঁজুন…", found:n=>`${n}টি রিসোর্স পাওয়া গেছে`, empty:"কোনো ফলাফল নেই।", suggest:"আপডেট সাজেস্ট করুন", hl1:"জরুরি আশ্রয়: 311 কল করুন (24/7)", hl2:"কোয়ালিশন হটলাইন:", hl3:"মানসিক স্বাস্থ্য:", sub:"আসল লিংক। আসল ঠিকানা। NYC 2025–2026 আপডেট।", darkOn:"ডার্ক মোড", darkOff:"লাইট মোড" },
+  ru: { search:"Поиск по потребности, ресурсу, ключевому слову…", found:n=>`Найдено ресурсов: ${n}`, empty:"Ничего не найдено.", suggest:"Предложить обновление", hl1:"Экстренный приют: Звоните 311 (24/7)", hl2:"Горячая линия:", hl3:"Психическое здоровье:", sub:"Реальные ссылки. Реальные адреса. Обновлено для NYC 2025–2026.", darkOn:"Тёмная тема", darkOff:"Светлая тема" }
+};
 
-const BULB = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/></svg>`;
+// ── SVG snippets ──────────────────────────────────────────────────
+const CHEVRON  = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+const BULB     = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/></svg>`;
+const SUN_SVG  = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+const MOON_SVG = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
 
-// ── Load ──────────────────────────────────────────────────────────
+// ── State ─────────────────────────────────────────────────────────
+let data = [], active = 'All', open = null, lang = 'en', fontScale = 1, isDark = false;
+
+// ── Load data.json ────────────────────────────────────────────────
 async function loadData() {
-  const json = await fetch('data.json').then(r => r.json()).catch(() => ({ cards: [], jobListings: {} }));
+  let json;
+  try { json = await fetch('data.json').then(r => r.json()); }
+  catch(e) { document.getElementById('results').innerHTML = '<div class="empty">Could not load data.json — make sure it is in the same folder as index.html.</div>'; return; }
+
   data = json.cards || [];
 
+  // Build job-listings card body from jobListings sections
   const gridCard = data.find(c => c.type === 'job-listings');
   if (gridCard && json.jobListings) {
     const sections = [
-      { label: '🟢 Entry-Level',            key: 'entryLevel'  },
-      { label: '🏥 Healthcare / HHA / CNA', key: 'healthcare'  },
-      { label: '🍽️ Food & Hospitality',    key: 'food'        },
-      { label: '🔨 Trades & Labor',         key: 'trades'      }
+      { label:'🟢 Entry-Level',           key:'entryLevel'  },
+      { label:'🏥 Healthcare / HHA / CNA',key:'healthcare'  },
+      { label:'🍽️ Food & Hospitality',   key:'food'        },
+      { label:'🔧 Trades & Labor',        key:'trades'      }
     ];
-    let html = '<div class="notice">⚠️ Check careers pages before sending clients — openings change.</div>';
+    let html = "<div class='notice'>⚠️ Check careers pages before sending clients — openings change.</div>";
     sections.forEach(s => {
       if (!json.jobListings[s.key]) return;
-      html += `<div class="section-label">${s.label}</div><div class="job-grid">`;
+      html += `<div class="section-label" role="heading" aria-level="3">${s.label}</div><div class="job-grid" role="list">`;
       html += json.jobListings[s.key].map(j =>
-        `<a class="job-card" href="${j.url}" target="_blank" onclick="event.stopPropagation()">
+        `<a class="job-card" href="${j.url}" target="_blank" rel="noopener noreferrer" role="listitem"
+            onclick="event.stopPropagation()" aria-label="${j.org} — ${j.note} (opens in new tab)">
           <div class="jc-org">${j.org}</div>
           <div class="jc-note">${j.note}</div>
         </a>`
       ).join('');
       html += '</div>';
     });
-    gridCard.body = html;
+    gridCard._builtBody = html;
   }
 
   rebuildPills();
@@ -617,106 +459,172 @@ async function loadData() {
 
 // ── Render ────────────────────────────────────────────────────────
 function render() {
-  const q = (document.getElementById('search').value || '').toLowerCase();
-  const filtered = data.map((d, i) => ({ ...d, _i: i })).filter(d => {
-    const matchCat = active === 'All' || (d.cats || []).includes(active);
-    const matchQ = !q
-      || d.title.toLowerCase().includes(q)
-      || d.sub.toLowerCase().includes(q)
-      || (d.tags || []).some(t => t.includes(q))
-      || (d.body || '').toLowerCase().includes(q);
+  const t = T[lang];
+  const q = (document.getElementById('search').value || '').toLowerCase().trim();
+  document.getElementById('search').placeholder = t.search;
+
+  const filtered = data.map((d,i) => ({...d,_i:i})).filter(d => {
+    const matchCat = active === 'All' || (d.cats||[]).includes(active);
+    const matchQ   = !q || d.title.toLowerCase().includes(q) || d.sub.toLowerCase().includes(q)
+      || (d.tags||[]).some(tag => tag.includes(q)) || (d.notice||'').toLowerCase().includes(q);
     return matchCat && matchQ;
   });
 
-  document.getElementById('count').textContent =
-    `${filtered.length} resource${filtered.length !== 1 ? 's' : ''} found`;
+  document.getElementById('count').textContent = t.found(filtered.length);
 
   const res = document.getElementById('results');
-  if (!filtered.length) {
-    res.innerHTML = '<div class="empty">🔭 No results — try a different search or category.</div>';
-    return;
-  }
+  if (!filtered.length) { res.innerHTML = `<div class="empty" role="listitem">${t.empty}</div>`; return; }
 
-  res.innerHTML = filtered.map((d, pos) => `
-    <div class="card${open === d._i ? ' is-open' : ''}" data-idx="${d._i}"
-         onclick="tog(${d._i})"
-         style="animation-delay:${Math.min(pos * 0.045, 0.32)}s">
-      <div class="ctop">
-        <div class="cicon-wrap">${d.icon}</div>
+  res.innerHTML = filtered.map((d, pos) => {
+    const isOpen = open === d._i, bodyId = `body-${d._i}`;
+    // Build body HTML from clean data fields
+    const noticeHtml  = d.notice ? `<div class="notice">${d.notice}</div>` : '';
+    const extraHtml   = d.extra  ? `<p style="margin-bottom:.6rem;font-size:.82rem">${d.extra}</p>` : '';
+    const bodyContent = d._builtBody || '';
+    const resHtml = (d.resources||[]).length ? `<div class="res-grid" role="list">${
+      d.resources.map(r => {
+        const tag  = r.url ? 'a' : 'div';
+        const href = r.url ? `href="${r.url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"` : '';
+        const al   = `aria-label="${r.org}${r.note?' — '+r.note:''}${r.url?' (opens in new tab)':''}"`;
+        return `<${tag} class="res-card${r.url?'':' no-link'}" ${href} ${al} role="listitem">
+          <div class="rc-org">${r.org}</div>
+          ${r.note  ? `<div class="rc-note">${r.note}</div>` : ''}
+          ${r.addr  ? `<div class="rc-addr"><span aria-label="Address">📍</span> ${r.addr}</div>` : ''}
+          ${r.phone ? `<div class="rc-phone"><span aria-label="Phone">📞</span> ${r.phone}</div>` : ''}
+        </${tag}>`;
+      }).join('')
+    }</div>` : '';
+
+    return `
+    <div class="card${isOpen?' is-open':''}" data-idx="${d._i}" role="listitem">
+      <div class="ctop" role="button" tabindex="0"
+           aria-expanded="${isOpen}" aria-controls="${bodyId}"
+           aria-label="${d.title} — ${d.sub}"
+           onclick="tog(${d._i})" onkeydown="handleKey(event,${d._i})"
+           style="animation-delay:${Math.min(pos*.045,.32)}s">
+        <div class="cicon-wrap" aria-hidden="true">${ICONS[d.id]||''}</div>
         <div style="flex:1;min-width:0">
           <div class="ctitle">${d.title}</div>
           <div class="csub">${d.sub}</div>
-          <div class="ctags">${(d.tags||[]).slice(0,5).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+          <div class="ctags" aria-label="Tags" role="list">
+            ${(d.tags||[]).slice(0,5).map(t=>`<span class="tag" role="listitem">${t}</span>`).join('')}
+          </div>
         </div>
-        <div class="chev">${CHEVRON}</div>
+        <div class="chev" aria-hidden="true">${CHEVRON}</div>
       </div>
-      <div class="cbody ${open === d._i ? 'open' : ''}">
+      <div class="cbody${isOpen?' open':''}" id="${bodyId}" role="region" aria-label="${d.title} details">
         <div class="cbody-inner">
-          ${d.body || ''}
-          ${(d.resources||[]).length ? `<div class="res-grid">${d.resources.map(r => {
-            const tag = r.url ? 'a' : 'div';
-            const href = r.url ? `href="${r.url}" target="_blank" onclick="event.stopPropagation()"` : '';
-            return `<${tag} class="res-card${r.url?'':' no-link'}" ${href}>
-              <div class="rc-org">${r.org}</div>
-              ${r.note  ? `<div class="rc-note">${r.note}</div>`   : ''}
-              ${r.addr  ? `<div class="rc-addr">${r.addr}</div>`   : ''}
-              ${r.phone ? `<div class="rc-phone">${r.phone}</div>` : ''}
-            </${tag}>`;
-          }).join('')}</div>` : ''}
+          ${noticeHtml}${extraHtml}${bodyContent}${resHtml}
           <div class="card-actions">
-            <button class="ca-btn" onclick="openFeedback('${d.title.replace(/'/g,"\\'")}',event)">
-              ${BULB} Suggest Update
+            <button class="ca-btn" onclick="openFeedback('${d.title.replace(/'/g,"\\'")}',event)"
+              aria-label="Suggest an update for ${d.title}">
+              ${BULB} ${t.suggest}
             </button>
           </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
-// ── Toggle (with scroll fix) ──────────────────────────────────────
+function handleKey(e,i) { if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(i);} }
+
 function tog(i) {
   const scrollY = window.scrollY;
   open = open === i ? null : i;
-
   document.querySelectorAll('.card').forEach(card => {
-    const idx  = parseInt(card.dataset.idx);
-    const isOpen = idx === open;
-    card.classList.toggle('is-open', isOpen);
-    const body = card.querySelector('.cbody');
-    if (body) body.classList.toggle('open', isOpen);
+    const idx = parseInt(card.dataset.idx), isOpen = idx===open;
+    card.classList.toggle('is-open',isOpen);
+    const body = card.querySelector('.cbody'); if(body) body.classList.toggle('open',isOpen);
+    const btn  = card.querySelector('[role="button"]'); if(btn) btn.setAttribute('aria-expanded',isOpen);
   });
-
-  requestAnimationFrame(() => window.scrollTo({ top: scrollY, behavior: 'instant' }));
+  requestAnimationFrame(() => window.scrollTo({top:scrollY,behavior:'instant'}));
 }
 
 // ── Pills ─────────────────────────────────────────────────────────
 function rebuildPills() {
   const pw = document.getElementById('pills');
   pw.innerHTML = '';
-  const cats = ['All', ...new Set(data.flatMap(d => d.cats || []))];
-  cats.forEach(c => {
-    const el = document.createElement('div');
-    el.className = 'pill' + (c === active ? ' active' : '');
+  ['All',...new Set(data.flatMap(d=>d.cats||[]))].forEach(c => {
+    const el = document.createElement('button');
+    el.className = 'pill'+(c===active?' active':'');
     el.textContent = c;
+    el.setAttribute('aria-pressed', c===active?'true':'false');
     el.onclick = () => {
-      active = c; open = null;
-      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-      el.classList.add('active');
+      active=c; open=null;
+      document.querySelectorAll('.pill').forEach(p=>{p.classList.remove('active');p.setAttribute('aria-pressed','false');});
+      el.classList.add('active'); el.setAttribute('aria-pressed','true');
       render();
     };
     pw.appendChild(el);
   });
 }
 
-// ── Modal ─────────────────────────────────────────────────────────
-function openFeedback(title, e) { e.stopPropagation(); openModal('feedbackModal'); }
-function openModal(id)  { document.getElementById(id).classList.add('open');    }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+// ── Theme ─────────────────────────────────────────────────────────
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark?'dark':'light');
+  const btn=document.getElementById('themeBtn'), lbl=document.getElementById('themeLabel');
+  btn.setAttribute('aria-pressed',isDark);
+  document.getElementById('themeIcon').outerHTML = isDark ? MOON_SVG : SUN_SVG;
+  lbl.textContent = isDark ? T[lang].darkOff : T[lang].darkOn;
+}
 
-document.querySelectorAll('.modal-bg').forEach(m =>
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); })
-);
+// ── Font ──────────────────────────────────────────────────────────
+function changeFont(delta) {
+  fontScale = Math.min(1.4,Math.max(0.8,+(fontScale+delta).toFixed(1)));
+  document.documentElement.style.setProperty('--font-scale',fontScale);
+  document.getElementById('fontLabel').textContent = Math.round(fontScale*100)+'%';
+}
+
+// ── Language ──────────────────────────────────────────────────────
+function toggleLangMenu() {
+  const menu=document.getElementById('langMenu'), btn=document.getElementById('langBtn');
+  const isOpen=menu.classList.toggle('open');
+  btn.setAttribute('aria-expanded',isOpen);
+  if(isOpen) menu.querySelector('button').focus();
+}
+function setLang(code) {
+  lang=code;
+  document.documentElement.setAttribute('lang',code);
+  const names={en:'English',es:'Español',zh:'中文',ht:'Kreyòl',bn:'বাংলা',ru:'Русский'};
+  document.getElementById('langLabel').textContent = names[code];
+  document.getElementById('langMenu').classList.remove('open');
+  document.getElementById('langBtn').setAttribute('aria-expanded','false');
+  document.querySelectorAll('.lang-opt').forEach(o=>{
+    const active=o.getAttribute('onclick').includes(`'${code}'`);
+    o.classList.toggle('active',active); o.setAttribute('aria-selected',active);
+  });
+  const t=T[code];
+  document.getElementById('hl1').textContent = t.hl1;
+  document.getElementById('hl2').innerHTML   = `${t.hl2} <strong>1-888-358-2384</strong>`;
+  document.getElementById('hl3').innerHTML   = `${t.hl3} <strong>NYC Well 1-888-NYC-WELL</strong>`;
+  document.getElementById('subtext').textContent = t.sub;
+  document.getElementById('themeLabel').textContent = isDark ? t.darkOff : t.darkOn;
+  render();
+}
+document.addEventListener('click', e => {
+  const w=document.getElementById('langWrap');
+  if(w&&!w.contains(e.target)){document.getElementById('langMenu').classList.remove('open');document.getElementById('langBtn').setAttribute('aria-expanded','false');}
+});
+
+// ── Modal ─────────────────────────────────────────────────────────
+let lastFocus=null;
+function openFeedback(title,e){e.stopPropagation();openModal('feedbackModal');}
+function openModal(id){lastFocus=document.activeElement;const m=document.getElementById(id);m.classList.add('open');m.querySelector('.modal-close').focus();}
+function closeModal(id){document.getElementById(id).classList.remove('open');if(lastFocus)lastFocus.focus();}
+document.querySelectorAll('.modal-bg').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);});
+  m.addEventListener('keydown',e=>{
+    if(e.key==='Escape')closeModal(m.id);
+    if(e.key==='Tab'){
+      const els=m.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');
+      const first=els[0],last=els[els.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    }
+  });
+});
 
 loadData();
 </script>

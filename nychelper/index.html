@@ -37,7 +37,7 @@
   --hotline-bg: linear-gradient(135deg,rgba(224,122,95,.12),rgba(242,204,143,.08));
   --modal-bg: #1f1f2e; --modal-text: #e8e4f0; --modal-muted: #9a90b0;
 }
-:root { --ease-spring: cubic-bezier(0.34,1.56,0.64,1); --ease-out: cubic-bezier(0.4,0,0.2,1); --font-scale: 1; }
+:root { --ease-spring: cubic-bezier(0.34,1.56,0.64,1); --ease-out: cubic-bezier(0.4,0,0.2,1); }
 
 .skip-link {
   position:absolute; top:-100%; left:1rem;
@@ -51,7 +51,6 @@
 body {
   background:var(--bg); color:var(--text);
   font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-  font-size:calc(1rem * var(--font-scale));
   min-height:100vh; -webkit-font-smoothing:antialiased;
   transition:background .3s,color .3s;
 }
@@ -217,6 +216,18 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
 .rc-note { font-size:.76rem; color:var(--muted); margin-bottom:.35rem; }
 .rc-addr { font-size:.73rem; color:var(--muted); font-style:italic; }
 .rc-phone { font-size:.73rem; color:var(--phone-color); margin-top:.2rem; }
+
+/* ── Volunteer form link ── */
+.vol-form-link {
+  display:inline-flex; align-items:center; gap:.5rem;
+  margin-top:.8rem; padding:.55rem 1.1rem;
+  background:var(--job-bg); border:1.5px solid var(--job-border);
+  border-radius:10px; text-decoration:none; color:var(--green);
+  font-size:.84rem; font-weight:600; transition:all .22s var(--ease-out);
+}
+.vol-form-link:hover { background:rgba(129,178,154,.2); border-color:var(--green); transform:translateY(-2px); text-decoration:none; }
+.vol-form-link:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
+.vol-form-link svg { width:15px; height:15px; flex-shrink:0; }
 
 /* ── Card actions ── */
 .card-actions { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.85rem; padding-top:.85rem; border-top:1px solid var(--border); }
@@ -397,7 +408,6 @@ const ICONS = {
   'immigrant':    `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
   'digital':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>`,
   'anchors':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0020 0h-3"/></svg>`,
-  'funding':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`,
   'volunteers':   `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
 };
 
@@ -408,6 +418,7 @@ const T = {
     found:n=>`${n} resource${n!==1?'s':''} found`,
     empty:"No results — try a different search or category.",
     suggest:"Suggest Update",
+    volForm:"Sign Up / Volunteer Form",
     hl1:"Emergency Shelter: Call 311 (24/7)", hl2:"Coalition Hotline:", hl3:"Mental Health:",
     sub:"Real links. Real addresses. Updated for NYC 2025–2026.",
     darkOn:"Dark mode", darkOff:"Light mode",
@@ -424,6 +435,7 @@ const T = {
     found:n=>`${n} recurso${n!==1?'s':''} encontrado${n!==1?'s':''}`,
     empty:"Sin resultados — intente otra búsqueda.",
     suggest:"Sugerir actualización",
+    volForm:"Formulario de voluntariado",
     hl1:"Refugio de emergencia: Llame al 311 (24/7)", hl2:"Línea directa:", hl3:"Salud mental:",
     sub:"Links reales. Direcciones reales. Actualizado para NYC 2025–2026.",
     darkOn:"Modo oscuro", darkOff:"Modo claro",
@@ -440,6 +452,7 @@ const T = {
     found:n=>`找到 ${n} 个资源`,
     empty:"无结果 — 请尝试其他搜索。",
     suggest:"建议更新",
+    volForm:"志愿者报名表",
     hl1:"紧急收容所：拨打 311（24/7）", hl2:"联盟热线：", hl3:"心理健康：",
     sub:"真实链接。真实地址。已更新至 NYC 2025–2026。",
     darkOn:"深色模式", darkOff:"浅色模式",
@@ -456,6 +469,7 @@ const T = {
     found:n=>`${n} resous jwenn`,
     empty:"Pa gen rezilta — eseye rechèch diferan.",
     suggest:"Sijere mizajou",
+    volForm:"Fòm volontè",
     hl1:"Abri ijans: Rele 311 (24/7)", hl2:"Liy koalisyon:", hl3:"Sante mantal:",
     sub:"Lyen reyèl. Adrès reyèl. Mete ajou pou NYC 2025–2026.",
     darkOn:"Mòd fènwa", darkOff:"Mòd klè",
@@ -472,6 +486,7 @@ const T = {
     found:n=>`${n}টি রিসোর্স পাওয়া গেছে`,
     empty:"কোনো ফলাফল নেই।",
     suggest:"আপডেট সাজেস্ট করুন",
+    volForm:"স্বেচ্ছাসেবী ফর্ম",
     hl1:"জরুরি আশ্রয়: 311 কল করুন (24/7)", hl2:"কোয়ালিশন হটলাইন:", hl3:"মানসিক স্বাস্থ্য:",
     sub:"আসল লিংক। আসল ঠিকানা। NYC 2025–2026 আপডেট।",
     darkOn:"ডার্ক মোড", darkOff:"লাইট মোড",
@@ -488,6 +503,7 @@ const T = {
     found:n=>`Найдено ресурсов: ${n}`,
     empty:"Ничего не найдено.",
     suggest:"Предложить обновление",
+    volForm:"Форма для волонтёров",
     hl1:"Экстренный приют: Звоните 311 (24/7)", hl2:"Горячая линия:", hl3:"Психическое здоровье:",
     sub:"Реальные ссылки. Реальные адреса. Обновлено для NYC 2025–2026.",
     darkOn:"Тёмная тема", darkOff:"Светлая тема",
@@ -504,6 +520,7 @@ const T = {
 // ── SVG snippets ──────────────────────────────────────────────────
 const CHEVRON  = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 const BULB     = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/></svg>`;
+const EXT_LINK = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
 const SUN_SVG  = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
 const MOON_SVG = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
 
@@ -549,8 +566,8 @@ function render() {
     const noticeHtml = d.notice ? `<div class="notice">${d.notice}</div>` : '';
     const extraHtml  = d.extra  ? `<p style="margin-bottom:.6rem;font-size:.82rem">${d.extra}</p>` : '';
 
-    // Build job-listings body dynamically using current language
-    const bodyContent = (() => {
+    // Build job-listings body
+    const jobBodyContent = (() => {
       if (d.type !== 'job-listings' || !jobListingsData) return '';
       let html = `<div class="notice">${t.jobNotice}</div>`;
       t.jobSections.forEach(s => {
@@ -569,6 +586,14 @@ function render() {
       });
       return html;
     })();
+
+    // Volunteer form link
+    const volFormHtml = d.volunteerFormUrl
+      ? `<a class="vol-form-link" href="${d.volunteerFormUrl}" target="_blank" rel="noopener noreferrer"
+           onclick="event.stopPropagation()" aria-label="${t.volForm} (opens in new tab)">
+           ${EXT_LINK} ${t.volForm}
+         </a>`
+      : '';
 
     const resHtml = (d.resources||[]).length ? `<div class="res-grid" role="list">${
       d.resources.map(r => {
@@ -603,7 +628,7 @@ function render() {
       </div>
       <div class="cbody${isOpen?' open':''}" id="${bodyId}" role="region" aria-label="${d.title} details">
         <div class="cbody-inner">
-          ${noticeHtml}${extraHtml}${bodyContent}${resHtml}
+          ${noticeHtml}${extraHtml}${jobBodyContent}${volFormHtml}${resHtml}
           <div class="card-actions">
             <button class="ca-btn" onclick="openFeedback('${d.title.replace(/'/g,"\\'")}',event)"
               aria-label="Suggest an update for ${d.title}">
@@ -660,10 +685,11 @@ function toggleTheme() {
 }
 
 // ── Font ──────────────────────────────────────────────────────────
+// Sets root font-size so all rem-based measurements scale globally
 function changeFont(delta) {
-  fontScale = Math.min(1.4,Math.max(0.8,+(fontScale+delta).toFixed(1)));
-  document.documentElement.style.setProperty('--font-scale',fontScale);
-  document.getElementById('fontLabel').textContent = Math.round(fontScale*100)+'%';
+  fontScale = Math.min(1.4, Math.max(0.8, +(fontScale + delta).toFixed(1)));
+  document.documentElement.style.fontSize = (fontScale * 16) + 'px';
+  document.getElementById('fontLabel').textContent = Math.round(fontScale * 100) + '%';
 }
 
 // ── Language ──────────────────────────────────────────────────────

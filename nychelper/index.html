@@ -8,15 +8,15 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #0a0a0f;
-  --card: #13131a;
-  --border: #2a2a3a;
-  --accent: #7c5cfc;
-  --accent2: #fc5c7d;
-  --green: #5cfca0;
-  --text: #e8e8f0;
-  --muted: #888;
-  --yellow: #ffd166;
+  --bg: #f5f0eb;
+  --card: #ffffff;
+  --border: #e0d8d0;
+  --accent: #e07a5f;      /* warm terracotta */
+  --accent2: #f2cc8f;     /* soft golden */
+  --green: #81b29a;       /* sage green */
+  --text: #3d405b;        /* soft navy */
+  --muted: #9a8f8f;
+  --yellow: #f2cc8f;
 }
 
 body {
@@ -481,7 +481,9 @@ function tog(i) {
   const scrollY = window.scrollY;
   open = open === i ? null : i;
   render();
-  window.scrollTo({ top: scrollY, behavior: 'instant' });
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: scrollY, behavior: 'instant' });
+  });
 }
 
 // ── CATEGORY PILLS ────────────────────────────────────────────────

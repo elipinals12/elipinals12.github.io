@@ -5,27 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NYC Community Resource Navigator</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
   --bg: #f5f0eb;
   --card: #ffffff;
   --border: #e0d8d0;
-  --accent: #e07a5f;      /* warm terracotta */
-  --accent2: #f2cc8f;     /* soft golden */
-  --green: #81b29a;       /* sage green */
-  --text: #3d405b;        /* soft navy */
+  --accent: #e07a5f;
+  --accent2: #f2cc8f;
+  --green: #81b29a;
+  --text: #3d405b;
   --muted: #9a8f8f;
   --yellow: #f2cc8f;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
+  --shadow-hover: 0 8px 28px rgba(224,122,95,.2), 0 3px 8px rgba(0,0,0,.06);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* Animated ambient background */
 body::before {
   content: '';
   position: fixed;
@@ -33,8 +40,15 @@ body::before {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(124,92,252,.08) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 80%, rgba(252,92,125,.06) 0%, transparent 60%);
+    radial-gradient(ellipse at 20% 20%, rgba(224,122,95,.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba(129,178,154,.1)  0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(242,204,143,.07) 0%, transparent 60%);
+  animation: bgPulse 14s ease-in-out infinite alternate;
+}
+
+@keyframes bgPulse {
+  0%   { opacity: .7; transform: scale(1); }
+  100% { opacity: 1;  transform: scale(1.05); }
 }
 
 .wrap {
@@ -42,160 +56,309 @@ body::before {
   z-index: 1;
   max-width: 780px;
   margin: 0 auto;
-  padding: 2rem 1.2rem 4rem;
+  padding: 2.5rem 1.2rem 5rem;
 }
 
-header { text-align: center; margin-bottom: 2rem; }
+/* ── Header ── */
+header {
+  text-align: center;
+  margin-bottom: 2.2rem;
+  animation: fadeDown .6s var(--ease-out) both;
+}
 
 header h1 {
-  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
   font-weight: 800;
-  letter-spacing: -.03em;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  letter-spacing: -.04em;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--green) 100%);
+  background-size: 200% 200%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: gradShift 7s ease infinite;
 }
 
-header p { color: var(--muted); margin-top: .4rem; font-size: .9rem; }
+@keyframes gradShift {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
 
+header p { color: var(--muted); margin-top: .45rem; font-size: .88rem; }
+
+/* ── Hotline bar ── */
 .hotline {
-  background: rgba(252,92,125,.1);
-  border: 1px solid rgba(252,92,125,.3);
-  border-radius: 12px;
-  padding: .8rem 1.2rem;
-  margin-bottom: 1.5rem;
-  font-size: .85rem;
-  color: #fc5c7d;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: .5rem 1.4rem;
+  background: linear-gradient(135deg, rgba(224,122,95,.1), rgba(242,204,143,.08));
+  border: 1px solid rgba(224,122,95,.3);
+  border-radius: 14px;
+  padding: .85rem 1.4rem;
+  margin-bottom: 1.6rem;
+  font-size: .82rem;
+  color: var(--accent);
+  animation: fadeDown .7s var(--ease-out) .1s both;
 }
 
-.search-wrap { position: relative; margin-bottom: 1rem; }
+.hotline-item {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+.h-icon { width: 15px; height: 15px; flex-shrink: 0; }
+
+/* ── Search ── */
+.search-wrap {
+  position: relative;
+  margin-bottom: 1rem;
+  animation: fadeDown .7s var(--ease-out) .15s both;
+}
 
 .search-wrap input {
   width: 100%;
-  padding: .85rem 1.2rem .85rem 3rem;
+  padding: .9rem 1.2rem .9rem 3.2rem;
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
   color: var(--text);
   font-size: .95rem;
   outline: none;
-  transition: border .2s;
+  box-shadow: var(--shadow-sm);
+  transition: border-color .25s, box-shadow .25s, transform .2s var(--ease-spring);
 }
 
-.search-wrap input:focus { border-color: var(--accent); }
-.search-wrap input::placeholder { color: var(--muted); }
-.si { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted); }
+.search-wrap input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(224,122,95,.13), var(--shadow-md);
+  transform: translateY(-1px);
+}
 
-.pills { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.2rem; }
+.search-wrap input::placeholder { color: var(--muted); }
+
+.search-ico {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  width: 18px; height: 18px;
+  pointer-events: none;
+  transition: color .25s;
+}
+
+.search-wrap:focus-within .search-ico { color: var(--accent); }
+
+/* ── Pills ── */
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin-bottom: 1.3rem;
+  animation: fadeDown .7s var(--ease-out) .2s both;
+}
 
 .pill {
-  padding: .35rem .85rem;
+  padding: .36rem .9rem;
   border-radius: 999px;
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   background: var(--card);
   color: var(--muted);
   cursor: pointer;
-  font-size: .8rem;
-  transition: all .18s;
+  font-size: .78rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  transition: all .22s var(--ease-out);
 }
 
-.pill:hover { border-color: var(--accent); color: var(--text); }
-.pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(224,122,95,.15);
+}
 
-.count { color: var(--muted); font-size: .78rem; margin-bottom: .8rem; }
+.pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 3px 14px rgba(224,122,95,.35);
+  transform: translateY(-1px);
+}
 
-.results { display: flex; flex-direction: column; gap: .8rem; }
+/* ── Count ── */
+.count { color: var(--muted); font-size: .76rem; margin-bottom: .9rem; }
 
+/* ── Results ── */
+.results { display: flex; flex-direction: column; gap: .75rem; }
+
+/* ── Card ── */
 .card {
   background: var(--card);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: 14px;
-  padding: 1rem 1.2rem;
+  padding: 1.1rem 1.3rem;
   cursor: pointer;
-  transition: all .18s;
-  animation: fadeUp .3s ease both;
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color .22s,
+    box-shadow .25s,
+    transform .25s var(--ease-spring);
+  animation: fadeUp .4s var(--ease-out) both;
+  will-change: transform;
 }
 
-.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-3px);
+}
 
-.ctop { display: flex; gap: .9rem; align-items: flex-start; }
-.cicon { font-size: 1.6rem; flex-shrink: 0; }
+.card:active { transform: translateY(-1px) scale(.997); }
+
+.card.is-open {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Card header row ── */
+.ctop { display: flex; gap: 1rem; align-items: flex-start; }
+
+/* ── Icon box ── */
+.cicon-wrap {
+  width: 46px; height: 46px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, rgba(224,122,95,.15), rgba(242,204,143,.22));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(224,122,95,.12);
+  transition: transform .3s var(--ease-spring), box-shadow .3s;
+}
+
+.card:hover .cicon-wrap {
+  transform: scale(1.12) rotate(-5deg);
+  box-shadow: 0 5px 16px rgba(224,122,95,.25);
+}
+
+/* ── Chevron ── */
+.chev {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--muted);
+  transition: transform .35s var(--ease-out), color .25s;
+  padding-top: .1rem;
+}
+
+.card.is-open .chev { transform: rotate(180deg); color: var(--accent); }
+.chev svg { width: 18px; height: 18px; display: block; }
+
+/* ── Text ── */
 .ctitle { font-weight: 700; font-size: .95rem; margin-bottom: .15rem; }
-.csub { color: var(--muted); font-size: .8rem; line-height: 1.5; }
-.ctags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .6rem; }
+.csub   { color: var(--muted); font-size: .8rem; line-height: 1.55; }
+
+/* ── Tags ── */
+.ctags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .55rem; }
 
 .tag {
   padding: .15rem .55rem;
-  background: rgba(124,92,252,.12);
+  background: rgba(224,122,95,.09);
+  border: 1px solid rgba(224,122,95,.2);
   border-radius: 999px;
-  font-size: .72rem;
+  font-size: .7rem;
   color: var(--accent);
+  font-weight: 500;
+  transition: background .2s, transform .2s var(--ease-spring);
 }
 
+.tag:hover { background: rgba(224,122,95,.18); transform: translateY(-1px); }
+
+/* ── Card body — smooth expand via grid trick ── */
 .cbody {
-  display: none;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition:
+    grid-template-rows .38s var(--ease-out),
+    opacity .3s ease,
+    margin-top .3s ease;
+  opacity: 0;
+  margin-top: 0;
+}
+
+.cbody.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
   margin-top: .9rem;
+}
+
+.cbody-inner {
+  min-height: 0;
+  overflow: hidden;
   padding-top: .9rem;
   border-top: 1px solid var(--border);
   font-size: .84rem;
-  line-height: 1.75;
-  color: #ccc;
+  line-height: 1.78;
+  color: var(--text);
 }
 
-.cbody.open { display: block; animation: fadeDown .2s ease; }
 .cbody a { color: #a78bfa; text-decoration: none; }
 .cbody a:hover { text-decoration: underline; }
 
 .addr { font-size: .76rem; color: var(--muted); font-style: italic; margin-left: .5rem; }
 .addr::before { content: '📍 '; font-style: normal; }
 
+/* ── Notice ── */
 .notice {
-  background: rgba(255,200,0,.06);
-  border: 1px solid rgba(255,200,0,.2);
+  background: rgba(242,204,143,.1);
+  border: 1px solid rgba(242,204,143,.35);
   border-radius: 8px;
-  padding: .5rem .8rem;
+  padding: .5rem .85rem;
   font-size: .76rem;
   color: var(--yellow);
-  margin-bottom: .6rem;
+  margin-bottom: .7rem;
 }
 
+/* ── Job grid ── */
 .job-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: .6rem;
-  margin-top: .8rem;
+  gap: .55rem;
+  margin-top: .7rem;
 }
 
 .job-card {
-  background: rgba(124,92,252,.07);
-  border: 1px solid rgba(124,92,252,.2);
+  background: rgba(129,178,154,.07);
+  border: 1px solid rgba(129,178,154,.25);
   border-radius: 10px;
   padding: .7rem .9rem;
   text-decoration: none;
-  transition: all .18s;
   display: block;
+  transition: all .22s var(--ease-out);
 }
 
 .job-card:hover {
-  background: rgba(124,92,252,.18);
-  border-color: var(--accent);
-  transform: translateY(-1px);
+  background: rgba(129,178,154,.2);
+  border-color: var(--green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(129,178,154,.2);
 }
 
-.jc-org { font-size: .86rem; font-weight: 600; color: var(--text); }
+.jc-org  { font-size: .86rem; font-weight: 600; color: var(--text); }
 .jc-note { font-size: .74rem; color: var(--muted); margin-top: .2rem; }
 
+/* ── Section label ── */
 .section-label {
-  font-size: .78rem;
+  font-size: .74rem;
   font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: .06em;
-  margin: 1rem 0 .4rem;
+  letter-spacing: .07em;
+  margin: 1.1rem 0 .45rem;
 }
 
+/* ── Links ── */
 .links { margin-top: .8rem; display: flex; flex-wrap: wrap; gap: .5rem; }
 
 .lnk {
@@ -204,125 +367,145 @@ header p { color: var(--muted); margin-top: .4rem; font-size: .9rem; }
   font-size: .76rem;
   font-weight: 600;
   text-decoration: none;
-  background: rgba(124,92,252,.15);
-  color: var(--accent);
-  border: 1px solid rgba(124,92,252,.25);
-  transition: all .18s;
+  background: rgba(167,139,250,.1);
+  color: #a78bfa;
+  border: 1px solid rgba(167,139,250,.25);
+  transition: all .2s var(--ease-out);
 }
 
-.lnk:hover { background: var(--accent); color: #fff; }
+.lnk:hover {
+  background: #a78bfa;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(167,139,250,.3);
+}
 
+/* ── Card actions ── */
 .card-actions {
   display: flex;
   flex-wrap: wrap;
   gap: .5rem;
-  margin-top: .8rem;
-  padding-top: .8rem;
+  margin-top: .85rem;
+  padding-top: .85rem;
   border-top: 1px solid var(--border);
 }
 
 .ca-btn {
-  padding: .3rem .75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .33rem .8rem;
   border-radius: 8px;
-  font-size: .75rem;
+  font-size: .74rem;
   font-weight: 600;
-  border: 1px solid rgba(92,252,160,.2);
+  border: 1px solid rgba(129,178,154,.3);
   cursor: pointer;
-  transition: all .18s;
-  background: rgba(92,252,160,.08);
+  background: rgba(129,178,154,.08);
   color: var(--green);
+  transition: all .2s var(--ease-out);
 }
 
-.ca-btn:hover { background: var(--green); color: #000; border-color: var(--green); }
+.ca-btn:hover {
+  background: var(--green);
+  color: #fff;
+  border-color: var(--green);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(129,178,154,.3);
+}
+
+.ca-btn svg { width: 13px; height: 13px; }
 
 /* ── Resource tiles ── */
 .res-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: .6rem;
+  gap: .55rem;
   margin-top: .8rem;
 }
 
 .res-card {
-  background: rgba(124,92,252,.07);
-  border: 1px solid rgba(124,92,252,.2);
+  background: rgba(224,122,95,.06);
+  border: 1px solid rgba(224,122,95,.18);
   border-radius: 10px;
   padding: .75rem 1rem;
   text-decoration: none;
   display: block;
-  transition: all .18s;
+  transition: all .22s var(--ease-out);
 }
 
 .res-card:hover {
-  background: rgba(124,92,252,.18);
+  background: rgba(224,122,95,.13);
   border-color: var(--accent);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(224,122,95,.15);
 }
 
 .res-card.no-link { cursor: default; }
-.res-card.no-link:hover { background: rgba(124,92,252,.07); border-color: rgba(124,92,252,.2); transform: none; }
+.res-card.no-link:hover { background: rgba(224,122,95,.06); border-color: rgba(224,122,95,.18); transform: none; box-shadow: none; }
 
-.rc-org  { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; }
-.rc-note { font-size: .76rem; color: var(--muted); margin-bottom: .35rem; }
-.rc-addr { font-size: .73rem; color: var(--muted); font-style: italic; }
-.rc-addr::before { content: '📍 '; font-style: normal; }
+.rc-org   { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; }
+.rc-note  { font-size: .76rem; color: var(--muted); margin-bottom: .35rem; }
+.rc-addr  { font-size: .73rem; color: var(--muted); font-style: italic; }
+.rc-addr::before  { content: '📍 '; font-style: normal; }
 .rc-phone { font-size: .73rem; color: #a78bfa; margin-top: .2rem; }
 .rc-phone::before { content: '☎ '; }
 
-.empty { text-align: center; color: var(--muted); padding: 3rem 0; }
+/* ── Empty ── */
+.empty { text-align: center; color: var(--muted); padding: 3.5rem 0; font-size: .9rem; }
 
 /* ── Modal ── */
 .modal-bg {
   display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.78);
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(5px);
   z-index: 200;
-  align-items: center;
-  justify-content: center;
+  align-items: center; justify-content: center;
   padding: 1rem;
 }
 
-.modal-bg.open { display: flex; }
+.modal-bg.open { display: flex; animation: fadeIn .25s ease; }
 
 .modal {
   background: #1a1a24;
   border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 1.5rem;
-  width: 100%;
-  max-width: 620px;
-  max-height: 90vh;
-  overflow-y: auto;
+  border-radius: 20px;
+  padding: 1.6rem;
+  width: 100%; max-width: 620px;
+  max-height: 90vh; overflow-y: auto;
+  animation: scaleIn .32s var(--ease-spring) both;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: .8rem;
+  margin-bottom: .9rem;
 }
 
-.modal-header h2 { font-size: 1.1rem; }
+.modal-header h2 { font-size: 1.05rem; display: flex; align-items: center; gap: .45rem; }
+.modal-header h2 svg { width: 18px; height: 18px; color: var(--accent); }
 
 .modal-close {
-  background: none;
-  border: none;
+  background: none; border: none;
   color: var(--muted);
-  font-size: 1rem;
   cursor: pointer;
-  padding: .2rem .5rem;
-  border-radius: 6px;
+  padding: .3rem .5rem;
+  border-radius: 8px;
   transition: all .18s;
+  display: flex; align-items: center;
 }
 
 .modal-close:hover { background: var(--border); color: var(--text); }
+.modal-close svg { width: 16px; height: 16px; }
 
-.hint { font-size: .78rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.5; }
+.hint { font-size: .78rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.55; }
 
-/* ── Animations ── */
-@keyframes fadeUp   { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-@keyframes fadeDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
+/* ── Keyframes ── */
+@keyframes fadeUp   { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-8px);  } to { opacity: 1; transform: none; } }
+@keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn  { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
 </style>
 </head>
 <body>
@@ -334,13 +517,31 @@ header p { color: var(--muted); margin-top: .4rem; font-size: .9rem; }
   </header>
 
   <div class="hotline">
-    🚨 <strong>Emergency Shelter: Call 311 (24/7)</strong> &nbsp;|&nbsp;
-    Coalition for the Homeless: <strong>1-888-358-2384</strong> &nbsp;|&nbsp;
-    Mental Health: <strong>NYC Well 1-888-NYC-WELL</strong>
+    <span class="hotline-item">
+      <svg class="h-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+      <strong>Emergency Shelter: Call 311 (24/7)</strong>
+    </span>
+    <span class="hotline-item">
+      <svg class="h-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.6 19.79 19.79 0 01.22 1 2 2 0 012.2.01h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.29 6.29l1.06-1.06a2 2 0 012.11-.45c.907.34 1.85.574 2.81.7a2 2 0 011.72 2z"/>
+      </svg>
+      Coalition for the Homeless: <strong>1-888-358-2384</strong>
+    </span>
+    <span class="hotline-item">
+      <svg class="h-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+      </svg>
+      Mental Health: <strong>NYC Well 1-888-NYC-WELL</strong>
+    </span>
   </div>
 
   <div class="search-wrap">
-    <span class="si">🔍</span>
+    <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
     <input type="text" id="search" placeholder="Search by need, resource, keyword..." oninput="render()">
   </div>
 
@@ -349,56 +550,51 @@ header p { color: var(--muted); margin-top: .4rem; font-size: .9rem; }
   <div class="results" id="results"></div>
 </div>
 
-<!-- ── FEEDBACK MODAL ──────────────────────────────────────────────
-  HOW TO CONNECT YOUR GOOGLE FORM:
-  1. Go to forms.google.com and create your feedback form
-  2. Click Send (top right) → Embed tab (<>) → copy only the URL
-     inside src="..." from the iframe code Google gives you
-  3. Paste that URL below to replace YOUR_GOOGLE_FORM_EMBED_URL_HERE
-  4. Done — responses go directly to your Google Form responses tab
-─────────────────────────────────────────────────────────────────── -->
+<!-- Feedback Modal -->
 <div class="modal-bg" id="feedbackModal">
   <div class="modal">
     <div class="modal-header">
-      <h2>💡 Suggest an Update</h2>
-      <button class="modal-close" onclick="closeModal('feedbackModal')">✕</button>
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        Suggest an Update
+      </h2>
+      <button class="modal-close" onclick="closeModal('feedbackModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
     </div>
     <p class="hint">Report outdated info, wrong numbers, changed addresses, or suggest a new resource. We review all submissions.</p>
     <iframe
       src="https://docs.google.com/forms/d/e/1FAIpQLScseQ-VlGIuKw-d5dJl8rs_9WlwYY6XRwmEuyB3HeYvxycUXw/viewform?embedded=true"
-      width="100%"
-      height="520"
-      frameborder="0"
-      marginheight="0"
-      marginwidth="0"
-      title="Suggest an update">
-      Loading form…
-    </iframe>
+      width="100%" height="520" frameborder="0" marginheight="0" marginwidth="0"
+      title="Suggest an update">Loading form…</iframe>
   </div>
 </div>
 
 <script>
-// ── STATE ─────────────────────────────────────────────────────────
-let data = [];
+let data  = [];
 let active = 'All';
-let open = null;
-let suggestCardTitle = '';
+let open   = null;
 
-// ── LOAD SINGLE JSON FILE ─────────────────────────────────────────
-// To add a new card: open data/resources.json and add a new object
-// to the "cards" array. To add a new job employer: add to "jobListings".
+const CHEVRON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+
+const BULB = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/></svg>`;
+
+// ── Load ──────────────────────────────────────────────────────────
 async function loadData() {
   const json = await fetch('data.json').then(r => r.json()).catch(() => ({ cards: [], jobListings: {} }));
   data = json.cards || [];
 
-  // Build the job listings grid card body from jobListings data
   const gridCard = data.find(c => c.type === 'job-listings');
   if (gridCard && json.jobListings) {
     const sections = [
-      { label: '🟢 Entry-Level',            key: 'entryLevel' },
-      { label: '🏥 Healthcare / HHA / CNA', key: 'healthcare' },
-      { label: '🍽️ Food & Hospitality',    key: 'food' },
-      { label: '🔨 Trades & Labor',         key: 'trades' }
+      { label: '🟢 Entry-Level',            key: 'entryLevel'  },
+      { label: '🏥 Healthcare / HHA / CNA', key: 'healthcare'  },
+      { label: '🍽️ Food & Hospitality',    key: 'food'        },
+      { label: '🔨 Trades & Labor',         key: 'trades'      }
     ];
     let html = '<div class="notice">⚠️ Check careers pages before sending clients — openings change.</div>';
     sections.forEach(s => {
@@ -419,7 +615,7 @@ async function loadData() {
   render();
 }
 
-// ── RENDER ────────────────────────────────────────────────────────
+// ── Render ────────────────────────────────────────────────────────
 function render() {
   const q = (document.getElementById('search').value || '').toLowerCase();
   const filtered = data.map((d, i) => ({ ...d, _i: i })).filter(d => {
@@ -441,52 +637,60 @@ function render() {
     return;
   }
 
-  res.innerHTML = filtered.map(d => `
-    <div class="card" data-idx="${d._i}" onclick="tog(${d._i})">
+  res.innerHTML = filtered.map((d, pos) => `
+    <div class="card${open === d._i ? ' is-open' : ''}" data-idx="${d._i}"
+         onclick="tog(${d._i})"
+         style="animation-delay:${Math.min(pos * 0.045, 0.32)}s">
       <div class="ctop">
-        <div class="cicon">${d.icon}</div>
-        <div>
+        <div class="cicon-wrap">${d.icon}</div>
+        <div style="flex:1;min-width:0">
           <div class="ctitle">${d.title}</div>
           <div class="csub">${d.sub}</div>
-          <div class="ctags">
-            ${(d.tags || []).slice(0, 5).map(t => `<span class="tag">${t}</span>`).join('')}
-          </div>
+          <div class="ctags">${(d.tags||[]).slice(0,5).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
         </div>
+        <div class="chev">${CHEVRON}</div>
       </div>
       <div class="cbody ${open === d._i ? 'open' : ''}">
-        ${d.body || ''}
-        ${(d.resources || []).length
-          ? `<div class="res-grid">${d.resources.map(r => {
-              const tag = r.url ? 'a' : 'div';
-              const href = r.url ? `href="${r.url}" target="_blank" onclick="event.stopPropagation()"` : '';
-              return `<${tag} class="res-card${r.url ? '' : ' no-link'}" ${href}>
-                <div class="rc-org">${r.org}</div>
-                ${r.note  ? `<div class="rc-note">${r.note}</div>` : ''}
-                ${r.addr  ? `<div class="rc-addr">${r.addr}</div>` : ''}
-                ${r.phone ? `<div class="rc-phone">${r.phone}</div>` : ''}
-              </${tag}>`;
-            }).join('')}</div>`
-          : ''}
-        <div class="card-actions">
-          <button class="ca-btn" onclick="openFeedback('${d.title.replace(/'/g, "\\'")}', event)">
-            💡 Suggest Update
-          </button>
+        <div class="cbody-inner">
+          ${d.body || ''}
+          ${(d.resources||[]).length ? `<div class="res-grid">${d.resources.map(r => {
+            const tag = r.url ? 'a' : 'div';
+            const href = r.url ? `href="${r.url}" target="_blank" onclick="event.stopPropagation()"` : '';
+            return `<${tag} class="res-card${r.url?'':' no-link'}" ${href}>
+              <div class="rc-org">${r.org}</div>
+              ${r.note  ? `<div class="rc-note">${r.note}</div>`   : ''}
+              ${r.addr  ? `<div class="rc-addr">${r.addr}</div>`   : ''}
+              ${r.phone ? `<div class="rc-phone">${r.phone}</div>` : ''}
+            </${tag}>`;
+          }).join('')}</div>` : ''}
+          <div class="card-actions">
+            <button class="ca-btn" onclick="openFeedback('${d.title.replace(/'/g,"\\'")}',event)">
+              ${BULB} Suggest Update
+            </button>
+          </div>
         </div>
       </div>
     </div>
   `).join('');
 }
 
+// ── Toggle (with scroll fix) ──────────────────────────────────────
 function tog(i) {
+  const scrollY = window.scrollY;
   open = open === i ? null : i;
+
   document.querySelectorAll('.card').forEach(card => {
-    const idx = parseInt(card.dataset.idx);
+    const idx  = parseInt(card.dataset.idx);
+    const isOpen = idx === open;
+    card.classList.toggle('is-open', isOpen);
     const body = card.querySelector('.cbody');
-    if (body) body.classList.toggle('open', idx === open);
+    if (body) body.classList.toggle('open', isOpen);
   });
+
+  requestAnimationFrame(() => window.scrollTo({ top: scrollY, behavior: 'instant' }));
 }
 
-// ── CATEGORY PILLS ────────────────────────────────────────────────
+// ── Pills ─────────────────────────────────────────────────────────
 function rebuildPills() {
   const pw = document.getElementById('pills');
   pw.innerHTML = '';
@@ -496,8 +700,7 @@ function rebuildPills() {
     el.className = 'pill' + (c === active ? ' active' : '');
     el.textContent = c;
     el.onclick = () => {
-      active = c;
-      open = null;
+      active = c; open = null;
       document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
       el.classList.add('active');
       render();
@@ -506,22 +709,15 @@ function rebuildPills() {
   });
 }
 
-// ── FEEDBACK MODAL ────────────────────────────────────────────────
-function openFeedback(cardTitle, e) {
-  e.stopPropagation();
-  suggestCardTitle = cardTitle;
-  openModal('feedbackModal');
-}
-
-// ── MODAL HELPERS ─────────────────────────────────────────────────
-function openModal(id) { document.getElementById(id).classList.add('open'); }
+// ── Modal ─────────────────────────────────────────────────────────
+function openFeedback(title, e) { e.stopPropagation(); openModal('feedbackModal'); }
+function openModal(id)  { document.getElementById(id).classList.add('open');    }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 document.querySelectorAll('.modal-bg').forEach(m =>
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); })
 );
 
-// ── START ─────────────────────────────────────────────────────────
 loadData();
 </script>
 </body>

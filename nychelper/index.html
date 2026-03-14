@@ -442,7 +442,7 @@ function render() {
   }
 
   res.innerHTML = filtered.map(d => `
-    <div class="card" onclick="tog(${d._i})">
+    <div class="card" data-idx="${d._i}" onclick="tog(${d._i})">
       <div class="ctop">
         <div class="cicon">${d.icon}</div>
         <div>
@@ -478,11 +478,11 @@ function render() {
 }
 
 function tog(i) {
-  const scrollY = window.scrollY;
   open = open === i ? null : i;
-  render();
-  requestAnimationFrame(() => {
-    window.scrollTo({ top: scrollY, behavior: 'instant' });
+  document.querySelectorAll('.card').forEach(card => {
+    const idx = parseInt(card.dataset.idx);
+    const body = card.querySelector('.cbody');
+    if (body) body.classList.toggle('open', idx === open);
   });
 }
 

@@ -403,12 +403,102 @@ const ICONS = {
 
 // ── Translations ──────────────────────────────────────────────────
 const T = {
-  en: { search:"Search by need, resource, keyword…", found:n=>`${n} resource${n!==1?'s':''} found`, empty:"No results — try a different search or category.", suggest:"Suggest Update", hl1:"Emergency Shelter: Call 311 (24/7)", hl2:"Coalition Hotline:", hl3:"Mental Health:", sub:"Real links. Real addresses. Updated for NYC 2025–2026.", darkOn:"Dark mode", darkOff:"Light mode" },
-  es: { search:"Buscar por necesidad, recurso, palabra clave…", found:n=>`${n} recurso${n!==1?'s':''} encontrado${n!==1?'s':''}`, empty:"Sin resultados — intente otra búsqueda.", suggest:"Sugerir actualización", hl1:"Refugio de emergencia: Llame al 311 (24/7)", hl2:"Línea directa:", hl3:"Salud mental:", sub:"Links reales. Direcciones reales. Actualizado para NYC 2025–2026.", darkOn:"Modo oscuro", darkOff:"Modo claro" },
-  zh: { search:"按需求、资源、关键字搜索…", found:n=>`找到 ${n} 个资源`, empty:"无结果 — 请尝试其他搜索。", suggest:"建议更新", hl1:"紧急收容所：拨打 311（24/7）", hl2:"联盟热线：", hl3:"心理健康：", sub:"真实链接。真实地址。已更新至 NYC 2025–2026。", darkOn:"深色模式", darkOff:"浅色模式" },
-  ht: { search:"Chèche pa bezwen, resous, mo kle…", found:n=>`${n} resous jwenn`, empty:"Pa gen rezilta — eseye rechèch diferan.", suggest:"Sijere mizajou", hl1:"Abri ijans: Rele 311 (24/7)", hl2:"Liy koalisyon:", hl3:"Sante mantal:", sub:"Lyen reyèl. Adrès reyèl. Mete ajou pou NYC 2025–2026.", darkOn:"Mòd fènwa", darkOff:"Mòd klè" },
-  bn: { search:"প্রয়োজন, সম্পদ, কীওয়ার্ড দিয়ে খুঁজুন…", found:n=>`${n}টি রিসোর্স পাওয়া গেছে`, empty:"কোনো ফলাফল নেই।", suggest:"আপডেট সাজেস্ট করুন", hl1:"জরুরি আশ্রয়: 311 কল করুন (24/7)", hl2:"কোয়ালিশন হটলাইন:", hl3:"মানসিক স্বাস্থ্য:", sub:"আসল লিংক। আসল ঠিকানা। NYC 2025–2026 আপডেট।", darkOn:"ডার্ক মোড", darkOff:"লাইট মোড" },
-  ru: { search:"Поиск по потребности, ресурсу, ключевому слову…", found:n=>`Найдено ресурсов: ${n}`, empty:"Ничего не найдено.", suggest:"Предложить обновление", hl1:"Экстренный приют: Звоните 311 (24/7)", hl2:"Горячая линия:", hl3:"Психическое здоровье:", sub:"Реальные ссылки. Реальные адреса. Обновлено для NYC 2025–2026.", darkOn:"Тёмная тема", darkOff:"Светлая тема" }
+  en: {
+    search:"Search by need, resource, keyword…",
+    found:n=>`${n} resource${n!==1?'s':''} found`,
+    empty:"No results — try a different search or category.",
+    suggest:"Suggest Update",
+    hl1:"Emergency Shelter: Call 311 (24/7)", hl2:"Coalition Hotline:", hl3:"Mental Health:",
+    sub:"Real links. Real addresses. Updated for NYC 2025–2026.",
+    darkOn:"Dark mode", darkOff:"Light mode",
+    jobNotice:"⚠️ Check careers pages before sending clients — openings change.",
+    jobSections:[
+      { label:"🟢 Entry-Level",            key:"entryLevel"  },
+      { label:"🏥 Healthcare / HHA / CNA", key:"healthcare"  },
+      { label:"🍽️ Food & Hospitality",    key:"food"        },
+      { label:"🔧 Trades & Labor",         key:"trades"      }
+    ]
+  },
+  es: {
+    search:"Buscar por necesidad, recurso, palabra clave…",
+    found:n=>`${n} recurso${n!==1?'s':''} encontrado${n!==1?'s':''}`,
+    empty:"Sin resultados — intente otra búsqueda.",
+    suggest:"Sugerir actualización",
+    hl1:"Refugio de emergencia: Llame al 311 (24/7)", hl2:"Línea directa:", hl3:"Salud mental:",
+    sub:"Links reales. Direcciones reales. Actualizado para NYC 2025–2026.",
+    darkOn:"Modo oscuro", darkOff:"Modo claro",
+    jobNotice:"⚠️ Verifique las páginas de empleo antes de enviar clientes — las vacantes cambian.",
+    jobSections:[
+      { label:"🟢 Nivel básico",             key:"entryLevel"  },
+      { label:"🏥 Salud / HHA / CNA",        key:"healthcare"  },
+      { label:"🍽️ Comida y hospitalidad",   key:"food"        },
+      { label:"🔧 Oficios y trabajo manual", key:"trades"      }
+    ]
+  },
+  zh: {
+    search:"按需求、资源、关键字搜索…",
+    found:n=>`找到 ${n} 个资源`,
+    empty:"无结果 — 请尝试其他搜索。",
+    suggest:"建议更新",
+    hl1:"紧急收容所：拨打 311（24/7）", hl2:"联盟热线：", hl3:"心理健康：",
+    sub:"真实链接。真实地址。已更新至 NYC 2025–2026。",
+    darkOn:"深色模式", darkOff:"浅色模式",
+    jobNotice:"⚠️ 发送客户前请检查招聘页面——职位随时变化。",
+    jobSections:[
+      { label:"🟢 入门级职位",         key:"entryLevel"  },
+      { label:"🏥 医疗 / HHA / CNA",   key:"healthcare"  },
+      { label:"🍽️ 餐饮与酒店",        key:"food"        },
+      { label:"🔧 技工与劳务",         key:"trades"      }
+    ]
+  },
+  ht: {
+    search:"Chèche pa bezwen, resous, mo kle…",
+    found:n=>`${n} resous jwenn`,
+    empty:"Pa gen rezilta — eseye rechèch diferan.",
+    suggest:"Sijere mizajou",
+    hl1:"Abri ijans: Rele 311 (24/7)", hl2:"Liy koalisyon:", hl3:"Sante mantal:",
+    sub:"Lyen reyèl. Adrès reyèl. Mete ajou pou NYC 2025–2026.",
+    darkOn:"Mòd fènwa", darkOff:"Mòd klè",
+    jobNotice:"⚠️ Verifye paj karyè anvan voye kliyan — pozisyon yo ka chanje.",
+    jobSections:[
+      { label:"🟢 Nivo debutan",           key:"entryLevel"  },
+      { label:"🏥 Sante / HHA / CNA",      key:"healthcare"  },
+      { label:"🍽️ Manje ak ospitalite",   key:"food"        },
+      { label:"🔧 Métye ak travay",         key:"trades"      }
+    ]
+  },
+  bn: {
+    search:"প্রয়োজন, সম্পদ, কীওয়ার্ড দিয়ে খুঁজুন…",
+    found:n=>`${n}টি রিসোর্স পাওয়া গেছে`,
+    empty:"কোনো ফলাফল নেই।",
+    suggest:"আপডেট সাজেস্ট করুন",
+    hl1:"জরুরি আশ্রয়: 311 কল করুন (24/7)", hl2:"কোয়ালিশন হটলাইন:", hl3:"মানসিক স্বাস্থ্য:",
+    sub:"আসল লিংক। আসল ঠিকানা। NYC 2025–2026 আপডেট।",
+    darkOn:"ডার্ক মোড", darkOff:"লাইট মোড",
+    jobNotice:"⚠️ ক্লায়েন্ট পাঠানোর আগে চাকরির পেজ চেক করুন — পদ পরিবর্তন হতে পারে।",
+    jobSections:[
+      { label:"🟢 এন্ট্রি-লেভেল",             key:"entryLevel"  },
+      { label:"🏥 স্বাস্থ্যসেবা / HHA / CNA",  key:"healthcare"  },
+      { label:"🍽️ খাদ্য ও আতিথেয়তা",        key:"food"        },
+      { label:"🔧 ট্রেড ও শ্রম",              key:"trades"      }
+    ]
+  },
+  ru: {
+    search:"Поиск по потребности, ресурсу, ключевому слову…",
+    found:n=>`Найдено ресурсов: ${n}`,
+    empty:"Ничего не найдено.",
+    suggest:"Предложить обновление",
+    hl1:"Экстренный приют: Звоните 311 (24/7)", hl2:"Горячая линия:", hl3:"Психическое здоровье:",
+    sub:"Реальные ссылки. Реальные адреса. Обновлено для NYC 2025–2026.",
+    darkOn:"Тёмная тема", darkOff:"Светлая тема",
+    jobNotice:"⚠️ Проверяйте страницы вакансий перед отправкой клиентов — позиции меняются.",
+    jobSections:[
+      { label:"🟢 Начальный уровень",                    key:"entryLevel"  },
+      { label:"🏥 Здравоохранение / HHA / CNA",          key:"healthcare"  },
+      { label:"🍽️ Еда и гостеприимство",               key:"food"        },
+      { label:"🔧 Ремёсла и рабочие специальности",      key:"trades"      }
+    ]
+  }
 };
 
 // ── SVG snippets ──────────────────────────────────────────────────
@@ -418,41 +508,19 @@ const SUN_SVG  = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fil
 const MOON_SVG = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
 
 // ── State ─────────────────────────────────────────────────────────
-let data = [], active = 'All', open = null, lang = 'en', fontScale = 1, isDark = false;
+let data = [], jobListingsData = null, active = 'All', open = null, lang = 'en', fontScale = 1, isDark = false;
 
 // ── Load data.json ────────────────────────────────────────────────
 async function loadData() {
   let json;
   try { json = await fetch('data.json').then(r => r.json()); }
-  catch(e) { document.getElementById('results').innerHTML = '<div class="empty">Could not load data.json — make sure it is in the same folder as index.html.</div>'; return; }
-
-  data = json.cards || [];
-
-  // Build job-listings card body from jobListings sections
-  const gridCard = data.find(c => c.type === 'job-listings');
-  if (gridCard && json.jobListings) {
-    const sections = [
-      { label:'🟢 Entry-Level',           key:'entryLevel'  },
-      { label:'🏥 Healthcare / HHA / CNA',key:'healthcare'  },
-      { label:'🍽️ Food & Hospitality',   key:'food'        },
-      { label:'🔧 Trades & Labor',        key:'trades'      }
-    ];
-    let html = "<div class='notice'>⚠️ Check careers pages before sending clients — openings change.</div>";
-    sections.forEach(s => {
-      if (!json.jobListings[s.key]) return;
-      html += `<div class="section-label" role="heading" aria-level="3">${s.label}</div><div class="job-grid" role="list">`;
-      html += json.jobListings[s.key].map(j =>
-        `<a class="job-card" href="${j.url}" target="_blank" rel="noopener noreferrer" role="listitem"
-            onclick="event.stopPropagation()" aria-label="${j.org} — ${j.note} (opens in new tab)">
-          <div class="jc-org">${j.org}</div>
-          <div class="jc-note">${j.note}</div>
-        </a>`
-      ).join('');
-      html += '</div>';
-    });
-    gridCard._builtBody = html;
+  catch(e) {
+    document.getElementById('results').innerHTML =
+      '<div class="empty">Could not load data.json — make sure it is in the same folder as index.html.</div>';
+    return;
   }
-
+  data = json.cards || [];
+  jobListingsData = json.jobListings || null;
   rebuildPills();
   render();
 }
@@ -477,10 +545,31 @@ function render() {
 
   res.innerHTML = filtered.map((d, pos) => {
     const isOpen = open === d._i, bodyId = `body-${d._i}`;
-    // Build body HTML from clean data fields
-    const noticeHtml  = d.notice ? `<div class="notice">${d.notice}</div>` : '';
-    const extraHtml   = d.extra  ? `<p style="margin-bottom:.6rem;font-size:.82rem">${d.extra}</p>` : '';
-    const bodyContent = d._builtBody || '';
+
+    const noticeHtml = d.notice ? `<div class="notice">${d.notice}</div>` : '';
+    const extraHtml  = d.extra  ? `<p style="margin-bottom:.6rem;font-size:.82rem">${d.extra}</p>` : '';
+
+    // Build job-listings body dynamically using current language
+    const bodyContent = (() => {
+      if (d.type !== 'job-listings' || !jobListingsData) return '';
+      let html = `<div class="notice">${t.jobNotice}</div>`;
+      t.jobSections.forEach(s => {
+        if (!jobListingsData[s.key]) return;
+        html += `<div class="section-label" role="heading" aria-level="3">${s.label}</div>
+                 <div class="job-grid" role="list">`;
+        html += jobListingsData[s.key].map(j =>
+          `<a class="job-card" href="${j.url}" target="_blank" rel="noopener noreferrer" role="listitem"
+              onclick="event.stopPropagation()"
+              aria-label="${j.org} — ${j.note} (opens in new tab)">
+            <div class="jc-org">${j.org}</div>
+            <div class="jc-note">${j.note}</div>
+          </a>`
+        ).join('');
+        html += '</div>';
+      });
+      return html;
+    })();
+
     const resHtml = (d.resources||[]).length ? `<div class="res-grid" role="list">${
       d.resources.map(r => {
         const tag  = r.url ? 'a' : 'div';
@@ -488,7 +577,7 @@ function render() {
         const al   = `aria-label="${r.org}${r.note?' — '+r.note:''}${r.url?' (opens in new tab)':''}"`;
         return `<${tag} class="res-card${r.url?'':' no-link'}" ${href} ${al} role="listitem">
           <div class="rc-org">${r.org}</div>
-          ${r.note  ? `<div class="rc-note">${r.note}</div>` : ''}
+          ${r.note  ? `<div class="rc-note">${r.note}</div>`  : ''}
           ${r.addr  ? `<div class="rc-addr"><span aria-label="Address">📍</span> ${r.addr}</div>` : ''}
           ${r.phone ? `<div class="rc-phone"><span aria-label="Phone">📞</span> ${r.phone}</div>` : ''}
         </${tag}>`;
@@ -507,7 +596,7 @@ function render() {
           <div class="ctitle">${d.title}</div>
           <div class="csub">${d.sub}</div>
           <div class="ctags" aria-label="Tags" role="list">
-            ${(d.tags||[]).slice(0,5).map(t=>`<span class="tag" role="listitem">${t}</span>`).join('')}
+            ${(d.tags||[]).slice(0,5).map(tg=>`<span class="tag" role="listitem">${tg}</span>`).join('')}
           </div>
         </div>
         <div class="chev" aria-hidden="true">${CHEVRON}</div>

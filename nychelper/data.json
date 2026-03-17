@@ -288,22 +288,6 @@
       ]
     },
     {
-      "id":    "funding",
-      "title": "Grants & Funding",
-      "sub":   "Who funds community coordination orgs in NYC",
-      "tags":  ["grants", "funding", "donors", "foundations", "nonprofit"],
-      "cats":  ["Operations"],
-      "notice": "📋 Before approaching any funder: 10+ tracked outcomes, volunteer hours logged, clean governance.",
-      "extra":  "<strong>Government sources:</strong> DYCD, NYC CEO, HRA contracts, Dept of Labor workforce grants.",
-      "resources": [
-        { "org": "Robin Hood Foundation",    "note": "LOI first — large grants",         "url": "https://robinhood.org" },
-        { "org": "Tiger Foundation",         "note": "LOI first — small community orgs" },
-        { "org": "New York Community Trust", "note": "LOI first — broad eligibility",    "url": "https://www.nycommunitytrust.org" },
-        { "org": "Altman Foundation",        "note": "LOI first — workforce & education" },
-        { "org": "NYC Nonprofits Portal",    "note": "City contracts & RFPs",            "url": "https://www.nyc.gov/nonprofits" }
-      ]
-    },
-    {
       "id":    "volunteers",
       "title": "Volunteers",
       "sub":   "Structure, onboarding, tools for 50 volunteers",

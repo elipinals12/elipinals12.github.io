@@ -170,6 +170,7 @@
       "notice": "",
       "resources": [
         { "org": "NYC MySchools",                    "note": "Pre-K & school finder",                                        "url": "https://www.myschools.nyc" },
+        { "org": "NYC Activities",                   "note": "Free resources",                                               "url": "https://www.nyc.gov/site/childcare/for-families/free-or-low-cost-activities-for-families.page"},
         { "org": "ACS Childcare Voucher",            "note": "Subsidized childcare",   "phone": "(718) 722-4646",            "url": "https://www.nyc.gov/acs" },
         { "org": "Child Development Support Corp",   "note": "Childcare services",     "addr": "352 Classon Ave, Brooklyn",  "phone": "(718) 398-5348", "url": "https://www.cdscny.org" },
         { "org": "Day Care Council of NY",           "note": "Childcare resources",    "addr": "12 W 21st St",              "phone": "(212) 206-7818", "url": "https://www.daycarecouncil.org" },

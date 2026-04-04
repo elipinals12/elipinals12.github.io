@@ -39,56 +39,25 @@
 }
 :root { --ease-spring: cubic-bezier(0.34,1.56,0.64,1); --ease-out: cubic-bezier(0.4,0,0.2,1); }
 
-.skip-link {
-  position:absolute; top:-100%; left:1rem;
-  background:var(--accent); color:#fff;
-  padding:.5rem 1rem; border-radius:0 0 8px 8px;
-  font-size:.88rem; font-weight:700; text-decoration:none;
-  z-index:9999; transition:top .2s;
-}
+.skip-link { position:absolute; top:-100%; left:1rem; background:var(--accent); color:#fff; padding:.5rem 1rem; border-radius:0 0 8px 8px; font-size:.88rem; font-weight:700; text-decoration:none; z-index:9999; transition:top .2s; }
 .skip-link:focus { top:0; }
 
-body {
-  background:var(--bg); color:var(--text);
-  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-  min-height:100vh; -webkit-font-smoothing:antialiased;
-  transition:background .3s,color .3s;
-}
-body::before {
-  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
-  background:
-    radial-gradient(ellipse at 20% 20%,rgba(224,122,95,.1) 0%,transparent 55%),
-    radial-gradient(ellipse at 80% 80%,rgba(129,178,154,.08) 0%,transparent 55%);
-  animation:bgPulse 14s ease-in-out infinite alternate;
-}
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; transition:background .3s,color .3s; }
+body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:0; background: radial-gradient(ellipse at 20% 20%,rgba(224,122,95,.1) 0%,transparent 55%), radial-gradient(ellipse at 80% 80%,rgba(129,178,154,.08) 0%,transparent 55%); animation:bgPulse 14s ease-in-out infinite alternate; }
 @keyframes bgPulse { 0%{opacity:.7;transform:scale(1)} 100%{opacity:1;transform:scale(1.04)} }
 
 .wrap { position:relative; z-index:1; max-width:780px; margin:0 auto; padding:2rem 1.2rem 5rem; }
 
-/* ── Toolbar ── */
 .toolbar { display:flex; align-items:center; justify-content:flex-end; gap:.4rem; margin-bottom:1.2rem; flex-wrap:wrap; }
-.tb-btn {
-  display:inline-flex; align-items:center; gap:.3rem; padding:.32rem .7rem;
-  border-radius:8px; border:1.5px solid var(--border); background:var(--card);
-  color:var(--muted); font-size:.75rem; font-weight:600; cursor:pointer;
-  transition:all .2s var(--ease-out); white-space:nowrap;
-}
+.tb-btn { display:inline-flex; align-items:center; gap:.3rem; padding:.32rem .7rem; border-radius:8px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); font-size:.75rem; font-weight:600; cursor:pointer; transition:all .2s var(--ease-out); white-space:nowrap; }
 .tb-btn:hover { border-color:var(--accent); color:var(--accent); }
 .tb-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .tb-btn svg { width:13px; height:13px; flex-shrink:0; }
 
 .lang-wrap { position:relative; }
-.lang-menu {
-  display:none; position:absolute; top:calc(100% + 4px); right:0;
-  background:var(--card); border:1.5px solid var(--border);
-  border-radius:10px; padding:.3rem; min-width:140px; z-index:100;
-  box-shadow:var(--shadow-md); flex-direction:column; gap:.1rem;
-}
+.lang-menu { display:none; position:absolute; top:calc(100% + 4px); right:0; background:var(--card); border:1.5px solid var(--border); border-radius:10px; padding:.3rem; min-width:150px; z-index:100; box-shadow:var(--shadow-md); flex-direction:column; gap:.1rem; }
 .lang-menu.open { display:flex; animation:fadeIn .15s ease; }
-.lang-opt {
-  padding:.4rem .75rem; border-radius:6px; font-size:.8rem; font-weight:500;
-  cursor:pointer; border:none; background:none; color:var(--text); text-align:left; transition:background .15s;
-}
+.lang-opt { padding:.4rem .75rem; border-radius:6px; font-size:.8rem; font-weight:500; cursor:pointer; border:none; background:none; color:var(--text); text-align:left; transition:background .15s; }
 .lang-opt:hover { background:var(--res-bg); }
 .lang-opt.active { color:var(--accent); font-weight:700; }
 .lang-opt:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
@@ -99,50 +68,24 @@ body::before {
 .fc-btn:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
 .fc-label { padding:0 .4rem; font-size:.7rem; font-weight:600; color:var(--muted); user-select:none; border-left:1px solid var(--border); border-right:1px solid var(--border); line-height:2; }
 
-/* ── Header ── */
 header { text-align:center; margin-bottom:1.8rem; animation:fadeDown .6s var(--ease-out) both; }
-header h1 {
-  font-size:clamp(1.7rem,5vw,2.5rem); font-weight:800; letter-spacing:-.04em;
-  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 50%,var(--green) 100%);
-  background-size:200% 200%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
-  animation:gradShift 7s ease infinite;
-}
+header h1 { font-size:clamp(1.7rem,5vw,2.5rem); font-weight:800; letter-spacing:-.04em; background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 50%,var(--green) 100%); background-size:200% 200%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:gradShift 7s ease infinite; }
 @keyframes gradShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
 header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
 
-/* ── Hotline ── */
-.hotline {
-  display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:.5rem 1.4rem;
-  background:var(--hotline-bg); border:1px solid rgba(224,122,95,.3); border-radius:14px;
-  padding:.8rem 1.4rem; margin-bottom:1.4rem; font-size:.82rem; color:var(--accent);
-  animation:fadeDown .7s var(--ease-out) .1s both;
-}
+.hotline { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:.5rem 1.4rem; background:var(--hotline-bg); border:1px solid rgba(224,122,95,.3); border-radius:14px; padding:.8rem 1.4rem; margin-bottom:1.4rem; font-size:.82rem; color:var(--accent); animation:fadeDown .7s var(--ease-out) .1s both; }
 .hotline-item { display:flex; align-items:center; gap:.4rem; }
 .h-icon { width:15px; height:15px; flex-shrink:0; }
 
-/* ── Search ── */
 .search-wrap { position:relative; margin-bottom:1rem; animation:fadeDown .7s var(--ease-out) .15s both; }
-.search-wrap input {
-  width:100%; padding:.9rem 1.2rem .9rem 3.2rem;
-  background:var(--card); border:1.5px solid var(--border); border-radius:14px;
-  color:var(--text); font-size:.95rem; outline:none; box-shadow:var(--shadow-sm);
-  transition:border-color .25s,box-shadow .25s,transform .2s var(--ease-spring);
-}
-.search-wrap input:focus-visible {
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(224,122,95,.25),var(--shadow-md); transform:translateY(-1px);
-}
+.search-wrap input { width:100%; padding:.9rem 1.2rem .9rem 3.2rem; background:var(--card); border:1.5px solid var(--border); border-radius:14px; color:var(--text); font-size:.95rem; outline:none; box-shadow:var(--shadow-sm); transition:border-color .25s,box-shadow .25s,transform .2s var(--ease-spring); }
+.search-wrap input:focus-visible { border-color:var(--accent); box-shadow:0 0 0 3px rgba(224,122,95,.25),var(--shadow-md); transform:translateY(-1px); }
 .search-wrap input::placeholder { color:var(--muted); }
 .search-ico { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--muted); width:18px; height:18px; pointer-events:none; transition:color .25s; }
 .search-wrap:focus-within .search-ico { color:var(--accent); }
 
-/* ── Pills ── */
 .pills { display:flex; flex-wrap:wrap; gap:.45rem; margin-bottom:1.2rem; animation:fadeDown .7s var(--ease-out) .2s both; }
-.pill {
-  padding:.36rem .9rem; border-radius:999px; border:1.5px solid var(--border);
-  background:var(--card); color:var(--muted); cursor:pointer; font-size:.78rem; font-weight:600;
-  box-shadow:var(--shadow-sm); transition:all .22s var(--ease-out);
-}
+.pill { padding:.36rem .9rem; border-radius:999px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); cursor:pointer; font-size:.78rem; font-weight:600; box-shadow:var(--shadow-sm); transition:all .22s var(--ease-out); }
 .pill:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
 .pill:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .pill[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:0 3px 14px rgba(224,122,95,.35); transform:translateY(-1px); }
@@ -150,40 +93,23 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
 .count { color:var(--muted); font-size:.76rem; margin-bottom:.9rem; font-weight:600; }
 .results { display:flex; flex-direction:column; gap:.75rem; }
 
-/* ── Card ── */
-.card {
-  background:var(--card); border:1.5px solid var(--border); border-radius:14px;
-  padding:1.1rem 1.3rem; box-shadow:var(--shadow-sm);
-  transition:border-color .22s,box-shadow .25s,transform .25s var(--ease-spring);
-  animation:fadeUp .4s var(--ease-out) both;
-}
+.card { background:var(--card); border:1.5px solid var(--border); border-radius:14px; padding:1.1rem 1.3rem; box-shadow:var(--shadow-sm); transition:border-color .22s,box-shadow .25s,transform .25s var(--ease-spring); animation:fadeUp .4s var(--ease-out) both; }
 .card:hover { border-color:var(--accent); box-shadow:var(--shadow-hover); transform:translateY(-3px); }
 .card:active { transform:translateY(-1px) scale(.997); }
 .card.is-open { border-color:var(--accent); box-shadow:var(--shadow-md); }
 
 .ctop { display:flex; gap:1rem; align-items:flex-start; cursor:pointer; }
 .ctop:focus-visible { outline:3px solid var(--accent); outline-offset:3px; border-radius:8px; }
-
-.cicon-wrap {
-  width:46px; height:46px; border-radius:13px;
-  background:linear-gradient(135deg,var(--res-bg),var(--job-bg));
-  display:flex; align-items:center; justify-content:center;
-  flex-shrink:0; color:var(--accent);
-  box-shadow:0 2px 8px rgba(224,122,95,.12);
-  transition:transform .3s var(--ease-spring),box-shadow .3s;
-}
+.cicon-wrap { width:46px; height:46px; border-radius:13px; background:linear-gradient(135deg,var(--res-bg),var(--job-bg)); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--accent); box-shadow:0 2px 8px rgba(224,122,95,.12); transition:transform .3s var(--ease-spring),box-shadow .3s; }
 .card:hover .cicon-wrap { transform:scale(1.1) rotate(-5deg); box-shadow:0 5px 16px rgba(224,122,95,.25); }
-
 .chev { margin-left:auto; flex-shrink:0; color:var(--muted); transition:transform .35s var(--ease-out),color .25s; padding-top:.1rem; }
 .card.is-open .chev { transform:rotate(180deg); color:var(--accent); }
 .chev svg { width:18px; height:18px; display:block; }
-
 .ctitle { font-weight:700; font-size:.95rem; margin-bottom:.15rem; }
 .csub { color:var(--muted); font-size:.8rem; line-height:1.55; }
 .ctags { display:flex; flex-wrap:wrap; gap:.3rem; margin-top:.55rem; }
 .tag { padding:.15rem .55rem; background:var(--tag-bg); border:1px solid var(--tag-border); border-radius:999px; font-size:.7rem; color:var(--accent); font-weight:500; }
 
-/* ── Card body ── */
 .cbody { display:grid; grid-template-rows:0fr; transition:grid-template-rows .38s var(--ease-out),opacity .3s ease,margin-top .3s ease; opacity:0; margin-top:0; }
 .cbody.open { grid-template-rows:1fr; opacity:1; margin-top:.9rem; }
 .cbody-inner { min-height:0; overflow:hidden; padding-top:.9rem; border-top:1px solid var(--border); font-size:.84rem; line-height:1.78; color:var(--text); }
@@ -191,13 +117,9 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
 .cbody a:hover { opacity:.8; }
 .cbody a:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
 
-/* ── Notice ── */
 .notice { background:var(--notice-bg); border:1px solid var(--notice-border); border-left:3px solid var(--accent2); border-radius:8px; padding:.5rem .85rem; font-size:.78rem; color:var(--notice-text); margin-bottom:.7rem; font-weight:500; }
-
-/* ── Section label ── */
 .section-label { font-size:.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin:1.1rem 0 .45rem; }
 
-/* ── Job grid ── */
 .job-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:.55rem; margin-top:.7rem; }
 .job-card { background:var(--job-bg); border:1px solid var(--job-border); border-radius:10px; padding:.7rem .9rem; text-decoration:none; display:block; transition:all .22s var(--ease-out); }
 .job-card:hover { background:rgba(129,178,154,.2); border-color:var(--green); transform:translateY(-2px); }
@@ -205,7 +127,6 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
 .jc-org { font-size:.86rem; font-weight:600; color:var(--text); }
 .jc-note { font-size:.74rem; color:var(--muted); margin-top:.2rem; }
 
-/* ── Resource tiles ── */
 .res-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:.55rem; margin-top:.8rem; }
 .res-card { background:var(--res-bg); border:1px solid var(--res-border); border-radius:10px; padding:.75rem 1rem; text-decoration:none; display:block; transition:all .22s var(--ease-out); }
 .res-card:hover { background:rgba(224,122,95,.15); border-color:var(--accent); transform:translateY(-2px); }
@@ -217,32 +138,19 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
 .rc-addr { font-size:.73rem; color:var(--muted); font-style:italic; }
 .rc-phone { font-size:.73rem; color:var(--phone-color); margin-top:.2rem; }
 
-/* ── Volunteer form link ── */
-.vol-form-link {
-  display:inline-flex; align-items:center; gap:.5rem;
-  margin-top:.8rem; padding:.55rem 1.1rem;
-  background:var(--job-bg); border:1.5px solid var(--job-border);
-  border-radius:10px; text-decoration:none; color:var(--green);
-  font-size:.84rem; font-weight:600; transition:all .22s var(--ease-out);
-}
+.vol-form-link { display:inline-flex; align-items:center; gap:.5rem; margin-top:.8rem; padding:.55rem 1.1rem; background:var(--job-bg); border:1.5px solid var(--job-border); border-radius:10px; text-decoration:none; color:var(--green); font-size:.84rem; font-weight:600; transition:all .22s var(--ease-out); }
 .vol-form-link:hover { background:rgba(129,178,154,.2); border-color:var(--green); transform:translateY(-2px); text-decoration:none; }
 .vol-form-link:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
 .vol-form-link svg { width:15px; height:15px; flex-shrink:0; }
 
-/* ── Card actions ── */
 .card-actions { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.85rem; padding-top:.85rem; border-top:1px solid var(--border); }
-.ca-btn {
-  display:inline-flex; align-items:center; gap:.35rem; padding:.33rem .8rem; border-radius:8px;
-  font-size:.74rem; font-weight:600; border:1px solid rgba(129,178,154,.3); cursor:pointer;
-  background:var(--btn-bg); color:var(--green); transition:all .2s var(--ease-out);
-}
+.ca-btn { display:inline-flex; align-items:center; gap:.35rem; padding:.33rem .8rem; border-radius:8px; font-size:.74rem; font-weight:600; border:1px solid rgba(129,178,154,.3); cursor:pointer; background:var(--btn-bg); color:var(--green); transition:all .2s var(--ease-out); }
 .ca-btn:hover { background:var(--green); color:#fff; border-color:var(--green); transform:translateY(-1px); }
 .ca-btn:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
 .ca-btn svg { width:13px; height:13px; }
 
 .empty { text-align:center; color:var(--muted); padding:3.5rem 0; font-size:.9rem; }
 
-/* ── Modal ── */
 .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(5px); z-index:200; align-items:center; justify-content:center; padding:1rem; }
 .modal-bg.open { display:flex; animation:fadeIn .25s ease; }
 .modal { background:var(--modal-bg); border:1px solid var(--border); border-radius:20px; padding:1.6rem; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; animation:scaleIn .32s var(--ease-spring) both; color:var(--modal-text); }
@@ -255,7 +163,6 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
 .modal-close svg { width:16px; height:16px; }
 .hint { font-size:.78rem; color:var(--modal-muted); margin-bottom:1rem; line-height:1.55; }
 
-/* ── Print ── */
 @media print {
   body::before,.toolbar,.hotline,.search-wrap,.pills,.count,.skip-link,.card-actions,.chev,.ctags { display:none !important; }
   body { background:#fff !important; color:#000 !important; font-size:11pt; }
@@ -282,9 +189,9 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
-
 <div class="wrap">
-  <!-- ── Toolbar ── -->
+
+  <!-- Toolbar -->
   <div class="toolbar" role="toolbar" aria-label="Display options">
     <div class="font-control" role="group" aria-label="Text size">
       <button class="fc-btn" onclick="changeFont(-0.1)" aria-label="Decrease text size">A−</button>
@@ -311,16 +218,24 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
       <div class="lang-menu" id="langMenu" role="listbox" aria-label="Language options">
         <button class="lang-opt active" role="option" aria-selected="true"  onclick="setLang('en')">🇺🇸 English</button>
         <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('es')">🇪🇸 Español</button>
-        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('zh')">🇨🇳 中文</button>
-        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('ht')">🇭🇹 Kreyòl</button>
-        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('bn')">🇧🇩 বাংলা</button>
+        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('fr')">🇫🇷 Français</button>
         <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('ru')">🇷🇺 Русский</button>
+        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('zh')">🇨🇳 中文</button>
+        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('hi')">🇮🇳 हिन्दी</button>
+        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('bn')">🇧🇩 বাংলা</button>
+        <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('ht')">🇭🇹 Kreyòl</button>
       </div>
     </div>
-    <button class="tb-btn" onclick="window.print()" aria-label="Print or save as PDF">
+  <button class="tb-btn" onclick="window.open('https://www.google.com/maps/search/community+center+near+me','_blank')" aria-label="Find a community center near me">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+      </svg>
+      Find a Community Center Near Me
+    </button>
+   <button class="tb-btn" onclick="window.print()" aria-label="Print or save as PDF">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="6 9 6 2 18 2 18 9"/>
-        <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+        <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2v5a2 2 0 01-2 2h-2"/>
         <rect x="6" y="14" width="12" height="8"/>
       </svg>
       Print / PDF
@@ -391,7 +306,6 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
 </div>
 
 <script>
-// ── SVG icons keyed by card id ────────────────────────────────────
 const ICONS = {
   'jobs-apply':   `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>`,
   'jobs-training':`<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
@@ -414,120 +328,151 @@ const ICONS = {
 // ── Translations ──────────────────────────────────────────────────
 const T = {
   en: {
-    search:"Search by need, resource, keyword…",
-    found:n=>`${n} resource${n!==1?'s':''} found`,
-    empty:"No results — try a different search or category.",
-    suggest:"Suggest Update",
-    volForm:"Sign Up / Volunteer Form",
-    hl1:"Emergency Shelter: Call 311 (24/7)", hl2:"Coalition Hotline:", hl3:"Mental Health:",
-    sub:"Real links. Real addresses. Updated for NYC 2025–2026.",
-    darkOn:"Dark mode", darkOff:"Light mode",
-    jobNotice:"⚠️ Check careers pages before sending clients — openings change.",
-    jobSections:[
-      { label:"🟢 Entry-Level",            key:"entryLevel"  },
-      { label:"🏥 Healthcare / HHA / CNA", key:"healthcare"  },
-      { label:"🍽️ Food & Hospitality",    key:"food"        },
-      { label:"🔧 Trades & Labor",         key:"trades"      }
+    search: "Search by need, resource, keyword…",
+    found: n => `${n} resource${n!==1?'s':''} found`,
+    empty: "No results — try a different search or category.",
+    suggest: "Suggest Update",
+    volForm: "Sign Up / Volunteer Form",
+    hl1: "Emergency Shelter: Call 311 (24/7)", hl2: "Coalition Hotline:", hl3: "Mental Health:",
+    sub: "Real links. Real addresses. Updated for NYC 2025–2026.",
+    darkOn: "Dark mode", darkOff: "Light mode",
+    jobNotice: "⚠️ Check careers pages before sending clients — openings change.",
+    jobSections: [
+      { label: "🟢 Entry-Level",            key: "entryLevel" },
+      { label: "🏥 Healthcare / HHA / CNA", key: "healthcare" },
+      { label: "🍽️ Food & Hospitality",    key: "food"       },
+      { label: "🔧 Trades & Labor",         key: "trades"     }
     ]
   },
   es: {
-    search:"Buscar por necesidad, recurso, palabra clave…",
-    found:n=>`${n} recurso${n!==1?'s':''} encontrado${n!==1?'s':''}`,
-    empty:"Sin resultados — intente otra búsqueda.",
-    suggest:"Sugerir actualización",
-    volForm:"Formulario de voluntariado",
-    hl1:"Refugio de emergencia: Llame al 311 (24/7)", hl2:"Línea directa:", hl3:"Salud mental:",
-    sub:"Links reales. Direcciones reales. Actualizado para NYC 2025–2026.",
-    darkOn:"Modo oscuro", darkOff:"Modo claro",
-    jobNotice:"⚠️ Verifique las páginas de empleo antes de enviar clientes — las vacantes cambian.",
-    jobSections:[
-      { label:"🟢 Nivel básico",             key:"entryLevel"  },
-      { label:"🏥 Salud / HHA / CNA",        key:"healthcare"  },
-      { label:"🍽️ Comida y hospitalidad",   key:"food"        },
-      { label:"🔧 Oficios y trabajo manual", key:"trades"      }
+    search: "Buscar por necesidad, recurso, palabra clave…",
+    found: n => `${n} recurso${n!==1?'s':''} encontrado${n!==1?'s':''}`,
+    empty: "Sin resultados — intente otra búsqueda.",
+    suggest: "Sugerir actualización",
+    volForm: "Formulario de voluntariado",
+    hl1: "Refugio de emergencia: Llame al 311 (24/7)", hl2: "Línea directa:", hl3: "Salud mental:",
+    sub: "Links reales. Direcciones reales. Actualizado para NYC 2025–2026.",
+    darkOn: "Modo oscuro", darkOff: "Modo claro",
+    jobNotice: "⚠️ Verifique las páginas de empleo antes de enviar clientes — las vacantes cambian.",
+    jobSections: [
+      { label: "🟢 Nivel básico",             key: "entryLevel" },
+      { label: "🏥 Salud / HHA / CNA",        key: "healthcare" },
+      { label: "🍽️ Comida y hospitalidad",   key: "food"       },
+      { label: "🔧 Oficios y trabajo manual", key: "trades"     }
     ]
   },
-  zh: {
-    search:"按需求、资源、关键字搜索…",
-    found:n=>`找到 ${n} 个资源`,
-    empty:"无结果 — 请尝试其他搜索。",
-    suggest:"建议更新",
-    volForm:"志愿者报名表",
-    hl1:"紧急收容所：拨打 311（24/7）", hl2:"联盟热线：", hl3:"心理健康：",
-    sub:"真实链接。真实地址。已更新至 NYC 2025–2026。",
-    darkOn:"深色模式", darkOff:"浅色模式",
-    jobNotice:"⚠️ 发送客户前请检查招聘页面——职位随时变化。",
-    jobSections:[
-      { label:"🟢 入门级职位",         key:"entryLevel"  },
-      { label:"🏥 医疗 / HHA / CNA",   key:"healthcare"  },
-      { label:"🍽️ 餐饮与酒店",        key:"food"        },
-      { label:"🔧 技工与劳务",         key:"trades"      }
-    ]
-  },
-  ht: {
-    search:"Chèche pa bezwen, resous, mo kle…",
-    found:n=>`${n} resous jwenn`,
-    empty:"Pa gen rezilta — eseye rechèch diferan.",
-    suggest:"Sijere mizajou",
-    volForm:"Fòm volontè",
-    hl1:"Abri ijans: Rele 311 (24/7)", hl2:"Liy koalisyon:", hl3:"Sante mantal:",
-    sub:"Lyen reyèl. Adrès reyèl. Mete ajou pou NYC 2025–2026.",
-    darkOn:"Mòd fènwa", darkOff:"Mòd klè",
-    jobNotice:"⚠️ Verifye paj karyè anvan voye kliyan — pozisyon yo ka chanje.",
-    jobSections:[
-      { label:"🟢 Nivo debutan",           key:"entryLevel"  },
-      { label:"🏥 Sante / HHA / CNA",      key:"healthcare"  },
-      { label:"🍽️ Manje ak ospitalite",   key:"food"        },
-      { label:"🔧 Métye ak travay",         key:"trades"      }
-    ]
-  },
-  bn: {
-    search:"প্রয়োজন, সম্পদ, কীওয়ার্ড দিয়ে খুঁজুন…",
-    found:n=>`${n}টি রিসোর্স পাওয়া গেছে`,
-    empty:"কোনো ফলাফল নেই।",
-    suggest:"আপডেট সাজেস্ট করুন",
-    volForm:"স্বেচ্ছাসেবী ফর্ম",
-    hl1:"জরুরি আশ্রয়: 311 কল করুন (24/7)", hl2:"কোয়ালিশন হটলাইন:", hl3:"মানসিক স্বাস্থ্য:",
-    sub:"আসল লিংক। আসল ঠিকানা। NYC 2025–2026 আপডেট।",
-    darkOn:"ডার্ক মোড", darkOff:"লাইট মোড",
-    jobNotice:"⚠️ ক্লায়েন্ট পাঠানোর আগে চাকরির পেজ চেক করুন — পদ পরিবর্তন হতে পারে।",
-    jobSections:[
-      { label:"🟢 এন্ট্রি-লেভেল",             key:"entryLevel"  },
-      { label:"🏥 স্বাস্থ্যসেবা / HHA / CNA",  key:"healthcare"  },
-      { label:"🍽️ খাদ্য ও আতিথেয়তা",        key:"food"        },
-      { label:"🔧 ট্রেড ও শ্রম",              key:"trades"      }
+  fr: {
+    search: "Rechercher par besoin, ressource, mot-clé…",
+    found: n => `${n} ressource${n!==1?'s':''} trouvée${n!==1?'s':''}`,
+    empty: "Aucun résultat — essayez une autre recherche ou catégorie.",
+    suggest: "Suggérer une mise à jour",
+    volForm: "Formulaire de bénévolat",
+    hl1: "Hébergement d'urgence : Appelez le 311 (24h/24)", hl2: "Ligne directe :", hl3: "Santé mentale :",
+    sub: "Vrais liens. Vraies adresses. Mis à jour pour NYC 2025–2026.",
+    darkOn: "Mode sombre", darkOff: "Mode clair",
+    jobNotice: "⚠️ Vérifiez les pages carrières avant d'envoyer des clients — les postes changent.",
+    jobSections: [
+      { label: "🟢 Niveau débutant",              key: "entryLevel" },
+      { label: "🏥 Santé / HHA / CNA",            key: "healthcare" },
+      { label: "🍽️ Alimentation et hôtellerie",  key: "food"       },
+      { label: "🔧 Métiers et main-d'œuvre",      key: "trades"     }
     ]
   },
   ru: {
-    search:"Поиск по потребности, ресурсу, ключевому слову…",
-    found:n=>`Найдено ресурсов: ${n}`,
-    empty:"Ничего не найдено.",
-    suggest:"Предложить обновление",
-    volForm:"Форма для волонтёров",
-    hl1:"Экстренный приют: Звоните 311 (24/7)", hl2:"Горячая линия:", hl3:"Психическое здоровье:",
-    sub:"Реальные ссылки. Реальные адреса. Обновлено для NYC 2025–2026.",
-    darkOn:"Тёмная тема", darkOff:"Светлая тема",
-    jobNotice:"⚠️ Проверяйте страницы вакансий перед отправкой клиентов — позиции меняются.",
-    jobSections:[
-      { label:"🟢 Начальный уровень",                    key:"entryLevel"  },
-      { label:"🏥 Здравоохранение / HHA / CNA",          key:"healthcare"  },
-      { label:"🍽️ Еда и гостеприимство",               key:"food"        },
-      { label:"🔧 Ремёсла и рабочие специальности",      key:"trades"      }
+    search: "Поиск по потребности, ресурсу, ключевому слову…",
+    found: n => `Найдено ресурсов: ${n}`,
+    empty: "Ничего не найдено — попробуйте другой запрос.",
+    suggest: "Предложить обновление",
+    volForm: "Форма для волонтёров",
+    hl1: "Экстренный приют: звоните 311 (24/7)", hl2: "Горячая линия:", hl3: "Психическое здоровье:",
+    sub: "Реальные ссылки. Реальные адреса. Обновлено для NYC 2025–2026.",
+    darkOn: "Тёмная тема", darkOff: "Светлая тема",
+    jobNotice: "⚠️ Проверяйте страницы вакансий перед отправкой клиентов — позиции меняются.",
+    jobSections: [
+      { label: "🟢 Начальный уровень",                key: "entryLevel" },
+      { label: "🏥 Здравоохранение / HHA / CNA",      key: "healthcare" },
+      { label: "🍽️ Питание и гостеприимство",        key: "food"       },
+      { label: "🔧 Рабочие специальности",            key: "trades"     }
+    ]
+  },
+  zh: {
+    search: "按需求、资源、关键字搜索…",
+    found: n => `找到 ${n} 个资源`,
+    empty: "无结果 — 请尝试其他搜索或类别。",
+    suggest: "建议更新",
+    volForm: "志愿者报名表",
+    hl1: "紧急收容所：拨打 311（24/7）", hl2: "联盟热线：", hl3: "心理健康：",
+    sub: "真实链接。真实地址。已更新至 NYC 2025–2026。",
+    darkOn: "深色模式", darkOff: "浅色模式",
+    jobNotice: "⚠️ 发送客户前请检查招聘页面——职位随时变化。",
+    jobSections: [
+      { label: "🟢 入门级职位",       key: "entryLevel" },
+      { label: "🏥 医疗 / HHA / CNA", key: "healthcare" },
+      { label: "🍽️ 餐饮与酒店",      key: "food"       },
+      { label: "🔧 技工与劳务",       key: "trades"     }
+    ]
+  },
+  hi: {
+    search: "जरूरत, संसाधन, कीवर्ड से खोजें…",
+    found: n => `${n} संसाधन मिले`,
+    empty: "कोई परिणाम नहीं — अलग खोज या श्रेणी आज़माएं।",
+    suggest: "अपडेट सुझाएं",
+    volForm: "स्वयंसेवक फॉर्म",
+    hl1: "आपातकालीन आश्रय: 311 पर कॉल करें (24/7)", hl2: "कोएलिशन हेल्पलाइन:", hl3: "मानसिक स्वास्थ्य:",
+    sub: "असली लिंक। असली पते। NYC 2025–2026 के लिए अपडेट।",
+    darkOn: "डार्क मोड", darkOff: "लाइट मोड",
+    jobNotice: "⚠️ क्लाइंट भेजने से पहले करियर पेज जांचें — पद बदल सकते हैं।",
+    jobSections: [
+      { label: "🟢 प्रवेश-स्तर",            key: "entryLevel" },
+      { label: "🏥 स्वास्थ्य / HHA / CNA",  key: "healthcare" },
+      { label: "🍽️ खाद्य और आतिथ्य",      key: "food"       },
+      { label: "🔧 कारीगरी और श्रम",        key: "trades"     }
+    ]
+  },
+  bn: {
+    search: "প্রয়োজন, সম্পদ, কীওয়ার্ড দিয়ে খুঁজুন…",
+    found: n => `${n}টি রিসোর্স পাওয়া গেছে`,
+    empty: "কোনো ফলাফল নেই — অন্য খোঁজ বা বিভাগ চেষ্টা করুন।",
+    suggest: "আপডেট সাজেস্ট করুন",
+    volForm: "স্বেচ্ছাসেবী ফর্ম",
+    hl1: "জরুরি আশ্রয়: 311 কল করুন (24/7)", hl2: "কোয়ালিশন হটলাইন:", hl3: "মানসিক স্বাস্থ্য:",
+    sub: "আসল লিংক। আসল ঠিকানা। NYC 2025–2026 আপডেট।",
+    darkOn: "ডার্ক মোড", darkOff: "লাইট মোড",
+    jobNotice: "⚠️ ক্লায়েন্ট পাঠানোর আগে চাকরির পেজ চেক করুন — পদ পরিবর্তন হতে পারে।",
+    jobSections: [
+      { label: "🟢 এন্ট্রি-লেভেল",             key: "entryLevel" },
+      { label: "🏥 স্বাস্থ্যসেবা / HHA / CNA",  key: "healthcare" },
+      { label: "🍽️ খাদ্য ও আতিথেয়তা",        key: "food"       },
+      { label: "🔧 ট্রেড ও শ্রম",              key: "trades"     }
+    ]
+  },
+  ht: {
+    search: "Chèche pa bezwen, resous, mo kle…",
+    found: n => `${n} resous jwenn`,
+    empty: "Pa gen rezilta — eseye yon lòt rechèch oswa kategori.",
+    suggest: "Sijere mizajou",
+    volForm: "Fòm volontè",
+    hl1: "Abri ijans: Rele 311 (24/7)", hl2: "Liy koalisyon:", hl3: "Sante mantal:",
+    sub: "Lyen reyèl. Adrès reyèl. Mete ajou pou NYC 2025–2026.",
+    darkOn: "Mòd fènwa", darkOff: "Mòd klè",
+    jobNotice: "⚠️ Verifye paj karyè anvan voye kliyan — pozisyon yo ka chanje.",
+    jobSections: [
+      { label: "🟢 Nivo debutan",           key: "entryLevel" },
+      { label: "🏥 Sante / HHA / CNA",      key: "healthcare" },
+      { label: "🍽️ Manje ak ospitalite",   key: "food"       },
+      { label: "🔧 Métye ak travay",         key: "trades"     }
     ]
   }
 };
 
-// ── SVG snippets ──────────────────────────────────────────────────
 const CHEVRON  = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 const BULB     = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/></svg>`;
 const EXT_LINK = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
 const SUN_SVG  = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
 const MOON_SVG = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
 
-// ── State ─────────────────────────────────────────────────────────
 let data = [], jobListingsData = null, active = 'All', open = null, lang = 'en', fontScale = 1, isDark = false;
 
-// ── Load data.json ────────────────────────────────────────────────
 async function loadData() {
   let json;
   try { json = await fetch('data.json').then(r => r.json()); }
@@ -542,7 +487,6 @@ async function loadData() {
   render();
 }
 
-// ── Render ────────────────────────────────────────────────────────
 function render() {
   const t = T[lang];
   const q = (document.getElementById('search').value || '').toLowerCase().trim();
@@ -556,17 +500,14 @@ function render() {
   });
 
   document.getElementById('count').textContent = t.found(filtered.length);
-
   const res = document.getElementById('results');
   if (!filtered.length) { res.innerHTML = `<div class="empty" role="listitem">${t.empty}</div>`; return; }
 
   res.innerHTML = filtered.map((d, pos) => {
     const isOpen = open === d._i, bodyId = `body-${d._i}`;
-
     const noticeHtml = d.notice ? `<div class="notice">${d.notice}</div>` : '';
     const extraHtml  = d.extra  ? `<p style="margin-bottom:.6rem;font-size:.82rem">${d.extra}</p>` : '';
 
-    // Build job-listings body
     const jobBodyContent = (() => {
       if (d.type !== 'job-listings' || !jobListingsData) return '';
       let html = `<div class="notice">${t.jobNotice}</div>`;
@@ -587,7 +528,6 @@ function render() {
       return html;
     })();
 
-    // Volunteer form link
     const volFormHtml = d.volunteerFormUrl
       ? `<a class="vol-form-link" href="${d.volunteerFormUrl}" target="_blank" rel="noopener noreferrer"
            onclick="event.stopPropagation()" aria-label="${t.volForm} (opens in new tab)">
@@ -655,7 +595,6 @@ function tog(i) {
   requestAnimationFrame(() => window.scrollTo({top:scrollY,behavior:'instant'}));
 }
 
-// ── Pills ─────────────────────────────────────────────────────────
 function rebuildPills() {
   const pw = document.getElementById('pills');
   pw.innerHTML = '';
@@ -674,7 +613,6 @@ function rebuildPills() {
   });
 }
 
-// ── Theme ─────────────────────────────────────────────────────────
 function toggleTheme() {
   isDark = !isDark;
   document.documentElement.setAttribute('data-theme', isDark?'dark':'light');
@@ -684,25 +622,23 @@ function toggleTheme() {
   lbl.textContent = isDark ? T[lang].darkOff : T[lang].darkOn;
 }
 
-// ── Font ──────────────────────────────────────────────────────────
-// Sets root font-size so all rem-based measurements scale globally
 function changeFont(delta) {
   fontScale = Math.min(1.4, Math.max(0.8, +(fontScale + delta).toFixed(1)));
   document.documentElement.style.fontSize = (fontScale * 16) + 'px';
   document.getElementById('fontLabel').textContent = Math.round(fontScale * 100) + '%';
 }
 
-// ── Language ──────────────────────────────────────────────────────
 function toggleLangMenu() {
   const menu=document.getElementById('langMenu'), btn=document.getElementById('langBtn');
   const isOpen=menu.classList.toggle('open');
   btn.setAttribute('aria-expanded',isOpen);
   if(isOpen) menu.querySelector('button').focus();
 }
+
 function setLang(code) {
   lang=code;
   document.documentElement.setAttribute('lang',code);
-  const names={en:'English',es:'Español',zh:'中文',ht:'Kreyòl',bn:'বাংলা',ru:'Русский'};
+  const names={en:'English',es:'Español',fr:'Français',ru:'Русский',zh:'中文',hi:'हिन्दी',bn:'বাংলা',ht:'Kreyòl'};
   document.getElementById('langLabel').textContent = names[code];
   document.getElementById('langMenu').classList.remove('open');
   document.getElementById('langBtn').setAttribute('aria-expanded','false');
@@ -718,12 +654,12 @@ function setLang(code) {
   document.getElementById('themeLabel').textContent = isDark ? t.darkOff : t.darkOn;
   render();
 }
+
 document.addEventListener('click', e => {
   const w=document.getElementById('langWrap');
   if(w&&!w.contains(e.target)){document.getElementById('langMenu').classList.remove('open');document.getElementById('langBtn').setAttribute('aria-expanded','false');}
 });
 
-// ── Modal ─────────────────────────────────────────────────────────
 let lastFocus=null;
 function openFeedback(title,e){e.stopPropagation();openModal('feedbackModal');}
 function openModal(id){lastFocus=document.activeElement;const m=document.getElementById(id);m.classList.add('open');m.querySelector('.modal-close').focus();}

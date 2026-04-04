@@ -170,6 +170,7 @@
       "notice": "",
       "resources": [
         { "org": "NYC MySchools",                    "note": "Pre-K & school finder",                                        "url": "https://www.myschools.nyc" },
+        { "org": "NYC Activities",                   "note": "Free resources",                                               "url": "https://www.nyc.gov/site/childcare/for-families/free-or-low-cost-activities-for-families.page"},
         { "org": "ACS Childcare Voucher",            "note": "Subsidized childcare",   "phone": "(718) 722-4646",            "url": "https://www.nyc.gov/acs" },
         { "org": "Child Development Support Corp",   "note": "Childcare services",     "addr": "352 Classon Ave, Brooklyn",  "phone": "(718) 398-5348", "url": "https://www.cdscny.org" },
         { "org": "Day Care Council of NY",           "note": "Childcare resources",    "addr": "12 W 21st St",              "phone": "(212) 206-7818", "url": "https://www.daycarecouncil.org" },
@@ -285,22 +286,6 @@
         { "org": "YMCA of Greater NY",     "note": "Community programs citywide",                                     "phone": "(212) 630-9600", "url": "https://www.ymcanyc.org" },
         { "org": "Grace Institute",        "note": "Women's job training",       "addr": "1233 Second Ave",           "phone": "(212) 832-7605", "url": "https://www.graceinstitute.org" },
         { "org": "FindHelp.org",           "note": "Search any service by zip",                                                            "url": "https://www.findhelp.org" }
-      ]
-    },
-    {
-      "id":    "funding",
-      "title": "Grants & Funding",
-      "sub":   "Who funds community coordination orgs in NYC",
-      "tags":  ["grants", "funding", "donors", "foundations", "nonprofit"],
-      "cats":  ["Operations"],
-      "notice": "📋 Before approaching any funder: 10+ tracked outcomes, volunteer hours logged, clean governance.",
-      "extra":  "<strong>Government sources:</strong> DYCD, NYC CEO, HRA contracts, Dept of Labor workforce grants.",
-      "resources": [
-        { "org": "Robin Hood Foundation",    "note": "LOI first — large grants",         "url": "https://robinhood.org" },
-        { "org": "Tiger Foundation",         "note": "LOI first — small community orgs" },
-        { "org": "New York Community Trust", "note": "LOI first — broad eligibility",    "url": "https://www.nycommunitytrust.org" },
-        { "org": "Altman Foundation",        "note": "LOI first — workforce & education" },
-        { "org": "NYC Nonprofits Portal",    "note": "City contracts & RFPs",            "url": "https://www.nyc.gov/nonprofits" }
       ]
     },
     {

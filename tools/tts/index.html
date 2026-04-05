@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>text to speech</title>
+<title>Text to Speech</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
@@ -21,14 +21,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .screen{display:none;flex-direction:column;position:absolute;inset:0;width:100%;max-width:560px;margin:0 auto;padding:20px;overflow:hidden}
 .screen.active{display:flex}
 
+/* == Step 1 == */
+.s1{gap:14px}
+.s1-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;overflow:hidden}
 .title{text-align:center;font-weight:700;letter-spacing:-.5px;
   background:linear-gradient(135deg,var(--ac),#a78bfa,#c084fc);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.4rem}
 .title.sm{font-size:.85rem}
-
-/* Step 1 */
-.s1{gap:14px}
-.s1-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;overflow:hidden}
 
 #textInput{
   flex:1;min-height:0;width:100%;background:var(--s2);border:1px solid var(--bdr);
@@ -39,7 +38,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 #textInput:focus{border-color:var(--ac)}
 .charct{text-align:right;font-size:.58rem;color:var(--tx3);margin-top:-6px}
 
-.drop{border:2px dashed var(--bdr);border-radius:var(--rs);padding:16px;text-align:center;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0}
+.drop{
+  border:2px dashed var(--bdr);border-radius:var(--rs);padding:16px;
+  text-align:center;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0;
+}
 .drop:hover,.drop.dragover{border-color:var(--ac);background:var(--acg)}
 .drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .drop p{font-size:.78rem;color:var(--tx2)}
@@ -58,7 +60,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .bp:hover{background:var(--ac2);transform:translateY(-1px)}
 .bp:disabled{opacity:.3;pointer-events:none}
 
-/* Step 2 */
+/* == Step 2: Player == */
 .s2{gap:0}
 .s2-inner{flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden;padding-top:6px}
 
@@ -72,6 +74,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .bgear.open{color:var(--ac);background:var(--acg)}
 .bgear svg,.bdl svg{width:19px;height:19px}
 
+/* Drawer */
 .drawer{max-height:0;overflow:hidden;transition:max-height .3s,padding .3s;background:var(--s1);border-radius:var(--rs);flex-shrink:0}
 .drawer.open{max-height:320px;padding:14px;border:1px solid var(--bdr)}
 .drawer .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
@@ -88,12 +91,15 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 input[type=range]{-webkit-appearance:none;width:100%;height:5px;background:var(--s3);border-radius:3px;outline:none;margin-top:4px}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--ac);border-radius:50%;cursor:pointer;box-shadow:0 2px 10px rgba(124,106,240,.3)}
 input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);border-radius:50%;cursor:pointer;border:none}
-
-.dlbtn{width:100%;padding:10px;border:none;border-radius:8px;font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer;background:var(--s3);color:var(--tx);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;margin-top:8px}
+.dlsec{margin-top:8px;padding-top:10px;border-top:1px solid var(--bdr)}
+.dlsec .row{margin-bottom:8px}
+.dlbtn{width:100%;padding:10px;border:none;border-radius:8px;font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer;background:var(--s3);color:var(--tx);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
 .dlbtn:hover{background:var(--ac);color:#fff}
 .dlbtn:disabled{opacity:.4;pointer-events:none}
 .dlbtn svg{width:15px;height:15px}
+.dlprog{font-size:.65rem;color:var(--tx2);text-align:center;margin-top:4px;min-height:16px}
 
+/* Read pane */
 .rpane{flex:1;min-height:0;overflow-y:auto;background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r);padding:18px;font-size:.9rem;line-height:2.1}
 .rpane::-webkit-scrollbar{width:4px}
 .rpane::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
@@ -101,26 +107,20 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
 .w.spent{color:var(--tx3)}
 .w.now{color:#fff;background:var(--ac);padding:1px 3px}
 
+/* Transport */
 .tport{flex-shrink:0;padding:10px 0 4px}
 .pbar{cursor:pointer;padding:4px 0}
 .ptrk{width:100%;height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
-.pfill{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),#a78bfa);border-radius:2px;transition:width .15s linear}
+.pfill{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),#a78bfa);border-radius:2px;transition:width .25s linear}
 .ptm{display:flex;justify-content:space-between;font-size:.55rem;color:var(--tx3);margin-top:3px;font-variant-numeric:tabular-nums}
 .ctrls{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:6px}
-.cb{
-  background:none;border:none;color:var(--tx2);cursor:pointer;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;width:40px;height:40px;
-  transition:all .12s;position:relative;-webkit-tap-highlight-color:transparent;
-  user-select:none;touch-action:manipulation;
-}
+.cb{background:none;border:none;color:var(--tx2);cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;width:40px;height:40px;transition:all .15s;position:relative}
 .cb:hover{color:var(--tx);background:rgba(255,255,255,.04)}
-.cb:active{transform:scale(.92)}
 .cb svg{width:18px;height:18px}
 .cb.main{background:var(--ac);color:#fff;width:50px;height:50px;box-shadow:0 4px 16px rgba(124,106,240,.3)}
 .cb.main:hover{background:var(--ac2);transform:scale(1.05)}
-.cb.main:active{transform:scale(.95)}
 .cb.main svg{width:22px;height:22px}
-.cb .sk{position:absolute;font-size:.48rem;font-weight:800;pointer-events:none;line-height:1}
+.cb .sk{position:absolute;font-size:.48rem;font-weight:800;pointer-events:none}
 .stat{text-align:center;font-size:.62rem;color:var(--tx3);padding:2px 0;flex-shrink:0;min-height:16px}
 .stat.on{color:var(--grn)}.stat.err{color:var(--red)}
 
@@ -136,6 +136,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
   <div class="title">text to speech</div>
   <textarea id="textInput" placeholder="Paste or type your text…"></textarea>
   <div class="charct" id="charCt"></div>
+
   <div class="drop" id="dropZone">
     <p>Upload a file</p>
     <span class="ft">.txt &ensp; .pdf &ensp; .docx</span>
@@ -143,6 +144,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
   </div>
   <div class="fpill" id="fpill"><span class="fn" id="fName"></span><button id="fClear"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="pmsg" id="pmsg">Extracting…</div>
+
   <button class="btn bp" id="btnGo" disabled>Speak This Text</button>
 </div>
 </div>
@@ -158,31 +160,31 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
     </div>
   </div>
 
+  <!-- Drawer -->
   <div class="drawer" id="drawer">
     <div class="row">
-      <div>
-        <label>Voice</label>
-        <select id="voiceSel">
-          <option value="Joanna">Joanna (US Female)</option>
-          <option value="Matthew">Matthew (US Male)</option>
-          <option value="Amy">Amy (UK Female)</option>
+      <div><label>Playback Voice</label><select id="voiceSel"></select></div>
+      <div><label>Language</label><select id="langSel"><option value="en">English</option></select></div>
+    </div>
+    <div class="spdrow"><label>Speed</label><span class="spdv" id="spdVal">1.0×</span></div>
+    <input type="range" id="spdR" min="0.1" max="5" step="0.1" value="1">
+
+    <div class="dlsec">
+      <div class="row">
+        <div><label>Download Voice</label><select id="dlVoice">
           <option value="Brian">Brian (UK Male)</option>
+          <option value="Amy">Amy (UK Female)</option>
+          <option value="Joanna" selected>Joanna (US Female)</option>
+          <option value="Matthew">Matthew (US Male)</option>
           <option value="Emma">Emma (UK Female)</option>
           <option value="Salli">Salli (US Female)</option>
+          <option value="Justin">Justin (US Male)</option>
           <option value="Joey">Joey (US Male)</option>
-          <option value="Kendra">Kendra (US Female)</option>
-        </select>
+        </select></div>
+        <div style="display:flex;align-items:flex-end"><button class="dlbtn" id="dlBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download MP3</button></div>
       </div>
-      <div>
-        <label>Speed</label>
-        <div class="spdrow"><span class="spdv" id="spdVal">1.0×</span></div>
-        <input type="range" id="spdR" min="0.1" max="4" step="0.1" value="1">
-      </div>
+      <div class="dlprog" id="dlProg"></div>
     </div>
-    <button class="dlbtn" id="dlBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Download MP3
-    </button>
   </div>
 
   <div class="rpane" id="rpane"></div>
@@ -191,9 +193,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
     <div class="pbar" id="pbar"><div class="ptrk"><div class="pfill" id="pfill"></div></div><div class="ptm"><span id="tE">0:00</span><span id="tT">0:00</span></div></div>
     <div class="ctrls">
       <button class="cb" id="cR" title="Start over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-11.36L1 10"/></svg></button>
-      <button class="cb" id="cB" title="Back 10s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-11.36L1 10"/></svg><span class="sk">10</span></button>
+      <button class="cb" id="cB" title="Back 10s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-11.36L1 10"/></svg><span class="sk" style="margin-top:2px">10</span></button>
       <button class="cb main" id="cP" title="Play"><svg id="iP" viewBox="0 0 24 24" fill="currentColor"><polygon points="7,3 21,12 7,21"/></svg><svg id="iPa" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="5" y="3" width="4.5" height="18" rx="1"/><rect x="14.5" y="3" width="4.5" height="18" rx="1"/></svg></button>
-      <button class="cb" id="cF" title="Forward 10s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-5.64-11.36L23 10"/></svg><span class="sk">10</span></button>
+      <button class="cb" id="cF" title="Forward 10s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-5.64-11.36L23 10"/></svg><span class="sk" style="margin-top:2px">10</span></button>
       <button class="cb" id="cS" title="Stop"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg></button>
     </div>
   </div>
@@ -203,31 +205,80 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-const $=id=>document.getElementById(id);
+const S=speechSynthesis,$=id=>document.getElementById(id);
 
+// DOM refs
 const s1=$('s1'),s2=$('s2'),ti=$('textInput'),charCt=$('charCt'),
 dropZone=$('dropZone'),fileIn=$('fileIn'),fpill=$('fpill'),fName=$('fName'),fClear=$('fClear'),pmsg=$('pmsg'),
 btnGo=$('btnGo'),bBack=$('bBack'),bGear=$('bGear'),drawer=$('drawer'),
-vSel=$('voiceSel'),spdR=$('spdR'),spdVal=$('spdVal'),
-dlBtn=$('dlBtn'),
+vSel=$('voiceSel'),lSel=$('langSel'),spdR=$('spdR'),spdVal=$('spdVal'),
+dlVoice=$('dlVoice'),dlBtn=$('dlBtn'),dlProg=$('dlProg'),
 rpane=$('rpane'),pfill=$('pfill'),pbar=$('pbar'),tE=$('tE'),tT=$('tT'),
 cP=$('cP'),cS=$('cS'),cR=$('cR'),cB=$('cB'),cF=$('cF'),iP=$('iP'),iPa=$('iPa'),stat=$('stat');
 
-// ---- State ----
-let words=[], chunks=[], cwm=[];
-let audioCache=new Map();
-let audio=new Audio();
-let curChunk=-1, playing=false, paused=false;
-let totalDur=0, chunkDurs=[];
+let allV=[],words=[],chunks=[],cwm=[];
+let cc=0,playing=false,paused=false,t0=0,elapsed=0,estT=0,pTmr=null;
 
-// ---- Text input ----
+// ---- Voices ----
+function loadV(){
+  allV=S.getVoices();if(!allV.length)return;
+  const ls=[...new Set(allV.map(v=>v.lang.split('-')[0]))].sort();
+  const dn=new Intl.DisplayNames(['en'],{type:'language'});
+  lSel.innerHTML='';
+  ls.forEach(l=>{const o=document.createElement('option');o.value=l;try{o.textContent=dn.of(l)}catch{o.textContent=l}lSel.appendChild(o)});
+  lSel.value=ls.includes('en')?'en':ls[0];
+  fillV();
+}
+// Retry voice loading — some browsers load them async
+let vRetry=0;
+function tryLoadV(){allV=S.getVoices();if(allV.length)loadV();else if(vRetry++<20)setTimeout(tryLoadV,250)}
+tryLoadV();
+function fillV(){
+  const lang=lSel.value,list=allV.filter(v=>v.lang.startsWith(lang));
+  vSel.innerHTML='';
+  if(!list.length){vSel.innerHTML='<option>No voices</option>';return}
+  // Score voices: prefer natural/neural/google/cloud
+  const scored=list.map(v=>{
+    const n=v.name.toLowerCase();
+    let s=0;
+    if(n.includes('natural'))s+=100;
+    if(n.includes('neural'))s+=90;
+    if(n.includes('enhanced'))s+=80;
+    if(n.includes('premium'))s+=70;
+    if(!v.localService)s+=50; // cloud voices
+    if(n.includes('google'))s+=40;
+    if(n.includes('samantha'))s+=35;
+    if(n.includes('karen'))s+=30;
+    if(n.includes('daniel'))s+=30;
+    return{v,s};
+  }).sort((a,b)=>b.s-a.s);
+
+  scored.forEach(({v})=>{
+    const o=document.createElement('option');
+    o.value=allV.indexOf(v);
+    let nm=v.name.replace(/Microsoft\s*/i,'').replace(/Google\s*/i,'');
+    if(!v.localService)nm+=' ☁️';
+    o.textContent=nm;
+    vSel.appendChild(o);
+  });
+}
+S.onvoiceschanged=loadV;loadV();
+lSel.addEventListener('change',fillV);
+
+// ---- Speed ----
+spdR.addEventListener('input',()=>{
+  spdVal.textContent=parseFloat(spdR.value).toFixed(1)+'×';
+  if(playing&&!paused)restartCC();
+});
+
+// ---- Text ----
 ti.addEventListener('input',()=>{
   const l=ti.value.length;
   charCt.textContent=l?l.toLocaleString()+' chars':'';
   btnGo.disabled=!ti.value.trim();
 });
 
-// ---- File handling ----
+// ---- File ----
 dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragover')});
 dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
 dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragover');if(e.dataTransfer.files.length)hFile(e.dataTransfer.files[0])});
@@ -249,221 +300,176 @@ async function hFile(f){
 }
 
 // ---- Nav ----
-btnGo.addEventListener('click',()=>{s1.classList.remove('active');s2.classList.add('active');initPlayer()});
+btnGo.addEventListener('click',()=>{s1.classList.remove('active');s2.classList.add('active');initP()});
 bBack.addEventListener('click',()=>{stopAll();s2.classList.remove('active');s1.classList.add('active')});
 bGear.addEventListener('click',()=>{bGear.classList.toggle('open');drawer.classList.toggle('open')});
 
-// ---- Speed ----
-spdR.addEventListener('input',()=>{
-  const v=parseFloat(spdR.value);
-  spdVal.textContent=v.toFixed(1)+'×';
-  audio.playbackRate=v;
-});
-
-// ---- Voice change: clear cache so next play uses new voice ----
-vSel.addEventListener('change',()=>{audioCache.clear();chunkDurs=[]});
-
-// ---- TTS API ----
-const API='https://api.streamelements.com/kappagen/v2/speech';
-
-async function fetchChunk(i){
-  if(audioCache.has(i))return audioCache.get(i);
-  const url=`${API}?voice=${vSel.value}&text=${encodeURIComponent(chunks[i])}`;
-  const r=await fetch(url);
-  if(!r.ok)throw new Error('Voice API error '+r.status);
-  const blob=await r.blob();
-  const burl=URL.createObjectURL(blob);
-  audioCache.set(i,burl);
-  return burl;
-}
-
-// ---- Init player ----
-function initPlayer(){
+// ---- Player init ----
+function initP(){
   const raw=ti.value.trim();
   words=[];
   const re=/\S+/g;let m;
-  while((m=re.exec(raw))!==null)words.push(m[0]);
-  rpane.innerHTML=words.map((w,i)=>`<span class="w" data-i="${i}">${esc(w)} </span>`).join('');
+  while((m=re.exec(raw))!==null)words.push({t:m[0],s:m.index});
+  rpane.innerHTML=words.map((w,i)=>`<span class="w" data-i="${i}">${esc(w.t)} </span>`).join('');
 
-  // Chunk at ~250 chars on sentence boundaries
   chunks=[];cwm=[];
-  const sents=raw.replace(/([.!?;])\s+/g,'$1||CUT||').split('||CUT||');
-  let buf='',sw=0,wi=0;
-  sents.forEach(s=>{
-    const wc=s.split(/\s+/).length;
-    if(buf.length+s.length+1>250&&buf){
-      chunks.push(buf.trim());cwm.push({s:sw,e:wi-1});buf=s+' ';sw=wi;
-    }else{buf+=s+' '}
-    wi+=wc;
+  let buf='',sw=0;
+  words.forEach((w,i)=>{
+    if(buf.length+w.t.length+1>180&&buf){chunks.push(buf.trim());cwm.push({s:sw,e:i-1});buf=w.t+' ';sw=i}
+    else buf+=w.t+' ';
   });
   if(buf.trim()){chunks.push(buf.trim());cwm.push({s:sw,e:words.length-1})}
 
-  audioCache.clear();chunkDurs=[];totalDur=0;curChunk=-1;
-  pfill.style.width='0%';tE.textContent='0:00';tT.textContent='--:--';
-  setSt('Ready');
+  estT=estTime(raw,rate());tT.textContent=fmt(estT);tE.textContent='0:00';
+  pfill.style.width='0%';cc=0;elapsed=0;setSt('Ready');
 }
-
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function fmt(s){if(!s||!isFinite(s))return'0:00';const m=Math.floor(s/60);return m+':'+String(Math.floor(s%60)).padStart(2,'0')}
 
-// ---- Playback engine ----
-async function playChunk(i){
+// ---- TTS ----
+function voice(){return allV[parseInt(vSel.value)]||null}
+function rate(){return parseFloat(spdR.value)}
+function estTime(t,r){return(t.split(/\s+/).length/150/r)*60}
+function fmt(s){const m=Math.floor(s/60);return m+':'+String(Math.floor(s%60)).padStart(2,'0')}
+
+function speakC(i){
   if(i>=chunks.length){stopAll();markTo(words.length-1);setSt('Done');return}
-  curChunk=i;
-  setSt('Loading…');
-
-  try{
-    const url=await fetchChunk(i);
-    // Prefetch next
-    if(i+1<chunks.length)fetchChunk(i+1).catch(()=>{});
-
-    audio.src=url;
-    audio.playbackRate=parseFloat(spdR.value);
-    await audio.play();
-    setSt('Speaking…','on');
-
-    // Get duration once loaded
-    await new Promise(r=>{
-      if(audio.duration&&isFinite(audio.duration))r();
-      else audio.addEventListener('durationchange',r,{once:true});
-    });
-    chunkDurs[i]=audio.duration;
-    updateTotalEst();
-  }catch(e){
-    setSt('Error — check connection','err');
-    playing=false;showPlayIcon();
-    return;
-  }
+  cc=i;
+  const u=new SpeechSynthesisUtterance(chunks[i]);
+  const v=voice();if(v)u.voice=v;
+  u.rate=rate();
+  const map=cwm[i];
+  u.onboundary=e=>{
+    if(e.name==='word'){
+      let wc=0;const wr=/\S+/g;let wm;
+      while((wm=wr.exec(chunks[i]))!==null){if(wm.index>=e.charIndex)break;wc++}
+      hlWord(map.s+wc);
+    }
+  };
+  u.onend=()=>{if(playing&&!paused){markRng(map.s,map.e,'spent');speakC(i+1)}};
+  u.onerror=e=>{if(e.error!=='canceled'&&e.error!=='interrupted')setSt('Error: '+e.error,'err')};
+  S.speak(u);
 }
 
-audio.addEventListener('timeupdate',()=>{
-  if(curChunk<0||!playing)return;
-  const map=cwm[curChunk];
-  if(!map)return;
-  const dur=audio.duration||1;
-  const pct=audio.currentTime/dur;
-  const totalW=map.e-map.s+1;
-  const curW=map.s+Math.min(Math.floor(pct*totalW),totalW-1);
-  hlWord(curW);
-  updateProgress();
-});
-
-audio.addEventListener('ended',()=>{
-  if(!playing)return;
-  const map=cwm[curChunk];
-  if(map)markRng(map.s,map.e,'spent');
-  playChunk(curChunk+1);
-});
-
-function updateTotalEst(){
-  // Use known durations + estimate for unknown
-  const avgDur=chunkDurs.filter(Boolean).reduce((a,b)=>a+b,0)/(chunkDurs.filter(Boolean).length||1);
-  totalDur=0;
-  for(let i=0;i<chunks.length;i++)totalDur+=(chunkDurs[i]||avgDur);
-  tT.textContent=fmt(totalDur/parseFloat(spdR.value));
-}
-
-function updateProgress(){
-  let elapsed=0;
-  for(let i=0;i<curChunk;i++)elapsed+=(chunkDurs[i]||0);
-  elapsed+=audio.currentTime||0;
-  const rate=parseFloat(spdR.value);
-  tE.textContent=fmt(elapsed/rate);
-  const pct=totalDur>0?(elapsed/totalDur)*100:0;
-  pfill.style.width=Math.min(100,pct)+'%';
-}
-
-// ---- Highlighting ----
 function hlWord(gi){
   if(gi<0||gi>=words.length)return;
-  rpane.querySelectorAll('.w.now').forEach(e=>{e.classList.remove('now');e.classList.add('spent')});
+  for(let i=0;i<gi;i++){const el=rpane.querySelector(`[data-i="${i}"]`);if(el){el.classList.add('spent');el.classList.remove('now')}}
+  rpane.querySelectorAll('.w.now').forEach(e=>e.classList.remove('now'));
   const c=rpane.querySelector(`[data-i="${gi}"]`);
   if(c){c.classList.add('now');c.classList.remove('spent');c.scrollIntoView({block:'center',behavior:'smooth'})}
-  // Mark all before as spent
-  for(let i=0;i<gi;i++){const el=rpane.querySelector(`[data-i="${i}"]`);if(el&&!el.classList.contains('spent'))el.classList.add('spent')}
 }
 function markRng(s,e,cls){for(let i=s;i<=e;i++){const el=rpane.querySelector(`[data-i="${i}"]`);if(el){el.classList.add(cls);el.classList.remove('now')}}}
 function markTo(gi){for(let i=0;i<=gi;i++){const el=rpane.querySelector(`[data-i="${i}"]`);if(el){el.classList.add('spent');el.classList.remove('now')}}}
 function clrHL(){rpane.querySelectorAll('.w').forEach(e=>{e.classList.remove('spent','now')})}
 
-function showPlayIcon(){iP.style.display='block';iPa.style.display='none'}
-function showPauseIcon(){iP.style.display='none';iPa.style.display='block'}
+function restartCC(){
+  S.cancel();elapsed=chunks.slice(0,cc).reduce((a,c)=>a+estTime(c,rate()),0);
+  t0=Date.now();speakC(cc);
+}
 
-// ---- Controls ----
-async function startPlay(){
+function startPlay(){
   if(!chunks.length)return;
-  playing=true;paused=false;clrHL();showPauseIcon();
-  await playChunk(0);
+  if(!allV.length){setSt('No voices loaded — try refreshing','err');return}
+  // Cancel any leftover speech
+  S.cancel();
+  playing=true;paused=false;elapsed=0;t0=Date.now();cc=0;
+  estT=estTime(ti.value.trim(),rate());tT.textContent=fmt(estT);
+  clrHL();iP.style.display='none';iPa.style.display='block';setSt('Speaking…','on');
+  speakC(0);startProg();
 }
-
-function togglePause(){
-  if(paused){
-    paused=false;audio.play();showPauseIcon();setSt('Speaking…','on');
-  }else{
-    paused=true;audio.pause();showPlayIcon();setSt('Paused');
-  }
+function toggleP(){
+  if(paused){paused=false;S.resume();t0=Date.now();iP.style.display='none';iPa.style.display='block';setSt('Speaking…','on');startProg()}
+  else{paused=true;S.pause();elapsed+=(Date.now()-t0)/1000;iP.style.display='block';iPa.style.display='none';setSt('Paused');clearInterval(pTmr)}
 }
-
 function stopAll(){
-  audio.pause();audio.src='';playing=false;paused=false;curChunk=-1;
-  showPlayIcon();pfill.style.width='0%';tE.textContent='0:00';
-  clrHL();setSt('Ready');
+  S.cancel();playing=false;paused=false;cc=0;elapsed=0;
+  iP.style.display='block';iPa.style.display='none';pfill.style.width='0%';tE.textContent='0:00';
+  clearInterval(pTmr);clrHL();setSt('Ready');
 }
-
-async function skipTo(i){
+function skip(n){
   if(!playing)return;
-  i=Math.max(0,Math.min(chunks.length-1,i));
-  audio.pause();
-  paused=false;showPauseIcon();
-  clrHL();
-  if(i>0)markTo((cwm[i]?.s||1)-1);
-  await playChunk(i);
+  const t=Math.max(0,Math.min(chunks.length-1,cc+n));
+  S.cancel();paused=false;
+  if(n<0){clrHL();for(let i=0;i<(cwm[t]?.s||0);i++){const el=rpane.querySelector(`[data-i="${i}"]`);if(el)el.classList.add('spent')}}
+  else markTo((cwm[t]?.s||1)-1);
+  elapsed=chunks.slice(0,t).reduce((a,c)=>a+estTime(c,rate()),0);
+  t0=Date.now();iP.style.display='none';iPa.style.display='block';setSt('Speaking…','on');speakC(t);
 }
-
+function startProg(){
+  clearInterval(pTmr);
+  pTmr=setInterval(()=>{
+    const e=elapsed+(Date.now()-t0)/1000;
+    estT=estTime(ti.value.trim(),rate());
+    pfill.style.width=Math.min(100,(e/estT)*100)+'%';
+    tE.textContent=fmt(e);tT.textContent=fmt(estT);
+  },200);
+}
 function setSt(m,t=''){stat.textContent=m;stat.className='stat'+(t?' '+t:'')}
 
-cP.addEventListener('click',()=>{if(!playing)startPlay();else togglePause()});
+cP.addEventListener('click',()=>{if(!playing)startPlay();else toggleP()});
 cS.addEventListener('click',stopAll);
 cR.addEventListener('click',()=>{stopAll();startPlay()});
-cB.addEventListener('click',()=>{if(playing)skipTo(curChunk-1)});
-cF.addEventListener('click',()=>{if(playing)skipTo(curChunk+1)});
-
+cB.addEventListener('click',()=>skip(-3));
+cF.addEventListener('click',()=>skip(3));
 pbar.addEventListener('click',e=>{
-  if(!playing||!chunks.length)return;
+  if(!playing)return;
   const p=(e.clientX-pbar.getBoundingClientRect().left)/pbar.offsetWidth;
   const t=Math.max(0,Math.min(chunks.length-1,Math.floor(p*chunks.length)));
-  skipTo(t);
+  S.cancel();paused=false;clrHL();markTo(t>0?(cwm[t]?.s||1)-1:0);
+  elapsed=chunks.slice(0,t).reduce((a,c)=>a+estTime(c,rate()),0);t0=Date.now();
+  iP.style.display='none';iPa.style.display='block';speakC(t);
 });
+vSel.addEventListener('change',()=>{if(playing&&!paused)restartCC()});
+setInterval(()=>{if(playing&&!paused&&S.speaking)S.resume()},5000);
 
-// ---- Download MP3 ----
+// ---- MP3 Download via StreamElements (free Amazon Polly voices) ----
 dlBtn.addEventListener('click',async()=>{
-  const text=ti.value.trim();if(!text)return;
-  dlBtn.disabled=true;
-  const origText=dlBtn.innerHTML;
-  const voice=vSel.value;
+  const text=ti.value.trim();
+  if(!text)return;
+  dlBtn.disabled=true;dlProg.textContent='Preparing…';
+  const dv=dlVoice.value;
+
+  // Split into ~250 char chunks at sentence/clause boundaries
   const dChunks=[];let buf='';
-  text.replace(/([.!?;])\s+/g,'$1||CUT||').split('||CUT||').forEach(s=>{
-    if((buf+' '+s).length>250&&buf){dChunks.push(buf.trim());buf=s}else buf+=(buf?' ':'')+s;
+  const parts=text.replace(/([.!?;,])\s+/g,'$1|CUT|').split('|CUT|');
+  parts.forEach(s=>{
+    if((buf+' '+s).trim().length>250&&buf.trim()){dChunks.push(buf.trim());buf=s}
+    else buf+=(buf?' ':'')+s;
   });
   if(buf.trim())dChunks.push(buf.trim());
 
-  try{
-    const blobs=[];
-    for(let i=0;i<dChunks.length;i++){
-      dlBtn.textContent=`Generating ${i+1}/${dChunks.length}…`;
-      const url=`${API}?voice=${voice}&text=${encodeURIComponent(dChunks[i])}`;
-      const r=await fetch(url);if(!r.ok)throw new Error('API error');
-      blobs.push(await r.blob());
+  const blobs=[];
+  let failed=false;
+  for(let i=0;i<dChunks.length;i++){
+    dlProg.textContent=`Generating ${i+1} of ${dChunks.length}…`;
+    try{
+      const url='https://api.streamelements.com/kappagen/v2/speech?voice='+dv+'&text='+encodeURIComponent(dChunks[i]);
+      const ctrl=new AbortController();
+      const timer=setTimeout(()=>ctrl.abort(),15000);
+      const r=await fetch(url,{signal:ctrl.signal});
+      clearTimeout(timer);
+      if(!r.ok)throw new Error(r.status);
+      const b=await r.blob();
+      if(b.size<100)throw new Error('empty');
+      blobs.push(b);
+    }catch(e){
+      failed=true;
+      dlProg.textContent='Download unavailable — API may be blocked or down. Playback still works!';
+      break;
     }
-    dlBtn.textContent='Saving…';
+    // Small delay between requests to be polite
+    if(i<dChunks.length-1)await new Promise(r=>setTimeout(r,300));
+  }
+
+  if(!failed&&blobs.length){
+    dlProg.textContent='Merging…';
     const merged=new Blob(blobs,{type:'audio/mpeg'});
     const a=document.createElement('a');
-    a.href=URL.createObjectURL(merged);a.download='speech.mp3';a.click();
+    a.href=URL.createObjectURL(merged);
+    a.download='speech.mp3';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
     URL.revokeObjectURL(a.href);
-    dlBtn.innerHTML=origText;
-  }catch(e){
-    dlBtn.textContent='Failed — try again';
-    setTimeout(()=>dlBtn.innerHTML=origText,2000);
+    dlProg.textContent='Done!';
+    setTimeout(()=>dlProg.textContent='',3000);
   }
   dlBtn.disabled=false;
 });

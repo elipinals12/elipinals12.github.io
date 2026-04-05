@@ -19,11 +19,9 @@ html,body{height:100%;overflow:hidden}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);display:flex;align-items:center;justify-content:center}
 .screen{display:none;flex-direction:column;position:absolute;inset:0;width:100%;max-width:560px;margin:0 auto;padding:20px;overflow:hidden}
 .screen.active{display:flex}
-
 .title{text-align:center;font-weight:700;letter-spacing:-.5px;background:linear-gradient(135deg,var(--ac),#a78bfa,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.4rem}
 .title.sm{font-size:.85rem}
 
-/* Step 1 */
 .s1{gap:14px}.s1-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;overflow:hidden}
 #textInput{flex:1;min-height:0;width:100%;background:var(--s2);border:1px solid var(--bdr);border-radius:var(--rs);color:var(--tx);font-family:inherit;font-size:.9rem;padding:14px;resize:none;outline:none;line-height:1.8;transition:border-color .2s}
 #textInput::placeholder{color:var(--tx3)}#textInput:focus{border-color:var(--ac)}
@@ -39,8 +37,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font-family:inherit;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:8px}
 .bp{background:var(--ac);color:#fff}.bp:hover{background:var(--ac2);transform:translateY(-1px)}.bp:disabled{opacity:.3;pointer-events:none}
 
-/* Step 2 */
-.s2{gap:0}.s2-inner{flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden;padding-top:6px}
+.s2{gap:0}.s2-inner{flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden;padding-top:6px;position:relative}
 .topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .bback{background:none;border:none;color:var(--tx2);cursor:pointer;display:flex;align-items:center;gap:3px;font-family:inherit;font-size:.72rem;padding:6px 0}.bback:hover{color:var(--tx)}.bback svg{width:15px;height:15px}
 .tbar-r{display:flex;align-items:center;gap:2px}
@@ -61,12 +58,13 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
 .rpane::-webkit-scrollbar{width:4px}.rpane::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
 .w{display:inline;transition:color .12s;border-radius:3px}.w.spent{color:var(--tx3)}.w.now{color:#fff;background:var(--ac);padding:1px 3px}
 
-/* Loading overlay */
-.gen-overlay{display:none;position:absolute;inset:0;background:rgba(11,12,16,.85);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:12px;border-radius:var(--r)}
-.gen-overlay.show{display:flex}
-.gen-spinner{width:36px;height:36px;border:3px solid var(--s3);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
+.ov{display:none;position:absolute;inset:0;background:rgba(11,12,16,.92);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:14px;border-radius:var(--r)}
+.ov.show{display:flex}
+.spinner{width:36px;height:36px;border:3px solid var(--s3);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.gen-text{font-size:.8rem;color:var(--tx2)}
+.ov-text{font-size:.8rem;color:var(--tx2);text-align:center;max-width:80%;line-height:1.5}
+.ov-prog{width:60%;max-width:240px;height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.ov-prog-fill{height:100%;width:0%;background:var(--ac);border-radius:2px;transition:width .3s}
 
 .tport{flex-shrink:0;padding:10px 0 4px}
 .pbar{cursor:pointer;padding:4px 0}
@@ -83,37 +81,32 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
 .stat.on{color:var(--grn)}.stat.err{color:var(--red)}
 
 @supports(padding-bottom:env(safe-area-inset-bottom)){.screen{padding-bottom:calc(20px + env(safe-area-inset-bottom))}}
-@media(max-width:400px){.title{font-size:1.2rem}#textInput{font-size:.84rem;padding:12px}.rpane{padding:14px;font-size:.84rem}.drawer select{font-size:.75rem}.cb{width:36px;height:36px}.cb.main{width:44px;height:44px}}
+@media(max-width:400px){.title{font-size:1.2rem}#textInput{font-size:.84rem;padding:12px}.rpane{padding:14px;font-size:.84rem}.cb{width:36px;height:36px}.cb.main{width:44px;height:44px}}
 </style>
 </head>
 <body>
 
-<!-- STEP 1 -->
 <div class="screen s1 active" id="s1">
 <div class="s1-body">
   <div class="title">text to speech</div>
   <textarea id="textInput" placeholder="Paste or type your text…"></textarea>
   <div class="charct" id="charCt"></div>
-  <div class="drop" id="dropZone">
-    <p>Upload a file</p><span class="ft">.txt &ensp; .pdf &ensp; .docx</span>
-    <input type="file" id="fileIn" accept=".txt,.pdf,.docx">
-  </div>
+  <div class="drop" id="dropZone"><p>Upload a file</p><span class="ft">.txt &ensp; .pdf &ensp; .docx</span><input type="file" id="fileIn" accept=".txt,.pdf,.docx"></div>
   <div class="fpill" id="fpill"><span class="fn" id="fName"></span><button id="fClear"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="pmsg" id="pmsg">Extracting…</div>
   <button class="btn bp" id="btnGo" disabled>Speak This Text</button>
 </div>
 </div>
 
-<!-- STEP 2 -->
 <div class="screen s2" id="s2">
-<div class="s2-inner" style="position:relative">
-  <div class="gen-overlay" id="genOv"><div class="gen-spinner"></div><div class="gen-text" id="genTxt">Generating audio…</div></div>
+<div class="s2-inner">
+  <div class="ov show" id="ov"><div class="spinner"></div><div class="ov-text" id="ovTxt">Loading AI voice model…</div><div class="ov-prog"><div class="ov-prog-fill" id="ovProg"></div></div></div>
 
   <div class="topbar">
     <button class="bback" id="bBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
     <div class="title sm">text to speech</div>
     <div class="tbar-r">
-      <button class="ibtn" id="bDl" title="Download MP3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+      <button class="ibtn" id="bDl" title="Download WAV"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
       <button class="ibtn" id="bGear" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
     </div>
   </div>
@@ -121,14 +114,17 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
   <div class="drawer" id="drawer">
     <label>Voice</label>
     <select id="voiceSel">
-      <option value="en-US-JennyNeural">Jenny (US Female)</option>
-      <option value="en-US-GuyNeural">Guy (US Male)</option>
-      <option value="en-US-AriaNeural">Aria (US Female)</option>
-      <option value="en-US-DavisNeural">Davis (US Male)</option>
-      <option value="en-US-SaraNeural">Sara (US Female)</option>
-      <option value="en-GB-SoniaNeural">Sonia (UK Female)</option>
-      <option value="en-GB-RyanNeural">Ryan (UK Male)</option>
-      <option value="en-AU-NatashaNeural">Natasha (AU Female)</option>
+      <option value="af_heart">Heart (US Female)</option>
+      <option value="af_bella">Bella (US Female)</option>
+      <option value="af_nicole">Nicole (US Female)</option>
+      <option value="af_sarah">Sarah (US Female)</option>
+      <option value="af_sky">Sky (US Female)</option>
+      <option value="am_adam">Adam (US Male)</option>
+      <option value="am_michael">Michael (US Male)</option>
+      <option value="bf_emma">Emma (UK Female)</option>
+      <option value="bf_isabella">Isabella (UK Female)</option>
+      <option value="bm_george">George (UK Male)</option>
+      <option value="bm_lewis">Lewis (UK Male)</option>
     </select>
     <div class="spdrow"><label>Speed</label><span class="spdv" id="spdVal">1.0×</span></div>
     <input type="range" id="spdR" min="0.1" max="5" step="0.1" value="1">
@@ -152,31 +148,137 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+</script>
+<script type="module">
 const $=id=>document.getElementById(id);
-
-// DOM
 const s1=$('s1'),s2=$('s2'),ti=$('textInput'),charCt=$('charCt'),
 dropZone=$('dropZone'),fileIn=$('fileIn'),fpill=$('fpill'),fName=$('fName'),fClear=$('fClear'),pmsg=$('pmsg'),
 btnGo=$('btnGo'),bBack=$('bBack'),bGear=$('bGear'),bDl=$('bDl'),drawer=$('drawer'),
 vSel=$('voiceSel'),spdR=$('spdR'),spdVal=$('spdVal'),
 rpane=$('rpane'),pfill=$('pfill'),pbar=$('pbar'),tE=$('tE'),tT=$('tT'),
 cP=$('cP'),cS=$('cS'),cR=$('cR'),cB=$('cB'),cF=$('cF'),iP=$('iP'),iPa=$('iPa'),
-stat=$('stat'),genOv=$('genOv'),genTxt=$('genTxt');
+stat=$('stat'),ov=$('ov'),ovTxt=$('ovTxt'),ovProg=$('ovProg');
 
-const audio=new Audio();
-let audioBlob=null,bounds=[],words=[],curVoice=null,rafId=null;
+const audioEl=new Audio();
+let wavBlob=null,words=[],wordTimes=[],rafId=null,tts=null,curVoice=null;
 
-// ---- File handling (same as before) ----
+// ---- Load Kokoro TTS model ----
+async function loadModel(){
+  ovTxt.textContent='Loading AI voice engine…';ovProg.style.width='10%';
+  try{
+    const{KokoroTTS}=await import('https://cdn.jsdelivr.net/npm/kokoro-js@0.4.0/+esm');
+    ovTxt.textContent='Downloading voice model (first time only)…';ovProg.style.width='20%';
+    tts=await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX',{
+      dtype:'q8',
+      progress_callback:(p)=>{
+        if(p.progress){
+          const pct=20+p.progress*0.7;
+          ovProg.style.width=pct+'%';
+          if(p.file)ovTxt.textContent='Downloading: '+p.file.split('/').pop();
+        }
+      }
+    });
+    ovProg.style.width='100%';
+    return true;
+  }catch(e){
+    console.error('Model load error:',e);
+    ovTxt.textContent='Failed to load voice model. Make sure you\'re on a modern browser (Chrome/Edge recommended) and have a stable connection. Error: '+e.message;
+    ovProg.style.width='0%';
+    return false;
+  }
+}
+
+// ---- Generate audio ----
+async function generateAudio(text,voice){
+  // Split into sentences for progress tracking
+  const sents=text.match(/[^.!?\n]+[.!?\n]+[\s]*/g)||[text];
+  const chunks=[];let buf='';
+  sents.forEach(s=>{if((buf+s).length>500&&buf){chunks.push(buf.trim());buf=s}else buf+=s});
+  if(buf.trim())chunks.push(buf.trim());
+
+  const allSamples=[];
+  let sr=24000;
+  for(let i=0;i<chunks.length;i++){
+    ovTxt.textContent=`Generating audio… (${i+1}/${chunks.length})`;
+    ovProg.style.width=((i/chunks.length)*100)+'%';
+    const result=await tts.generate(chunks[i],{voice});
+    sr=result.sampling_rate;
+    // result.audio is Float32Array
+    const samples=result.audio instanceof Float32Array?result.audio:new Float32Array(result.audio);
+    allSamples.push(samples);
+    // Small gap between chunks
+    allSamples.push(new Float32Array(Math.floor(sr*0.3)));
+  }
+  ovProg.style.width='100%';
+
+  // Concatenate
+  const total=allSamples.reduce((a,b)=>a+b.length,0);
+  const merged=new Float32Array(total);
+  let off=0;
+  allSamples.forEach(s=>{merged.set(s,off);off+=s.length});
+
+  return{samples:merged,sampleRate:sr};
+}
+
+// ---- Float32 → WAV blob ----
+function toWav(samples,sr){
+  const buf=new ArrayBuffer(44+samples.length*2);
+  const v=new DataView(buf);
+  const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
+  w(0,'RIFF');v.setUint32(4,36+samples.length*2,true);w(8,'WAVE');
+  w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);
+  w(36,'data');v.setUint32(40,samples.length*2,true);
+  for(let i=0;i<samples.length;i++){
+    const s=Math.max(-1,Math.min(1,samples[i]));
+    v.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);
+  }
+  return new Blob([buf],{type:'audio/wav'});
+}
+
+// ---- Estimate word timings ----
+function calcWordTimes(dur){
+  wordTimes=[];
+  const totalChars=words.reduce((a,w)=>a+w.t.length+1,0);
+  let t=0;
+  words.forEach(w=>{
+    const d=(w.t.length+1)/totalChars*dur;
+    wordTimes.push({start:t,end:t+d});
+    t+=d;
+  });
+}
+
+// ---- Highlight loop ----
+function hlLoop(){
+  if(audioEl.paused&&!audioEl.ended)return;
+  const ct=audioEl.currentTime;
+  let cur=-1;
+  for(let i=wordTimes.length-1;i>=0;i--){
+    if(ct>=wordTimes[i].start){cur=i;break}
+  }
+  if(cur>=0){
+    rpane.querySelectorAll('.w.now').forEach(e=>{e.classList.remove('now');e.classList.add('spent')});
+    for(let i=0;i<cur;i++){const el=rpane.querySelector(`[data-i="${i}"]`);if(el&&!el.classList.contains('spent'))el.classList.add('spent')}
+    const cel=rpane.querySelector(`[data-i="${cur}"]`);
+    if(cel&&!cel.classList.contains('now')){cel.classList.add('now');cel.classList.remove('spent');cel.scrollIntoView({block:'center',behavior:'smooth'})}
+  }
+  rafId=requestAnimationFrame(hlLoop);
+}
+function clrHL(){rpane.querySelectorAll('.w').forEach(e=>{e.classList.remove('spent','now')})}
+function fmt(s){if(!s||!isFinite(s))return'0:00';const m=Math.floor(s/60);return m+':'+String(Math.floor(s%60)).padStart(2,'0')}
+function setSt(m,t=''){stat.textContent=m;stat.className='stat'+(t?' '+t:'')}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+// ---- File handling ----
 ti.addEventListener('input',()=>{const l=ti.value.length;charCt.textContent=l?l.toLocaleString()+' chars':'';btnGo.disabled=!ti.value.trim()});
 dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragover')});
 dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
 dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragover');if(e.dataTransfer.files.length)hFile(e.dataTransfer.files[0])});
 fileIn.addEventListener('change',e=>{if(e.target.files.length)hFile(e.target.files[0])});
 fClear.addEventListener('click',()=>{fpill.classList.remove('show');fileIn.value=''});
-
 async function hFile(f){
   const ext=f.name.split('.').pop().toLowerCase();
-  if(!['txt','pdf','docx'].includes(ext)){setSt('Use .txt .pdf or .docx','err');return}
+  if(!['txt','pdf','docx'].includes(ext))return;
   fName.textContent=f.name;fpill.classList.add('show');pmsg.classList.add('show');
   try{
     let t='';
@@ -184,207 +286,88 @@ async function hFile(f){
     else if(ext==='pdf'){const b=await f.arrayBuffer(),p=await pdfjsLib.getDocument({data:b}).promise;for(let i=1;i<=p.numPages;i++){const pg=await p.getPage(i),c=await pg.getTextContent();t+=c.items.map(x=>x.str).join(' ')+'\n\n'}t=t.trim()}
     else{const b=await f.arrayBuffer(),r=await mammoth.extractRawText({arrayBuffer:b});t=r.value.trim()}
     ti.value=t;ti.dispatchEvent(new Event('input'));
-  }catch(e){setSt('Error: '+e.message,'err')}
+  }catch(e){}
   pmsg.classList.remove('show');
 }
 
-// ---- Nav ----
-btnGo.addEventListener('click',()=>{s1.classList.remove('active');s2.classList.add('active');initPlayer()});
-bBack.addEventListener('click',()=>{audio.pause();audio.src='';cancelAnimationFrame(rafId);s2.classList.remove('active');s1.classList.add('active')});
-bGear.addEventListener('click',()=>{bGear.classList.toggle('open');drawer.classList.toggle('open')});
-spdR.addEventListener('input',()=>{const v=parseFloat(spdR.value);spdVal.textContent=v.toFixed(1)+'×';audio.playbackRate=v});
+// ---- Navigation ----
+btnGo.addEventListener('click',async()=>{
+  s1.classList.remove('active');s2.classList.add('active');
+  ov.classList.add('show');
 
-// ---- Edge TTS Engine ----
-const TK='6A5AA1D4EAFF4E9FB37E23D68491D6F4';
-const WSU='wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1';
-
-function uid(){return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g,()=>(Math.random()*16|0).toString(16))}
-function xmlEsc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-
-function edgeTTS(text,voice){
-  return new Promise((resolve,reject)=>{
-    const cid=uid(),rid=uid();
-    let ws;
-    try{ws=new WebSocket(`${WSU}?TrustedClientToken=${TK}&ConnectionId=${cid}`)}
-    catch(e){reject(new Error('WebSocket unavailable'));return}
-    const aChunks=[],wBounds=[];
-    let done=false;
-
-    const timeout=setTimeout(()=>{if(!done){ws.close();reject(new Error('Timeout'))}},60000);
-
-    ws.onopen=()=>{
-      ws.send('Content-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n'+
-        JSON.stringify({context:{synthesis:{audio:{metadataoptions:{sentenceBoundaryEnabled:'true',wordBoundaryEnabled:'true'},outputFormat:'audio-24khz-96kbitrate-mono-mp3'}}}}));
-      const ssml=`<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='en-US'><voice name='${voice}'><prosody rate='+0%' pitch='+0Hz'>${xmlEsc(text)}</prosody></voice></speak>`;
-      ws.send(`X-RequestId:${rid}\r\nContent-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n${ssml}`);
-    };
-
-    ws.onmessage=async ev=>{
-      if(typeof ev.data==='string'){
-        if(ev.data.includes('Path:audio.metadata')){
-          try{
-            const j=JSON.parse(ev.data.split('\r\n\r\n')[1]);
-            (j.Metadata||[]).forEach(m=>{
-              if(m.Type==='WordBoundary'){
-                wBounds.push({ms:m.Data.Offset/1e4,dur:m.Data.Duration/1e4,word:m.Data.text.Text,tOff:m.Data.text.Offset,tLen:m.Data.text.Length});
-              }
-            });
-          }catch(e){}
-        }
-        if(ev.data.includes('Path:turn.end')){
-          done=true;clearTimeout(timeout);ws.close();
-          resolve({audio:new Blob(aChunks,{type:'audio/mpeg'}),bounds:wBounds});
-        }
-      }else{
-        // Binary: 2-byte header length, then header, then MP3 data
-        let ab=ev.data instanceof Blob?await ev.data.arrayBuffer():ev.data;
-        const hl=new DataView(ab).getUint16(0);
-        if(2+hl<ab.byteLength)aChunks.push(ab.slice(2+hl));
-      }
-    };
-    ws.onerror=()=>{done=true;clearTimeout(timeout);reject(new Error('Connection failed — try a different network'))};
-  });
-}
-
-// ---- Generate with chunking for long text ----
-async function generateAll(text,voice){
-  // Chunk at ~2500 chars on sentence boundaries
-  const MAX=2500;
-  const sents=text.match(/[^.!?\n]*[.!?\n]+[\s]*/g)||[text];
-  const chunks=[];let buf='';
-  sents.forEach(s=>{if((buf+s).length>MAX&&buf){chunks.push(buf);buf=s}else buf+=s});
-  if(buf)chunks.push(buf);
-
-  const allAudio=[],allBounds=[];
-  let tOff=0;
-
-  for(let i=0;i<chunks.length;i++){
-    genTxt.textContent=chunks.length>1?`Generating ${i+1} of ${chunks.length}…`:'Generating audio…';
-    const{audio:aBlob,bounds:bArr}=await edgeTTS(chunks[i],voice);
-    allAudio.push(aBlob);
-
-    // Get duration of this chunk to offset next chunk's bounds
-    const dur=await blobDuration(aBlob);
-    bArr.forEach(b=>{allBounds.push({...b,ms:b.ms+tOff})});
-    tOff+=dur*1000;
+  // Load model if needed
+  if(!tts){
+    const ok=await loadModel();
+    if(!ok)return;
   }
-  return{audio:new Blob(allAudio,{type:'audio/mpeg'}),bounds:allBounds};
-}
 
-function blobDuration(blob){
-  return new Promise(r=>{
-    const a=new Audio();a.preload='metadata';
-    const u=URL.createObjectURL(blob);a.src=u;
-    a.onloadedmetadata=()=>{r(a.duration);URL.revokeObjectURL(u)};
-    a.onerror=()=>{r(0);URL.revokeObjectURL(u)};
-  });
-}
+  await initPlayer();
+});
+bBack.addEventListener('click',()=>{audioEl.pause();audioEl.src='';cancelAnimationFrame(rafId);s2.classList.remove('active');s1.classList.add('active')});
+bGear.addEventListener('click',()=>{bGear.classList.toggle('open');drawer.classList.toggle('open')});
+spdR.addEventListener('input',()=>{const v=parseFloat(spdR.value);spdVal.textContent=v.toFixed(1)+'×';audioEl.playbackRate=v});
 
 // ---- Player ----
 async function initPlayer(){
   const raw=ti.value.trim();
-  // Render words
   words=[];const re=/\S+/g;let m;
-  while((m=re.exec(raw))!==null)words.push({t:m[0],s:m.index,e:m.index+m[0].length});
+  while((m=re.exec(raw))!==null)words.push({t:m[0],s:m.index});
   rpane.innerHTML=words.map((w,i)=>`<span class="w" data-i="${i}">${esc(w.t)} </span>`).join('');
 
   pfill.style.width='0%';tE.textContent='0:00';tT.textContent='0:00';
   iP.style.display='block';iPa.style.display='none';
-  setSt('Generating…');
 
-  // Generate audio
-  genOv.classList.add('show');
   const voice=vSel.value;curVoice=voice;
   try{
-    const res=await generateAll(raw,voice);
-    audioBlob=res.audio;bounds=res.bounds;
-    matchBounds();
-    const url=URL.createObjectURL(audioBlob);
-    audio.src=url;audio.playbackRate=parseFloat(spdR.value);
-    audio.load();
-    genOv.classList.remove('show');
+    const{samples,sampleRate}=await generateAudio(raw,voice);
+    wavBlob=toWav(samples,sampleRate);
+    audioEl.src=URL.createObjectURL(wavBlob);
+    audioEl.playbackRate=parseFloat(spdR.value);
+    audioEl.load();
+    audioEl.onloadedmetadata=()=>{
+      calcWordTimes(audioEl.duration);
+      tT.textContent=fmt(audioEl.duration);
+    };
+    ov.classList.remove('show');
     setSt('Ready');
   }catch(e){
-    genOv.classList.remove('show');
-    setSt(e.message||'Generation failed','err');
+    console.error(e);
+    ovTxt.textContent='Generation failed: '+e.message;
   }
 }
-
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-
-// Match TTS word boundaries to rendered word spans
-function matchBounds(){
-  let wi=0;
-  bounds.forEach(b=>{
-    const bw=b.word.replace(/[.,!?;:'"()\[\]{}]/g,'').toLowerCase();
-    while(wi<words.length){
-      const ww=words[wi].t.replace(/[.,!?;:'"()\[\]{}]/g,'').toLowerCase();
-      if(ww===bw||ww.startsWith(bw)||bw.startsWith(ww)){b.wi=wi;wi++;return}
-      wi++;
-    }
-    b.wi=-1;
-  });
-}
-
-// Highlight loop
-function hlLoop(){
-  if(audio.paused&&!audio.ended){cancelAnimationFrame(rafId);return}
-  const ms=audio.currentTime*1000;
-  let cur=-1;
-  for(let i=bounds.length-1;i>=0;i--){
-    if(ms>=bounds[i].ms){cur=i;break}
-  }
-  if(cur>=0&&bounds[cur].wi>=0){
-    const wi=bounds[cur].wi;
-    rpane.querySelectorAll('.w.now').forEach(el=>{el.classList.remove('now');el.classList.add('spent')});
-    for(let i=0;i<wi;i++){const el=rpane.querySelector(`[data-i="${i}"]`);if(el&&!el.classList.contains('spent'))el.classList.add('spent')}
-    const cel=rpane.querySelector(`[data-i="${wi}"]`);
-    if(cel&&!cel.classList.contains('now')){cel.classList.add('now');cel.classList.remove('spent');cel.scrollIntoView({block:'center',behavior:'smooth'})}
-  }
-  rafId=requestAnimationFrame(hlLoop);
-}
-
-function clrHL(){rpane.querySelectorAll('.w').forEach(e=>{e.classList.remove('spent','now')})}
-function fmt(s){if(!s||!isFinite(s))return'0:00';const m=Math.floor(s/60);return m+':'+String(Math.floor(s%60)).padStart(2,'0')}
-function setSt(m,t=''){stat.textContent=m;stat.className='stat'+(t?' '+t:'')}
 
 // Audio events
-audio.addEventListener('timeupdate',()=>{
-  if(!audio.duration)return;
-  pfill.style.width=(audio.currentTime/audio.duration*100)+'%';
-  tE.textContent=fmt(audio.currentTime);tT.textContent=fmt(audio.duration);
+audioEl.addEventListener('timeupdate',()=>{
+  if(!audioEl.duration)return;
+  pfill.style.width=(audioEl.currentTime/audioEl.duration*100)+'%';
+  tE.textContent=fmt(audioEl.currentTime);tT.textContent=fmt(audioEl.duration);
 });
-audio.addEventListener('ended',()=>{iP.style.display='block';iPa.style.display='none';cancelAnimationFrame(rafId);setSt('Done')});
+audioEl.addEventListener('ended',()=>{iP.style.display='block';iPa.style.display='none';cancelAnimationFrame(rafId);setSt('Done')});
 
 // Controls
 cP.addEventListener('click',()=>{
-  if(!audio.src||!audioBlob)return;
-  if(audio.paused){audio.play();iP.style.display='none';iPa.style.display='block';setSt('Playing','on');rafId=requestAnimationFrame(hlLoop)}
-  else{audio.pause();iP.style.display='block';iPa.style.display='none';setSt('Paused')}
+  if(!audioEl.src||!wavBlob)return;
+  if(audioEl.paused){audioEl.play();iP.style.display='none';iPa.style.display='block';setSt('Playing','on');rafId=requestAnimationFrame(hlLoop)}
+  else{audioEl.pause();iP.style.display='block';iPa.style.display='none';cancelAnimationFrame(rafId);setSt('Paused')}
 });
-cS.addEventListener('click',()=>{audio.pause();audio.currentTime=0;iP.style.display='block';iPa.style.display='none';pfill.style.width='0%';tE.textContent='0:00';cancelAnimationFrame(rafId);clrHL();setSt('Ready')});
-cR.addEventListener('click',()=>{audio.currentTime=0;clrHL();if(audio.paused){audio.play();iP.style.display='none';iPa.style.display='block';setSt('Playing','on');rafId=requestAnimationFrame(hlLoop)}});
-cB.addEventListener('click',()=>{audio.currentTime=Math.max(0,audio.currentTime-10)});
-cF.addEventListener('click',()=>{if(audio.duration)audio.currentTime=Math.min(audio.duration,audio.currentTime+10)});
-pbar.addEventListener('click',e=>{if(!audio.duration)return;const p=(e.clientX-pbar.getBoundingClientRect().left)/pbar.offsetWidth;audio.currentTime=p*audio.duration;clrHL()});
+cS.addEventListener('click',()=>{audioEl.pause();audioEl.currentTime=0;iP.style.display='block';iPa.style.display='none';pfill.style.width='0%';tE.textContent='0:00';cancelAnimationFrame(rafId);clrHL();setSt('Ready')});
+cR.addEventListener('click',()=>{audioEl.currentTime=0;clrHL();if(audioEl.paused){audioEl.play();iP.style.display='none';iPa.style.display='block';setSt('Playing','on');rafId=requestAnimationFrame(hlLoop)}});
+cB.addEventListener('click',()=>{audioEl.currentTime=Math.max(0,audioEl.currentTime-10)});
+cF.addEventListener('click',()=>{if(audioEl.duration)audioEl.currentTime=Math.min(audioEl.duration,audioEl.currentTime+10)});
+pbar.addEventListener('click',e=>{if(!audioEl.duration)return;const p=(e.clientX-pbar.getBoundingClientRect().left)/pbar.offsetWidth;audioEl.currentTime=p*audioEl.duration;clrHL()});
 
 // Voice change → regenerate
 vSel.addEventListener('change',async()=>{
-  if(!audioBlob||vSel.value===curVoice)return;
-  audio.pause();genOv.classList.add('show');setSt('Regenerating…');
-  try{
-    const res=await generateAll(ti.value.trim(),vSel.value);
-    audioBlob=res.audio;bounds=res.bounds;curVoice=vSel.value;
-    matchBounds();audio.src=URL.createObjectURL(audioBlob);audio.playbackRate=parseFloat(spdR.value);
-    genOv.classList.remove('show');clrHL();setSt('Ready');
-  }catch(e){genOv.classList.remove('show');setSt(e.message,'err')}
+  if(!tts||vSel.value===curVoice)return;
+  audioEl.pause();ov.classList.add('show');
+  await initPlayer();
 });
 
 // Download
 bDl.addEventListener('click',()=>{
-  if(!audioBlob)return;
-  const a=document.createElement('a');a.href=URL.createObjectURL(audioBlob);
-  a.download='speech.mp3';document.body.appendChild(a);a.click();document.body.removeChild(a);
+  if(!wavBlob)return;
+  const a=document.createElement('a');a.href=URL.createObjectURL(wavBlob);
+  a.download='speech.wav';document.body.appendChild(a);a.click();document.body.removeChild(a);
 });
 </script>
 </body>

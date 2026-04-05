@@ -177,7 +177,7 @@ const modelBar=$('modelBar'),modelBarFill=$('modelBarFill'),modelBarTxt=$('model
 (async function preloadModel(){
   try{
     modelBarTxt.textContent='Loading voice engine…';modelBarFill.style.width='5%';
-    const{KokoroTTS}=await import('https://cdn.jsdelivr.net/npm/kokoro-js@0.4.0/+esm');
+    const{KokoroTTS}=await import('https://esm.sh/kokoro-js');
     modelBarTxt.textContent='Downloading voice model (first time only)…';modelBarFill.style.width='15%';
     tts=await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX',{
       dtype:'q8',

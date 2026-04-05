@@ -37,6 +37,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font-family:inherit;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:8px}
 .bp{background:var(--ac);color:#fff}.bp:hover{background:var(--ac2);transform:translateY(-1px)}.bp:disabled{opacity:.3;pointer-events:none}
 
+.model-bar{position:relative;width:100%;height:24px;background:var(--s2);border-radius:8px;overflow:hidden;flex-shrink:0;transition:opacity .5s}
+.model-bar.done{opacity:0;pointer-events:none;height:0;margin:0}
+.model-bar-fill{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,var(--ac),#a78bfa);border-radius:8px;transition:width .4s}
+.model-bar-txt{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;font-size:.6rem;font-weight:500;color:rgba(255,255,255,.8);letter-spacing:.3px}
+
 .s2{gap:0}.s2-inner{flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden;padding-top:6px;position:relative}
 .topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .bback{background:none;border:none;color:var(--tx2);cursor:pointer;display:flex;align-items:center;gap:3px;font-family:inherit;font-size:.72rem;padding:6px 0}.bback:hover{color:var(--tx)}.bback svg{width:15px;height:15px}
@@ -95,6 +100,10 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
   <div class="fpill" id="fpill"><span class="fn" id="fName"></span><button id="fClear"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="pmsg" id="pmsg">Extracting…</div>
   <button class="btn bp" id="btnGo" disabled>Speak This Text</button>
+  <div class="model-bar" id="modelBar">
+    <div class="model-bar-fill" id="modelBarFill"></div>
+    <span class="model-bar-txt" id="modelBarTxt">Loading voice model…</span>
+  </div>
 </div>
 </div>
 
@@ -161,32 +170,36 @@ stat=$('stat'),ov=$('ov'),ovTxt=$('ovTxt'),ovProg=$('ovProg');
 
 const audioEl=new Audio();
 let wavBlob=null,words=[],wordTimes=[],rafId=null,tts=null,curVoice=null;
+let modelReady=false,modelError=null;
+const modelBar=$('modelBar'),modelBarFill=$('modelBarFill'),modelBarTxt=$('modelBarTxt');
 
-// ---- Load Kokoro TTS model ----
-async function loadModel(){
-  ovTxt.textContent='Loading AI voice engine…';ovProg.style.width='10%';
+// ---- Load Kokoro TTS model immediately on page open ----
+(async function preloadModel(){
   try{
+    modelBarTxt.textContent='Loading voice engine…';modelBarFill.style.width='5%';
     const{KokoroTTS}=await import('https://cdn.jsdelivr.net/npm/kokoro-js@0.4.0/+esm');
-    ovTxt.textContent='Downloading voice model (first time only)…';ovProg.style.width='20%';
+    modelBarTxt.textContent='Downloading voice model (first time only)…';modelBarFill.style.width='15%';
     tts=await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX',{
       dtype:'q8',
       progress_callback:(p)=>{
-        if(p.progress){
-          const pct=20+p.progress*0.7;
-          ovProg.style.width=pct+'%';
-          if(p.file)ovTxt.textContent='Downloading: '+p.file.split('/').pop();
+        if(p.progress!=null){
+          const pct=15+p.progress*0.85;
+          modelBarFill.style.width=pct+'%';
+          if(p.file)modelBarTxt.textContent='Downloading: '+p.file.split('/').pop();
         }
       }
     });
-    ovProg.style.width='100%';
-    return true;
+    modelBarFill.style.width='100%';
+    modelBarTxt.textContent='Voice model ready ✓';
+    modelReady=true;
+    setTimeout(()=>modelBar.classList.add('done'),1200);
   }catch(e){
     console.error('Model load error:',e);
-    ovTxt.textContent='Failed to load voice model. Make sure you\'re on a modern browser (Chrome/Edge recommended) and have a stable connection. Error: '+e.message;
-    ovProg.style.width='0%';
-    return false;
+    modelError=e.message;
+    modelBarFill.style.width='0%';
+    modelBarTxt.textContent='Model failed: '+e.message;
   }
-}
+})();
 
 // ---- Generate audio ----
 async function generateAudio(text,voice){
@@ -295,10 +308,17 @@ btnGo.addEventListener('click',async()=>{
   s1.classList.remove('active');s2.classList.add('active');
   ov.classList.add('show');
 
-  // Load model if needed
-  if(!tts){
-    const ok=await loadModel();
-    if(!ok)return;
+  if(modelError){
+    ovTxt.textContent='Voice model failed to load: '+modelError;
+    return;
+  }
+
+  // Wait for model if still downloading
+  if(!modelReady){
+    ovTxt.textContent='Waiting for voice model to finish loading…';
+    ovProg.style.width='50%';
+    while(!modelReady&&!modelError)await new Promise(r=>setTimeout(r,200));
+    if(modelError){ovTxt.textContent='Voice model failed: '+modelError;return}
   }
 
   await initPlayer();

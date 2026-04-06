@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neighborhood Portal</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root[data-theme="light"]{
+  --bg:#f5f0eb;--card:#fff;--border:#e0d8d0;
+  --accent:#c9624a;--accent2:#d4a830;--green:#5a9478;
+  --text:#2a2d45;--muted:#5a5050;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.09);
+}
+:root[data-theme="dark"]{
+  --bg:#16161e;--card:#1f1f2e;--border:#2e2e42;
+  --accent:#e07a5f;--accent2:#f2cc8f;--green:#81b29a;
+  --text:#e8e4f0;--muted:#9a90b0;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.4);
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:2rem 1.2rem 5rem}
+
+.top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;margin-bottom:2rem}
+.back-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.back-btn svg{width:14px;height:14px}
+.theme-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .7rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s}
+.theme-btn:hover{border-color:var(--accent);color:var(--accent)}
+.theme-btn svg{width:13px;height:13px}
+
+header{margin-bottom:1.6rem}
+header h1{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--accent),var(--accent2),var(--green));background-size:200% 200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:grad 7s ease infinite}
+@keyframes grad{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+header p{color:var(--muted);margin-top:.4rem;font-size:.88rem}
+
+.zip-gate{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:1.1rem 1.4rem;margin-bottom:1.4rem;display:flex;align-items:center;flex-wrap:wrap;gap:.6rem;box-shadow:var(--shadow-sm)}
+.zip-gate label{font-size:.82rem;font-weight:600;color:var(--muted)}
+.zip-gate input{padding:.45rem .75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.9rem;width:130px;outline:none;transition:border-color .2s}
+.zip-gate input:focus{border-color:var(--accent)}
+.zip-pill{background:rgba(201,98,74,.1);border:1.5px solid rgba(201,98,74,.3);color:var(--accent);border-radius:999px;padding:.25rem .75rem;font-size:.78rem;font-weight:700;display:none;align-items:center;gap:.35rem}
+.zip-pill.show{display:inline-flex}
+.zip-pill button{background:none;border:none;cursor:pointer;color:var(--accent);font-size:.9rem;line-height:1;padding:0 0 0 2px;opacity:.7}
+.zip-pill button:hover{opacity:1}
+
+.tabs{display:flex;border-bottom:1.5px solid var(--border);margin-bottom:1.4rem}
+.tab{padding:.65rem 1.2rem;font-size:.88rem;font-weight:600;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--muted);cursor:pointer;margin-bottom:-1.5px;transition:all .2s}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:hover:not(.active){color:var(--text)}
+
+.filter-row{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
+.filter-row label{font-size:.78rem;font-weight:600;color:var(--muted)}
+.filter-row select{padding:.3rem .6rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.8rem;cursor:pointer;outline:none}
+.filter-row select:focus{border-color:var(--accent)}
+
+.pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.pill{padding:.28rem .75rem;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:.75rem;font-weight:600;transition:all .18s}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+.pill.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.count{color:var(--muted);font-size:.76rem;font-weight:600;margin-bottom:.8rem}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
+
+.ncard{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:1rem 1.2rem;box-shadow:var(--shadow-sm);transition:border-color .2s,box-shadow .2s}
+.ncard:hover{border-color:rgba(201,98,74,.4);box-shadow:var(--shadow-md)}
+.ncard.claimed{opacity:.65}
+.ncard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem}
+.cat-badge{font-size:.68rem;font-weight:700;padding:.2rem .55rem;border-radius:999px;letter-spacing:.02em}
+.urg-wrap{display:flex;align-items:center;gap:.3rem}
+.urg-dot{width:8px;height:8px;border-radius:50%}
+.urg-label{font-size:.68rem;font-weight:600;color:var(--muted)}
+.urg-urgent .urg-dot{background:#e24b4a}
+.urg-week .urg-dot{background:#ef9f27}
+.urg-flexible .urg-dot{background:#639922}
+.urg-urgent .urg-label{color:#e24b4a}
+.urg-week .urg-label{color:#ef9f27}
+.urg-flexible .urg-label{color:#639922}
+.ncard-name{font-weight:700;font-size:.88rem;margin-bottom:.25rem}
+.ncard-zip{font-size:.72rem;color:var(--muted);margin-bottom:.35rem;font-weight:600}
+.ncard-desc{font-size:.8rem;color:var(--muted);line-height:1.55;margin-bottom:.8rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ncard-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4rem}
+.ncard-time{font-size:.7rem;color:var(--muted)}
+.ncard-actions{display:flex;gap:.4rem;align-items:center}
+.btn-help{padding:.28rem .75rem;border-radius:8px;border:1.5px solid rgba(90,148,120,.35);background:rgba(90,148,120,.08);color:var(--green);font-size:.73rem;font-weight:600;cursor:pointer;transition:all .18s}
+.btn-help:hover{background:var(--green);color:#fff;border-color:var(--green)}
+.status-chip{font-size:.68rem;font-weight:700;padding:.2rem .55rem;border-radius:999px}
+.status-open{background:rgba(90,148,120,.12);color:var(--green)}
+.status-claimed{background:rgba(201,98,74,.1);color:var(--accent)}
+
+.contact-box{margin-top:.75rem;padding:.65rem .85rem;background:rgba(90,148,120,.07);border:1px solid rgba(90,148,120,.25);border-radius:10px;font-size:.78rem;color:var(--text);line-height:1.6;display:none}
+.contact-box.show{display:block}
+.contact-box strong{color:var(--green)}
+.contact-box .btn-mark{margin-top:.5rem;display:inline-block;padding:.25rem .7rem;border-radius:7px;border:1px solid rgba(201,98,74,.3);background:rgba(201,98,74,.08);color:var(--accent);font-size:.72rem;font-weight:600;cursor:pointer;transition:all .18s}
+.contact-box .btn-mark:hover{background:var(--accent);color:#fff}
+
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:.75rem}
+.empty p{font-size:.88rem;line-height:1.6}
+
+.form-wrap{max-width:520px}
+.success-bar{background:rgba(90,148,120,.12);border:1.5px solid rgba(90,148,120,.3);border-radius:10px;padding:.65rem 1rem;font-size:.82rem;color:var(--green);font-weight:600;margin-bottom:1.2rem;display:none}
+.success-bar.show{display:block}
+.fg{margin-bottom:1.1rem}
+.fg label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.04em}
+.fg input,.fg select,.fg textarea{width:100%;padding:.5rem .8rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.88rem;font-family:inherit;outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
+.fg textarea{height:96px;resize:vertical;line-height:1.5}
+.fg .hint{font-size:.7rem;color:var(--muted);margin-top:.3rem}
+.urg-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.urg-opt{padding:.5rem .4rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);font-size:.75rem;font-weight:600;cursor:pointer;text-align:center;color:var(--muted);transition:all .18s}
+.urg-opt:hover{border-color:var(--accent);color:var(--accent)}
+.urg-opt.sel-urgent{background:#FCEBEB;border-color:#E24B4A;color:#A32D2D}
+.urg-opt.sel-week{background:#FAEEDA;border-color:#EF9F27;color:#854F0B}
+.urg-opt.sel-flexible{background:#EAF3DE;border-color:#639922;color:#3B6D11}
+.sub-btn{width:100%;padding:.75rem;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:.92rem;font-weight:700;cursor:pointer;margin-top:.4rem;transition:opacity .2s}
+.sub-btn:hover{opacity:.88}
+.sub-btn:disabled{opacity:.5;cursor:not-allowed}
+
+.loading{text-align:center;padding:2.5rem;color:var(--muted);font-size:.88rem}
+@media(max-width:520px){.zip-gate{flex-direction:column;align-items:flex-start}.urg-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-bar">
+    <a class="back-btn" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Resource Navigator
+    </a>
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+      <svg id="themeIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <span id="themeLabel">Dark mode</span>
+    </button>
+  </div>
+
+  <header>
+    <h1>🏘️ Neighborhood Portal</h1>
+    <p>Hyper-local mutual aid — post a need or offer help, filtered by ZIP code.</p>
+  </header>
+
+  <div class="zip-gate">
+    <label for="globalZip">Your ZIP code:</label>
+    <input type="text" id="globalZip" maxlength="5" placeholder="e.g. 10031" oninput="onGlobalZip()" autocomplete="postal-code">
+    <span class="zip-pill" id="zipPill">
+      <span id="zipPillText"></span>
+      <button onclick="clearZip()" title="Clear ZIP">✕</button>
+    </span>
+    <span id="zipHint" style="font-size:.76rem;color:var(--muted)">Enter your ZIP to see local needs &amp; pre-fill the form.</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tabA" onclick="switchTab('browse')">Browse Needs</button>
+    <button class="tab" id="tabB" onclick="switchTab('post')">Post a Need</button>
+  </div>
+
+  <div id="browsePanel">
+    <div class="filter-row">
+      <label for="zipSel">ZIP:</label>
+      <select id="zipSel" onchange="renderBrowse()">
+        <option value="">All ZIPs</option>
+      </select>
+      <label for="urgSel" style="margin-left:.4rem">Urgency:</label>
+      <select id="urgSel" onchange="renderBrowse()">
+        <option value="">All</option>
+        <option value="urgent">Urgent</option>
+        <option value="week">This week</option>
+        <option value="flexible">Flexible</option>
+      </select>
+    </div>
+    <div class="pills" id="catPills"></div>
+    <div class="count" id="countBar"></div>
+    <div id="needsList"><div class="loading">Loading neighborhood needs…</div></div>
+  </div>
+
+  <div id="postPanel" style="display:none">
+    <div class="success-bar" id="successBar">✓ Your need has been posted! Neighbors can now see and respond.</div>
+    <div class="form-wrap">
+      <div class="fg">
+        <label for="fZip">ZIP code *</label>
+        <input type="text" id="fZip" maxlength="5" placeholder="5-digit ZIP" style="max-width:160px" oninput="validateZipField()">
+      </div>
+      <div class="fg">
+        <label for="fName">First name or alias</label>
+        <input type="text" id="fName" placeholder="e.g. Maria or Neighbor">
+      </div>
+      <div class="fg">
+        <label for="fCat">Category *</label>
+        <select id="fCat">
+          <option value="">Select a category…</option>
+          <option>Food</option><option>Clothing</option><option>Housing</option>
+          <option>Childcare</option><option>Transportation</option><option>Employment</option>
+          <option>Education</option><option>Legal</option><option>Mental Health</option>
+          <option>Medical</option><option>Other</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label for="fDesc">What do you need? *</label>
+        <textarea id="fDesc" placeholder="Be specific — what, when, where, any constraints. e.g. 'Need a ride to a medical appointment in the Bronx on Thursday mornings, can't take the bus.'"></textarea>
+      </div>
+      <div class="fg">
+        <label>How urgent?</label>
+        <div class="urg-row">
+          <div class="urg-opt" data-v="urgent" onclick="selUrg('urgent')">🔴 Urgent</div>
+          <div class="urg-opt" data-v="week"   onclick="selUrg('week')">🟡 This week</div>
+          <div class="urg-opt" data-v="flexible" onclick="selUrg('flexible')">🟢 Flexible</div>
+        </div>
+      </div>
+      <div class="fg">
+        <label for="fContact">How can helpers reach you? (optional)</label>
+        <input type="text" id="fContact" placeholder="Email, phone, or Signal — only shown when someone clicks 'I can help'">
+        <p class="hint">Leave blank to stay anonymous. Contact info is only revealed to neighbors who click "I can help."</p>
+      </div>
+      <button class="sub-btn" id="subBtn" onclick="submitNeed()">Post My Need</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATS=['Food','Clothing','Housing','Childcare','Transportation','Employment','Education','Legal','Mental Health','Medical','Other'];
+const KEY='neighborhood-needs-v2';
+const CAT_STYLE={
+  'Food':         {bg:'#FAEEDA',tc:'#633806'},
+  'Clothing':     {bg:'#FAECE7',tc:'#712B13'},
+  'Housing':      {bg:'#E6F1FB',tc:'#0C447C'},
+  'Childcare':    {bg:'#FBEAF0',tc:'#72243E'},
+  'Transportation':{bg:'#E1F5EE',tc:'#085041'},
+  'Employment':   {bg:'#EEEDFE',tc:'#3C3489'},
+  'Education':    {bg:'#EAF3DE',tc:'#27500A'},
+  'Legal':        {bg:'#F1EFE8',tc:'#444441'},
+  'Mental Health':{bg:'#EEEDFE',tc:'#3C3489'},
+  'Medical':      {bg:'#E1F5EE',tc:'#085041'},
+  'Other':        {bg:'#F1EFE8',tc:'#444441'}
+};
+
+let needs=[], activeCat='All', openContact=null, selUrgency='', isDark=false;
+
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function timeAgo(ts){
+  const d=Math.floor((Date.now()-new Date(ts))/1000);
+  if(d<60)return'Just now';
+  if(d<3600)return Math.floor(d/60)+'m ago';
+  if(d<86400)return Math.floor(d/3600)+'h ago';
+  return Math.floor(d/86400)+'d ago';
+}
+
+async function loadNeeds(){
+  try{const r=await window.storage.get(KEY,true);needs=JSON.parse(r.value);}
+  catch(e){needs=[];}
+  rebuildFilters();
+  renderBrowse();
+}
+async function saveNeeds(){
+  try{await window.storage.set(KEY,JSON.stringify(needs),true);}
+  catch(e){console.error(e);}
+}
+
+function rebuildFilters(){
+  const zips=[...new Set(needs.map(n=>n.zip))].sort();
+  const sel=document.getElementById('zipSel');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">All ZIPs</option>'+zips.map(z=>`<option${z===cur?' selected':''}>${z}</option>`).join('');
+  const usedCats=['All',...CATS.filter(c=>needs.some(n=>n.category===c))];
+  document.getElementById('catPills').innerHTML=usedCats.map(c=>
+    `<button class="pill${c===activeCat?' on':''}" onclick="setCat('${esc(c)}')">${c}</button>`
+  ).join('');
+}
+
+function setCat(c){activeCat=c;openContact=null;rebuildFilters();renderBrowse();}
+
+function renderBrowse(){
+  const zipF=document.getElementById('zipSel').value;
+  const urgF=document.getElementById('urgSel').value;
+  let f=needs.filter(n=>{
+    const mz=!zipF||n.zip===zipF;
+    const mc=activeCat==='All'||n.category===activeCat;
+    const mu=!urgF||n.urgency===urgF;
+    return mz&&mc&&mu;
+  });
+  const ord={urgent:0,week:1,flexible:2};
+  f.sort((a,b)=>(ord[a.urgency]||2)-(ord[b.urgency]||2)||(new Date(b.timestamp)-new Date(a.timestamp)));
+  const open=f.filter(n=>n.status!=='claimed');
+  const done=f.filter(n=>n.status==='claimed');
+  const all=[...open,...done];
+  document.getElementById('countBar').textContent=
+    all.length?`${open.length} open · ${done.length} fulfilled${zipF?' in ZIP '+zipF:''}`:''  ;
+  const list=document.getElementById('needsList');
+  if(!all.length){
+    list.innerHTML=`<div class="empty"><div class="empty-icon">🌱</div><p>No needs posted yet${zipF?' in ZIP '+zipF:activeCat!=='All'?' for '+activeCat:''}.<br>Be the first to post, or try a different filter.</p></div>`;
+    return;
+  }
+  list.innerHTML=`<div class="grid">${all.map(nCard).join('')}</div>`;
+}
+
+function nCard(n){
+  const cs=CAT_STYLE[n.category]||CAT_STYLE['Other'];
+  const urgMap={urgent:'urg-urgent',week:'urg-week',flexible:'urg-flexible'};
+  const urgLbl={urgent:'Urgent',week:'This week',flexible:'Flexible'};
+  const isOpen=openContact===n.id;
+  const claimed=n.status==='claimed';
+  return`<div class="ncard${claimed?' claimed':''}" id="card-${n.id}">
+    <div class="ncard-top">
+      <span class="cat-badge" style="background:${cs.bg};color:${cs.tc}">${esc(n.category)}</span>
+      <div class="urg-wrap ${urgMap[n.urgency]||'urg-flexible'}">
+        <div class="urg-dot"></div>
+        <span class="urg-label">${urgLbl[n.urgency]||'Flexible'}</span>
+      </div>
+    </div>
+    <div class="ncard-name">${esc(n.firstName||'Neighbor')}</div>
+    <div class="ncard-zip">ZIP ${esc(n.zip)}</div>
+    <div class="ncard-desc">${esc(n.description)}</div>
+    <div class="ncard-footer">
+      <span class="ncard-time">${timeAgo(n.timestamp)}</span>
+      <div class="ncard-actions">
+        <span class="status-chip ${claimed?'status-claimed':'status-open'}">${claimed?'Fulfilled':'Open'}</span>
+        ${!claimed?`<button class="btn-help" onclick="togContact('${n.id}')">${isOpen?'Hide':'I can help'}</button>`:''}
+      </div>
+    </div>
+    <div class="contact-box${isOpen?' show':''}" id="contact-${n.id}">
+      ${n.contact
+        ?`<strong>Reach out:</strong> ${esc(n.contact)}`
+        :`<em>This neighbor prefers to stay anonymous. Share this post with your network!</em>`}
+      ${!claimed?`<br><button class="btn-mark" onclick="markClaimed('${n.id}')">Mark as fulfilled ✓</button>`:''}
+    </div>
+  </div>`;
+}
+
+function togContact(id){
+  openContact=openContact===id?null:id;
+  renderBrowse();
+}
+async function markClaimed(id){
+  const i=needs.findIndex(n=>n.id===id);
+  if(i!==-1){needs[i].status='claimed';await saveNeeds();openContact=null;rebuildFilters();renderBrowse();}
+}
+
+function selUrg(v){
+  selUrgency=v;
+  document.querySelectorAll('.urg-opt').forEach(el=>{
+    el.className='urg-opt';
+    if(el.dataset.v===v)el.className='urg-opt sel-'+v;
+  });
+}
+
+async function submitNeed(){
+  const zip=document.getElementById('fZip').value.trim();
+  const name=document.getElementById('fName').value.trim();
+  const cat=document.getElementById('fCat').value;
+  const desc=document.getElementById('fDesc').value.trim();
+  const contact=document.getElementById('fContact').value.trim();
+  if(!zip||zip.length!==5||!/^\d{5}$/.test(zip)){alert('Please enter a valid 5-digit ZIP code.');return;}
+  if(!cat){alert('Please select a category.');return;}
+  if(desc.length<10){alert('Please describe your need in at least a few words.');return;}
+  const btn=document.getElementById('subBtn');
+  btn.disabled=true;btn.textContent='Posting…';
+  const n={
+    id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+    zip,firstName:name||'Neighbor',category:cat,description:desc,
+    urgency:selUrgency||'flexible',contact,
+    timestamp:new Date().toISOString(),status:'open'
+  };
+  needs.push(n);
+  await saveNeeds();
+  ['fName','fDesc','fContact'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fCat').value='';
+  selUrgency='';
+  document.querySelectorAll('.urg-opt').forEach(el=>el.className='urg-opt');
+  btn.disabled=false;btn.textContent='Post My Need';
+  const sb=document.getElementById('successBar');
+  sb.className='success-bar show';
+  setTimeout(()=>sb.className='success-bar',4000);
+  rebuildFilters();
+  switchTab('browse');
+  const sel=document.getElementById('zipSel');
+  sel.value=zip;
+  renderBrowse();
+}
+
+function onGlobalZip(){
+  const z=document.getElementById('globalZip').value.trim();
+  if(/^\d{5}$/.test(z)){
+    document.getElementById('zipPillText').textContent='ZIP '+z;
+    document.getElementById('zipPill').className='zip-pill show';
+    document.getElementById('zipHint').style.display='none';
+    document.getElementById('fZip').value=z;
+    const sel=document.getElementById('zipSel');
+    if([...sel.options].some(o=>o.value===z))sel.value=z;
+    renderBrowse();
+  }else{
+    document.getElementById('zipPill').className='zip-pill';
+    document.getElementById('zipHint').style.display='';
+  }
+}
+function clearZip(){
+  document.getElementById('globalZip').value='';
+  document.getElementById('zipPill').className='zip-pill';
+  document.getElementById('zipHint').style.display='';
+  document.getElementById('zipSel').value='';
+  document.getElementById('fZip').value='';
+  renderBrowse();
+}
+function validateZipField(){
+  const v=document.getElementById('fZip').value;
+  if(/^\d{5}$/.test(v)&&!document.getElementById('globalZip').value){
+    document.getElementById('globalZip').value=v;
+    onGlobalZip();
+  }
+}
+
+function switchTab(t){
+  document.getElementById('browsePanel').style.display=t==='browse'?'block':'none';
+  document.getElementById('postPanel').style.display=t==='post'?'block':'none';
+  document.getElementById('tabA').className='tab'+(t==='browse'?' active':'');
+  document.getElementById('tabB').className='tab'+(t==='post'?' active':'');
+}
+
+function toggleTheme(){
+  isDark=!isDark;
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  document.getElementById('themeLabel').textContent=isDark?'Light mode':'Dark mode';
+  document.getElementById('themeIco').outerHTML=isDark
+    ?`<svg id="themeIco" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`
+    :`<svg id="themeIco" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+}
+
+loadNeeds();
+</script>
+</body>
+</html>

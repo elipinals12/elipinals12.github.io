@@ -31,6 +31,11 @@ header h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:800;letter-spacing:-.03em
 @keyframes grad{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 
+.status-bar{border-radius:9px;padding:.42rem .9rem;font-size:.76rem;font-weight:600;margin-bottom:.85rem;display:none;text-align:center}
+.status-bar.loading{background:rgba(74,111,165,.1);border:1px solid rgba(74,111,165,.2);color:var(--blue);animation:pulse 1.6s ease infinite}
+.status-bar.error{background:rgba(201,98,74,.08);border:1px solid rgba(201,98,74,.22);color:var(--accent);text-align:left}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+
 .zip-gate{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:.9rem 1.2rem;margin-bottom:1.3rem;display:flex;align-items:center;flex-wrap:wrap;gap:.6rem;box-shadow:var(--shadow-sm)}
 .zip-gate label{font-size:.8rem;font-weight:600;color:var(--muted)}
 .zip-gate input{padding:.38rem .7rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.88rem;width:130px;outline:none;transition:border-color .2s}
@@ -47,7 +52,7 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 
 .filter-row{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;margin-bottom:.85rem}
 .filter-row label{font-size:.74rem;font-weight:600;color:var(--muted)}
-.filter-row select{padding:.28rem .52rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.76rem;cursor:pointer;outline:none;transition:border-color .2s}
+.filter-row select{padding:.28rem .52rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.76rem;cursor:pointer;outline:none}
 .filter-row select:focus{border-color:var(--accent)}
 
 .cpills{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.85rem}
@@ -58,7 +63,6 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 .count{color:var(--muted);font-size:.72rem;font-weight:600;margin-bottom:.7rem}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:.7rem}
 
-/* Cards */
 .ncard{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:.95rem 1.1rem;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:.45rem;transition:border-color .2s,box-shadow .2s}
 .ncard:hover{border-color:rgba(201,98,74,.3);box-shadow:var(--shadow-md)}
 .ncard.offer-card:hover{border-color:rgba(90,148,120,.35)}
@@ -98,7 +102,6 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 .btn-del{border-color:rgba(180,50,50,.3);color:#c0392b;background:rgba(180,50,50,.07)}
 .btn-del:hover{background:#c0392b;color:#fff;border-color:#c0392b}
 
-/* Expand box */
 .expand-box{padding:.6rem .8rem;border-radius:10px;font-size:.77rem;line-height:1.65;display:none;margin-top:.1rem}
 .expand-box.show{display:block}
 .expand-green{background:rgba(90,148,120,.07);border:1px solid rgba(90,148,120,.22)}
@@ -111,7 +114,6 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 .anon-note{font-size:.67rem;color:var(--muted);font-style:italic}
 .msg-sent{font-size:.72rem;color:var(--green);font-weight:600;display:none}
 
-/* Post form */
 .form-wrap{max-width:540px}
 .type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.1rem}
 .type-opt{padding:.62rem;border-radius:10px;border:2px solid var(--border);background:var(--card);cursor:pointer;text-align:center;transition:all .2s;user-select:none}
@@ -145,17 +147,15 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 .sub-btn:hover{opacity:.88}
 .sub-btn:disabled{opacity:.45;cursor:not-allowed}
 
-/* Success / code display */
 .success-box{background:rgba(90,148,120,.09);border:2px solid rgba(90,148,120,.28);border-radius:13px;padding:1.1rem 1.3rem;margin-bottom:1.3rem;display:none;position:relative}
 .success-box.show{display:block}
-.success-box h3{font-size:.88rem;color:var(--green);margin-bottom:.5rem;display:flex;align-items:center;gap:.35rem}
+.success-box h3{font-size:.88rem;color:var(--green);margin-bottom:.5rem}
 .code-display{background:var(--card);border:2.5px dashed var(--green);border-radius:9px;padding:.45rem 1rem;font-size:1.5rem;font-weight:800;letter-spacing:.18em;color:var(--green);text-align:center;font-family:'Courier New',monospace;margin:.4rem 0;cursor:pointer;transition:background .2s}
 .code-display:hover{background:rgba(90,148,120,.08)}
 .code-warn{font-size:.7rem;color:var(--muted);line-height:1.5;background:rgba(212,168,48,.1);border:1px solid rgba(212,168,48,.3);border-radius:7px;padding:.38rem .65rem;margin-top:.4rem}
 .close-success{position:absolute;top:.7rem;right:.9rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;opacity:.6;transition:opacity .15s}
 .close-success:hover{opacity:1}
 
-/* Manage panel */
 .manage-intro{font-size:.83rem;color:var(--muted);margin-bottom:1rem;line-height:1.55}
 .code-search{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
 .code-search input{padding:.48rem .85rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.96rem;font-family:'Courier New',monospace;letter-spacing:.12em;width:200px;text-transform:uppercase;outline:none;transition:border-color .2s}
@@ -172,7 +172,6 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 .msg-item .msg-reply{font-size:.67rem;color:var(--blue);margin-top:.2rem;font-style:italic}
 .msg-item .msg-time{font-size:.63rem;color:var(--muted);margin-top:.15rem}
 .no-msgs{font-size:.78rem;color:var(--muted);font-style:italic}
-
 .manage-actions{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--border)}
 
 .edit-box{margin-top:.85rem;display:none}
@@ -180,11 +179,11 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 .edit-box textarea:focus{border-color:var(--accent)}
 .edit-actions{display:flex;gap:.4rem;margin-top:.4rem}
 
-.alert{padding:.5rem .8rem;border-radius:9px;font-size:.78rem;font-weight:600;margin-bottom:.8rem;display:none}
-.alert.show{display:block}
-.alert-warn{background:rgba(212,168,48,.1);border:1.5px solid rgba(212,168,48,.3);color:#5a3f00}
-.alert-ok{background:rgba(90,148,120,.1);border:1.5px solid rgba(90,148,120,.28);color:var(--green)}
-[data-theme="dark"] .alert-warn{color:var(--accent2)}
+.m-alert{padding:.5rem .8rem;border-radius:9px;font-size:.78rem;font-weight:600;margin-bottom:.8rem;display:none}
+.m-alert.show{display:block}
+.m-alert.warn{background:rgba(212,168,48,.1);border:1.5px solid rgba(212,168,48,.3);color:#5a3f00}
+.m-alert.ok{background:rgba(90,148,120,.1);border:1.5px solid rgba(90,148,120,.28);color:var(--green)}
+[data-theme="dark"] .m-alert.warn{color:var(--accent2)}
 
 .empty-state{text-align:center;padding:2.8rem 1rem;color:var(--muted)}
 .empty-state .e-icon{font-size:2.1rem;margin-bottom:.55rem}
@@ -198,12 +197,18 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 </head>
 <body>
 <div class="wrap">
+  <!-- Status bar — loading / errors -->
+  <div id="statusBar" class="status-bar"></div>
 
   <div class="top-bar">
     <a class="tb-btn" href="index.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       Back to Resource Navigator
     </a>
+    <button class="tb-btn" onclick="load()" title="Refresh posts from server">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      Refresh
+    </button>
     <button class="tb-btn" onclick="toggleTheme()" id="themeBtn">
       <svg id="themeIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       <span id="themeLabel">Dark mode</span>
@@ -212,7 +217,7 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 
   <header>
     <h1>🏘️ Neighborhood Portal</h1>
-    <p>Mutual aid by ZIP — post a need or offer help. All posts are anonymous by default.</p>
+    <p>Mutual aid by ZIP — post a need or offer help. All posts are anonymous by default. Powered by Google Sheets.</p>
   </header>
 
   <div class="zip-gate">
@@ -232,7 +237,7 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
     <button class="tab"        id="t-manage" onclick="switchTab('manage')">🔑 Manage My Post</button>
   </div>
 
-  <!-- ── NEEDS ── -->
+  <!-- NEEDS -->
   <div id="p-needs">
     <div class="filter-row">
       <label>ZIP:</label><select id="nZip" onchange="renderNeeds()"><option value="">All</option></select>
@@ -251,7 +256,7 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
     <div id="nList"></div>
   </div>
 
-  <!-- ── OFFERS ── -->
+  <!-- OFFERS -->
   <div id="p-offers" style="display:none">
     <div class="filter-row">
       <label>ZIP:</label><select id="oZip" onchange="renderOffers()"><option value="">All</option></select>
@@ -265,20 +270,16 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
     <div id="oList"></div>
   </div>
 
-  <!-- ── POST ── -->
+  <!-- POST -->
   <div id="p-post" style="display:none">
     <div class="success-box" id="successBox">
       <button class="close-success" onclick="document.getElementById('successBox').className='success-box'" title="Dismiss">✕</button>
-      <h3>✅ Posted!</h3>
-      <p style="font-size:.79rem;color:var(--text);margin-bottom:.4rem">
-        Save your <strong>secret management code</strong> — it's the only way to view responses, edit, mark as done, or delete your post.
-      </p>
+      <h3>✅ Posted to Google Sheets!</h3>
+      <p style="font-size:.79rem;color:var(--text);margin-bottom:.4rem">Save your <strong>secret management code</strong> — use it to view responses, edit, mark as done, or delete from any device.</p>
       <div class="code-display" id="codeDisplay" title="Click to copy" onclick="copyCode()"></div>
-      <div class="code-warn">⚠️ This code is shown <strong>once</strong>. Screenshot it or write it down now. Click the code above to copy it.</div>
+      <div class="code-warn">⚠️ This code is shown <strong>once</strong>. Screenshot it or write it down now. Click to copy.</div>
     </div>
-
     <div class="form-wrap">
-      <!-- Type toggle -->
       <div class="fg" style="margin-bottom:1.2rem">
         <span class="fg-label">I want to…</span>
         <div class="type-toggle">
@@ -294,7 +295,6 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
           </div>
         </div>
       </div>
-
       <div class="fg">
         <label for="fZip">ZIP code *</label>
         <input type="text" id="fZip" maxlength="5" placeholder="5-digit ZIP" style="max-width:160px" oninput="onFZip()">
@@ -311,17 +311,17 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
           <option>Childcare</option><option>Transportation</option><option>Employment</option>
           <option>Education</option><option>Legal</option><option>Mental Health</option>
           <option>Medical</option><option>Technology</option><option>Errands</option>
-          <option>Companionship</option><option>Skills / Tutoring</option>
-          <option>Other</option>
+          <option>Companionship</option><option>Skills / Tutoring</option><option>Other</option>
         </select>
       </div>
       <div class="fg" id="fOtherWrap" style="display:none">
         <label for="fOther">Describe your category *</label>
-        <input type="text" id="fOther" placeholder="e.g. Pet care, Language exchange, Moving help…">
+        <input type="text" id="fOther" placeholder="e.g. Pet care, Moving help, Language exchange…">
       </div>
       <div class="fg">
         <label for="fDesc" id="fDescLbl">What do you need? *</label>
-        <textarea id="fDesc" placeholder="Be specific — what, when, where, any constraints."></textarea>
+        <textarea id="fDesc" maxlength="800" placeholder="Be specific — what, when, where, any constraints."></textarea>
+        <p class="hint">Max 800 characters.</p>
       </div>
       <div class="fg" id="fUrgWrap">
         <span class="fg-label">How urgent?</span>
@@ -331,8 +331,6 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
           <div class="urg-opt" data-v="flexible" onclick="selUrg('flexible')">🟢 Flexible / Ongoing</div>
         </div>
       </div>
-
-      <!-- Privacy -->
       <div class="fg">
         <span class="fg-label">Contact privacy *</span>
         <label class="popt sel" id="poptAnon">
@@ -346,37 +344,38 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
           <input type="radio" name="priv" value="reveal" onchange="setPrivacy('reveal')">
           <div>
             <div class="popt-lbl">👁️ Reveal my contact when someone responds</div>
-            <div class="popt-desc">Your info is shown only after someone clicks the help/respond button. Never shown publicly.</div>
+            <div class="popt-desc">Your info is shown only after someone clicks the help button. Never shown publicly.</div>
           </div>
         </label>
       </div>
       <div class="fg" id="fContactWrap" style="display:none">
         <label for="fContact">Your contact info *</label>
         <input type="text" id="fContact" placeholder="Email, phone, Signal, etc.">
-        <p class="hint">Only revealed when a neighbor clicks the respond button. Never shown publicly.</p>
+        <p class="hint">Only revealed when a neighbor clicks the respond button. Never shown publicly on the card.</p>
       </div>
-
       <button class="sub-btn" id="subBtn" onclick="submitPost()">Post →</button>
     </div>
   </div>
 
-  <!-- ── MANAGE ── -->
+  <!-- MANAGE -->
   <div id="p-manage" style="display:none">
-    <p class="manage-intro">Enter the secret code you received when posting to manage your listing — view responses, edit, mark as done, or delete.</p>
+    <p class="manage-intro">Enter the secret code from when you posted — view messages, edit, mark as done, or delete. Works from any device.</p>
     <div class="code-search">
       <input type="text" id="codeIn" maxlength="8" placeholder="ABCD1234"
         oninput="this.value=this.value.toUpperCase()"
         onkeydown="if(event.key==='Enter')lookupCode()">
       <button class="sub-btn" style="width:auto;padding:.48rem 1.1rem;margin-top:0" onclick="lookupCode()">Find My Post</button>
     </div>
-    <div class="alert alert-warn" id="manageAlert"></div>
+    <div class="m-alert" id="mAlert"></div>
     <div class="manage-card" id="manageCard"></div>
   </div>
 
-</div><!-- /wrap -->
+</div>
 
 <script>
-const KEY = 'neighborhood-portal-v3';
+// ── !! REQUIRED: paste your Apps Script web app URL here !! ──
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyu6otJIsyEg_G4A6fbncOR3D8fGQKdIcDZNsrjiNnV8d6WYYtEvekpRs_IiR462fvm/exec';
+
 const CATS = ['Food','Clothing','Housing','Childcare','Transportation','Employment','Education','Legal','Mental Health','Medical','Technology','Errands','Companionship','Skills / Tutoring','Other'];
 const CS = {
   'Food':{bg:'#FAEEDA',tc:'#633806'},'Clothing':{bg:'#FAECE7',tc:'#712B13'},
@@ -411,31 +410,57 @@ function copyCode(){
   navigator.clipboard.writeText(t).then(()=>{
     const el=document.getElementById('codeDisplay');
     const orig=el.textContent; el.textContent='Copied!';
-    setTimeout(()=>el.textContent=orig,1200);
+    setTimeout(()=>el.textContent=orig,1400);
   });
 }
 
-// ── Storage ────────────────────────────────────────────────────
-async function load(){
-  try{const r=await window.storage.get(KEY,true);posts=JSON.parse(r.value);}catch(e){posts=[];}
-  rebuildFilters(); renderNeeds(); renderOffers();
-}
-async function save(){
-  try{await window.storage.set(KEY,JSON.stringify(posts),true);}catch(e){console.error(e);}
+// ── API ───────────────────────────────────────────────────────
+async function api(action, payload={}) {
+  if (!SCRIPT_URL || SCRIPT_URL.includes('PASTE')) {
+    throw new Error('SCRIPT_URL not set — open portal.html in a text editor and paste your Apps Script URL.');
+  }
+  const url = SCRIPT_URL
+    + '?action=' + encodeURIComponent(action)
+    + '&payload=' + encodeURIComponent(JSON.stringify(payload));
+  const r = await fetch(url, { redirect: 'follow' });
+  if (!r.ok) throw new Error('Server returned ' + r.status);
+  return r.json();
 }
 
-// ── Filters ────────────────────────────────────────────────────
-function displayCat(p){return p.category==='Other'&&p.customCat?p.customCat:p.category;}
+// ── Status bar ────────────────────────────────────────────────
+function setStatus(type, msg) {
+  const el = document.getElementById('statusBar');
+  el.className = 'status-bar' + (type ? ' ' + type : '');
+  el.textContent = msg || '';
+  el.style.display = msg ? 'block' : 'none';
+}
+
+// ── Load posts ────────────────────────────────────────────────
+async function load() {
+  setStatus('loading', '⏳ Loading posts from Google Sheets…');
+  try {
+    const res = await api('load');
+    if (!res.ok) throw new Error(res.error || 'Load failed');
+    posts = res.posts || [];
+    rebuildFilters(); renderNeeds(); renderOffers();
+    setStatus('', '');
+  } catch(e) {
+    setStatus('error', '⚠️ ' + e.message);
+  }
+}
+
+// ── Filters ───────────────────────────────────────────────────
+function displayCat(p){ return p.category==='Other'&&p.customCat ? p.customCat : p.category; }
 
 function rebuildFilters(){
-  const needs=posts.filter(p=>p.type==='need'&&p.status!=='deleted');
-  const offers=posts.filter(p=>p.type==='offer'&&p.status!=='deleted');
+  const needs=posts.filter(p=>p.type==='need');
+  const offers=posts.filter(p=>p.type==='offer');
   buildZip('nZip',needs); buildZip('oZip',offers);
-  buildCats('nCats',needs,nCat,"setNCat");
-  buildCats('oCats',offers,oCat,"setOCat");
+  buildCats('nCats',needs,nCat,'setNCat');
+  buildCats('oCats',offers,oCat,'setOCat');
 }
 function buildZip(id,arr){
-  const el=document.getElementById(id), cur=el.value;
+  const el=document.getElementById(id),cur=el.value;
   const zips=[...new Set(arr.map(p=>p.zip))].sort();
   el.innerHTML='<option value="">All</option>'+zips.map(z=>`<option${z===cur?' selected':''}>${esc(z)}</option>`).join('');
 }
@@ -448,18 +473,18 @@ function buildCats(id,arr,active,fn){
 function setNCat(c){nCat=c;openContact=openMsg=null;rebuildFilters();renderNeeds();}
 function setOCat(c){oCat=c;openContact=openMsg=null;rebuildFilters();renderOffers();}
 
-// ── Render ─────────────────────────────────────────────────────
+// ── Render ────────────────────────────────────────────────────
 function renderNeeds(){
   const zipF=document.getElementById('nZip').value;
   const urgF=document.getElementById('nUrg').value;
-  const stF =document.getElementById('nStat').value;
+  const stF=document.getElementById('nStat').value;
   let f=posts.filter(p=>{
-    if(p.type!=='need'||p.status==='deleted')return false;
+    if(p.type!=='need')return false;
     if(zipF&&p.zip!==zipF)return false;
     if(nCat!=='All'&&displayCat(p)!==nCat&&p.category!==nCat)return false;
     if(urgF&&p.urgency!==urgF)return false;
     if(stF&&p.status!==stF)return false;
-    if(!stF&&p.status==='claimed')return false; // "open" default hides fulfilled unless selected
+    if(!stF&&p.status==='claimed')return false;
     return true;
   });
   const ord={urgent:0,week:1,flexible:2};
@@ -471,9 +496,9 @@ function renderNeeds(){
 }
 function renderOffers(){
   const zipF=document.getElementById('oZip').value;
-  const stF =document.getElementById('oStat').value;
+  const stF=document.getElementById('oStat').value;
   let f=posts.filter(p=>{
-    if(p.type!=='offer'||p.status==='deleted')return false;
+    if(p.type!=='offer')return false;
     if(zipF&&p.zip!==zipF)return false;
     if(oCat!=='All'&&displayCat(p)!==oCat&&p.category!==oCat)return false;
     if(stF&&p.status!==stF)return false;
@@ -498,20 +523,17 @@ function renderList(id,items,type){
 }
 
 function card(p,type){
-  const dc=displayCat(p), c=cs(p.category);
+  const dc=displayCat(p),c=cs(p.category);
   const urgCls={urgent:'urg-urgent',week:'urg-week',flexible:'urg-flex'}[p.urgency]||'urg-flex';
   const urgLbl={urgent:'Urgent',week:'This week',flexible:'Flexible'}[p.urgency]||'Flexible';
   const done=p.status==='claimed';
   const msgs=(p.messages||[]).length;
-  const isC=openContact===p.id, isM=openMsg===p.id;
-  const helpLbl=isC?'Hide':(type==='need'?'I can help':'I need this');
-
+  const isC=openContact===p.id,isM=openMsg===p.id;
   const contactInner=p.privacy==='reveal'&&p.contact
     ?`<strong>Contact:</strong> ${esc(p.contact)}`
     :p.privacy==='reveal'&&!p.contact
-    ?`<em>Poster didn't leave contact info — try leaving a message below.</em>`
-    :`<em>Poster chose full anonymity. Leave them a private message below and they'll read it with their secret code.</em>`;
-
+    ?`<em>No contact left — try leaving a message below.</em>`
+    :`<em>Poster chose full anonymity. Leave a private message and they'll read it with their secret code.</em>`;
   return`<div class="ncard${done?' fulfilled':''}${type==='offer'?' offer-card':''}" id="pc-${p.id}">
     <div class="ncard-top">
       <div class="badges">
@@ -527,16 +549,16 @@ function card(p,type){
       <span class="ncard-time">Posted ${timeAgo(p.timestamp)}${msgs?' · 💬 '+msgs+' msg'+(msgs>1?'s':''):''}</span>
       <div class="ncard-btns">
         <span class="chip ${done?'chip-done':'chip-open'}">${done?(type==='need'?'Fulfilled':'Closed'):'Open'}</span>
-        ${!done?`<button class="btn btn-g" onclick="togContact('${p.id}')">${esc(helpLbl)}</button>`:''}
-        <button class="btn btn-b" onclick="togMsg('${p.id}')">${isM?'Hide msg':'💬 Message'}</button>
+        ${!done?`<button class="btn btn-g" onclick="togContact('${p.id}')">${isC?'Hide':type==='need'?'I can help':'I need this'}</button>`:''}
+        <button class="btn btn-b" onclick="togMsg('${p.id}')">${isM?'Hide':'💬 Message'}</button>
       </div>
     </div>
-    <div class="expand-box expand-green${isC?' show':''}" id="cx-${p.id}">${contactInner}</div>
-    <div class="expand-box expand-blue${isM?' show':''}" id="mx-${p.id}">
+    <div class="expand-box expand-green${isC?' show':''}">${contactInner}</div>
+    <div class="expand-box expand-blue${isM?' show':''}">
       <div class="msg-form">
-        <div class="anon-note">Messages are private — only the poster sees them using their secret code.</div>
-        <textarea id="mt-${p.id}" placeholder="Write your message…"></textarea>
-        <input type="text" id="mr-${p.id}" placeholder="Optional: your contact info (only visible to poster)">
+        <div class="anon-note">Messages are private — only the poster sees them with their secret code.</div>
+        <textarea id="mt-${p.id}" placeholder="Write your message…" maxlength="600"></textarea>
+        <input type="text" id="mr-${p.id}" placeholder="Optional: your contact info (only visible to poster)" maxlength="200">
         <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
           <button class="btn btn-b" onclick="sendMsg('${p.id}')">Send</button>
           <span class="anon-note">Your identity is not revealed.</span>
@@ -551,21 +573,33 @@ function togContact(id){openContact=openContact===id?null:id;openMsg=null;render
 function togMsg(id){openMsg=openMsg===id?null:id;openContact=null;renderNeeds();renderOffers();}
 
 async function sendMsg(id){
-  const txt=(document.getElementById('mt-'+id)||{}).value||'';
-  const rpl=(document.getElementById('mr-'+id)||{}).value||'';
+  const mt=document.getElementById('mt-'+id);
+  const mr=document.getElementById('mr-'+id);
+  const txt=(mt||{}).value||'';
+  const rpl=(mr||{}).value||'';
   if(!txt.trim()){alert('Please write a message.');return;}
-  const idx=posts.findIndex(p=>p.id===id); if(idx===-1)return;
-  if(!posts[idx].messages)posts[idx].messages=[];
-  posts[idx].messages.push({id:Date.now().toString(36),text:txt.trim(),replyTo:rpl.trim(),timestamp:new Date().toISOString()});
-  posts[idx].updatedAt=new Date().toISOString();
-  await save();
-  const s=document.getElementById('ms-'+id);
-  if(s){s.style.display='inline';setTimeout(()=>s.style.display='none',2500);}
-  const mt=document.getElementById('mt-'+id); if(mt)mt.value='';
-  const mr=document.getElementById('mr-'+id); if(mr)mr.value='';
+  const message={
+    id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+    text:txt.trim(), replyTo:rpl.trim(),
+    timestamp:new Date().toISOString()
+  };
+  try {
+    await api('message',{id,message});
+    // Optimistic local update
+    const idx=posts.findIndex(p=>p.id===id);
+    if(idx>-1){
+      if(!posts[idx].messages)posts[idx].messages=[];
+      posts[idx].messages.push(message);
+      posts[idx].updatedAt=new Date().toISOString();
+    }
+    const s=document.getElementById('ms-'+id);
+    if(s){s.style.display='inline';setTimeout(()=>s.style.display='none',2500);}
+    if(mt)mt.value='';
+    if(mr)mr.value='';
+  } catch(e){ alert('Could not send: '+e.message); }
 }
 
-// ── Post form ──────────────────────────────────────────────────
+// ── Post form ─────────────────────────────────────────────────
 function setPostType(t){
   postType=t;
   document.getElementById('optNeed').className='type-opt'+(t==='need'?' sel-need':'');
@@ -573,7 +607,7 @@ function setPostType(t){
   document.getElementById('fDescLbl').textContent=t==='need'?'What do you need? *':'What can you help with? *';
   document.getElementById('fDesc').placeholder=t==='need'
     ?'Be specific — what, when, where, any constraints.'
-    :'Describe what you can offer, your availability, and general location.';
+    :'Describe what you can offer, your availability, and area.';
   document.getElementById('fUrgWrap').style.display=t==='need'?'':'none';
 }
 function setPrivacy(v){
@@ -590,8 +624,8 @@ function selUrg(v){
   });
 }
 function onCatChange(){
-  const isOther=document.getElementById('fCat').value==='Other';
-  document.getElementById('fOtherWrap').style.display=isOther?'block':'none';
+  document.getElementById('fOtherWrap').style.display=
+    document.getElementById('fCat').value==='Other'?'block':'none';
 }
 function onFZip(){
   const v=document.getElementById('fZip').value;
@@ -603,11 +637,10 @@ function onFZip(){
 async function submitPost(){
   const zip=document.getElementById('fZip').value.trim();
   const name=document.getElementById('fName').value.trim();
-  let cat=document.getElementById('fCat').value;
+  const cat=document.getElementById('fCat').value;
   const customCat=cat==='Other'?document.getElementById('fOther').value.trim():'';
   const desc=document.getElementById('fDesc').value.trim();
   const contact=document.getElementById('fContact').value.trim();
-
   if(!zip||!/^\d{5}$/.test(zip)){alert('Please enter a valid 5-digit ZIP.');return;}
   if(!cat){alert('Please select a category.');return;}
   if(cat==='Other'&&!customCat){alert('Please describe your "Other" category.');return;}
@@ -617,9 +650,10 @@ async function submitPost(){
 
   const btn=document.getElementById('subBtn');
   btn.disabled=true; btn.textContent='Posting…';
+  setStatus('loading','💾 Saving to Google Sheets…');
 
   const code=genCode();
-  posts.push({
+  const newPost={
     id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
     type:postType, zip, firstName:name||'Neighbor',
     category:cat, customCat, description:desc,
@@ -627,53 +661,65 @@ async function submitPost(){
     privacy, contact:privacy==='reveal'?contact:'',
     timestamp:new Date().toISOString(), updatedAt:new Date().toISOString(),
     status:'open', secretCode:code, messages:[]
-  });
-  await save(); rebuildFilters(); renderNeeds(); renderOffers();
+  };
 
-  document.getElementById('codeDisplay').textContent=code;
-  const sb=document.getElementById('successBox');
-  sb.className='success-box show';
-  sb.scrollIntoView({behavior:'smooth',block:'nearest'});
-
-  // Reset form
-  ['fName','fDesc','fContact','fOther'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  document.getElementById('fCat').value='';
-  document.getElementById('fOtherWrap').style.display='none';
-  urgency=''; document.querySelectorAll('.urg-opt').forEach(e=>e.className='urg-opt');
-  setPostType('need'); setPrivacy('anon');
+  try {
+    const res=await api('add',newPost);
+    if(!res.ok) throw new Error(res.error||'Save failed');
+    document.getElementById('codeDisplay').textContent=code;
+    const sb=document.getElementById('successBox');
+    sb.className='success-box show';
+    sb.scrollIntoView({behavior:'smooth',block:'nearest'});
+    ['fName','fDesc','fContact','fOther'].forEach(id=>{
+      const e=document.getElementById(id); if(e)e.value='';
+    });
+    document.getElementById('fCat').value='';
+    document.getElementById('fOtherWrap').style.display='none';
+    urgency=''; document.querySelectorAll('.urg-opt').forEach(e=>e.className='urg-opt');
+    setPostType('need'); setPrivacy('anon');
+    setStatus('','');
+    await load();
+  } catch(e){
+    setStatus('error','⚠️ Could not post: '+e.message);
+  }
   btn.disabled=false; btn.textContent='Post →';
 }
 
-// ── Manage ─────────────────────────────────────────────────────
-function showManageAlert(msg,ok){
-  const el=document.getElementById('manageAlert');
-  el.textContent=msg; el.className='alert '+(ok?'alert-ok':'alert-warn')+' show';
-  document.getElementById('manageCard').className='manage-card';
+// ── Manage ────────────────────────────────────────────────────
+function showMAlert(msg,ok){
+  const el=document.getElementById('mAlert');
+  el.textContent=msg; el.className='m-alert '+(ok?'ok':'warn')+' show';
+  if(!ok)document.getElementById('manageCard').className='manage-card';
 }
 
 async function lookupCode(){
   const code=document.getElementById('codeIn').value.trim().toUpperCase();
-  if(code.length<6){showManageAlert('Please enter your 8-character secret code.');return;}
-  const p=posts.find(p=>p.secretCode===code&&p.status!=='deleted');
-  if(!p){showManageAlert('No active post found with that code. Check for typos, or your post may have been deleted.');return;}
-  document.getElementById('manageAlert').className='alert alert-warn';
-  renderManageCard(p,code);
+  if(code.length<6){showMAlert('Please enter your 8-character secret code.');return;}
+  setStatus('loading','🔍 Looking up your post…');
+  document.getElementById('mAlert').className='m-alert';
+  try {
+    const res=await api('lookup',{code});
+    setStatus('','');
+    if(!res.ok){showMAlert(res.error||'Not found.');return;}
+    renderManageCard(res.post,code);
+  } catch(e){
+    setStatus('error','⚠️ '+e.message);
+  }
 }
 
 function renderManageCard(p,code){
-  const dc=displayCat(p), c=cs(p.category);
+  const dc=displayCat(p),c=cs(p.category);
   const msgs=p.messages||[];
   const msgsHtml=msgs.length
     ?msgs.map(m=>`<div class="msg-item">
         <div>${esc(m.text)}</div>
-        ${m.replyTo?`<div class="msg-reply">📧 They left contact: ${esc(m.replyTo)}</div>`:''}
+        ${m.replyTo?`<div class="msg-reply">📧 Their contact: ${esc(m.replyTo)}</div>`:''}
         <div class="msg-time">${timeAgo(m.timestamp)}</div>
       </div>`).join('')
-    :`<div class="no-msgs">No messages yet.</div>`;
+    :`<div class="no-msgs">No messages yet — share your post so neighbors can reach you.</div>`;
 
-  const el=document.getElementById('manageCard');
-  el.className='manage-card show';
-  el.innerHTML=`
+  document.getElementById('manageCard').className='manage-card show';
+  document.getElementById('manageCard').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem">
       <div class="badges">
         <span class="type-badge ${p.type==='need'?'type-need':'type-offer'}">${p.type}</span>
@@ -689,45 +735,63 @@ function renderManageCard(p,code){
     </div>
     <div class="manage-actions">
       ${p.status==='open'?`<button class="btn btn-g" onclick="mMark('${p.id}','${code}')">${p.type==='need'?'✓ Mark fulfilled':'✓ Mark closed'}</button>`:''}
-      <button class="btn btn-r" onclick="mEdit('${p.id}','${code}')">Edit description</button>
-      <button class="btn btn-del" onclick="mDelete('${p.id}','${code}')">Delete post</button>
+      <button class="btn btn-r" onclick="mEdit('${p.id}','${code}')">✏️ Edit</button>
+      <button class="btn btn-del" onclick="mDelete('${p.id}','${code}')">🗑️ Delete</button>
     </div>
     <div class="edit-box" id="editBox">
-      <textarea id="editTxt">${esc(p.description)}</textarea>
+      <textarea id="editTxt" maxlength="800">${esc(p.description)}</textarea>
       <div class="edit-actions">
-        <button class="btn btn-g" onclick="mSaveEdit('${p.id}','${code}')">Save</button>
+        <button class="btn btn-g" onclick="mSaveEdit('${p.id}','${code}')">Save changes</button>
         <button class="btn btn-r" onclick="document.getElementById('editBox').style.display='none'">Cancel</button>
       </div>
     </div>`;
 }
 
-function mEdit(id,code){
+function mEdit(){
   const eb=document.getElementById('editBox');
-  if(eb)eb.style.display=eb.style.display==='block'?'none':'block';
-}
-async function mSaveEdit(id,code){
-  const p=posts.find(p=>p.id===id&&p.secretCode===code); if(!p)return;
-  const t=(document.getElementById('editTxt')||{}).value||'';
-  if(t.trim().length<5){alert('Description too short.');return;}
-  p.description=t.trim(); p.updatedAt=new Date().toISOString();
-  await save(); rebuildFilters(); renderNeeds(); renderOffers();
-  renderManageCard(p,code);
-}
-async function mMark(id,code){
-  const p=posts.find(p=>p.id===id&&p.secretCode===code); if(!p)return;
-  p.status='claimed'; p.updatedAt=new Date().toISOString();
-  await save(); rebuildFilters(); renderNeeds(); renderOffers();
-  renderManageCard(p,code);
-}
-async function mDelete(id,code){
-  if(!confirm('Delete this post permanently?'))return;
-  const p=posts.find(p=>p.id===id&&p.secretCode===code); if(!p)return;
-  p.status='deleted'; p.updatedAt=new Date().toISOString();
-  await save(); rebuildFilters(); renderNeeds(); renderOffers();
-  showManageAlert('Post deleted successfully.',true);
+  if(eb) eb.style.display=eb.style.display==='block'?'none':'block';
 }
 
-// ── ZIP gate ───────────────────────────────────────────────────
+async function mSaveEdit(id,code){
+  const t=(document.getElementById('editTxt')||{}).value||'';
+  if(t.trim().length<5){alert('Description too short.');return;}
+  setStatus('loading','Saving changes…');
+  try {
+    const res=await api('lookup',{code}); if(!res.ok)throw new Error(res.error);
+    const p=res.post; p.description=t.trim(); p.updatedAt=new Date().toISOString();
+    const up=await api('update',p); if(!up.ok)throw new Error(up.error);
+    await load();
+    const res2=await api('lookup',{code}); if(res2.ok)renderManageCard(res2.post,code);
+    setStatus('','');
+  } catch(e){ setStatus('error','⚠️ '+e.message); }
+}
+
+async function mMark(id,code){
+  setStatus('loading','Updating…');
+  try {
+    const res=await api('lookup',{code}); if(!res.ok)throw new Error(res.error);
+    const p=res.post; p.status='claimed'; p.updatedAt=new Date().toISOString();
+    const up=await api('update',p); if(!up.ok)throw new Error(up.error);
+    await load();
+    const res2=await api('lookup',{code}); if(res2.ok)renderManageCard(res2.post,code);
+    setStatus('','');
+  } catch(e){ setStatus('error','⚠️ '+e.message); }
+}
+
+async function mDelete(id,code){
+  if(!confirm('Delete this post permanently? This cannot be undone.'))return;
+  setStatus('loading','Deleting…');
+  try {
+    const res=await api('lookup',{code}); if(!res.ok)throw new Error(res.error);
+    const p=res.post; p.status='deleted'; p.updatedAt=new Date().toISOString();
+    const up=await api('update',p); if(!up.ok)throw new Error(up.error);
+    await load();
+    showMAlert('Post deleted successfully.',true);
+    setStatus('','');
+  } catch(e){ setStatus('error','⚠️ '+e.message); }
+}
+
+// ── ZIP gate ──────────────────────────────────────────────────
 function onGlobalZip(){
   const z=document.getElementById('gZip').value.trim();
   if(/^\d{5}$/.test(z)){
@@ -754,7 +818,7 @@ function clearZip(){
   renderNeeds(); renderOffers();
 }
 
-// ── Tab switch ─────────────────────────────────────────────────
+// ── Tabs ──────────────────────────────────────────────────────
 function switchTab(t){
   ['needs','offers','post','manage'].forEach(k=>{
     document.getElementById('p-'+k).style.display=k===t?'block':'none';
@@ -762,7 +826,7 @@ function switchTab(t){
   });
 }
 
-// ── Theme ──────────────────────────────────────────────────────
+// ── Theme ─────────────────────────────────────────────────────
 function toggleTheme(){
   isDark=!isDark;
   document.documentElement.setAttribute('data-theme',isDark?'dark':'light');

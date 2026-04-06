@@ -8,127 +8,203 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root[data-theme="light"]{
   --bg:#f5f0eb;--card:#fff;--border:#e0d8d0;
-  --accent:#c9624a;--accent2:#d4a830;--green:#5a9478;
+  --accent:#c9624a;--accent2:#d4a830;--green:#5a9478;--blue:#4a6fa5;
   --text:#2a2d45;--muted:#5a5050;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.09);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.1);
 }
 :root[data-theme="dark"]{
   --bg:#16161e;--card:#1f1f2e;--border:#2e2e42;
-  --accent:#e07a5f;--accent2:#f2cc8f;--green:#81b29a;
+  --accent:#e07a5f;--accent2:#f2cc8f;--green:#81b29a;--blue:#7aa2d4;
   --text:#e8e4f0;--muted:#9a90b0;
   --shadow-sm:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.4);
 }
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
-.wrap{max-width:900px;margin:0 auto;padding:2rem 1.2rem 5rem}
+.wrap{max-width:940px;margin:0 auto;padding:2rem 1.2rem 5rem}
 
-.top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;margin-bottom:2rem}
-.back-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s}
-.back-btn:hover{border-color:var(--accent);color:var(--accent)}
-.back-btn svg{width:14px;height:14px}
-.theme-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .7rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s}
-.theme-btn:hover{border-color:var(--accent);color:var(--accent)}
-.theme-btn svg{width:13px;height:13px}
+.top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;margin-bottom:1.8rem}
+.tb-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s}
+.tb-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tb-btn svg{width:14px;height:14px;flex-shrink:0}
 
-header{margin-bottom:1.6rem}
-header h1{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--accent),var(--accent2),var(--green));background-size:200% 200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:grad 7s ease infinite}
+header{margin-bottom:1.3rem}
+header h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--accent),var(--accent2),var(--green));background-size:200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:grad 7s ease infinite}
 @keyframes grad{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-header p{color:var(--muted);margin-top:.4rem;font-size:.88rem}
+header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 
-.zip-gate{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:1.1rem 1.4rem;margin-bottom:1.4rem;display:flex;align-items:center;flex-wrap:wrap;gap:.6rem;box-shadow:var(--shadow-sm)}
-.zip-gate label{font-size:.82rem;font-weight:600;color:var(--muted)}
-.zip-gate input{padding:.45rem .75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.9rem;width:130px;outline:none;transition:border-color .2s}
+.zip-gate{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:.9rem 1.2rem;margin-bottom:1.3rem;display:flex;align-items:center;flex-wrap:wrap;gap:.6rem;box-shadow:var(--shadow-sm)}
+.zip-gate label{font-size:.8rem;font-weight:600;color:var(--muted)}
+.zip-gate input{padding:.38rem .7rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.88rem;width:130px;outline:none;transition:border-color .2s}
 .zip-gate input:focus{border-color:var(--accent)}
-.zip-pill{background:rgba(201,98,74,.1);border:1.5px solid rgba(201,98,74,.3);color:var(--accent);border-radius:999px;padding:.25rem .75rem;font-size:.78rem;font-weight:700;display:none;align-items:center;gap:.35rem}
+.zip-pill{background:rgba(201,98,74,.1);border:1.5px solid rgba(201,98,74,.3);color:var(--accent);border-radius:999px;padding:.2rem .7rem;font-size:.76rem;font-weight:700;display:none;align-items:center;gap:.3rem}
 .zip-pill.show{display:inline-flex}
-.zip-pill button{background:none;border:none;cursor:pointer;color:var(--accent);font-size:.9rem;line-height:1;padding:0 0 0 2px;opacity:.7}
+.zip-pill button{background:none;border:none;cursor:pointer;color:var(--accent);font-size:.85rem;opacity:.7;padding:0 0 0 3px;line-height:1}
 .zip-pill button:hover{opacity:1}
 
-.tabs{display:flex;border-bottom:1.5px solid var(--border);margin-bottom:1.4rem}
-.tab{padding:.65rem 1.2rem;font-size:.88rem;font-weight:600;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--muted);cursor:pointer;margin-bottom:-1.5px;transition:all .2s}
+.tabs{display:flex;border-bottom:1.5px solid var(--border);margin-bottom:1.3rem;overflow-x:auto}
+.tab{padding:.58rem 1.05rem;font-size:.83rem;font-weight:600;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--muted);cursor:pointer;margin-bottom:-1.5px;white-space:nowrap;transition:all .2s;flex-shrink:0}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .tab:hover:not(.active){color:var(--text)}
 
-.filter-row{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
-.filter-row label{font-size:.78rem;font-weight:600;color:var(--muted)}
-.filter-row select{padding:.3rem .6rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.8rem;cursor:pointer;outline:none}
+.filter-row{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;margin-bottom:.85rem}
+.filter-row label{font-size:.74rem;font-weight:600;color:var(--muted)}
+.filter-row select{padding:.28rem .52rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.76rem;cursor:pointer;outline:none;transition:border-color .2s}
 .filter-row select:focus{border-color:var(--accent)}
 
-.pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
-.pill{padding:.28rem .75rem;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:.75rem;font-weight:600;transition:all .18s}
-.pill:hover{border-color:var(--accent);color:var(--accent)}
-.pill.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.cpills{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.85rem}
+.cpill{padding:.22rem .65rem;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:.7rem;font-weight:600;transition:all .18s}
+.cpill:hover{border-color:var(--accent);color:var(--accent)}
+.cpill.on{background:var(--accent);border-color:var(--accent);color:#fff}
 
-.count{color:var(--muted);font-size:.76rem;font-weight:600;margin-bottom:.8rem}
+.count{color:var(--muted);font-size:.72rem;font-weight:600;margin-bottom:.7rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:.7rem}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
+/* Cards */
+.ncard{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:.95rem 1.1rem;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:.45rem;transition:border-color .2s,box-shadow .2s}
+.ncard:hover{border-color:rgba(201,98,74,.3);box-shadow:var(--shadow-md)}
+.ncard.offer-card:hover{border-color:rgba(90,148,120,.35)}
+.ncard.fulfilled{opacity:.6}
 
-.ncard{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:1rem 1.2rem;box-shadow:var(--shadow-sm);transition:border-color .2s,box-shadow .2s}
-.ncard:hover{border-color:rgba(201,98,74,.4);box-shadow:var(--shadow-md)}
-.ncard.claimed{opacity:.65}
-.ncard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem}
-.cat-badge{font-size:.68rem;font-weight:700;padding:.2rem .55rem;border-radius:999px;letter-spacing:.02em}
-.urg-wrap{display:flex;align-items:center;gap:.3rem}
-.urg-dot{width:8px;height:8px;border-radius:50%}
-.urg-label{font-size:.68rem;font-weight:600;color:var(--muted)}
-.urg-urgent .urg-dot{background:#e24b4a}
-.urg-week .urg-dot{background:#ef9f27}
-.urg-flexible .urg-dot{background:#639922}
-.urg-urgent .urg-label{color:#e24b4a}
-.urg-week .urg-label{color:#ef9f27}
-.urg-flexible .urg-label{color:#639922}
-.ncard-name{font-weight:700;font-size:.88rem;margin-bottom:.25rem}
-.ncard-zip{font-size:.72rem;color:var(--muted);margin-bottom:.35rem;font-weight:600}
-.ncard-desc{font-size:.8rem;color:var(--muted);line-height:1.55;margin-bottom:.8rem;display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient: vertical;overflow:hidden}
-.ncard-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4rem}
-.ncard-time{font-size:.7rem;color:var(--muted)}
-.ncard-actions{display:flex;gap:.4rem;align-items:center}
-.btn-help{padding:.28rem .75rem;border-radius:8px;border:1.5px solid rgba(90,148,120,.35);background:rgba(90,148,120,.08);color:var(--green);font-size:.73rem;font-weight:600;cursor:pointer;transition:all .18s}
-.btn-help:hover{background:var(--green);color:#fff;border-color:var(--green)}
-.status-chip{font-size:.68rem;font-weight:700;padding:.2rem .55rem;border-radius:999px}
-.status-open{background:rgba(90,148,120,.12);color:var(--green)}
-.status-claimed{background:rgba(201,98,74,.1);color:var(--accent)}
+.badges{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center}
+.ncard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem}
+.type-badge{font-size:.62rem;font-weight:800;padding:.16rem .48rem;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}
+.type-need{background:#FAECE7;color:#712B13}
+.type-offer{background:#E1F5EE;color:#085041}
+.cat-badge{font-size:.64rem;font-weight:700;padding:.16rem .48rem;border-radius:999px}
+.urg-mini{display:flex;align-items:center;gap:.28rem}
+.urg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.urg-lbl{font-size:.64rem;font-weight:600}
+.urg-urgent .urg-dot{background:#e24b4a}.urg-urgent .urg-lbl{color:#e24b4a}
+.urg-week   .urg-dot{background:#ef9f27}.urg-week   .urg-lbl{color:#ef9f27}
+.urg-flex   .urg-dot{background:#639922}.urg-flex   .urg-lbl{color:#639922}
 
-.contact-box{margin-top:.75rem;padding:.65rem .85rem;background:rgba(90,148,120,.07);border:1px solid rgba(90,148,120,.25);border-radius:10px;font-size:.78rem;color:var(--text);line-height:1.6;display:none}
-.contact-box.show{display:block}
-.contact-box strong{color:var(--green)}
-.contact-box .btn-mark{margin-top:.5rem;display:inline-block;padding:.25rem .7rem;border-radius:7px;border:1px solid rgba(201,98,74,.3);background:rgba(201,98,74,.08);color:var(--accent);font-size:.72rem;font-weight:600;cursor:pointer;transition:all .18s}
-.contact-box .btn-mark:hover{background:var(--accent);color:#fff}
+.ncard-name{font-weight:700;font-size:.86rem}
+.ncard-meta{font-size:.68rem;color:var(--muted);font-weight:500}
+.ncard-desc{font-size:.78rem;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.ncard-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.3rem;margin-top:auto;padding-top:.4rem}
+.ncard-time{font-size:.66rem;color:var(--muted)}
+.ncard-btns{display:flex;gap:.3rem;flex-wrap:wrap}
 
-.empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
-.empty-icon{font-size:2.5rem;margin-bottom:.75rem}
-.empty p{font-size:.88rem;line-height:1.6}
+.chip{font-size:.62rem;font-weight:700;padding:.15rem .48rem;border-radius:999px}
+.chip-open{background:rgba(90,148,120,.12);color:var(--green)}
+.chip-done{background:rgba(201,98,74,.1);color:var(--accent)}
 
-.form-wrap{max-width:520px}
-.success-bar{background:rgba(90,148,120,.12);border:1.5px solid rgba(90,148,120,.3);border-radius:10px;padding:.65rem 1rem;font-size:.82rem;color:var(--green);font-weight:600;margin-bottom:1.2rem;display:none}
-.success-bar.show{display:block}
-.fg{margin-bottom:1.1rem}
-.fg label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.04em}
-.fg input,.fg select,.fg textarea{width:100%;padding:.5rem .8rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.88rem;font-family:inherit;outline:none;transition:border-color .2s}
+.btn{padding:.22rem .6rem;border-radius:7px;border:1.5px solid;font-size:.68rem;font-weight:600;cursor:pointer;transition:all .18s;background:none;white-space:nowrap}
+.btn-g{border-color:rgba(90,148,120,.3);color:var(--green);background:rgba(90,148,120,.07)}
+.btn-g:hover{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-b{border-color:rgba(74,111,165,.3);color:var(--blue);background:rgba(74,111,165,.07)}
+.btn-b:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-r{border-color:rgba(201,98,74,.3);color:var(--accent);background:rgba(201,98,74,.07)}
+.btn-r:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-del{border-color:rgba(180,50,50,.3);color:#c0392b;background:rgba(180,50,50,.07)}
+.btn-del:hover{background:#c0392b;color:#fff;border-color:#c0392b}
+
+/* Expand box */
+.expand-box{padding:.6rem .8rem;border-radius:10px;font-size:.77rem;line-height:1.65;display:none;margin-top:.1rem}
+.expand-box.show{display:block}
+.expand-green{background:rgba(90,148,120,.07);border:1px solid rgba(90,148,120,.22)}
+.expand-blue{background:rgba(74,111,165,.06);border:1px solid rgba(74,111,165,.18)}
+
+.msg-form{display:flex;flex-direction:column;gap:.38rem;margin-top:.35rem}
+.msg-form textarea,.msg-form input[type=text]{width:100%;padding:.38rem .6rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.76rem;font-family:inherit;outline:none;transition:border-color .2s}
+.msg-form textarea{height:66px;resize:vertical;line-height:1.45}
+.msg-form textarea:focus,.msg-form input[type=text]:focus{border-color:var(--blue)}
+.anon-note{font-size:.67rem;color:var(--muted);font-style:italic}
+.msg-sent{font-size:.72rem;color:var(--green);font-weight:600;display:none}
+
+/* Post form */
+.form-wrap{max-width:540px}
+.type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.1rem}
+.type-opt{padding:.62rem;border-radius:10px;border:2px solid var(--border);background:var(--card);cursor:pointer;text-align:center;transition:all .2s;user-select:none}
+.type-opt.sel-need{border-color:var(--accent);background:rgba(201,98,74,.07)}
+.type-opt.sel-offer{border-color:var(--green);background:rgba(90,148,120,.07)}
+.t-emoji{font-size:1.35rem;display:block;margin-bottom:.15rem}
+.t-label{font-size:.8rem;font-weight:700;color:var(--text)}
+.t-desc{font-size:.68rem;color:var(--muted);margin-top:.08rem}
+
+.fg{margin-bottom:.95rem}
+.fg>label,.fg-label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:.28rem;text-transform:uppercase;letter-spacing:.04em}
+.fg input,.fg select,.fg textarea{width:100%;padding:.45rem .72rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.84rem;font-family:inherit;outline:none;transition:border-color .2s}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
-.fg textarea{height:96px;resize:vertical;line-height:1.5}
-.fg .hint{font-size:.7rem;color:var(--muted);margin-top:.3rem}
-.urg-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
-.urg-opt{padding:.5rem .4rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);font-size:.75rem;font-weight:600;cursor:pointer;text-align:center;color:var(--muted);transition:all .18s}
-.urg-opt:hover{border-color:var(--accent);color:var(--accent)}
+.fg textarea{height:88px;resize:vertical;line-height:1.5}
+.fg .hint{font-size:.67rem;color:var(--muted);margin-top:.25rem;line-height:1.4}
+
+.urg-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.42rem}
+.urg-opt{padding:.45rem .3rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);font-size:.71rem;font-weight:600;cursor:pointer;text-align:center;color:var(--muted);transition:all .18s;user-select:none}
 .urg-opt.sel-urgent{background:#FCEBEB;border-color:#E24B4A;color:#A32D2D}
 .urg-opt.sel-week{background:#FAEEDA;border-color:#EF9F27;color:#854F0B}
 .urg-opt.sel-flexible{background:#EAF3DE;border-color:#639922;color:#3B6D11}
-.sub-btn{width:100%;padding:.75rem;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:.92rem;font-weight:700;cursor:pointer;margin-top:.4rem;transition:opacity .2s}
-.sub-btn:hover{opacity:.88}
-.sub-btn:disabled{opacity:.5;cursor:not-allowed}
 
-.loading{text-align:center;padding:2.5rem;color:var(--muted);font-size:.88rem}
-@media(max-width:520px){.zip-gate{flex-direction:column;align-items:flex-start}.urg-row{grid-template-columns:1fr}}
+.popt{display:flex;align-items:flex-start;gap:.55rem;padding:.55rem .75rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;margin-bottom:.4rem;transition:all .2s;user-select:none}
+.popt:hover{border-color:var(--accent)}
+.popt.sel{border-color:var(--accent);background:rgba(201,98,74,.06)}
+.popt input[type=radio]{margin-top:.1rem;flex-shrink:0;accent-color:var(--accent);cursor:pointer}
+.popt-lbl{font-size:.78rem;font-weight:700;color:var(--text)}
+.popt-desc{font-size:.67rem;color:var(--muted);margin-top:.08rem;line-height:1.4}
+
+.sub-btn{width:100%;padding:.7rem;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;margin-top:.5rem;transition:opacity .18s}
+.sub-btn:hover{opacity:.88}
+.sub-btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* Success / code display */
+.success-box{background:rgba(90,148,120,.09);border:2px solid rgba(90,148,120,.28);border-radius:13px;padding:1.1rem 1.3rem;margin-bottom:1.3rem;display:none;position:relative}
+.success-box.show{display:block}
+.success-box h3{font-size:.88rem;color:var(--green);margin-bottom:.5rem;display:flex;align-items:center;gap:.35rem}
+.code-display{background:var(--card);border:2.5px dashed var(--green);border-radius:9px;padding:.45rem 1rem;font-size:1.5rem;font-weight:800;letter-spacing:.18em;color:var(--green);text-align:center;font-family:'Courier New',monospace;margin:.4rem 0;cursor:pointer;transition:background .2s}
+.code-display:hover{background:rgba(90,148,120,.08)}
+.code-warn{font-size:.7rem;color:var(--muted);line-height:1.5;background:rgba(212,168,48,.1);border:1px solid rgba(212,168,48,.3);border-radius:7px;padding:.38rem .65rem;margin-top:.4rem}
+.close-success{position:absolute;top:.7rem;right:.9rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;opacity:.6;transition:opacity .15s}
+.close-success:hover{opacity:1}
+
+/* Manage panel */
+.manage-intro{font-size:.83rem;color:var(--muted);margin-bottom:1rem;line-height:1.55}
+.code-search{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+.code-search input{padding:.48rem .85rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.96rem;font-family:'Courier New',monospace;letter-spacing:.12em;width:200px;text-transform:uppercase;outline:none;transition:border-color .2s}
+.code-search input:focus{border-color:var(--accent)}
+
+.manage-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:1.1rem 1.3rem;box-shadow:var(--shadow-sm);display:none}
+.manage-card.show{display:block}
+.manage-desc-block{font-size:.84rem;color:var(--text);line-height:1.65;margin:.55rem 0}
+.manage-meta{font-size:.7rem;color:var(--muted);margin-bottom:.7rem}
+
+.msgs-section{margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--border)}
+.msgs-section h4{font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem}
+.msg-item{background:rgba(74,111,165,.07);border:1px solid rgba(74,111,165,.16);border-radius:9px;padding:.55rem .75rem;margin-bottom:.4rem;font-size:.78rem;line-height:1.55}
+.msg-item .msg-reply{font-size:.67rem;color:var(--blue);margin-top:.2rem;font-style:italic}
+.msg-item .msg-time{font-size:.63rem;color:var(--muted);margin-top:.15rem}
+.no-msgs{font-size:.78rem;color:var(--muted);font-style:italic}
+
+.manage-actions{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--border)}
+
+.edit-box{margin-top:.85rem;display:none}
+.edit-box textarea{width:100%;padding:.48rem .72rem;border-radius:9px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.84rem;font-family:inherit;height:88px;outline:none;resize:vertical;line-height:1.5;transition:border-color .2s}
+.edit-box textarea:focus{border-color:var(--accent)}
+.edit-actions{display:flex;gap:.4rem;margin-top:.4rem}
+
+.alert{padding:.5rem .8rem;border-radius:9px;font-size:.78rem;font-weight:600;margin-bottom:.8rem;display:none}
+.alert.show{display:block}
+.alert-warn{background:rgba(212,168,48,.1);border:1.5px solid rgba(212,168,48,.3);color:#5a3f00}
+.alert-ok{background:rgba(90,148,120,.1);border:1.5px solid rgba(90,148,120,.28);color:var(--green)}
+[data-theme="dark"] .alert-warn{color:var(--accent2)}
+
+.empty-state{text-align:center;padding:2.8rem 1rem;color:var(--muted)}
+.empty-state .e-icon{font-size:2.1rem;margin-bottom:.55rem}
+.empty-state p{font-size:.84rem;line-height:1.6}
+
+@media(max-width:520px){
+  .type-toggle,.urg-row{grid-template-columns:1fr}
+  .tab{padding:.48rem .7rem;font-size:.76rem}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
+
   <div class="top-bar">
-    <a class="back-btn" href="index.html">
+    <a class="tb-btn" href="index.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       Back to Resource Navigator
     </a>
-    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+    <button class="tb-btn" onclick="toggleTheme()" id="themeBtn">
       <svg id="themeIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       <span id="themeLabel">Dark mode</span>
     </button>
@@ -136,294 +212,567 @@ header p{color:var(--muted);margin-top:.4rem;font-size:.88rem}
 
   <header>
     <h1>🏘️ Neighborhood Portal</h1>
-    <p>Hyper-local mutual aid — post a need or offer help, filtered by ZIP code.</p>
+    <p>Mutual aid by ZIP — post a need or offer help. All posts are anonymous by default.</p>
   </header>
 
   <div class="zip-gate">
-    <label for="globalZip">Your ZIP code:</label>
-    <input type="text" id="globalZip" maxlength="5" placeholder="e.g. 10031" oninput="onGlobalZip()" autocomplete="postal-code">
+    <label for="gZip">Your ZIP:</label>
+    <input type="text" id="gZip" maxlength="5" placeholder="e.g. 10031" oninput="onGlobalZip()" autocomplete="postal-code">
     <span class="zip-pill" id="zipPill">
-      <span id="zipPillText"></span>
-      <button onclick="clearZip()" title="Clear ZIP">✕</button>
+      <span id="zipPillTxt"></span>
+      <button onclick="clearZip()" title="Clear">✕</button>
     </span>
-    <span id="zipHint" style="font-size:.76rem;color:var(--muted)">Enter your ZIP to see local needs &amp; pre-fill the form.</span>
+    <span id="zipHint" style="font-size:.73rem;color:var(--muted)">Enter your ZIP to filter nearby posts and pre-fill the form.</span>
   </div>
 
   <div class="tabs">
-    <button class="tab active" id="tabA" onclick="switchTab('browse')">Browse Needs</button>
-    <button class="tab" id="tabB" onclick="switchTab('post')">Post a Need</button>
+    <button class="tab active" id="t-needs"  onclick="switchTab('needs')">🙋 Needs</button>
+    <button class="tab"        id="t-offers" onclick="switchTab('offers')">🤝 Offers</button>
+    <button class="tab"        id="t-post"   onclick="switchTab('post')">➕ Post</button>
+    <button class="tab"        id="t-manage" onclick="switchTab('manage')">🔑 Manage My Post</button>
   </div>
 
-  <div id="browsePanel">
+  <!-- ── NEEDS ── -->
+  <div id="p-needs">
     <div class="filter-row">
-      <label for="zipSel">ZIP:</label>
-      <select id="zipSel" onchange="renderBrowse()">
-        <option value="">All ZIPs</option>
+      <label>ZIP:</label><select id="nZip" onchange="renderNeeds()"><option value="">All</option></select>
+      <label>Urgency:</label>
+      <select id="nUrg" onchange="renderNeeds()">
+        <option value="">All</option><option value="urgent">Urgent</option>
+        <option value="week">This week</option><option value="flexible">Flexible</option>
       </select>
-      <label for="urgSel" style="margin-left:.4rem">Urgency:</label>
-      <select id="urgSel" onchange="renderBrowse()">
-        <option value="">All</option>
-        <option value="urgent">Urgent</option>
-        <option value="week">This week</option>
-        <option value="flexible">Flexible</option>
+      <label>Show:</label>
+      <select id="nStat" onchange="renderNeeds()">
+        <option value="open">Open</option><option value="">All</option><option value="claimed">Fulfilled</option>
       </select>
     </div>
-    <div class="pills" id="catPills"></div>
-    <div class="count" id="countBar"></div>
-    <div id="needsList"><div class="loading">Loading neighborhood needs…</div></div>
+    <div class="cpills" id="nCats"></div>
+    <div class="count"  id="nCount"></div>
+    <div id="nList"></div>
   </div>
 
-  <div id="postPanel" style="display:none">
-    <div class="success-bar" id="successBar">✓ Your need has been posted! Neighbors can now see and respond.</div>
+  <!-- ── OFFERS ── -->
+  <div id="p-offers" style="display:none">
+    <div class="filter-row">
+      <label>ZIP:</label><select id="oZip" onchange="renderOffers()"><option value="">All</option></select>
+      <label>Show:</label>
+      <select id="oStat" onchange="renderOffers()">
+        <option value="open">Active</option><option value="">All</option><option value="claimed">Closed</option>
+      </select>
+    </div>
+    <div class="cpills" id="oCats"></div>
+    <div class="count"  id="oCount"></div>
+    <div id="oList"></div>
+  </div>
+
+  <!-- ── POST ── -->
+  <div id="p-post" style="display:none">
+    <div class="success-box" id="successBox">
+      <button class="close-success" onclick="document.getElementById('successBox').className='success-box'" title="Dismiss">✕</button>
+      <h3>✅ Posted!</h3>
+      <p style="font-size:.79rem;color:var(--text);margin-bottom:.4rem">
+        Save your <strong>secret management code</strong> — it's the only way to view responses, edit, mark as done, or delete your post.
+      </p>
+      <div class="code-display" id="codeDisplay" title="Click to copy" onclick="copyCode()"></div>
+      <div class="code-warn">⚠️ This code is shown <strong>once</strong>. Screenshot it or write it down now. Click the code above to copy it.</div>
+    </div>
+
     <div class="form-wrap">
+      <!-- Type toggle -->
+      <div class="fg" style="margin-bottom:1.2rem">
+        <span class="fg-label">I want to…</span>
+        <div class="type-toggle">
+          <div class="type-opt sel-need" id="optNeed" onclick="setPostType('need')">
+            <span class="t-emoji">🙋</span>
+            <span class="t-label">Post a Need</span>
+            <span class="t-desc">I need help with something</span>
+          </div>
+          <div class="type-opt" id="optOffer" onclick="setPostType('offer')">
+            <span class="t-emoji">🤝</span>
+            <span class="t-label">Offer Help</span>
+            <span class="t-desc">I can help my neighbors</span>
+          </div>
+        </div>
+      </div>
+
       <div class="fg">
         <label for="fZip">ZIP code *</label>
-        <input type="text" id="fZip" maxlength="5" placeholder="5-digit ZIP" style="max-width:160px" oninput="validateZipField()">
+        <input type="text" id="fZip" maxlength="5" placeholder="5-digit ZIP" style="max-width:160px" oninput="onFZip()">
       </div>
       <div class="fg">
-        <label for="fName">First name or alias</label>
-        <input type="text" id="fName" placeholder="e.g. Maria or Neighbor">
+        <label for="fName">Display name or alias</label>
+        <input type="text" id="fName" placeholder="e.g. Maria, or leave blank to appear as 'Neighbor'">
       </div>
       <div class="fg">
         <label for="fCat">Category *</label>
-        <select id="fCat">
-          <option value="">Select a category…</option>
+        <select id="fCat" onchange="onCatChange()">
+          <option value="">Select…</option>
           <option>Food</option><option>Clothing</option><option>Housing</option>
           <option>Childcare</option><option>Transportation</option><option>Employment</option>
           <option>Education</option><option>Legal</option><option>Mental Health</option>
-          <option>Medical</option><option>Other</option>
+          <option>Medical</option><option>Technology</option><option>Errands</option>
+          <option>Companionship</option><option>Skills / Tutoring</option>
+          <option>Other</option>
         </select>
       </div>
-      <div class="fg">
-        <label for="fDesc">What do you need? *</label>
-        <textarea id="fDesc" placeholder="Be specific — what, when, where, any constraints. e.g. 'Need a ride to a medical appointment in the Bronx on Thursday mornings, can't take the bus.'"></textarea>
+      <div class="fg" id="fOtherWrap" style="display:none">
+        <label for="fOther">Describe your category *</label>
+        <input type="text" id="fOther" placeholder="e.g. Pet care, Language exchange, Moving help…">
       </div>
       <div class="fg">
-        <label>How urgent?</label>
+        <label for="fDesc" id="fDescLbl">What do you need? *</label>
+        <textarea id="fDesc" placeholder="Be specific — what, when, where, any constraints."></textarea>
+      </div>
+      <div class="fg" id="fUrgWrap">
+        <span class="fg-label">How urgent?</span>
         <div class="urg-row">
-          <div class="urg-opt" data-v="urgent" onclick="selUrg('urgent')">🔴 Urgent</div>
-          <div class="urg-opt" data-v="week"   onclick="selUrg('week')">🟡 This week</div>
-          <div class="urg-opt" data-v="flexible" onclick="selUrg('flexible')">🟢 Flexible</div>
+          <div class="urg-opt" data-v="urgent"   onclick="selUrg('urgent')">🔴 Urgent</div>
+          <div class="urg-opt" data-v="week"     onclick="selUrg('week')">🟡 This week</div>
+          <div class="urg-opt" data-v="flexible" onclick="selUrg('flexible')">🟢 Flexible / Ongoing</div>
         </div>
       </div>
+
+      <!-- Privacy -->
       <div class="fg">
-        <label for="fContact">How can helpers reach you? (optional)</label>
-        <input type="text" id="fContact" placeholder="Email, phone, or Signal — only shown when someone clicks 'I can help'">
-        <p class="hint">Leave blank to stay anonymous. Contact info is only revealed to neighbors who click "I can help."</p>
+        <span class="fg-label">Contact privacy *</span>
+        <label class="popt sel" id="poptAnon">
+          <input type="radio" name="priv" value="anon" checked onchange="setPrivacy('anon')">
+          <div>
+            <div class="popt-lbl">🔒 Fully anonymous (recommended)</div>
+            <div class="popt-desc">No contact info shown. Helpers leave you a private message; you read it with your secret code.</div>
+          </div>
+        </label>
+        <label class="popt" id="poptReveal">
+          <input type="radio" name="priv" value="reveal" onchange="setPrivacy('reveal')">
+          <div>
+            <div class="popt-lbl">👁️ Reveal my contact when someone responds</div>
+            <div class="popt-desc">Your info is shown only after someone clicks the help/respond button. Never shown publicly.</div>
+          </div>
+        </label>
       </div>
-      <button class="sub-btn" id="subBtn" onclick="submitNeed()">Post My Need</button>
+      <div class="fg" id="fContactWrap" style="display:none">
+        <label for="fContact">Your contact info *</label>
+        <input type="text" id="fContact" placeholder="Email, phone, Signal, etc.">
+        <p class="hint">Only revealed when a neighbor clicks the respond button. Never shown publicly.</p>
+      </div>
+
+      <button class="sub-btn" id="subBtn" onclick="submitPost()">Post →</button>
     </div>
   </div>
-</div>
+
+  <!-- ── MANAGE ── -->
+  <div id="p-manage" style="display:none">
+    <p class="manage-intro">Enter the secret code you received when posting to manage your listing — view responses, edit, mark as done, or delete.</p>
+    <div class="code-search">
+      <input type="text" id="codeIn" maxlength="8" placeholder="ABCD1234"
+        oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter')lookupCode()">
+      <button class="sub-btn" style="width:auto;padding:.48rem 1.1rem;margin-top:0" onclick="lookupCode()">Find My Post</button>
+    </div>
+    <div class="alert alert-warn" id="manageAlert"></div>
+    <div class="manage-card" id="manageCard"></div>
+  </div>
+
+</div><!-- /wrap -->
 
 <script>
-const CATS=['Food','Clothing','Housing','Childcare','Transportation','Employment','Education','Legal','Mental Health','Medical','Other'];
-const KEY='neighborhood-needs-v2';
-const CAT_STYLE={
-  'Food':         {bg:'#FAEEDA',tc:'#633806'},
-  'Clothing':     {bg:'#FAECE7',tc:'#712B13'},
-  'Housing':      {bg:'#E6F1FB',tc:'#0C447C'},
-  'Childcare':    {bg:'#FBEAF0',tc:'#72243E'},
-  'Transportation':{bg:'#E1F5EE',tc:'#085041'},
-  'Employment':   {bg:'#EEEDFE',tc:'#3C3489'},
-  'Education':    {bg:'#EAF3DE',tc:'#27500A'},
-  'Legal':        {bg:'#F1EFE8',tc:'#444441'},
-  'Mental Health':{bg:'#EEEDFE',tc:'#3C3489'},
-  'Medical':      {bg:'#E1F5EE',tc:'#085041'},
-  'Other':        {bg:'#F1EFE8',tc:'#444441'}
+const KEY = 'neighborhood-portal-v3';
+const CATS = ['Food','Clothing','Housing','Childcare','Transportation','Employment','Education','Legal','Mental Health','Medical','Technology','Errands','Companionship','Skills / Tutoring','Other'];
+const CS = {
+  'Food':{bg:'#FAEEDA',tc:'#633806'},'Clothing':{bg:'#FAECE7',tc:'#712B13'},
+  'Housing':{bg:'#E6F1FB',tc:'#0C447C'},'Childcare':{bg:'#FBEAF0',tc:'#72243E'},
+  'Transportation':{bg:'#E1F5EE',tc:'#085041'},'Employment':{bg:'#EEEDFE',tc:'#3C3489'},
+  'Education':{bg:'#EAF3DE',tc:'#27500A'},'Legal':{bg:'#F1EFE8',tc:'#444441'},
+  'Mental Health':{bg:'#EEEDFE',tc:'#3C3489'},'Medical':{bg:'#E1F5EE',tc:'#085041'},
+  'Technology':{bg:'#E8F4FD',tc:'#0B4F6C'},'Errands':{bg:'#FDF5E1',tc:'#5C4400'},
+  'Companionship':{bg:'#F9EAF5',tc:'#6B2D7A'},'Skills / Tutoring':{bg:'#EBF5EB',tc:'#1E5E1E'},
+  'Other':{bg:'#F1EFE8',tc:'#444441'}
 };
 
-let needs=[], activeCat='All', openContact=null, selUrgency='', isDark=false;
+let posts=[], nCat='All', oCat='All', openContact=null, openMsg=null;
+let postType='need', urgency='', privacy='anon', isDark=false;
 
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const cs=c=>CS[c]||CS['Other'];
+
 function timeAgo(ts){
   const d=Math.floor((Date.now()-new Date(ts))/1000);
-  if(d<60)return'Just now';
-  if(d<3600)return Math.floor(d/60)+'m ago';
+  if(d<60)return'just now';if(d<3600)return Math.floor(d/60)+'m ago';
   if(d<86400)return Math.floor(d/3600)+'h ago';
-  return Math.floor(d/86400)+'d ago';
+  if(d<604800)return Math.floor(d/86400)+'d ago';
+  return new Date(ts).toLocaleDateString();
+}
+function genCode(){
+  const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:8},()=>a[Math.floor(Math.random()*a.length)]).join('');
+}
+function copyCode(){
+  const t=document.getElementById('codeDisplay').textContent.trim();
+  navigator.clipboard.writeText(t).then(()=>{
+    const el=document.getElementById('codeDisplay');
+    const orig=el.textContent; el.textContent='Copied!';
+    setTimeout(()=>el.textContent=orig,1200);
+  });
 }
 
-async function loadNeeds(){
-  try{const r=await window.storage.get(KEY,true);needs=JSON.parse(r.value);}
-  catch(e){needs=[];}
-  rebuildFilters();
-  renderBrowse();
+// ── Storage ────────────────────────────────────────────────────
+async function load(){
+  try{const r=await window.storage.get(KEY,true);posts=JSON.parse(r.value);}catch(e){posts=[];}
+  rebuildFilters(); renderNeeds(); renderOffers();
 }
-async function saveNeeds(){
-  try{await window.storage.set(KEY,JSON.stringify(needs),true);}
-  catch(e){console.error(e);}
+async function save(){
+  try{await window.storage.set(KEY,JSON.stringify(posts),true);}catch(e){console.error(e);}
 }
+
+// ── Filters ────────────────────────────────────────────────────
+function displayCat(p){return p.category==='Other'&&p.customCat?p.customCat:p.category;}
 
 function rebuildFilters(){
-  const zips=[...new Set(needs.map(n=>n.zip))].sort();
-  const sel=document.getElementById('zipSel');
-  const cur=sel.value;
-  sel.innerHTML='<option value="">All ZIPs</option>'+zips.map(z=>`<option${z===cur?' selected':''}>${z}</option>`).join('');
-  const usedCats=['All',...CATS.filter(c=>needs.some(n=>n.category===c))];
-  document.getElementById('catPills').innerHTML=usedCats.map(c=>
-    `<button class="pill${c===activeCat?' on':''}" onclick="setCat('${esc(c)}')">${c}</button>`
+  const needs=posts.filter(p=>p.type==='need'&&p.status!=='deleted');
+  const offers=posts.filter(p=>p.type==='offer'&&p.status!=='deleted');
+  buildZip('nZip',needs); buildZip('oZip',offers);
+  buildCats('nCats',needs,nCat,"setNCat");
+  buildCats('oCats',offers,oCat,"setOCat");
+}
+function buildZip(id,arr){
+  const el=document.getElementById(id), cur=el.value;
+  const zips=[...new Set(arr.map(p=>p.zip))].sort();
+  el.innerHTML='<option value="">All</option>'+zips.map(z=>`<option${z===cur?' selected':''}>${esc(z)}</option>`).join('');
+}
+function buildCats(id,arr,active,fn){
+  const used=['All',...CATS.filter(c=>arr.some(p=>p.category===c||displayCat(p)===c))];
+  document.getElementById(id).innerHTML=used.map(c=>
+    `<button class="cpill${c===active?' on':''}" onclick="${fn}('${esc(c)}')">${esc(c)}</button>`
   ).join('');
 }
+function setNCat(c){nCat=c;openContact=openMsg=null;rebuildFilters();renderNeeds();}
+function setOCat(c){oCat=c;openContact=openMsg=null;rebuildFilters();renderOffers();}
 
-function setCat(c){activeCat=c;openContact=null;rebuildFilters();renderBrowse();}
-
-function renderBrowse(){
-  const zipF=document.getElementById('zipSel').value;
-  const urgF=document.getElementById('urgSel').value;
-  let f=needs.filter(n=>{
-    const mz=!zipF||n.zip===zipF;
-    const mc=activeCat==='All'||n.category===activeCat;
-    const mu=!urgF||n.urgency===urgF;
-    return mz&&mc&&mu;
+// ── Render ─────────────────────────────────────────────────────
+function renderNeeds(){
+  const zipF=document.getElementById('nZip').value;
+  const urgF=document.getElementById('nUrg').value;
+  const stF =document.getElementById('nStat').value;
+  let f=posts.filter(p=>{
+    if(p.type!=='need'||p.status==='deleted')return false;
+    if(zipF&&p.zip!==zipF)return false;
+    if(nCat!=='All'&&displayCat(p)!==nCat&&p.category!==nCat)return false;
+    if(urgF&&p.urgency!==urgF)return false;
+    if(stF&&p.status!==stF)return false;
+    if(!stF&&p.status==='claimed')return false; // "open" default hides fulfilled unless selected
+    return true;
   });
   const ord={urgent:0,week:1,flexible:2};
   f.sort((a,b)=>(ord[a.urgency]||2)-(ord[b.urgency]||2)||(new Date(b.timestamp)-new Date(a.timestamp)));
-  const open=f.filter(n=>n.status!=='claimed');
-  const done=f.filter(n=>n.status==='claimed');
-  const all=[...open,...done];
-  document.getElementById('countBar').textContent=
-    all.length?`${open.length} open · ${done.length} fulfilled${zipF?' in ZIP '+zipF:''}`:''  ;
-  const list=document.getElementById('needsList');
-  if(!all.length){
-    list.innerHTML=`<div class="empty"><div class="empty-icon">🌱</div><p>No needs posted yet${zipF?' in ZIP '+zipF:activeCat!=='All'?' for '+activeCat:''}.<br>Be the first to post, or try a different filter.</p></div>`;
-    return;
-  }
-  list.innerHTML=`<div class="grid">${all.map(nCard).join('')}</div>`;
+  const open=f.filter(p=>p.status==='open').length;
+  document.getElementById('nCount').textContent=f.length
+    ?`${open} open · ${f.length-open} fulfilled`+(zipF?' in ZIP '+zipF:'')+(nCat!=='All'?' · '+nCat:''):'';
+  renderList('nList',f,'need');
+}
+function renderOffers(){
+  const zipF=document.getElementById('oZip').value;
+  const stF =document.getElementById('oStat').value;
+  let f=posts.filter(p=>{
+    if(p.type!=='offer'||p.status==='deleted')return false;
+    if(zipF&&p.zip!==zipF)return false;
+    if(oCat!=='All'&&displayCat(p)!==oCat&&p.category!==oCat)return false;
+    if(stF&&p.status!==stF)return false;
+    if(!stF&&p.status==='claimed')return false;
+    return true;
+  });
+  f.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+  const open=f.filter(p=>p.status==='open').length;
+  document.getElementById('oCount').textContent=f.length
+    ?`${open} active · ${f.length-open} closed`+(zipF?' in ZIP '+zipF:'')+(oCat!=='All'?' · '+oCat:''):'';
+  renderList('oList',f,'offer');
 }
 
-function nCard(n){
-  const cs=CAT_STYLE[n.category]||CAT_STYLE['Other'];
-  const urgMap={urgent:'urg-urgent',week:'urg-week',flexible:'urg-flexible'};
-  const urgLbl={urgent:'Urgent',week:'This week',flexible:'Flexible'};
-  const isOpen=openContact===n.id;
-  const claimed=n.status==='claimed';
-  return`<div class="ncard${claimed?' claimed':''}" id="card-${n.id}">
+function renderList(id,items,type){
+  const el=document.getElementById(id);
+  if(!items.length){
+    el.innerHTML=`<div class="empty-state"><div class="e-icon">${type==='need'?'🌱':'🤝'}</div>
+      <p>No ${type==='need'?'needs':'offers'} match your filters.<br>Be the first to post!</p></div>`;
+    return;
+  }
+  el.innerHTML=`<div class="grid">${items.map(p=>card(p,type)).join('')}</div>`;
+}
+
+function card(p,type){
+  const dc=displayCat(p), c=cs(p.category);
+  const urgCls={urgent:'urg-urgent',week:'urg-week',flexible:'urg-flex'}[p.urgency]||'urg-flex';
+  const urgLbl={urgent:'Urgent',week:'This week',flexible:'Flexible'}[p.urgency]||'Flexible';
+  const done=p.status==='claimed';
+  const msgs=(p.messages||[]).length;
+  const isC=openContact===p.id, isM=openMsg===p.id;
+  const helpLbl=isC?'Hide':(type==='need'?'I can help':'I need this');
+
+  const contactInner=p.privacy==='reveal'&&p.contact
+    ?`<strong>Contact:</strong> ${esc(p.contact)}`
+    :p.privacy==='reveal'&&!p.contact
+    ?`<em>Poster didn't leave contact info — try leaving a message below.</em>`
+    :`<em>Poster chose full anonymity. Leave them a private message below and they'll read it with their secret code.</em>`;
+
+  return`<div class="ncard${done?' fulfilled':''}${type==='offer'?' offer-card':''}" id="pc-${p.id}">
     <div class="ncard-top">
-      <span class="cat-badge" style="background:${cs.bg};color:${cs.tc}">${esc(n.category)}</span>
-      <div class="urg-wrap ${urgMap[n.urgency]||'urg-flexible'}">
-        <div class="urg-dot"></div>
-        <span class="urg-label">${urgLbl[n.urgency]||'Flexible'}</span>
+      <div class="badges">
+        <span class="type-badge ${type==='need'?'type-need':'type-offer'}">${type}</span>
+        <span class="cat-badge" style="background:${c.bg};color:${c.tc}">${esc(dc)}</span>
       </div>
+      ${type==='need'?`<div class="urg-mini ${urgCls}"><div class="urg-dot"></div><span class="urg-lbl">${urgLbl}</span></div>`:''}
     </div>
-    <div class="ncard-name">${esc(n.firstName||'Neighbor')}</div>
-    <div class="ncard-zip">ZIP ${esc(n.zip)}</div>
-    <div class="ncard-desc">${esc(n.description)}</div>
+    <div class="ncard-name">${esc(p.firstName||'Neighbor')}</div>
+    <div class="ncard-meta">ZIP ${esc(p.zip)}${p.updatedAt&&p.updatedAt!==p.timestamp?' · updated '+timeAgo(p.updatedAt):''}</div>
+    <div class="ncard-desc">${esc(p.description)}</div>
     <div class="ncard-footer">
-      <span class="ncard-time">${timeAgo(n.timestamp)}</span>
-      <div class="ncard-actions">
-        <span class="status-chip ${claimed?'status-claimed':'status-open'}">${claimed?'Fulfilled':'Open'}</span>
-        ${!claimed?`<button class="btn-help" onclick="togContact('${n.id}')">${isOpen?'Hide':'I can help'}</button>`:''}
+      <span class="ncard-time">Posted ${timeAgo(p.timestamp)}${msgs?' · 💬 '+msgs+' msg'+(msgs>1?'s':''):''}</span>
+      <div class="ncard-btns">
+        <span class="chip ${done?'chip-done':'chip-open'}">${done?(type==='need'?'Fulfilled':'Closed'):'Open'}</span>
+        ${!done?`<button class="btn btn-g" onclick="togContact('${p.id}')">${esc(helpLbl)}</button>`:''}
+        <button class="btn btn-b" onclick="togMsg('${p.id}')">${isM?'Hide msg':'💬 Message'}</button>
       </div>
     </div>
-    <div class="contact-box${isOpen?' show':''}" id="contact-${n.id}">
-      ${n.contact
-        ?`<strong>Reach out:</strong> ${esc(n.contact)}`
-        :`<em>This neighbor prefers to stay anonymous. Share this post with your network!</em>`}
-      ${!claimed?`<br><button class="btn-mark" onclick="markClaimed('${n.id}')">Mark as fulfilled ✓</button>`:''}
+    <div class="expand-box expand-green${isC?' show':''}" id="cx-${p.id}">${contactInner}</div>
+    <div class="expand-box expand-blue${isM?' show':''}" id="mx-${p.id}">
+      <div class="msg-form">
+        <div class="anon-note">Messages are private — only the poster sees them using their secret code.</div>
+        <textarea id="mt-${p.id}" placeholder="Write your message…"></textarea>
+        <input type="text" id="mr-${p.id}" placeholder="Optional: your contact info (only visible to poster)">
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+          <button class="btn btn-b" onclick="sendMsg('${p.id}')">Send</button>
+          <span class="anon-note">Your identity is not revealed.</span>
+          <span class="msg-sent" id="ms-${p.id}">✓ Sent!</span>
+        </div>
+      </div>
     </div>
   </div>`;
 }
 
-function togContact(id){
-  openContact=openContact===id?null:id;
-  renderBrowse();
-}
-async function markClaimed(id){
-  const i=needs.findIndex(n=>n.id===id);
-  if(i!==-1){needs[i].status='claimed';await saveNeeds();openContact=null;rebuildFilters();renderBrowse();}
+function togContact(id){openContact=openContact===id?null:id;openMsg=null;renderNeeds();renderOffers();}
+function togMsg(id){openMsg=openMsg===id?null:id;openContact=null;renderNeeds();renderOffers();}
+
+async function sendMsg(id){
+  const txt=(document.getElementById('mt-'+id)||{}).value||'';
+  const rpl=(document.getElementById('mr-'+id)||{}).value||'';
+  if(!txt.trim()){alert('Please write a message.');return;}
+  const idx=posts.findIndex(p=>p.id===id); if(idx===-1)return;
+  if(!posts[idx].messages)posts[idx].messages=[];
+  posts[idx].messages.push({id:Date.now().toString(36),text:txt.trim(),replyTo:rpl.trim(),timestamp:new Date().toISOString()});
+  posts[idx].updatedAt=new Date().toISOString();
+  await save();
+  const s=document.getElementById('ms-'+id);
+  if(s){s.style.display='inline';setTimeout(()=>s.style.display='none',2500);}
+  const mt=document.getElementById('mt-'+id); if(mt)mt.value='';
+  const mr=document.getElementById('mr-'+id); if(mr)mr.value='';
 }
 
+// ── Post form ──────────────────────────────────────────────────
+function setPostType(t){
+  postType=t;
+  document.getElementById('optNeed').className='type-opt'+(t==='need'?' sel-need':'');
+  document.getElementById('optOffer').className='type-opt'+(t==='offer'?' sel-offer':'');
+  document.getElementById('fDescLbl').textContent=t==='need'?'What do you need? *':'What can you help with? *';
+  document.getElementById('fDesc').placeholder=t==='need'
+    ?'Be specific — what, when, where, any constraints.'
+    :'Describe what you can offer, your availability, and general location.';
+  document.getElementById('fUrgWrap').style.display=t==='need'?'':'none';
+}
+function setPrivacy(v){
+  privacy=v;
+  document.getElementById('poptAnon').classList.toggle('sel',v==='anon');
+  document.getElementById('poptReveal').classList.toggle('sel',v==='reveal');
+  document.getElementById('fContactWrap').style.display=v==='reveal'?'block':'none';
+}
 function selUrg(v){
-  selUrgency=v;
+  urgency=v;
   document.querySelectorAll('.urg-opt').forEach(el=>{
     el.className='urg-opt';
     if(el.dataset.v===v)el.className='urg-opt sel-'+v;
   });
 }
-
-async function submitNeed(){
-  const zip=document.getElementById('fZip').value.trim();
-  const name=document.getElementById('fName').value.trim();
-  const cat=document.getElementById('fCat').value;
-  const desc=document.getElementById('fDesc').value.trim();
-  const contact=document.getElementById('fContact').value.trim();
-  if(!zip||zip.length!==5||!/^\d{5}$/.test(zip)){alert('Please enter a valid 5-digit ZIP code.');return;}
-  if(!cat){alert('Please select a category.');return;}
-  if(desc.length<10){alert('Please describe your need in at least a few words.');return;}
-  const btn=document.getElementById('subBtn');
-  btn.disabled=true;btn.textContent='Posting…';
-  const n={
-    id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
-    zip,firstName:name||'Neighbor',category:cat,description:desc,
-    urgency:selUrgency||'flexible',contact,
-    timestamp:new Date().toISOString(),status:'open'
-  };
-  needs.push(n);
-  await saveNeeds();
-  ['fName','fDesc','fContact'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('fCat').value='';
-  selUrgency='';
-  document.querySelectorAll('.urg-opt').forEach(el=>el.className='urg-opt');
-  btn.disabled=false;btn.textContent='Post My Need';
-  const sb=document.getElementById('successBar');
-  sb.className='success-bar show';
-  setTimeout(()=>sb.className='success-bar',4000);
-  rebuildFilters();
-  switchTab('browse');
-  const sel=document.getElementById('zipSel');
-  sel.value=zip;
-  renderBrowse();
+function onCatChange(){
+  const isOther=document.getElementById('fCat').value==='Other';
+  document.getElementById('fOtherWrap').style.display=isOther?'block':'none';
+}
+function onFZip(){
+  const v=document.getElementById('fZip').value;
+  if(/^\d{5}$/.test(v)&&!document.getElementById('gZip').value){
+    document.getElementById('gZip').value=v; onGlobalZip();
+  }
 }
 
+async function submitPost(){
+  const zip=document.getElementById('fZip').value.trim();
+  const name=document.getElementById('fName').value.trim();
+  let cat=document.getElementById('fCat').value;
+  const customCat=cat==='Other'?document.getElementById('fOther').value.trim():'';
+  const desc=document.getElementById('fDesc').value.trim();
+  const contact=document.getElementById('fContact').value.trim();
+
+  if(!zip||!/^\d{5}$/.test(zip)){alert('Please enter a valid 5-digit ZIP.');return;}
+  if(!cat){alert('Please select a category.');return;}
+  if(cat==='Other'&&!customCat){alert('Please describe your "Other" category.');return;}
+  if(desc.length<10){alert('Please add a bit more detail to your description.');return;}
+  if(postType==='need'&&!urgency){alert('Please select an urgency level.');return;}
+  if(privacy==='reveal'&&!contact){alert('Please enter your contact info, or choose "Fully anonymous."');return;}
+
+  const btn=document.getElementById('subBtn');
+  btn.disabled=true; btn.textContent='Posting…';
+
+  const code=genCode();
+  posts.push({
+    id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+    type:postType, zip, firstName:name||'Neighbor',
+    category:cat, customCat, description:desc,
+    urgency:postType==='need'?(urgency||'flexible'):'',
+    privacy, contact:privacy==='reveal'?contact:'',
+    timestamp:new Date().toISOString(), updatedAt:new Date().toISOString(),
+    status:'open', secretCode:code, messages:[]
+  });
+  await save(); rebuildFilters(); renderNeeds(); renderOffers();
+
+  document.getElementById('codeDisplay').textContent=code;
+  const sb=document.getElementById('successBox');
+  sb.className='success-box show';
+  sb.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  // Reset form
+  ['fName','fDesc','fContact','fOther'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('fCat').value='';
+  document.getElementById('fOtherWrap').style.display='none';
+  urgency=''; document.querySelectorAll('.urg-opt').forEach(e=>e.className='urg-opt');
+  setPostType('need'); setPrivacy('anon');
+  btn.disabled=false; btn.textContent='Post →';
+}
+
+// ── Manage ─────────────────────────────────────────────────────
+function showManageAlert(msg,ok){
+  const el=document.getElementById('manageAlert');
+  el.textContent=msg; el.className='alert '+(ok?'alert-ok':'alert-warn')+' show';
+  document.getElementById('manageCard').className='manage-card';
+}
+
+async function lookupCode(){
+  const code=document.getElementById('codeIn').value.trim().toUpperCase();
+  if(code.length<6){showManageAlert('Please enter your 8-character secret code.');return;}
+  const p=posts.find(p=>p.secretCode===code&&p.status!=='deleted');
+  if(!p){showManageAlert('No active post found with that code. Check for typos, or your post may have been deleted.');return;}
+  document.getElementById('manageAlert').className='alert alert-warn';
+  renderManageCard(p,code);
+}
+
+function renderManageCard(p,code){
+  const dc=displayCat(p), c=cs(p.category);
+  const msgs=p.messages||[];
+  const msgsHtml=msgs.length
+    ?msgs.map(m=>`<div class="msg-item">
+        <div>${esc(m.text)}</div>
+        ${m.replyTo?`<div class="msg-reply">📧 They left contact: ${esc(m.replyTo)}</div>`:''}
+        <div class="msg-time">${timeAgo(m.timestamp)}</div>
+      </div>`).join('')
+    :`<div class="no-msgs">No messages yet.</div>`;
+
+  const el=document.getElementById('manageCard');
+  el.className='manage-card show';
+  el.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem">
+      <div class="badges">
+        <span class="type-badge ${p.type==='need'?'type-need':'type-offer'}">${p.type}</span>
+        <span class="cat-badge" style="background:${c.bg};color:${c.tc}">${esc(dc)}</span>
+      </div>
+      <span class="chip ${p.status==='open'?'chip-open':'chip-done'}">${p.status==='open'?'Open':p.type==='need'?'Fulfilled':'Closed'}</span>
+    </div>
+    <div class="manage-desc-block">${esc(p.description)}</div>
+    <div class="manage-meta">ZIP ${esc(p.zip)} · Posted ${timeAgo(p.timestamp)}${p.updatedAt&&p.updatedAt!==p.timestamp?' · Updated '+timeAgo(p.updatedAt):''}</div>
+    <div class="msgs-section">
+      <h4>💬 Messages from neighbors (${msgs.length})</h4>
+      ${msgsHtml}
+    </div>
+    <div class="manage-actions">
+      ${p.status==='open'?`<button class="btn btn-g" onclick="mMark('${p.id}','${code}')">${p.type==='need'?'✓ Mark fulfilled':'✓ Mark closed'}</button>`:''}
+      <button class="btn btn-r" onclick="mEdit('${p.id}','${code}')">Edit description</button>
+      <button class="btn btn-del" onclick="mDelete('${p.id}','${code}')">Delete post</button>
+    </div>
+    <div class="edit-box" id="editBox">
+      <textarea id="editTxt">${esc(p.description)}</textarea>
+      <div class="edit-actions">
+        <button class="btn btn-g" onclick="mSaveEdit('${p.id}','${code}')">Save</button>
+        <button class="btn btn-r" onclick="document.getElementById('editBox').style.display='none'">Cancel</button>
+      </div>
+    </div>`;
+}
+
+function mEdit(id,code){
+  const eb=document.getElementById('editBox');
+  if(eb)eb.style.display=eb.style.display==='block'?'none':'block';
+}
+async function mSaveEdit(id,code){
+  const p=posts.find(p=>p.id===id&&p.secretCode===code); if(!p)return;
+  const t=(document.getElementById('editTxt')||{}).value||'';
+  if(t.trim().length<5){alert('Description too short.');return;}
+  p.description=t.trim(); p.updatedAt=new Date().toISOString();
+  await save(); rebuildFilters(); renderNeeds(); renderOffers();
+  renderManageCard(p,code);
+}
+async function mMark(id,code){
+  const p=posts.find(p=>p.id===id&&p.secretCode===code); if(!p)return;
+  p.status='claimed'; p.updatedAt=new Date().toISOString();
+  await save(); rebuildFilters(); renderNeeds(); renderOffers();
+  renderManageCard(p,code);
+}
+async function mDelete(id,code){
+  if(!confirm('Delete this post permanently?'))return;
+  const p=posts.find(p=>p.id===id&&p.secretCode===code); if(!p)return;
+  p.status='deleted'; p.updatedAt=new Date().toISOString();
+  await save(); rebuildFilters(); renderNeeds(); renderOffers();
+  showManageAlert('Post deleted successfully.',true);
+}
+
+// ── ZIP gate ───────────────────────────────────────────────────
 function onGlobalZip(){
-  const z=document.getElementById('globalZip').value.trim();
+  const z=document.getElementById('gZip').value.trim();
   if(/^\d{5}$/.test(z)){
-    document.getElementById('zipPillText').textContent='ZIP '+z;
+    document.getElementById('zipPillTxt').textContent='ZIP '+z;
     document.getElementById('zipPill').className='zip-pill show';
     document.getElementById('zipHint').style.display='none';
     document.getElementById('fZip').value=z;
-    const sel=document.getElementById('zipSel');
-    if([...sel.options].some(o=>o.value===z))sel.value=z;
-    renderBrowse();
-  }else{
+    ['nZip','oZip'].forEach(id=>{
+      const s=document.getElementById(id);
+      if([...s.options].some(o=>o.value===z))s.value=z;
+    });
+    renderNeeds(); renderOffers();
+  } else {
     document.getElementById('zipPill').className='zip-pill';
     document.getElementById('zipHint').style.display='';
   }
 }
 function clearZip(){
-  document.getElementById('globalZip').value='';
+  document.getElementById('gZip').value='';
   document.getElementById('zipPill').className='zip-pill';
   document.getElementById('zipHint').style.display='';
-  document.getElementById('zipSel').value='';
+  ['nZip','oZip'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fZip').value='';
-  renderBrowse();
-}
-function validateZipField(){
-  const v=document.getElementById('fZip').value;
-  if(/^\d{5}$/.test(v)&&!document.getElementById('globalZip').value){
-    document.getElementById('globalZip').value=v;
-    onGlobalZip();
-  }
+  renderNeeds(); renderOffers();
 }
 
+// ── Tab switch ─────────────────────────────────────────────────
 function switchTab(t){
-  document.getElementById('browsePanel').style.display=t==='browse'?'block':'none';
-  document.getElementById('postPanel').style.display=t==='post'?'block':'none';
-  document.getElementById('tabA').className='tab'+(t==='browse'?' active':'');
-  document.getElementById('tabB').className='tab'+(t==='post'?' active':'');
+  ['needs','offers','post','manage'].forEach(k=>{
+    document.getElementById('p-'+k).style.display=k===t?'block':'none';
+    document.getElementById('t-'+k).className='tab'+(k===t?' active':'');
+  });
 }
 
+// ── Theme ──────────────────────────────────────────────────────
 function toggleTheme(){
   isDark=!isDark;
   document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
   document.getElementById('themeLabel').textContent=isDark?'Light mode':'Dark mode';
   document.getElementById('themeIco').outerHTML=isDark
-    ?`<svg id="themeIco" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`
-    :`<svg id="themeIco" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+    ?`<svg id="themeIco" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`
+    :`<svg id="themeIco" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
 }
 
-loadNeeds();
+load();
 </script>
 </body>
 </html>

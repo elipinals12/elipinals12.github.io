@@ -14,6 +14,12 @@
     #setup input::placeholder { color: #7eb8da44; }
     #setup label { display: block; margin-top: 14px; font-family: 'Segoe UI', sans-serif; font-size: 1rem; color: #7eb8da66; }
     #setup .hint { display: block; margin-top: 24px; font-family: 'Segoe UI', sans-serif; font-size: 0.7rem; color: #ffffff22; }
+    #start {
+      margin-top: 36px; padding: 16px 48px; font-family: 'Segoe UI', sans-serif; font-size: 1.4rem; font-weight: 300;
+      background: transparent; border: 1px solid #7eb8da33; border-radius: 6px;
+      color: #7eb8da; cursor: pointer; transition: border-color 0.2s, color 0.2s;
+    }
+    #start:hover { border-color: #7eb8da88; color: #7eb8dacc; }
     #slide {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       object-fit: cover; border: none; outline: none;
@@ -27,6 +33,8 @@
   <input id="seconds" type="number" min="0.01" step="any" placeholder="10" autofocus>
   <label>seconds between images</label>
   <span class="hint">minimum 0.01s · esc to return</span>
+  <br><br>
+  <button id="start">start slideshow</button>
 </div>
 <img id="slide">
 
@@ -69,18 +77,18 @@ const slide = document.getElementById('slide');
 const setup = document.getElementById('setup');
 const input = document.getElementById('seconds');
 
-input.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    const sec = Math.max(0.01, parseFloat(input.value) || 10);
-    // dynamic buffer: ~20s of runway, min 10, max 200
-    queueSize = Math.min(200, Math.max(10, Math.ceil(20 / sec)));
-    generation++;
-    ready.length = 0;
-    loading = 0;
-    preload();
-    startSlideshow(sec);
-  }
-});
+function begin() {
+  const sec = Math.max(0.01, parseFloat(input.value) || 10);
+  queueSize = Math.min(200, Math.max(10, Math.ceil(20 / sec)));
+  generation++;
+  ready.length = 0;
+  loading = 0;
+  preload();
+  startSlideshow(sec);
+}
+
+input.addEventListener('keydown', e => { if (e.key === 'Enter') begin(); });
+document.getElementById('start').addEventListener('click', begin);
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && intervalId !== null) {

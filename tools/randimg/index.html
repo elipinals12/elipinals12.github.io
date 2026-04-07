@@ -26,19 +26,20 @@
   <h1>random image slideshow</h1>
   <input id="seconds" type="number" min="0.01" step="any" placeholder="10" autofocus>
   <label>seconds between images</label>
-  <span class="hint">minimum 0.01s</span>
+  <span class="hint">minimum 0.01s · esc to return</span>
 </div>
 <img id="slide">
 
 <script>
 let W = innerWidth, H = innerHeight;
-const ready = [];   // resolved image URLs, ready to display
+const ready = [];
 let loading = 0;
-let generation = 0; // increments on resize to discard stale loads
-const QUEUE_SIZE = 10;
+let generation = 0;
+let queueSize = 10;
+let intervalId = null;
 
 function preload() {
-  while (loading + ready.length < QUEUE_SIZE) {
+  while (loading + ready.length < queueSize) {
     loading++;
     const gen = generation;
     const img = new Image();
@@ -71,7 +72,29 @@ const input = document.getElementById('seconds');
 input.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     const sec = Math.max(0.01, parseFloat(input.value) || 10);
+    // dynamic buffer: ~20s of runway, min 10, max 200
+    queueSize = Math.min(200, Math.max(10, Math.ceil(20 / sec)));
+    generation++;
+    ready.length = 0;
+    loading = 0;
+    preload();
     startSlideshow(sec);
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && intervalId !== null) {
+    clearInterval(intervalId);
+    intervalId = null;
+    slide.style.display = 'none';
+    setup.style.display = '';
+    input.focus();
+    // reset buffer to default while picking
+    queueSize = 10;
+    generation++;
+    ready.length = 0;
+    loading = 0;
+    preload();
   }
 });
 
@@ -80,22 +103,19 @@ function waitForReady() {
     if (ready.length > 0) return resolve();
     const check = setInterval(() => {
       if (ready.length > 0) { clearInterval(check); resolve(); }
-    }, 16);
+    }, 5);
   });
 }
 
 async function startSlideshow(sec) {
-  // wait for at least one image to be fully loaded
   await waitForReady();
 
-  // show first image, then swap setup out
   slide.src = ready.shift();
   slide.style.display = 'block';
   setup.style.display = 'none';
   preload();
 
-  // use setInterval for rock-steady timing
-  setInterval(() => {
+  intervalId = setInterval(() => {
     if (ready.length > 0) {
       slide.src = ready.shift();
       preload();

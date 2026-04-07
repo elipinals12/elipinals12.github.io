@@ -1,28 +1,79 @@
 <html>
-
 <head>
-  <link rel="icon" href="../../ref/Disc_Plain_blue_dark.png">
-  <link rel="stylesheet" type="text/css" href="./style.css">
-  <title>Random Image Generator</title>
-</head>
-
-<body bgcolor=#00094a>
-
-
-  <meta http-equiv="refresh" content="17; URL=index.html">
-
-  <img id="randomimage" src="" class="bottom" width=100% height=100%></img>
-
-  <style type="text/css">
-    * {
-      cursor: none;
+  <title>random image slideshow</title>
+  <style>
+    * { margin: 0; padding: 0; cursor: none; }
+    body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+    #setup { text-align: center; }
+    #setup h1 { font-family: 'Segoe UI', sans-serif; font-size: 1.8rem; font-weight: 300; color: #7eb8da; margin-bottom: 40px; }
+    #setup input {
+      font-family: 'Segoe UI', sans-serif; font-size: 5rem; font-weight: 200;
+      background: transparent; border: none; border-bottom: 2px solid #7eb8da33;
+      color: #7eb8da; text-align: center; width: 4ch; outline: none; caret-color: #7eb8da;
+    }
+    #setup input::placeholder { color: #7eb8da44; }
+    #setup label { display: block; margin-top: 14px; font-family: 'Segoe UI', sans-serif; font-size: 1rem; color: #7eb8da66; }
+    #slide {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      object-fit: cover; transition: opacity 0.6s ease; border: none; outline: none;
     }
   </style>
+</head>
+<body>
 
-  <script>
-    let link = "https://unsplash.it/" + innerWidth + "/" + innerHeight;
-    document.getElementById("randomimage").src = link;
-  </script>
+<div id="setup">
+  <h1>random image slideshow</h1>
+  <input id="seconds" type="number" min="1" placeholder="10" autofocus>
+  <label>seconds between images</label>
+</div>
+<img id="slide">
+
+<script>
+const W = innerWidth, H = innerHeight;
+const queue = [];
+const QUEUE_SIZE = 10;
+
+function loadImage() {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img.src);
+    img.onerror = () => resolve(loadImage()); // retry on fail
+    img.src = `https://unsplash.it/${W}/${H}?random&t=${Date.now()}-${Math.random()}`;
+  });
+}
+
+function fillQueue() {
+  while (queue.length < QUEUE_SIZE) queue.push(loadImage());
+}
+
+// start preloading immediately while user types
+fillQueue();
+
+const slide = document.getElementById('slide');
+const setup = document.getElementById('setup');
+const input = document.getElementById('seconds');
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const sec = parseInt(input.value) || 10;
+    setup.style.display = 'none';
+    slide.style.display = 'block';
+    startSlideshow(sec);
+  }
+});
+
+async function startSlideshow(sec) {
+  while (true) {
+    const src = await queue.shift();
+    fillQueue(); // refill after consuming one
+    slide.style.opacity = 0;
+    await new Promise(r => setTimeout(r, 600));
+    slide.src = src;
+    slide.style.opacity = 1;
+    await new Promise(r => setTimeout(r, sec * 1000));
+  }
+}
+</script>
 </body>
-
 </html>

@@ -46,6 +46,18 @@ let loading = 0;
 let generation = 0;
 let queueSize = 10;
 let intervalId = null;
+let currentSec = null;
+
+function resetInterval() {
+  clearInterval(intervalId);
+  intervalId = setInterval(() => {
+    if (ready.length > 0) { slide.src = ready.shift(); preload(); }
+  }, currentSec * 1000);
+}
+
+function advance() {
+  if (ready.length > 0) { slide.src = ready.shift(); preload(); resetInterval(); }
+}
 
 function preload() {
   while (loading + ready.length < queueSize) {
@@ -117,7 +129,10 @@ function waitForReady() {
   });
 }
 
+slide.addEventListener('click', advance);
+
 async function startSlideshow(sec) {
+  currentSec = sec;
   await waitForReady();
 
   slide.src = ready.shift();
@@ -126,12 +141,7 @@ async function startSlideshow(sec) {
   document.body.classList.add('playing');
   preload();
 
-  intervalId = setInterval(() => {
-    if (ready.length > 0) {
-      slide.src = ready.shift();
-      preload();
-    }
-  }, sec * 1000);
+  resetInterval();
 }
 </script>
 </body>

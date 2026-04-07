@@ -19,7 +19,7 @@ html,body{height:100%;overflow:hidden}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);display:flex;align-items:center;justify-content:center}
 .screen{display:none;flex-direction:column;position:absolute;inset:0;width:100%;max-width:560px;margin:0 auto;padding:20px;overflow:hidden}
 .screen.active{display:flex}
-.title{text-align:center;font-weight:700;letter-spacing:-.5px;background:linear-gradient(135deg,var(--ac),#a78bfa,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.4rem}
+.title{text-align:center;font-weight:700;letter-spacing:-.5px;background:linear-gradient(135deg,var(--ac),#a78bfa,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:2.2rem}
 .title.sm{font-size:.85rem}
 
 .s1{gap:14px}.s1-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;overflow:hidden}
@@ -67,7 +67,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
 @keyframes spin{to{transform:rotate(360deg)}}
 .ov-label{font-size:.78rem;color:var(--tx2);text-align:center}
 .ov-bar{width:80%;max-width:300px;height:6px;background:var(--s3);border-radius:3px;overflow:hidden}
-.ov-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),#a78bfa);border-radius:3px;transition:width .2s}
+.ov-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),#a78bfa);border-radius:3px}
 .ov-pct{font-size:.85rem;font-weight:700;color:var(--ac);font-variant-numeric:tabular-nums}
 .tport{flex-shrink:0;padding:10px 0 4px}
 .pbar{cursor:pointer;padding:4px 0}
@@ -83,7 +83,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
 .stat{text-align:center;font-size:.62rem;color:var(--tx3);padding:2px 0;flex-shrink:0;min-height:16px}
 .stat.on{color:var(--grn)}.stat.err{color:var(--red)}
 @supports(padding-bottom:env(safe-area-inset-bottom)){.screen{padding-bottom:calc(20px + env(safe-area-inset-bottom))}}
-@media(max-width:400px){.title{font-size:1.2rem}#textInput{font-size:.84rem;padding:12px}.rpane{padding:14px;font-size:.84rem}.cb{width:36px;height:36px}.cb.main{width:44px;height:44px}}
+@media(max-width:400px){.title{font-size:1.7rem}#textInput{font-size:.84rem;padding:12px}.rpane{padding:14px;font-size:.84rem}.cb{width:36px;height:36px}.cb.main{width:44px;height:44px}}
 </style>
 </head>
 <body>
@@ -276,7 +276,8 @@ async function generateAudio(text,voice){
   for(let i=0;i<chunks.length;i++){
     const pct=Math.round((i/chunks.length)*100);
     setGP(pct,`Generating speech… chunk ${i+1} of ${chunks.length}`);
-    await new Promise(r=>setTimeout(r,10));
+    // Yield + force repaint so bar actually renders before next chunk blocks thread
+    await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,50)));
 
     const result=await tts.generate(chunks[i],{voice});
     sr=result.sampling_rate;

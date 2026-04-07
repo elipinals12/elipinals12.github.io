@@ -32,15 +32,19 @@
 
 <script>
 const folders = [
-    'jesse',
     'asa',
-    'malkah'
+    'deb',
+    'golda',
+    'jesse',
+    'malkah',
+    'mix',
+    'rafi'
 ];
 
 const nav = document.getElementById('folders');
 folders.forEach(folder => {
     const a = document.createElement('a');
-    a.href = '../../' + encodeURIComponent(folder) + '/';
+    a.href = encodeURIComponent(folder) + '/';
     a.textContent = folder;
     nav.appendChild(a);
 });

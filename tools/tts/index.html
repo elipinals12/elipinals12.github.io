@@ -37,12 +37,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font-family:inherit;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:8px}
 .bp{background:var(--ac);color:#fff}.bp:hover{background:var(--ac2);transform:translateY(-1px)}.bp:disabled{opacity:.3;pointer-events:none}
 
-/* Progress bar shared style */
-.prog-bar{position:relative;width:100%;height:28px;background:var(--s2);border-radius:8px;overflow:hidden;flex-shrink:0;transition:opacity .5s,height .4s,margin .4s}
-.prog-bar.done{opacity:0;pointer-events:none;height:0;margin:0}
-.prog-bar-fill{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,var(--ac),#a78bfa);border-radius:8px;transition:width .3s}
-.prog-bar-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;font-size:.6rem;font-weight:500;color:rgba(255,255,255,.85);letter-spacing:.3px;gap:6px}
-.prog-bar-pct{font-weight:700;font-variant-numeric:tabular-nums;min-width:28px;text-align:right}
+.pbar-wrap{position:relative;width:100%;height:28px;background:var(--s2);border-radius:8px;overflow:hidden;flex-shrink:0;transition:opacity .5s,height .4s,margin .4s}
+.pbar-wrap.done{opacity:0;pointer-events:none;height:0;margin:0}
+.pbar-fill{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,var(--ac),#a78bfa);border-radius:8px;transition:width .3s}
+.pbar-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;font-size:.6rem;font-weight:500;color:rgba(255,255,255,.85);letter-spacing:.3px;gap:6px}
+.pbar-pct{font-weight:700;font-variant-numeric:tabular-nums;min-width:28px;text-align:right}
 
 .s2{gap:0}.s2-inner{flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden;padding-top:6px;position:relative}
 .topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
@@ -50,7 +49,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .tbar-r{display:flex;align-items:center;gap:2px}
 .ibtn{background:none;border:none;color:var(--tx3);cursor:pointer;display:flex;padding:6px;border-radius:8px;transition:all .2s}
 .ibtn:hover{color:var(--tx2);background:var(--s2)}.ibtn.open{color:var(--ac);background:var(--acg)}.ibtn svg{width:19px;height:19px}
-
 .drawer{max-height:0;overflow:hidden;transition:max-height .3s,padding .3s;background:var(--s1);border-radius:var(--rs);flex-shrink:0}
 .drawer.open{max-height:260px;padding:14px;border:1px solid var(--bdr)}
 .drawer label{font-size:.58rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--tx3);display:block;margin-bottom:4px}
@@ -60,20 +58,17 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 input[type=range]{-webkit-appearance:none;width:100%;height:5px;background:var(--s3);border-radius:3px;outline:none;margin-top:4px}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--ac);border-radius:50%;cursor:pointer;box-shadow:0 2px 10px rgba(124,106,240,.3)}
 input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);border-radius:50%;cursor:pointer;border:none}
-
 .rpane{flex:1;min-height:0;overflow-y:auto;background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r);padding:18px;font-size:.9rem;line-height:2.1}
 .rpane::-webkit-scrollbar{width:4px}.rpane::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
 .w{display:inline;transition:color .12s;border-radius:3px}.w.spent{color:var(--tx3)}.w.now{color:#fff;background:var(--ac);padding:1px 3px}
-
-.ov{display:none;position:absolute;inset:0;background:rgba(11,12,16,.92);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:16px;border-radius:var(--r)}
+.ov{display:none;position:absolute;inset:0;background:rgba(11,12,16,.94);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:16px;border-radius:var(--r);padding:30px}
 .ov.show{display:flex}
-.spinner{width:32px;height:32px;border:3px solid var(--s3);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
+.spinner{width:28px;height:28px;border:3px solid var(--s3);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.ov-label{font-size:.78rem;color:var(--tx2);text-align:center;max-width:80%}
-.ov-bar{width:70%;max-width:280px;height:6px;background:var(--s3);border-radius:3px;overflow:hidden}
+.ov-label{font-size:.78rem;color:var(--tx2);text-align:center}
+.ov-bar{width:80%;max-width:300px;height:6px;background:var(--s3);border-radius:3px;overflow:hidden}
 .ov-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),#a78bfa);border-radius:3px;transition:width .2s}
-.ov-pct{font-size:.72rem;font-weight:700;color:var(--ac);font-variant-numeric:tabular-nums}
-
+.ov-pct{font-size:.85rem;font-weight:700;color:var(--ac);font-variant-numeric:tabular-nums}
 .tport{flex-shrink:0;padding:10px 0 4px}
 .pbar{cursor:pointer;padding:4px 0}
 .ptrk{width:100%;height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
@@ -87,7 +82,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
 .cb .sk{position:absolute;font-size:.48rem;font-weight:800;pointer-events:none}
 .stat{text-align:center;font-size:.62rem;color:var(--tx3);padding:2px 0;flex-shrink:0;min-height:16px}
 .stat.on{color:var(--grn)}.stat.err{color:var(--red)}
-
 @supports(padding-bottom:env(safe-area-inset-bottom)){.screen{padding-bottom:calc(20px + env(safe-area-inset-bottom))}}
 @media(max-width:400px){.title{font-size:1.2rem}#textInput{font-size:.84rem;padding:12px}.rpane{padding:14px;font-size:.84rem}.cb{width:36px;height:36px}.cb.main{width:44px;height:44px}}
 </style>
@@ -103,9 +97,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
   <div class="fpill" id="fpill"><span class="fn" id="fName"></span><button id="fClear"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="pmsg" id="pmsg">Extracting…</div>
   <button class="btn bp" id="btnGo" disabled>Speak This Text</button>
-  <div class="prog-bar" id="mBar">
-    <div class="prog-bar-fill" id="mFill"></div>
-    <div class="prog-bar-inner"><span id="mTxt">Loading voice model…</span><span class="prog-bar-pct" id="mPct">0%</span></div>
+  <div class="pbar-wrap" id="mBar">
+    <div class="pbar-fill" id="mFill"></div>
+    <div class="pbar-inner"><span id="mTxt">Loading voice model…</span><span class="pbar-pct" id="mPct">0%</span></div>
   </div>
 </div>
 </div>
@@ -114,11 +108,10 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
 <div class="s2-inner">
   <div class="ov" id="ov">
     <div class="spinner"></div>
-    <div class="ov-label" id="ovTxt">Generating audio…</div>
-    <div class="ov-bar"><div class="ov-bar-fill" id="ovFill"></div></div>
     <div class="ov-pct" id="ovPct">0%</div>
+    <div class="ov-bar"><div class="ov-bar-fill" id="ovFill"></div></div>
+    <div class="ov-label" id="ovTxt">Generating speech…</div>
   </div>
-
   <div class="topbar">
     <button class="bback" id="bBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
     <div class="title sm">text to speech</div>
@@ -127,7 +120,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
       <button class="ibtn" id="bGear" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
     </div>
   </div>
-
   <div class="drawer" id="drawer">
     <label>Voice</label>
     <select id="voiceSel">
@@ -146,9 +138,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
     <div class="spdrow"><label>Speed</label><span class="spdv" id="spdVal">1.0×</span></div>
     <input type="range" id="spdR" min="0.1" max="5" step="0.1" value="1">
   </div>
-
   <div class="rpane" id="rpane"></div>
-
   <div class="tport">
     <div class="pbar" id="pbar"><div class="ptrk"><div class="pfill" id="pfill"></div></div><div class="ptm"><span id="tE">0:00</span><span id="tT">0:00</span></div></div>
     <div class="ctrls">
@@ -181,46 +171,44 @@ const audioEl=new Audio();
 let wavBlob=null,words=[],wordTimes=[],rafId=null,tts=null,curVoice=null;
 let modelReady=false,modelError=null;
 
-// ---- helpers ----
-function setMProg(pct,txt){const p=Math.round(Math.min(100,Math.max(0,pct)));mFill.style.width=p+'%';mPct.textContent=p+'%';if(txt)mTxt.textContent=txt}
-function setGProg(pct,txt){const p=Math.round(Math.min(100,Math.max(0,pct)));ovFill.style.width=p+'%';ovPct.textContent=p+'%';if(txt)ovTxt.textContent=txt}
+function setMP(p,t){const v=Math.round(Math.min(100,Math.max(0,p)));mFill.style.width=v+'%';mPct.textContent=v+'%';if(t)mTxt.textContent=t}
+function setGP(p,t){const v=Math.round(Math.min(100,Math.max(0,p)));ovFill.style.width=v+'%';ovPct.textContent=v+'%';if(t)ovTxt.textContent=t}
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function fmt(s){if(!s||!isFinite(s))return'0:00';const m=Math.floor(s/60);return m+':'+String(Math.floor(s%60)).padStart(2,'0')}
 function setSt(m,t=''){stat.textContent=m;stat.className='stat'+(t?' '+t:'')}
 
-// ---- Preload model (deferred so textarea is immediately responsive) ----
+// ---- Preload model on page open (deferred so textarea stays snappy) ----
+let KokoroTTS=null;
 setTimeout(async()=>{
   try{
-    setMProg(2,'Loading voice engine…');
-    const{KokoroTTS}=await import('https://esm.sh/kokoro-js');
-    const{env}=await import('https://esm.sh/@huggingface/transformers');
-    env.backends.onnx.wasm.numThreads=navigator.hardwareConcurrency||8;
-
-    setMProg(8,'Checking GPU…');
-    let device='wasm';
-    try{if(navigator.gpu){const a=await navigator.gpu.requestAdapter();if(a)device='webgpu'}}catch(e){}
-
-    setMProg(10,device==='webgpu'?'Downloading model (WebGPU)…':'Downloading model (CPU)…');
+    setMP(3,'Loading voice engine…');
+    // Single import — do NOT import transformers separately, it conflicts
+    const mod=await import('https://esm.sh/kokoro-js@0.4.0');
+    KokoroTTS=mod.KokoroTTS;
+    setMP(10,'Downloading voice model…');
     tts=await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX',{
-      dtype:device==='webgpu'?'fp32':'q8',device,
+      dtype:'q8',
+      device:'wasm',
       progress_callback:p=>{
         if(p.progress!=null){
           const pct=10+p.progress*0.88;
           const fn=p.file?p.file.split('/').pop():'';
-          setMProg(pct,fn?'Downloading '+fn:'Downloading…');
+          setMP(pct,fn?'Downloading '+fn:'Downloading…');
         }
       }
     });
-    setMProg(100,'Voice model ready ✓ ('+device+')');
+    setMP(100,'Voice model ready ✓');
     modelReady=true;
     setTimeout(()=>mBar.classList.add('done'),1400);
   }catch(e){
-    console.error(e);modelError=e.message;
-    mFill.style.width='0%';mPct.textContent='';mTxt.textContent='Model failed: '+e.message;
+    console.error('Model load error:',e);
+    modelError=e.message;
+    mFill.style.width='0%';mPct.textContent='';
+    mTxt.textContent='Failed: '+e.message;
   }
-},300);
+},100);
 
-// ---- File handling ----
+// ---- File handling (runs on main thread, never blocked) ----
 ti.addEventListener('input',()=>{const l=ti.value.length;charCt.textContent=l?l.toLocaleString()+' chars':'';btnGo.disabled=!ti.value.trim()});
 dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragover')});
 dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
@@ -244,12 +232,12 @@ async function hFile(f){
 // ---- Nav ----
 btnGo.addEventListener('click',async()=>{
   s1.classList.remove('active');s2.classList.add('active');
-  ov.classList.add('show');
-  if(modelError){setGProg(0,'Model failed to load: '+modelError);return}
+  ov.classList.add('show');setGP(0,'Preparing…');
+  if(modelError){setGP(0,'Model failed: '+modelError);return}
   if(!modelReady){
-    setGProg(0,'Waiting for model to finish loading…');
+    setGP(0,'Waiting for model to finish loading…');
     while(!modelReady&&!modelError)await new Promise(r=>setTimeout(r,200));
-    if(modelError){setGProg(0,'Model failed: '+modelError);return}
+    if(modelError){setGP(0,'Model failed: '+modelError);return}
   }
   await initPlayer();
 });
@@ -257,19 +245,16 @@ bBack.addEventListener('click',()=>{audioEl.pause();audioEl.src='';cancelAnimati
 bGear.addEventListener('click',()=>{bGear.classList.toggle('open');drawer.classList.toggle('open')});
 spdR.addEventListener('input',()=>{const v=parseFloat(spdR.value);spdVal.textContent=v.toFixed(1)+'×';audioEl.playbackRate=v});
 
-// ---- Split text into chunks (robust, never drops text) ----
+// ---- Chunk text robustly (never drops anything) ----
 function chunkText(text,maxLen){
   const chunks=[];
-  // Try splitting at sentence boundaries first
   const parts=[];
   let last=0;
   const sre=/[.!?\n]+[\s]*/g;
   let m;
-  while((m=sre.exec(text))!==null){
-    parts.push(text.slice(last,m.index+m[0].length));
-    last=sre.lastIndex;
-  }
-  if(last<text.length)parts.push(text.slice(last));
+  while((m=sre.exec(text))!==null){parts.push(text.slice(last,sre.lastIndex));last=sre.lastIndex}
+  const tail=text.slice(last).trim();
+  if(tail)parts.push(tail);
   if(!parts.length)parts.push(text);
 
   let buf='';
@@ -281,9 +266,10 @@ function chunkText(text,maxLen){
   return chunks;
 }
 
-// ---- Generate audio with progress ----
+// ---- Generate audio with real % progress ----
 async function generateAudio(text,voice){
-  const chunks=chunkText(text,300);
+  // Use ~150 char chunks for granular progress + better model output
+  const chunks=chunkText(text,150);
   const allSamples=[];
   let sr=24000;
   const totalChars=chunks.reduce((a,c)=>a+c.length,0);
@@ -291,19 +277,19 @@ async function generateAudio(text,voice){
 
   for(let i=0;i<chunks.length;i++){
     const pct=Math.round((doneChars/totalChars)*100);
-    setGProg(pct,`Generating speech… ${pct}%`);
-
-    // Yield to UI so progress bar actually updates
-    await new Promise(r=>setTimeout(r,0));
+    setGP(pct,`Generating speech… ${pct}%`);
+    // Yield to UI between chunks so progress actually renders
+    await new Promise(r=>setTimeout(r,10));
 
     const result=await tts.generate(chunks[i],{voice});
     sr=result.sampling_rate;
     const samples=result.audio instanceof Float32Array?result.audio:new Float32Array(result.audio);
     allSamples.push(samples);
-    if(i<chunks.length-1)allSamples.push(new Float32Array(Math.floor(sr*0.2)));
+    // Tiny silence between chunks
+    if(i<chunks.length-1)allSamples.push(new Float32Array(Math.floor(sr*0.15)));
     doneChars+=chunks[i].length;
   }
-  setGProg(100,'Finalizing…');
+  setGP(100,'Finalizing…');
 
   const total=allSamples.reduce((a,b)=>a+b.length,0);
   const merged=new Float32Array(total);
@@ -328,7 +314,7 @@ function toWav(samples,sr){
   return new Blob([buf],{type:'audio/wav'});
 }
 
-// ---- Player ----
+// ---- Player init ----
 async function initPlayer(){
   const raw=ti.value.trim();
   words=[];const re=/\S+/g;let m;
@@ -348,12 +334,12 @@ async function initPlayer(){
     ov.classList.remove('show');
     setSt('Ready');
   }catch(e){
-    console.error(e);
-    setGProg(0,'Generation failed: '+e.message);
+    console.error('TTS generate error:',e);
+    setGP(0,'Failed: '+e.message);
   }
 }
 
-// ---- Word timing (estimated by character count) ----
+// ---- Word timing ----
 function calcWordTimes(dur){
   wordTimes=[];
   const totalChars=words.reduce((a,w)=>a+w.t.length+1,0);
@@ -361,7 +347,7 @@ function calcWordTimes(dur){
   words.forEach(w=>{const d=(w.t.length+1)/totalChars*dur;wordTimes.push({start:t,end:t+d});t+=d});
 }
 
-// ---- Highlight ----
+// ---- Highlight loop ----
 function hlLoop(){
   if(audioEl.paused&&!audioEl.ended)return;
   const ct=audioEl.currentTime;
@@ -392,15 +378,11 @@ cR.addEventListener('click',()=>{audioEl.currentTime=0;clrHL();if(audioEl.paused
 cB.addEventListener('click',()=>{audioEl.currentTime=Math.max(0,audioEl.currentTime-10)});
 cF.addEventListener('click',()=>{if(audioEl.duration)audioEl.currentTime=Math.min(audioEl.duration,audioEl.currentTime+10)});
 pbar.addEventListener('click',e=>{if(!audioEl.duration)return;const p=(e.clientX-pbar.getBoundingClientRect().left)/pbar.offsetWidth;audioEl.currentTime=p*audioEl.duration;clrHL()});
-
-// Voice change → regenerate
 vSel.addEventListener('change',async()=>{
   if(!tts||vSel.value===curVoice)return;
-  audioEl.pause();ov.classList.add('show');setGProg(0,'Regenerating…');
+  audioEl.pause();ov.classList.add('show');setGP(0,'Regenerating…');
   await initPlayer();
 });
-
-// Download
 bDl.addEventListener('click',()=>{
   if(!wavBlob)return;
   const a=document.createElement('a');a.href=URL.createObjectURL(wavBlob);

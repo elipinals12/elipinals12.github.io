@@ -272,12 +272,10 @@ async function generateAudio(text,voice){
   const chunks=chunkText(text,100);
   const allSamples=[];
   let sr=24000;
-  const totalChars=chunks.reduce((a,c)=>a+c.length,0);
-  let doneChars=0;
 
   for(let i=0;i<chunks.length;i++){
-    setGP((doneChars/totalChars)*100,`Generating speech… chunk ${i+1} of ${chunks.length}`);
-    // Yield to UI between chunks so progress actually renders
+    const pct=Math.round((i/chunks.length)*100);
+    setGP(pct,`Generating speech… chunk ${i+1} of ${chunks.length}`);
     await new Promise(r=>setTimeout(r,10));
 
     const result=await tts.generate(chunks[i],{voice});
@@ -286,7 +284,6 @@ async function generateAudio(text,voice){
     allSamples.push(samples);
     // Tiny silence between chunks
     if(i<chunks.length-1)allSamples.push(new Float32Array(Math.floor(sr*0.15)));
-    doneChars+=chunks[i].length;
   }
   setGP(100,'Finalizing…');
 

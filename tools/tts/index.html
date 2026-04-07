@@ -123,12 +123,12 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
   <div class="drawer" id="drawer">
     <label>Voice</label>
     <select id="voiceSel">
+      <option value="am_adam">Adam ♂ US</option>
       <option value="af_heart">Heart ♀ US</option>
       <option value="af_bella">Bella ♀ US</option>
       <option value="af_nicole">Nicole ♀ US</option>
       <option value="af_sarah">Sarah ♀ US</option>
       <option value="af_sky">Sky ♀ US</option>
-      <option value="am_adam">Adam ♂ US</option>
       <option value="am_michael">Michael ♂ US</option>
       <option value="bf_emma">Emma ♀ UK</option>
       <option value="bf_isabella">Isabella ♀ UK</option>
@@ -381,23 +381,48 @@ vSel.addEventListener('change',async()=>{
   audioEl.pause();ov.classList.add('show');setGP(0,'Regenerating…');
   await initPlayer();
 });
-bDl.addEventListener('click',()=>{
-  if(!rawSamples)return;
-  const speed=parseFloat(spdR.value);
-  const dlBlob=toWav(rawSamples,rawSr,speed);
-  const d=new Date();
-  const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  let fname='text to speech '+ds;
-  if(Math.abs(speed-1)>0.05)fname+=' '+speed.toFixed(1)+'x';
-  fname+='.wav';
-  const url=URL.createObjectURL(dlBlob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download=fname;
-  a.style.display='none';
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url)},3000);
+bDl.addEventListener('click',async()=>{
+  if(!rawSamples||!rawSamples.length){setSt('No audio yet','err');return}
+  setSt('Preparing download…');
+  try{
+    const speed=parseFloat(spdR.value);
+    const dlBlob=toWav(rawSamples,rawSr,speed);
+    const d=new Date();
+    const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    let fname='text to speech '+ds;
+    if(Math.abs(speed-1)>0.05)fname+=' '+speed.toFixed(1)+'x';
+    fname+='.wav';
+
+    // Try modern File System API first (Chrome/Edge)
+    if(window.showSaveFilePicker){
+      try{
+        const handle=await window.showSaveFilePicker({suggestedName:fname,types:[{description:'WAV Audio',accept:{'audio/wav':['.wav']}}]});
+        const wr=await handle.createWritable();
+        await wr.write(dlBlob);
+        await wr.close();
+        setSt('Downloaded ✓','on');
+        return;
+      }catch(e){
+        if(e.name==='AbortError'){setSt('Cancelled');return}
+        // Fall through to anchor method
+      }
+    }
+
+    // Fallback: anchor download
+    const url=URL.createObjectURL(dlBlob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=fname;
+    a.style.cssText='position:fixed;left:-9999px';
+    document.body.appendChild(a);
+    await new Promise(r=>setTimeout(r,100));
+    a.click();
+    setTimeout(()=>{try{document.body.removeChild(a)}catch(e){}URL.revokeObjectURL(url)},60000);
+    setSt('Downloaded ✓','on');
+  }catch(e){
+    console.error('Download error:',e);
+    setSt('Download failed: '+e.message,'err');
+  }
 });
 </script>
 </body>

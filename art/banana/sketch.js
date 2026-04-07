@@ -36,22 +36,23 @@ function draw() {
   image(img, width / 2, height / 2, width / 5, width / 5);
 }
 
+function hitBanana(x, y) {
+  // banana is drawn centered at (width/2, height/2) with size (width/5, width/5)
+  var bw = width / 5;
+  var bh = width / 5;
+  var bx = width / 2;
+  var by = height / 2;
+  return abs(x - bx) < bw / 2 && abs(y - by) < bh / 2;
+}
+
 function handleClick(x, y) {
-  // make sure coordinates are valid
-  x = constrain(floor(x), 0, width - 1);
-  y = constrain(floor(y), 0, height - 1);
+  if (!hitBanana(x, y)) return;
 
-  var colAr = get(x, y);
-  var totalrgbnum = colAr[0] + colAr[1] + colAr[2] + colAr[3];
-
-  // white bg = 255*4 = 1020, anything less means we hit the banana
-  if (totalrgbnum < 1020) {
-    go = !go;
-    if (go) {
-      backsound.loop();
-    } else {
-      backsound.pause();
-    }
+  go = !go;
+  if (go) {
+    backsound.loop();
+  } else {
+    backsound.pause();
   }
 }
 
@@ -67,7 +68,6 @@ function touchStarted() {
   } else {
     handleClick(mouseX, mouseY);
   }
-  // prevent default browser touch behavior (scrolling, zoom, etc.)
   return false;
 }
 

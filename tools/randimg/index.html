@@ -15,7 +15,7 @@
     #setup label { display: block; margin-top: 14px; font-family: 'Segoe UI', sans-serif; font-size: 1rem; color: #7eb8da66; }
     #slide {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      object-fit: cover; transition: opacity 0.6s ease; border: none; outline: none;
+      object-fit: cover; border: none; outline: none;
     }
   </style>
 </head>
@@ -58,19 +58,22 @@ input.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     const sec = parseInt(input.value) || 10;
     setup.style.display = 'none';
-    slide.style.display = 'block';
     startSlideshow(sec);
   }
 });
 
 async function startSlideshow(sec) {
+  // show first image instantly
+  const first = await queue.shift();
+  fillQueue();
+  slide.src = first;
+  slide.style.display = 'block';
+  await new Promise(r => setTimeout(r, sec * 1000));
+  // loop remaining
   while (true) {
     const src = await queue.shift();
-    fillQueue(); // refill after consuming one
-    slide.style.opacity = 0;
-    await new Promise(r => setTimeout(r, 600));
+    fillQueue();
     slide.src = src;
-    slide.style.opacity = 1;
     await new Promise(r => setTimeout(r, sec * 1000));
   }
 }

@@ -183,7 +183,7 @@ setTimeout(async()=>{
   try{
     setMP(3,'Loading voice engine…');
     // Single import — do NOT import transformers separately, it conflicts
-    const mod=await import('https://esm.sh/kokoro-js@0.4.0');
+    const mod=await import('https://esm.sh/kokoro-js');
     KokoroTTS=mod.KokoroTTS;
     setMP(10,'Downloading voice model…');
     tts=await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX',{

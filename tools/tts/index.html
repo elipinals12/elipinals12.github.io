@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>text to speech</title>
+<script src="coi-serviceworker.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
@@ -185,36 +186,16 @@ setTimeout(async()=>{
     const mod=await import('https://esm.sh/kokoro-js');
     KokoroTTS=mod.KokoroTTS;
 
-    // Try to unlock multi-threading via kokoro's re-exported env
+    setMP(10,'Downloading voice model…');
     const cores=navigator.hardwareConcurrency||4;
-    if(mod.env){
-      try{mod.env.backends.onnx.wasm.numThreads=cores}catch(e){}
-    }
-    // Also try global ort if it exists
-    if(typeof ort!=='undefined'){
-      try{ort.env.wasm.numThreads=cores}catch(e){}
-    }
-
-    setMP(6,'Checking GPU…');
-    // WebGPU is MUCH faster than WASM — auto-detect
-    let device='wasm';
-    try{
-      if(navigator.gpu){
-        const adapter=await navigator.gpu.requestAdapter();
-        if(adapter){device='webgpu';setMP(8,'GPU found — using WebGPU ⚡')}
-      }
-    }catch(e){}
-
-    setMP(10,device==='webgpu'?'Downloading model (WebGPU ⚡)…':'Downloading model (CPU)…');
-    console.log(`[TTS] Using ${device}, ${cores} cores detected`);
-    console.log('[TTS] For max CPU speed, add these HTTP headers to your server:');
+    console.log(`[TTS] ${cores} CPU cores detected`);
+    console.log('[TTS] For max speed, add these HTTP headers to your server:');
     console.log('  Cross-Origin-Opener-Policy: same-origin');
     console.log('  Cross-Origin-Embedder-Policy: credentialless');
-    console.log('[TTS] Without them, WASM is limited to 1-2 threads.');
 
     tts=await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX',{
-      dtype:device==='webgpu'?'fp32':'q8',
-      device,
+      dtype:'q8',
+      device:'wasm',
       progress_callback:p=>{
         if(p.progress!=null){
           const pct=10+p.progress*0.88;
@@ -223,7 +204,7 @@ setTimeout(async()=>{
         }
       }
     });
-    setMP(100,'Voice model ready ✓ ('+device+(device==='wasm'?' · '+cores+' cores':'')+ ')');
+    setMP(100,'Voice model ready ✓');
     modelReady=true;
     setTimeout(()=>mBar.classList.add('done'),1400);
   }catch(e){

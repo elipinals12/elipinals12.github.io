@@ -37,11 +37,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font-family:inherit;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:8px}
 .bp{background:var(--ac);color:#fff}.bp:hover{background:var(--ac2);transform:translateY(-1px)}.bp:disabled{opacity:.3;pointer-events:none}
 
-.model-bar{position:relative;width:100%;height:28px;background:var(--s2);border-radius:8px;overflow:hidden;flex-shrink:0;transition:opacity .5s,height .4s}
-.model-bar.done{opacity:0;pointer-events:none;height:0;margin:0}
-.model-bar-fill{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,var(--ac),#a78bfa);border-radius:8px;transition:width .3s}
-.model-bar-txt{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;font-size:.6rem;font-weight:500;color:rgba(255,255,255,.85);letter-spacing:.3px;gap:6px}
-.model-bar-pct{font-weight:700;font-variant-numeric:tabular-nums;min-width:28px;text-align:right}
+/* Progress bar shared style */
+.prog-bar{position:relative;width:100%;height:28px;background:var(--s2);border-radius:8px;overflow:hidden;flex-shrink:0;transition:opacity .5s,height .4s,margin .4s}
+.prog-bar.done{opacity:0;pointer-events:none;height:0;margin:0}
+.prog-bar-fill{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,var(--ac),#a78bfa);border-radius:8px;transition:width .3s}
+.prog-bar-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;font-size:.6rem;font-weight:500;color:rgba(255,255,255,.85);letter-spacing:.3px;gap:6px}
+.prog-bar-pct{font-weight:700;font-variant-numeric:tabular-nums;min-width:28px;text-align:right}
 
 .s2{gap:0}.s2-inner{flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden;padding-top:6px;position:relative}
 .topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
@@ -64,13 +65,14 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
 .rpane::-webkit-scrollbar{width:4px}.rpane::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
 .w{display:inline;transition:color .12s;border-radius:3px}.w.spent{color:var(--tx3)}.w.now{color:#fff;background:var(--ac);padding:1px 3px}
 
-.ov{display:none;position:absolute;inset:0;background:rgba(11,12,16,.92);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:14px;border-radius:var(--r)}
+.ov{display:none;position:absolute;inset:0;background:rgba(11,12,16,.92);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:16px;border-radius:var(--r)}
 .ov.show{display:flex}
-.spinner{width:36px;height:36px;border:3px solid var(--s3);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
+.spinner{width:32px;height:32px;border:3px solid var(--s3);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.ov-text{font-size:.8rem;color:var(--tx2);text-align:center;max-width:80%;line-height:1.5}
-.ov-prog{width:60%;max-width:240px;height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
-.ov-prog-fill{height:100%;width:0%;background:var(--ac);border-radius:2px;transition:width .3s}
+.ov-label{font-size:.78rem;color:var(--tx2);text-align:center;max-width:80%}
+.ov-bar{width:70%;max-width:280px;height:6px;background:var(--s3);border-radius:3px;overflow:hidden}
+.ov-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),#a78bfa);border-radius:3px;transition:width .2s}
+.ov-pct{font-size:.72rem;font-weight:700;color:var(--ac);font-variant-numeric:tabular-nums}
 
 .tport{flex-shrink:0;padding:10px 0 4px}
 .pbar{cursor:pointer;padding:4px 0}
@@ -101,16 +103,21 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
   <div class="fpill" id="fpill"><span class="fn" id="fName"></span><button id="fClear"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="pmsg" id="pmsg">Extracting…</div>
   <button class="btn bp" id="btnGo" disabled>Speak This Text</button>
-  <div class="model-bar" id="modelBar">
-    <div class="model-bar-fill" id="modelBarFill"></div>
-    <span class="model-bar-txt"><span id="modelBarTxt">Loading voice model…</span><span class="model-bar-pct" id="modelBarPct">0%</span></span>
+  <div class="prog-bar" id="mBar">
+    <div class="prog-bar-fill" id="mFill"></div>
+    <div class="prog-bar-inner"><span id="mTxt">Loading voice model…</span><span class="prog-bar-pct" id="mPct">0%</span></div>
   </div>
 </div>
 </div>
 
 <div class="screen s2" id="s2">
 <div class="s2-inner">
-  <div class="ov show" id="ov"><div class="spinner"></div><div class="ov-text" id="ovTxt">Loading AI voice model…</div><div class="ov-prog"><div class="ov-prog-fill" id="ovProg"></div></div></div>
+  <div class="ov" id="ov">
+    <div class="spinner"></div>
+    <div class="ov-label" id="ovTxt">Generating audio…</div>
+    <div class="ov-bar"><div class="ov-bar-fill" id="ovFill"></div></div>
+    <div class="ov-pct" id="ovPct">0%</div>
+  </div>
 
   <div class="topbar">
     <button class="bback" id="bBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
@@ -124,17 +131,17 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);
   <div class="drawer" id="drawer">
     <label>Voice</label>
     <select id="voiceSel">
-      <option value="af_heart">Heart (US Female)</option>
-      <option value="af_bella">Bella (US Female)</option>
-      <option value="af_nicole">Nicole (US Female)</option>
-      <option value="af_sarah">Sarah (US Female)</option>
-      <option value="af_sky">Sky (US Female)</option>
-      <option value="am_adam">Adam (US Male)</option>
-      <option value="am_michael">Michael (US Male)</option>
-      <option value="bf_emma">Emma (UK Female)</option>
-      <option value="bf_isabella">Isabella (UK Female)</option>
-      <option value="bm_george">George (UK Male)</option>
-      <option value="bm_lewis">Lewis (UK Male)</option>
+      <option value="af_heart">Heart ♀ US</option>
+      <option value="af_bella">Bella ♀ US</option>
+      <option value="af_nicole">Nicole ♀ US</option>
+      <option value="af_sarah">Sarah ♀ US</option>
+      <option value="af_sky">Sky ♀ US</option>
+      <option value="am_adam">Adam ♂ US</option>
+      <option value="am_michael">Michael ♂ US</option>
+      <option value="bf_emma">Emma ♀ UK</option>
+      <option value="bf_isabella">Isabella ♀ UK</option>
+      <option value="bm_george">George ♂ UK</option>
+      <option value="bm_lewis">Lewis ♂ UK</option>
     </select>
     <div class="spdrow"><label>Speed</label><span class="spdv" id="spdVal">1.0×</span></div>
     <input type="range" id="spdR" min="0.1" max="5" step="0.1" value="1">
@@ -167,152 +174,51 @@ btnGo=$('btnGo'),bBack=$('bBack'),bGear=$('bGear'),bDl=$('bDl'),drawer=$('drawer
 vSel=$('voiceSel'),spdR=$('spdR'),spdVal=$('spdVal'),
 rpane=$('rpane'),pfill=$('pfill'),pbar=$('pbar'),tE=$('tE'),tT=$('tT'),
 cP=$('cP'),cS=$('cS'),cR=$('cR'),cB=$('cB'),cF=$('cF'),iP=$('iP'),iPa=$('iPa'),
-stat=$('stat'),ov=$('ov'),ovTxt=$('ovTxt'),ovProg=$('ovProg');
+stat=$('stat'),ov=$('ov'),ovTxt=$('ovTxt'),ovFill=$('ovFill'),ovPct=$('ovPct'),
+mBar=$('mBar'),mFill=$('mFill'),mTxt=$('mTxt'),mPct=$('mPct');
 
 const audioEl=new Audio();
 let wavBlob=null,words=[],wordTimes=[],rafId=null,tts=null,curVoice=null;
 let modelReady=false,modelError=null;
-const modelBar=$('modelBar'),modelBarFill=$('modelBarFill'),modelBarTxt=$('modelBarTxt'),modelBarPct=$('modelBarPct');
 
-function setModelProg(pct,txt){
-  const p=Math.round(Math.min(100,Math.max(0,pct)));
-  modelBarFill.style.width=p+'%';
-  modelBarPct.textContent=p+'%';
-  if(txt)modelBarTxt.textContent=txt;
-}
+// ---- helpers ----
+function setMProg(pct,txt){const p=Math.round(Math.min(100,Math.max(0,pct)));mFill.style.width=p+'%';mPct.textContent=p+'%';if(txt)mTxt.textContent=txt}
+function setGProg(pct,txt){const p=Math.round(Math.min(100,Math.max(0,pct)));ovFill.style.width=p+'%';ovPct.textContent=p+'%';if(txt)ovTxt.textContent=txt}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function fmt(s){if(!s||!isFinite(s))return'0:00';const m=Math.floor(s/60);return m+':'+String(Math.floor(s%60)).padStart(2,'0')}
+function setSt(m,t=''){stat.textContent=m;stat.className='stat'+(t?' '+t:'')}
 
-// ---- Load Kokoro TTS model immediately on page open ----
-(async function preloadModel(){
+// ---- Preload model (deferred so textarea is immediately responsive) ----
+setTimeout(async()=>{
   try{
-    setModelProg(3,'Loading voice engine…');
+    setMProg(2,'Loading voice engine…');
     const{KokoroTTS}=await import('https://esm.sh/kokoro-js');
     const{env}=await import('https://esm.sh/@huggingface/transformers');
-
-    // Max out WASM threads
     env.backends.onnx.wasm.numThreads=navigator.hardwareConcurrency||8;
 
-    setModelProg(10,'Preparing model download…');
-
-    // Try WebGPU first (much faster), fall back to WASM
+    setMProg(8,'Checking GPU…');
     let device='wasm';
-    try{
-      if(navigator.gpu){
-        const adapter=await navigator.gpu.requestAdapter();
-        if(adapter)device='webgpu';
-      }
-    }catch(e){}
-    setModelProg(12,device==='webgpu'?'Loading model (WebGPU)…':'Downloading voice model…');
+    try{if(navigator.gpu){const a=await navigator.gpu.requestAdapter();if(a)device='webgpu'}}catch(e){}
 
+    setMProg(10,device==='webgpu'?'Downloading model (WebGPU)…':'Downloading model (CPU)…');
     tts=await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX',{
-      dtype:device==='webgpu'?'fp32':'q8',
-      device,
-      progress_callback:(p)=>{
+      dtype:device==='webgpu'?'fp32':'q8',device,
+      progress_callback:p=>{
         if(p.progress!=null){
-          const pct=12+p.progress*0.86;
-          const fname=p.file?p.file.split('/').pop():'';
-          setModelProg(pct,fname?'Downloading: '+fname:'Downloading model…');
+          const pct=10+p.progress*0.88;
+          const fn=p.file?p.file.split('/').pop():'';
+          setMProg(pct,fn?'Downloading '+fn:'Downloading…');
         }
       }
     });
-    setModelProg(100,'Voice model ready ✓ ('+device+')');
+    setMProg(100,'Voice model ready ✓ ('+device+')');
     modelReady=true;
-    setTimeout(()=>modelBar.classList.add('done'),1500);
+    setTimeout(()=>mBar.classList.add('done'),1400);
   }catch(e){
-    console.error('Model load error:',e);
-    modelError=e.message;
-    modelBarFill.style.width='0%';
-    modelBarPct.textContent='';
-    modelBarTxt.textContent='Model failed: '+e.message;
+    console.error(e);modelError=e.message;
+    mFill.style.width='0%';mPct.textContent='';mTxt.textContent='Model failed: '+e.message;
   }
-})();
-
-// ---- Generate audio ----
-async function generateAudio(text,voice){
-  // Split into sentences — make sure no text is lost
-  const sents=[];
-  let remaining=text;
-  const sre=/[^.!?\n]*[.!?\n]+[\s]*/g;
-  let sm,lastIdx=0;
-  while((sm=sre.exec(remaining))!==null){sents.push(sm[0]);lastIdx=sre.lastIndex}
-  const tail=remaining.slice(lastIdx).trim();
-  if(tail)sents.push(tail);
-  if(!sents.length)sents.push(text);
-
-  // Group into ~500 char chunks
-  const chunks=[];let buf='';
-  sents.forEach(s=>{if((buf+s).length>500&&buf){chunks.push(buf.trim());buf=s}else buf+=s});
-  if(buf.trim())chunks.push(buf.trim());
-
-  const allSamples=[];
-  let sr=24000;
-  for(let i=0;i<chunks.length;i++){
-    ovTxt.textContent=`Generating audio… ${i+1}/${chunks.length}`;
-    ovProg.style.width=((i/chunks.length)*100)+'%';
-    const result=await tts.generate(chunks[i],{voice});
-    sr=result.sampling_rate;
-    const samples=result.audio instanceof Float32Array?result.audio:new Float32Array(result.audio);
-    allSamples.push(samples);
-    if(i<chunks.length-1)allSamples.push(new Float32Array(Math.floor(sr*0.25)));
-  }
-  ovProg.style.width='100%';
-
-  // Concatenate
-  const total=allSamples.reduce((a,b)=>a+b.length,0);
-  const merged=new Float32Array(total);
-  let off=0;
-  allSamples.forEach(s=>{merged.set(s,off);off+=s.length});
-
-  return{samples:merged,sampleRate:sr};
-}
-
-// ---- Float32 → WAV blob ----
-function toWav(samples,sr){
-  const buf=new ArrayBuffer(44+samples.length*2);
-  const v=new DataView(buf);
-  const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
-  w(0,'RIFF');v.setUint32(4,36+samples.length*2,true);w(8,'WAVE');
-  w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
-  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);
-  w(36,'data');v.setUint32(40,samples.length*2,true);
-  for(let i=0;i<samples.length;i++){
-    const s=Math.max(-1,Math.min(1,samples[i]));
-    v.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);
-  }
-  return new Blob([buf],{type:'audio/wav'});
-}
-
-// ---- Estimate word timings ----
-function calcWordTimes(dur){
-  wordTimes=[];
-  const totalChars=words.reduce((a,w)=>a+w.t.length+1,0);
-  let t=0;
-  words.forEach(w=>{
-    const d=(w.t.length+1)/totalChars*dur;
-    wordTimes.push({start:t,end:t+d});
-    t+=d;
-  });
-}
-
-// ---- Highlight loop ----
-function hlLoop(){
-  if(audioEl.paused&&!audioEl.ended)return;
-  const ct=audioEl.currentTime;
-  let cur=-1;
-  for(let i=wordTimes.length-1;i>=0;i--){
-    if(ct>=wordTimes[i].start){cur=i;break}
-  }
-  if(cur>=0){
-    rpane.querySelectorAll('.w.now').forEach(e=>{e.classList.remove('now');e.classList.add('spent')});
-    for(let i=0;i<cur;i++){const el=rpane.querySelector(`[data-i="${i}"]`);if(el&&!el.classList.contains('spent'))el.classList.add('spent')}
-    const cel=rpane.querySelector(`[data-i="${cur}"]`);
-    if(cel&&!cel.classList.contains('now')){cel.classList.add('now');cel.classList.remove('spent');cel.scrollIntoView({block:'center',behavior:'smooth'})}
-  }
-  rafId=requestAnimationFrame(hlLoop);
-}
-function clrHL(){rpane.querySelectorAll('.w').forEach(e=>{e.classList.remove('spent','now')})}
-function fmt(s){if(!s||!isFinite(s))return'0:00';const m=Math.floor(s/60);return m+':'+String(Math.floor(s%60)).padStart(2,'0')}
-function setSt(m,t=''){stat.textContent=m;stat.className='stat'+(t?' '+t:'')}
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+},300);
 
 // ---- File handling ----
 ti.addEventListener('input',()=>{const l=ti.value.length;charCt.textContent=l?l.toLocaleString()+' chars':'';btnGo.disabled=!ti.value.trim()});
@@ -335,29 +241,92 @@ async function hFile(f){
   pmsg.classList.remove('show');
 }
 
-// ---- Navigation ----
+// ---- Nav ----
 btnGo.addEventListener('click',async()=>{
   s1.classList.remove('active');s2.classList.add('active');
   ov.classList.add('show');
-
-  if(modelError){
-    ovTxt.textContent='Voice model failed to load: '+modelError;
-    return;
-  }
-
-  // Wait for model if still downloading
+  if(modelError){setGProg(0,'Model failed to load: '+modelError);return}
   if(!modelReady){
-    ovTxt.textContent='Waiting for voice model to finish loading…';
-    ovProg.style.width='50%';
+    setGProg(0,'Waiting for model to finish loading…');
     while(!modelReady&&!modelError)await new Promise(r=>setTimeout(r,200));
-    if(modelError){ovTxt.textContent='Voice model failed: '+modelError;return}
+    if(modelError){setGProg(0,'Model failed: '+modelError);return}
   }
-
   await initPlayer();
 });
 bBack.addEventListener('click',()=>{audioEl.pause();audioEl.src='';cancelAnimationFrame(rafId);s2.classList.remove('active');s1.classList.add('active')});
 bGear.addEventListener('click',()=>{bGear.classList.toggle('open');drawer.classList.toggle('open')});
 spdR.addEventListener('input',()=>{const v=parseFloat(spdR.value);spdVal.textContent=v.toFixed(1)+'×';audioEl.playbackRate=v});
+
+// ---- Split text into chunks (robust, never drops text) ----
+function chunkText(text,maxLen){
+  const chunks=[];
+  // Try splitting at sentence boundaries first
+  const parts=[];
+  let last=0;
+  const sre=/[.!?\n]+[\s]*/g;
+  let m;
+  while((m=sre.exec(text))!==null){
+    parts.push(text.slice(last,m.index+m[0].length));
+    last=sre.lastIndex;
+  }
+  if(last<text.length)parts.push(text.slice(last));
+  if(!parts.length)parts.push(text);
+
+  let buf='';
+  parts.forEach(p=>{
+    if((buf+p).length>maxLen&&buf.trim()){chunks.push(buf.trim());buf=p}
+    else buf+=p;
+  });
+  if(buf.trim())chunks.push(buf.trim());
+  return chunks;
+}
+
+// ---- Generate audio with progress ----
+async function generateAudio(text,voice){
+  const chunks=chunkText(text,300);
+  const allSamples=[];
+  let sr=24000;
+  const totalChars=chunks.reduce((a,c)=>a+c.length,0);
+  let doneChars=0;
+
+  for(let i=0;i<chunks.length;i++){
+    const pct=Math.round((doneChars/totalChars)*100);
+    setGProg(pct,`Generating speech… ${pct}%`);
+
+    // Yield to UI so progress bar actually updates
+    await new Promise(r=>setTimeout(r,0));
+
+    const result=await tts.generate(chunks[i],{voice});
+    sr=result.sampling_rate;
+    const samples=result.audio instanceof Float32Array?result.audio:new Float32Array(result.audio);
+    allSamples.push(samples);
+    if(i<chunks.length-1)allSamples.push(new Float32Array(Math.floor(sr*0.2)));
+    doneChars+=chunks[i].length;
+  }
+  setGProg(100,'Finalizing…');
+
+  const total=allSamples.reduce((a,b)=>a+b.length,0);
+  const merged=new Float32Array(total);
+  let off=0;
+  allSamples.forEach(s=>{merged.set(s,off);off+=s.length});
+  return{samples:merged,sampleRate:sr};
+}
+
+// ---- Float32 → WAV ----
+function toWav(samples,sr){
+  const buf=new ArrayBuffer(44+samples.length*2);
+  const v=new DataView(buf);
+  const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
+  w(0,'RIFF');v.setUint32(4,36+samples.length*2,true);w(8,'WAVE');
+  w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);
+  w(36,'data');v.setUint32(40,samples.length*2,true);
+  for(let i=0;i<samples.length;i++){
+    const s=Math.max(-1,Math.min(1,samples[i]));
+    v.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);
+  }
+  return new Blob([buf],{type:'audio/wav'});
+}
 
 // ---- Player ----
 async function initPlayer(){
@@ -365,7 +334,6 @@ async function initPlayer(){
   words=[];const re=/\S+/g;let m;
   while((m=re.exec(raw))!==null)words.push({t:m[0],s:m.index});
   rpane.innerHTML=words.map((w,i)=>`<span class="w" data-i="${i}">${esc(w.t)} </span>`).join('');
-
   pfill.style.width='0%';tE.textContent='0:00';tT.textContent='0:00';
   iP.style.display='block';iPa.style.display='none';
 
@@ -376,27 +344,44 @@ async function initPlayer(){
     audioEl.src=URL.createObjectURL(wavBlob);
     audioEl.playbackRate=parseFloat(spdR.value);
     audioEl.load();
-    audioEl.onloadedmetadata=()=>{
-      calcWordTimes(audioEl.duration);
-      tT.textContent=fmt(audioEl.duration);
-    };
+    audioEl.onloadedmetadata=()=>{calcWordTimes(audioEl.duration);tT.textContent=fmt(audioEl.duration)};
     ov.classList.remove('show');
     setSt('Ready');
   }catch(e){
     console.error(e);
-    ovTxt.textContent='Generation failed: '+e.message;
+    setGProg(0,'Generation failed: '+e.message);
   }
 }
 
-// Audio events
-audioEl.addEventListener('timeupdate',()=>{
-  if(!audioEl.duration)return;
-  pfill.style.width=(audioEl.currentTime/audioEl.duration*100)+'%';
-  tE.textContent=fmt(audioEl.currentTime);tT.textContent=fmt(audioEl.duration);
-});
+// ---- Word timing (estimated by character count) ----
+function calcWordTimes(dur){
+  wordTimes=[];
+  const totalChars=words.reduce((a,w)=>a+w.t.length+1,0);
+  let t=0;
+  words.forEach(w=>{const d=(w.t.length+1)/totalChars*dur;wordTimes.push({start:t,end:t+d});t+=d});
+}
+
+// ---- Highlight ----
+function hlLoop(){
+  if(audioEl.paused&&!audioEl.ended)return;
+  const ct=audioEl.currentTime;
+  let cur=-1;
+  for(let i=wordTimes.length-1;i>=0;i--){if(ct>=wordTimes[i].start){cur=i;break}}
+  if(cur>=0){
+    rpane.querySelectorAll('.w.now').forEach(el=>{el.classList.remove('now');el.classList.add('spent')});
+    for(let i=0;i<cur;i++){const el=rpane.querySelector(`[data-i="${i}"]`);if(el&&!el.classList.contains('spent'))el.classList.add('spent')}
+    const cel=rpane.querySelector(`[data-i="${cur}"]`);
+    if(cel&&!cel.classList.contains('now')){cel.classList.add('now');cel.classList.remove('spent');cel.scrollIntoView({block:'center',behavior:'smooth'})}
+  }
+  rafId=requestAnimationFrame(hlLoop);
+}
+function clrHL(){rpane.querySelectorAll('.w').forEach(e=>{e.classList.remove('spent','now')})}
+
+// ---- Audio events ----
+audioEl.addEventListener('timeupdate',()=>{if(!audioEl.duration)return;pfill.style.width=(audioEl.currentTime/audioEl.duration*100)+'%';tE.textContent=fmt(audioEl.currentTime);tT.textContent=fmt(audioEl.duration)});
 audioEl.addEventListener('ended',()=>{iP.style.display='block';iPa.style.display='none';cancelAnimationFrame(rafId);setSt('Done')});
 
-// Controls
+// ---- Controls ----
 cP.addEventListener('click',()=>{
   if(!audioEl.src||!wavBlob)return;
   if(audioEl.paused){audioEl.play();iP.style.display='none';iPa.style.display='block';setSt('Playing','on');rafId=requestAnimationFrame(hlLoop)}
@@ -411,7 +396,7 @@ pbar.addEventListener('click',e=>{if(!audioEl.duration)return;const p=(e.clientX
 // Voice change → regenerate
 vSel.addEventListener('change',async()=>{
   if(!tts||vSel.value===curVoice)return;
-  audioEl.pause();ov.classList.add('show');
+  audioEl.pause();ov.classList.add('show');setGProg(0,'Regenerating…');
   await initPlayer();
 });
 

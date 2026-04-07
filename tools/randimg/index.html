@@ -2,7 +2,8 @@
 <head>
   <title>random image slideshow</title>
   <style>
-    * { margin: 0; padding: 0; cursor: none; }
+    * { margin: 0; padding: 0; }
+    body.playing * { cursor: none; }
     body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
     #setup { text-align: center; }
     #setup h1 { font-family: 'Segoe UI', sans-serif; font-size: 1.8rem; font-weight: 300; color: #7eb8da; margin-bottom: 40px; }
@@ -96,6 +97,7 @@ document.addEventListener('keydown', e => {
     intervalId = null;
     slide.style.display = 'none';
     setup.style.display = '';
+    document.body.classList.remove('playing');
     input.focus();
     // reset buffer to default while picking
     queueSize = 10;
@@ -121,6 +123,7 @@ async function startSlideshow(sec) {
   slide.src = ready.shift();
   slide.style.display = 'block';
   setup.style.display = 'none';
+  document.body.classList.add('playing');
   preload();
 
   intervalId = setInterval(() => {

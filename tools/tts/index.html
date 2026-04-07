@@ -181,14 +181,40 @@ function setSt(m,t=''){stat.textContent=m;stat.className='stat'+(t?' '+t:'')}
 let KokoroTTS=null;
 setTimeout(async()=>{
   try{
-    setMP(3,'Loading voice engine…');
-    // Single import — do NOT import transformers separately, it conflicts
+    setMP(2,'Loading voice engine…');
     const mod=await import('https://esm.sh/kokoro-js');
     KokoroTTS=mod.KokoroTTS;
-    setMP(10,'Downloading voice model…');
+
+    // Try to unlock multi-threading via kokoro's re-exported env
+    const cores=navigator.hardwareConcurrency||4;
+    if(mod.env){
+      try{mod.env.backends.onnx.wasm.numThreads=cores}catch(e){}
+    }
+    // Also try global ort if it exists
+    if(typeof ort!=='undefined'){
+      try{ort.env.wasm.numThreads=cores}catch(e){}
+    }
+
+    setMP(6,'Checking GPU…');
+    // WebGPU is MUCH faster than WASM — auto-detect
+    let device='wasm';
+    try{
+      if(navigator.gpu){
+        const adapter=await navigator.gpu.requestAdapter();
+        if(adapter){device='webgpu';setMP(8,'GPU found — using WebGPU ⚡')}
+      }
+    }catch(e){}
+
+    setMP(10,device==='webgpu'?'Downloading model (WebGPU ⚡)…':'Downloading model (CPU)…');
+    console.log(`[TTS] Using ${device}, ${cores} cores detected`);
+    console.log('[TTS] For max CPU speed, add these HTTP headers to your server:');
+    console.log('  Cross-Origin-Opener-Policy: same-origin');
+    console.log('  Cross-Origin-Embedder-Policy: credentialless');
+    console.log('[TTS] Without them, WASM is limited to 1-2 threads.');
+
     tts=await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX',{
-      dtype:'q8',
-      device:'wasm',
+      dtype:device==='webgpu'?'fp32':'q8',
+      device,
       progress_callback:p=>{
         if(p.progress!=null){
           const pct=10+p.progress*0.88;
@@ -197,7 +223,7 @@ setTimeout(async()=>{
         }
       }
     });
-    setMP(100,'Voice model ready ✓');
+    setMP(100,'Voice model ready ✓ ('+device+(device==='wasm'?' · '+cores+' cores':'')+ ')');
     modelReady=true;
     setTimeout(()=>mBar.classList.add('done'),1400);
   }catch(e){
@@ -269,7 +295,7 @@ function chunkText(text,maxLen){
 // ---- Generate audio with real % progress ----
 async function generateAudio(text,voice){
   // Use ~150 char chunks for granular progress + better model output
-  const chunks=chunkText(text,100);
+  const chunks=chunkText(text,250);
   const allSamples=[];
   let sr=24000;
 

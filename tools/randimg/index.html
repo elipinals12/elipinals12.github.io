@@ -30,25 +30,22 @@
 
 <script>
 const W = innerWidth, H = innerHeight;
-const queue = [];
+const ready = [];   // resolved image URLs, ready to display
+let loading = 0;
 const QUEUE_SIZE = 10;
 
-function loadImage() {
-  return new Promise(resolve => {
+function preload() {
+  while (loading + ready.length < QUEUE_SIZE) {
+    loading++;
     const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => resolve(img.src);
-    img.onerror = () => resolve(loadImage()); // retry on fail
+    img.onload = () => { ready.push(img.src); loading--; preload(); };
+    img.onerror = () => { loading--; preload(); };
     img.src = `https://unsplash.it/${W}/${H}?random&t=${Date.now()}-${Math.random()}`;
-  });
-}
-
-function fillQueue() {
-  while (queue.length < QUEUE_SIZE) queue.push(loadImage());
+  }
 }
 
 // start preloading immediately while user types
-fillQueue();
+preload();
 
 const slide = document.getElementById('slide');
 const setup = document.getElementById('setup');
@@ -57,25 +54,36 @@ const input = document.getElementById('seconds');
 input.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     const sec = parseInt(input.value) || 10;
-    setup.style.display = 'none';
     startSlideshow(sec);
   }
 });
 
+function waitForReady() {
+  return new Promise(resolve => {
+    if (ready.length > 0) return resolve();
+    const check = setInterval(() => {
+      if (ready.length > 0) { clearInterval(check); resolve(); }
+    }, 16);
+  });
+}
+
 async function startSlideshow(sec) {
-  // show first image instantly
-  const first = await queue.shift();
-  fillQueue();
-  slide.src = first;
+  // wait for at least one image to be fully loaded
+  await waitForReady();
+
+  // show first image, then swap setup out
+  slide.src = ready.shift();
   slide.style.display = 'block';
-  await new Promise(r => setTimeout(r, sec * 1000));
-  // loop remaining
-  while (true) {
-    const src = await queue.shift();
-    fillQueue();
-    slide.src = src;
-    await new Promise(r => setTimeout(r, sec * 1000));
-  }
+  setup.style.display = 'none';
+  preload();
+
+  // use setInterval for rock-steady timing
+  setInterval(() => {
+    if (ready.length > 0) {
+      slide.src = ready.shift();
+      preload();
+    }
+  }, sec * 1000);
 }
 </script>
 </body>

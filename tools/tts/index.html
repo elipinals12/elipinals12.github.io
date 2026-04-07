@@ -61,7 +61,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--ac);border-radius:50%;cursor:pointer;border:none}
 .rpane{flex:1;min-height:0;overflow-y:auto;background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r);padding:18px;font-size:.9rem;line-height:2.1}
 .rpane::-webkit-scrollbar{width:4px}.rpane::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
-.w{display:inline;transition:color .12s;border-radius:3px}.w.spent{color:var(--tx3)}.w.now{color:#fff;background:var(--ac);padding:1px 3px}
+.w{display:inline;transition:color .3s;border-radius:3px}.w.spent{color:var(--tx3)}
 .ov{display:none;position:absolute;inset:0;background:rgba(11,12,16,.94);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:16px;border-radius:var(--r);padding:30px}
 .ov.show{display:flex}
 .spinner{width:28px;height:28px;border:3px solid var(--s3);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
@@ -353,21 +353,21 @@ function calcWordTimes(dur){
   words.forEach(w=>{const d=(w.t.length+1)/totalChars*dur;wordTimes.push({start:t,end:t+d});t+=d});
 }
 
-// ---- Highlight loop ----
+// ---- Grey-out loop (no highlight, just fade read words) ----
 function hlLoop(){
   if(audioEl.paused&&!audioEl.ended)return;
   const ct=audioEl.currentTime;
   let cur=-1;
   for(let i=wordTimes.length-1;i>=0;i--){if(ct>=wordTimes[i].start){cur=i;break}}
   if(cur>=0){
-    rpane.querySelectorAll('.w.now').forEach(el=>{el.classList.remove('now');el.classList.add('spent')});
-    for(let i=0;i<cur;i++){const el=rpane.querySelector(`[data-i="${i}"]`);if(el&&!el.classList.contains('spent'))el.classList.add('spent')}
-    const cel=rpane.querySelector(`[data-i="${cur}"]`);
-    if(cel&&!cel.classList.contains('now')){cel.classList.add('now');cel.classList.remove('spent');cel.scrollIntoView({block:'center',behavior:'smooth'})}
+    for(let i=0;i<=cur;i++){const el=rpane.querySelector(`[data-i="${i}"]`);if(el&&!el.classList.contains('spent'))el.classList.add('spent')}
+    // Auto-scroll to keep reading position visible
+    const last=rpane.querySelector(`[data-i="${cur}"]`);
+    if(last){const r=last.getBoundingClientRect(),p=rpane.getBoundingClientRect();if(r.bottom>p.bottom-30||r.top<p.top+30)last.scrollIntoView({block:'center',behavior:'smooth'})}
   }
   rafId=requestAnimationFrame(hlLoop);
 }
-function clrHL(){rpane.querySelectorAll('.w').forEach(e=>{e.classList.remove('spent','now')})}
+function clrHL(){rpane.querySelectorAll('.w.spent').forEach(e=>e.classList.remove('spent'))}
 
 // ---- Audio events ----
 audioEl.addEventListener('timeupdate',()=>{if(!audioEl.duration)return;pfill.style.width=(audioEl.currentTime/audioEl.duration*100)+'%';tE.textContent=fmt(audioEl.currentTime);tT.textContent=fmt(audioEl.duration)});
@@ -389,44 +389,31 @@ vSel.addEventListener('change',async()=>{
   audioEl.pause();ov.classList.add('show');setGP(0,'Regenerating…');
   await initPlayer();
 });
-bDl.addEventListener('click',async()=>{
+bDl.addEventListener('click',()=>{
   if(!rawSamples||!rawSamples.length){setSt('No audio yet','err');return}
   setSt('Preparing download…');
   try{
     const speed=parseFloat(spdR.value);
-    const dlBlob=toWav(rawSamples,rawSr,speed);
+    // For 1x, reuse the existing working blob; otherwise build speed-adjusted WAV
+    const dlBlob=(Math.abs(speed-1)<0.05)?wavBlob:toWav(rawSamples,rawSr,speed);
     const d=new Date();
     const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
     let fname='text to speech '+ds;
     if(Math.abs(speed-1)>0.05)fname+=' '+speed.toFixed(1)+'x';
     fname+='.wav';
-
-    // Try modern File System API first (Chrome/Edge)
-    if(window.showSaveFilePicker){
-      try{
-        const handle=await window.showSaveFilePicker({suggestedName:fname,types:[{description:'WAV Audio',accept:{'audio/wav':['.wav']}}]});
-        const wr=await handle.createWritable();
-        await wr.write(dlBlob);
-        await wr.close();
-        setSt('Downloaded ✓','on');
-        return;
-      }catch(e){
-        if(e.name==='AbortError'){setSt('Cancelled');return}
-        // Fall through to anchor method
-      }
-    }
-
-    // Fallback: anchor download
-    const url=URL.createObjectURL(dlBlob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download=fname;
-    a.style.cssText='position:fixed;left:-9999px';
-    document.body.appendChild(a);
-    await new Promise(r=>setTimeout(r,100));
-    a.click();
-    setTimeout(()=>{try{document.body.removeChild(a)}catch(e){}URL.revokeObjectURL(url)},60000);
-    setSt('Downloaded ✓','on');
+    // Convert to data URL (bypasses blob URL issues entirely)
+    const reader=new FileReader();
+    reader.onloadend=()=>{
+      const a=document.createElement('a');
+      a.href=reader.result;
+      a.download=fname;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>a.remove(),5000);
+      setSt('Downloaded ✓','on');
+    };
+    reader.onerror=()=>setSt('Download failed','err');
+    reader.readAsDataURL(dlBlob);
   }catch(e){
     console.error('Download error:',e);
     setSt('Download failed: '+e.message,'err');

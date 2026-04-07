@@ -13,6 +13,7 @@
     }
     #setup input::placeholder { color: #7eb8da44; }
     #setup label { display: block; margin-top: 14px; font-family: 'Segoe UI', sans-serif; font-size: 1rem; color: #7eb8da66; }
+    #setup .hint { display: block; margin-top: 24px; font-family: 'Segoe UI', sans-serif; font-size: 0.7rem; color: #ffffff22; }
     #slide {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       object-fit: cover; border: none; outline: none;
@@ -23,8 +24,9 @@
 
 <div id="setup">
   <h1>random image slideshow</h1>
-  <input id="seconds" type="number" min="1" placeholder="10" autofocus>
+  <input id="seconds" type="number" min="0.01" step="any" placeholder="10" autofocus>
   <label>seconds between images</label>
+  <span class="hint">minimum 0.01s</span>
 </div>
 <img id="slide">
 
@@ -68,7 +70,7 @@ const input = document.getElementById('seconds');
 
 input.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
-    const sec = parseInt(input.value) || 10;
+    const sec = Math.max(0.01, parseFloat(input.value) || 10);
     startSlideshow(sec);
   }
 });

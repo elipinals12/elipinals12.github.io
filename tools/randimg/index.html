@@ -29,16 +29,18 @@
 <img id="slide">
 
 <script>
-const W = innerWidth, H = innerHeight;
+let W = innerWidth, H = innerHeight;
 const ready = [];   // resolved image URLs, ready to display
 let loading = 0;
+let generation = 0; // increments on resize to discard stale loads
 const QUEUE_SIZE = 10;
 
 function preload() {
   while (loading + ready.length < QUEUE_SIZE) {
     loading++;
+    const gen = generation;
     const img = new Image();
-    img.onload = () => { ready.push(img.src); loading--; preload(); };
+    img.onload = () => { if (gen === generation) ready.push(img.src); loading--; preload(); };
     img.onerror = () => { loading--; preload(); };
     img.src = `https://unsplash.it/${W}/${H}?random&t=${Date.now()}-${Math.random()}`;
   }
@@ -46,6 +48,19 @@ function preload() {
 
 // start preloading immediately while user types
 preload();
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    W = innerWidth;
+    H = innerHeight;
+    generation++;
+    ready.length = 0;
+    loading = 0;
+    preload();
+  }, 300);
+});
 
 const slide = document.getElementById('slide');
 const setup = document.getElementById('setup');

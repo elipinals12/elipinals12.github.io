@@ -10,195 +10,226 @@
 :root[data-theme="light"] {
   --bg: #f5f0eb; --card: #ffffff; --border: #e0d8d0;
   --accent: #c9624a; --accent2: #d4a830; --green: #5a9478;
-  --text: #2a2d45; --muted: #5a5050;
+  --text: #2a2d45; --muted: #6a6060;
   --notice-bg: rgba(212,168,48,.12); --notice-border: rgba(212,168,48,.4); --notice-text: #4a3a08;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.07); --shadow-md: 0 4px 16px rgba(0,0,0,.09);
-  --shadow-hover: 0 8px 28px rgba(201,98,74,.22);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06); --shadow-md: 0 4px 14px rgba(0,0,0,.09);
+  --shadow-hover: 0 6px 22px rgba(201,98,74,.18);
   --res-bg: rgba(201,98,74,.07); --res-border: rgba(201,98,74,.2);
   --job-bg: rgba(90,148,120,.07); --job-border: rgba(90,148,120,.25);
   --link-color: #5a3fa0; --phone-color: #5a3fa0;
-  --tag-bg: rgba(201,98,74,.09); --tag-border: rgba(201,98,74,.22);
+  --tag-bg: rgba(201,98,74,.08); --tag-border: rgba(201,98,74,.2);
   --btn-bg: rgba(90,148,120,.09);
-  --hotline-bg: linear-gradient(135deg,rgba(201,98,74,.1),rgba(212,168,48,.08));
-  --modal-bg: #fff; --modal-text: #2a2d45; --modal-muted: #5a5050;
+  --hotline-bg: linear-gradient(135deg,rgba(201,98,74,.08),rgba(212,168,48,.06));
+  --modal-bg: #fff; --modal-text: #2a2d45; --modal-muted: #6a6060;
 }
 :root[data-theme="dark"] {
   --bg: #16161e; --card: #1f1f2e; --border: #2e2e42;
   --accent: #e07a5f; --accent2: #f2cc8f; --green: #81b29a;
   --text: #e8e4f0; --muted: #9a90b0;
   --notice-bg: rgba(242,204,143,.08); --notice-border: rgba(242,204,143,.3); --notice-text: #d4b060;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.3); --shadow-md: 0 4px 16px rgba(0,0,0,.4);
-  --shadow-hover: 0 8px 28px rgba(224,122,95,.25);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.3); --shadow-md: 0 4px 14px rgba(0,0,0,.4);
+  --shadow-hover: 0 6px 22px rgba(224,122,95,.22);
   --res-bg: rgba(224,122,95,.08); --res-border: rgba(224,122,95,.2);
   --job-bg: rgba(129,178,154,.08); --job-border: rgba(129,178,154,.25);
   --link-color: #a78bfa; --phone-color: #a78bfa;
   --tag-bg: rgba(224,122,95,.1); --tag-border: rgba(224,122,95,.22);
   --btn-bg: rgba(129,178,154,.1);
-  --hotline-bg: linear-gradient(135deg,rgba(224,122,95,.12),rgba(242,204,143,.08));
+  --hotline-bg: linear-gradient(135deg,rgba(224,122,95,.1),rgba(242,204,143,.07));
   --modal-bg: #1f1f2e; --modal-text: #e8e4f0; --modal-muted: #9a90b0;
 }
 :root { --ease-spring: cubic-bezier(0.34,1.56,0.64,1); --ease-out: cubic-bezier(0.4,0,0.2,1); }
 
-.skip-link { position:absolute; top:-100%; left:1rem; background:var(--accent); color:#fff; padding:.5rem 1rem; border-radius:0 0 8px 8px; font-size:.88rem; font-weight:700; text-decoration:none; z-index:9999; transition:top .2s; }
+.skip-link { position:absolute; top:-100%; left:1rem; background:var(--accent); color:#fff; padding:.5rem 1rem; border-radius:0 0 8px 8px; font-size:.9rem; font-weight:700; text-decoration:none; z-index:9999; transition:top .2s; }
 .skip-link:focus { top:0; }
 
-body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; transition:background .3s,color .3s; }
-body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:0; background: radial-gradient(ellipse at 20% 20%,rgba(224,122,95,.1) 0%,transparent 55%), radial-gradient(ellipse at 80% 80%,rgba(129,178,154,.08) 0%,transparent 55%); animation:bgPulse 14s ease-in-out infinite alternate; }
-@keyframes bgPulse { 0%{opacity:.7;transform:scale(1)} 100%{opacity:1;transform:scale(1.04)} }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; min-height:100vh; font-size:17px; line-height:1.65; -webkit-font-smoothing:antialiased; transition:background .3s,color .3s; }
 
-.wrap { position:relative; z-index:1; max-width:780px; margin:0 auto; padding:2rem 1.2rem 5rem; }
+/* Simplified background — static gradient, no animation to reduce eye strain */
+body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background: radial-gradient(ellipse at 18% 18%,rgba(224,122,95,.08) 0%,transparent 52%),
+              radial-gradient(ellipse at 82% 82%,rgba(129,178,154,.06) 0%,transparent 52%); }
 
+.wrap { position:relative; z-index:1; max-width:780px; margin:0 auto; padding:1.8rem 1.2rem 5rem; }
+
+/* ── Toolbar ── */
 .toolbar { display:flex; align-items:center; justify-content:flex-end; gap:.4rem; margin-bottom:1.2rem; flex-wrap:wrap; }
-.tb-btn { display:inline-flex; align-items:center; gap:.3rem; padding:.32rem .7rem; border-radius:8px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); font-size:.75rem; font-weight:600; cursor:pointer; transition:all .2s var(--ease-out); white-space:nowrap; }
+.tb-btn { display:inline-flex; align-items:center; gap:.3rem; padding:.34rem .75rem; border-radius:8px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); font-size:.78rem; font-weight:600; cursor:pointer; transition:border-color .2s,color .2s; white-space:nowrap; min-height:36px; -webkit-tap-highlight-color:transparent; }
 .tb-btn:hover { border-color:var(--accent); color:var(--accent); }
 .tb-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .tb-btn svg { width:13px; height:13px; flex-shrink:0; }
 
 .lang-wrap { position:relative; }
-.lang-menu { display:none; position:absolute; top:calc(100% + 4px); right:0; background:var(--card); border:1.5px solid var(--border); border-radius:10px; padding:.3rem; min-width:150px; z-index:100; box-shadow:var(--shadow-md); flex-direction:column; gap:.1rem; }
-.lang-menu.open { display:flex; animation:fadeIn .15s ease; }
-.lang-opt { padding:.4rem .75rem; border-radius:6px; font-size:.8rem; font-weight:500; cursor:pointer; border:none; background:none; color:var(--text); text-align:left; transition:background .15s; }
+.lang-menu { display:none; position:absolute; top:calc(100% + 4px); right:0; background:var(--card); border:1.5px solid var(--border); border-radius:10px; padding:.3rem; min-width:152px; z-index:100; box-shadow:var(--shadow-md); flex-direction:column; gap:.1rem; }
+.lang-menu.open { display:flex; }
+.lang-opt { padding:.42rem .8rem; border-radius:6px; font-size:.82rem; font-weight:500; cursor:pointer; border:none; background:none; color:var(--text); text-align:left; transition:background .15s; white-space:nowrap; }
 .lang-opt:hover { background:var(--res-bg); }
 .lang-opt.active { color:var(--accent); font-weight:700; }
 .lang-opt:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
 
 .font-control { display:inline-flex; align-items:center; border:1.5px solid var(--border); border-radius:8px; overflow:hidden; background:var(--card); }
-.fc-btn { padding:.32rem .6rem; background:none; border:none; color:var(--muted); font-size:.82rem; font-weight:700; cursor:pointer; transition:all .15s; }
+.fc-btn { padding:.34rem .62rem; background:none; border:none; color:var(--muted); font-size:.84rem; font-weight:700; cursor:pointer; transition:all .15s; min-height:36px; }
 .fc-btn:hover { background:var(--res-bg); color:var(--accent); }
 .fc-btn:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
-.fc-label { padding:0 .4rem; font-size:.7rem; font-weight:600; color:var(--muted); user-select:none; border-left:1px solid var(--border); border-right:1px solid var(--border); line-height:2; }
+.fc-label { padding:0 .42rem; font-size:.72rem; font-weight:600; color:var(--muted); user-select:none; border-left:1px solid var(--border); border-right:1px solid var(--border); line-height:2; }
 
-header { text-align:center; margin-bottom:1.8rem; animation:fadeDown .6s var(--ease-out) both; }
-header h1 { font-size:clamp(1.7rem,5vw,2.5rem); font-weight:800; letter-spacing:-.04em; background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 50%,var(--green) 100%); background-size:200% 200%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:gradShift 7s ease infinite; }
-@keyframes gradShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
-header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
+/* ── Header ── */
+header { text-align:center; margin-bottom:1.6rem; animation:fadeDown .55s var(--ease-out) both; }
+header h1 { font-size:clamp(1.7rem,5vw,2.4rem); font-weight:800; letter-spacing:-.04em; background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 50%,var(--green) 100%); background-size:200% 200%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:gradShift 8s ease infinite; }
+@keyframes gradShift { 0%,100%{background-position:0 50%} 50%{background-position:100% 50%} }
+header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
 
-.hotline { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:.5rem 1.4rem; background:var(--hotline-bg); border:1px solid rgba(224,122,95,.3); border-radius:14px; padding:.8rem 1.4rem; margin-bottom:1.4rem; font-size:.82rem; color:var(--accent); animation:fadeDown .7s var(--ease-out) .1s both; }
+/* ── Hotline ── */
+.hotline { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:.45rem 1.2rem; background:var(--hotline-bg); border:1px solid rgba(224,122,95,.28); border-radius:14px; padding:.75rem 1.3rem; margin-bottom:1.4rem; font-size:.84rem; color:var(--accent); animation:fadeDown .65s var(--ease-out) .1s both; }
 .hotline-item { display:flex; align-items:center; gap:.4rem; }
 .h-icon { width:15px; height:15px; flex-shrink:0; }
 
-.search-wrap { position:relative; margin-bottom:1rem; animation:fadeDown .7s var(--ease-out) .15s both; }
-.search-wrap input { width:100%; padding:.9rem 1.2rem .9rem 3.2rem; background:var(--card); border:1.5px solid var(--border); border-radius:14px; color:var(--text); font-size:.95rem; outline:none; box-shadow:var(--shadow-sm); transition:border-color .25s,box-shadow .25s,transform .2s var(--ease-spring); }
-.search-wrap input:focus-visible { border-color:var(--accent); box-shadow:0 0 0 3px rgba(224,122,95,.25),var(--shadow-md); transform:translateY(-1px); }
+/* ── Search ── */
+.search-wrap { position:relative; margin-bottom:1rem; animation:fadeDown .65s var(--ease-out) .15s both; }
+.search-wrap input { width:100%; padding:.88rem 1.2rem .88rem 3.1rem; background:var(--card); border:1.5px solid var(--border); border-radius:14px; color:var(--text); font-size:.96rem; outline:none; box-shadow:var(--shadow-sm); transition:border-color .25s,box-shadow .25s; }
+.search-wrap input:focus-visible { border-color:var(--accent); box-shadow:0 0 0 3px rgba(224,122,95,.2),var(--shadow-md); }
 .search-wrap input::placeholder { color:var(--muted); }
 .search-ico { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--muted); width:18px; height:18px; pointer-events:none; transition:color .25s; }
 .search-wrap:focus-within .search-ico { color:var(--accent); }
 
-.pills { display:flex; flex-wrap:wrap; gap:.45rem; margin-bottom:1.2rem; animation:fadeDown .7s var(--ease-out) .2s both; }
-.pill { padding:.36rem .9rem; border-radius:999px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); cursor:pointer; font-size:.78rem; font-weight:600; box-shadow:var(--shadow-sm); transition:all .22s var(--ease-out); }
-.pill:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
+/* ── Pills ── */
+.pills { display:flex; flex-wrap:wrap; gap:.42rem; margin-bottom:1.1rem; animation:fadeDown .65s var(--ease-out) .2s both; }
+.pill { padding:.36rem .9rem; border-radius:999px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); cursor:pointer; font-size:.8rem; font-weight:600; box-shadow:var(--shadow-sm); transition:border-color .2s,color .2s,background .2s; min-height:34px; -webkit-tap-highlight-color:transparent; }
+.pill:hover { border-color:var(--accent); color:var(--accent); }
 .pill:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-.pill[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:0 3px 14px rgba(224,122,95,.35); transform:translateY(-1px); }
+.pill[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:0 2px 10px rgba(224,122,95,.28); }
 
-.count { color:var(--muted); font-size:.76rem; margin-bottom:.9rem; font-weight:600; }
-.results { display:flex; flex-direction:column; gap:.75rem; }
+.count { color:var(--muted); font-size:.78rem; margin-bottom:.85rem; font-weight:600; }
+.results { display:flex; flex-direction:column; gap:.7rem; }
 
-.card { background:var(--card); border:1.5px solid var(--border); border-radius:14px; padding:1.1rem 1.3rem; box-shadow:var(--shadow-sm); transition:border-color .22s,box-shadow .25s,transform .25s var(--ease-spring); animation:fadeUp .4s var(--ease-out) both; }
-.card:hover { border-color:var(--accent); box-shadow:var(--shadow-hover); transform:translateY(-3px); }
-.card:active { transform:translateY(-1px) scale(.997); }
+/* ── Cards ── */
+.card { background:var(--card); border:1.5px solid var(--border); border-radius:14px; padding:1.05rem 1.25rem; box-shadow:var(--shadow-sm); transition:border-color .22s,box-shadow .22s; animation:fadeUp .4s var(--ease-out) both; }
+.card:hover { border-color:var(--accent); box-shadow:var(--shadow-hover); }
 .card.is-open { border-color:var(--accent); box-shadow:var(--shadow-md); }
 
-.ctop { display:flex; gap:1rem; align-items:flex-start; cursor:pointer; }
+.ctop { display:flex; gap:.95rem; align-items:flex-start; cursor:pointer; }
 .ctop:focus-visible { outline:3px solid var(--accent); outline-offset:3px; border-radius:8px; }
-.cicon-wrap { width:46px; height:46px; border-radius:13px; background:linear-gradient(135deg,var(--res-bg),var(--job-bg)); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--accent); box-shadow:0 2px 8px rgba(224,122,95,.12); transition:transform .3s var(--ease-spring),box-shadow .3s; }
-.card:hover .cicon-wrap { transform:scale(1.1) rotate(-5deg); box-shadow:0 5px 16px rgba(224,122,95,.25); }
-.chev { margin-left:auto; flex-shrink:0; color:var(--muted); transition:transform .35s var(--ease-out),color .25s; padding-top:.1rem; }
+.cicon-wrap { width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,var(--res-bg),var(--job-bg)); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--accent); box-shadow:0 2px 6px rgba(224,122,95,.1); transition:transform .28s var(--ease-spring); }
+.card:hover .cicon-wrap { transform:scale(1.08); }
+.chev { margin-left:auto; flex-shrink:0; color:var(--muted); transition:transform .32s var(--ease-out),color .22s; padding-top:.1rem; }
 .card.is-open .chev { transform:rotate(180deg); color:var(--accent); }
 .chev svg { width:18px; height:18px; display:block; }
-.ctitle { font-weight:700; font-size:.95rem; margin-bottom:.15rem; }
-.csub { color:var(--muted); font-size:.8rem; line-height:1.55; }
-.ctags { display:flex; flex-wrap:wrap; gap:.3rem; margin-top:.55rem; }
-.tag { padding:.15rem .55rem; background:var(--tag-bg); border:1px solid var(--tag-border); border-radius:999px; font-size:.7rem; color:var(--accent); font-weight:500; }
+.ctitle { font-weight:700; font-size:.97rem; margin-bottom:.15rem; }
+.csub { color:var(--muted); font-size:.82rem; line-height:1.6; }
+.ctags { display:flex; flex-wrap:wrap; gap:.28rem; margin-top:.5rem; }
+.tag { padding:.14rem .52rem; background:var(--tag-bg); border:1px solid var(--tag-border); border-radius:999px; font-size:.71rem; color:var(--accent); font-weight:500; }
 
-.cbody { display:grid; grid-template-rows:0fr; transition:grid-template-rows .38s var(--ease-out),opacity .3s ease,margin-top .3s ease; opacity:0; margin-top:0; }
-.cbody.open { grid-template-rows:1fr; opacity:1; margin-top:.9rem; }
-.cbody-inner { min-height:0; overflow:hidden; padding-top:.9rem; border-top:1px solid var(--border); font-size:.84rem; line-height:1.78; color:var(--text); }
+/* ── Accordion body
+   Max-height fallback for all browsers, grid-template-rows enhancement for modern ones ── */
+.cbody {
+  overflow:hidden;
+  max-height:0;
+  opacity:0;
+  margin-top:0;
+  transition:max-height .38s ease,opacity .3s ease,margin-top .3s ease;
+}
+.cbody.open {
+  max-height:3000px;
+  opacity:1;
+  margin-top:.85rem;
+}
+/* Progressive enhancement: smoother animation in browsers that support it */
+@supports (grid-template-rows: 0fr) {
+  .cbody {
+    display:grid;
+    grid-template-rows:0fr;
+    max-height:none;
+    transition:grid-template-rows .36s ease,opacity .3s ease,margin-top .3s ease;
+  }
+  .cbody.open {
+    grid-template-rows:1fr;
+    max-height:none;
+  }
+  .cbody-inner { min-height:0; }
+}
+
+.cbody-inner { overflow:hidden; padding-top:.9rem; border-top:1px solid var(--border); font-size:.85rem; line-height:1.75; color:var(--text); }
 .cbody a { color:var(--link-color); text-decoration:underline; }
 .cbody a:hover { opacity:.8; }
 .cbody a:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
 
-.notice { background:var(--notice-bg); border:1px solid var(--notice-border); border-left:3px solid var(--accent2); border-radius:8px; padding:.5rem .85rem; font-size:.78rem; color:var(--notice-text); margin-bottom:.7rem; font-weight:500; }
-.section-label { font-size:.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin:1.1rem 0 .45rem; }
+.notice { background:var(--notice-bg); border:1px solid var(--notice-border); border-left:3px solid var(--accent2); border-radius:8px; padding:.5rem .88rem; font-size:.8rem; color:var(--notice-text); margin-bottom:.7rem; font-weight:500; }
+.section-label { font-size:.76rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin:1.1rem 0 .45rem; }
 
-.job-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:.55rem; margin-top:.7rem; }
-.job-card { background:var(--job-bg); border:1px solid var(--job-border); border-radius:10px; padding:.7rem .9rem; text-decoration:none; display:block; transition:all .22s var(--ease-out); }
-.job-card:hover { background:rgba(129,178,154,.2); border-color:var(--green); transform:translateY(-2px); }
+.job-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(195px,1fr)); gap:.52rem; margin-top:.65rem; }
+.job-card { background:var(--job-bg); border:1px solid var(--job-border); border-radius:10px; padding:.68rem .88rem; text-decoration:none; display:block; transition:background .2s,border-color .2s; }
+.job-card:hover { background:rgba(129,178,154,.18); border-color:var(--green); }
 .job-card:focus-visible { outline:2px solid var(--green); outline-offset:2px; border-radius:10px; }
-.jc-org { font-size:.86rem; font-weight:600; color:var(--text); }
-.jc-note { font-size:.74rem; color:var(--muted); margin-top:.2rem; }
+.jc-org { font-size:.87rem; font-weight:600; color:var(--text); }
+.jc-note { font-size:.75rem; color:var(--muted); margin-top:.18rem; }
 
-.res-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:.55rem; margin-top:.8rem; }
-.res-card { background:var(--res-bg); border:1px solid var(--res-border); border-radius:10px; padding:.75rem 1rem; text-decoration:none; display:block; transition:all .22s var(--ease-out); }
-.res-card:hover { background:rgba(224,122,95,.15); border-color:var(--accent); transform:translateY(-2px); }
+.res-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(205px,1fr)); gap:.52rem; margin-top:.75rem; }
+.res-card { background:var(--res-bg); border:1px solid var(--res-border); border-radius:10px; padding:.72rem .95rem; text-decoration:none; display:block; transition:background .2s,border-color .2s; }
+.res-card:hover { background:rgba(224,122,95,.13); border-color:var(--accent); }
 .res-card:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:10px; }
 .res-card.no-link { cursor:default; }
-.res-card.no-link:hover { background:var(--res-bg); border-color:var(--res-border); transform:none; }
-.rc-org { font-size:.88rem; font-weight:700; color:var(--text); margin-bottom:.2rem; }
-.rc-note { font-size:.76rem; color:var(--muted); margin-bottom:.35rem; }
-.rc-addr { font-size:.73rem; color:var(--muted); font-style:italic; }
-.rc-phone { font-size:.73rem; color:var(--phone-color); margin-top:.2rem; }
+.res-card.no-link:hover { background:var(--res-bg); border-color:var(--res-border); }
+.rc-org { font-size:.9rem; font-weight:700; color:var(--text); margin-bottom:.18rem; }
+.rc-note { font-size:.77rem; color:var(--muted); margin-bottom:.3rem; }
+.rc-addr { font-size:.74rem; color:var(--muted); font-style:italic; }
+.rc-phone { font-size:.74rem; color:var(--phone-color); margin-top:.18rem; }
 
-.vol-form-link { display:inline-flex; align-items:center; gap:.5rem; margin-top:.8rem; padding:.55rem 1.1rem; background:var(--job-bg); border:1.5px solid var(--job-border); border-radius:10px; text-decoration:none; color:var(--green); font-size:.84rem; font-weight:600; transition:all .22s var(--ease-out); }
-.vol-form-link:hover { background:rgba(129,178,154,.2); border-color:var(--green); transform:translateY(-2px); text-decoration:none; }
+.vol-form-link { display:inline-flex; align-items:center; gap:.48rem; margin-top:.75rem; padding:.52rem 1.05rem; background:var(--job-bg); border:1.5px solid var(--job-border); border-radius:10px; text-decoration:none; color:var(--green); font-size:.85rem; font-weight:600; transition:background .2s,border-color .2s; }
+.vol-form-link:hover { background:rgba(129,178,154,.18); border-color:var(--green); text-decoration:none; }
 .vol-form-link:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
-.vol-form-link svg { width:15px; height:15px; flex-shrink:0; }
+.vol-form-link svg { width:14px; height:14px; flex-shrink:0; }
 
-.card-actions { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.85rem; padding-top:.85rem; border-top:1px solid var(--border); }
-.ca-btn { display:inline-flex; align-items:center; gap:.35rem; padding:.33rem .8rem; border-radius:8px; font-size:.74rem; font-weight:600; border:1px solid rgba(129,178,154,.3); cursor:pointer; background:var(--btn-bg); color:var(--green); transition:all .2s var(--ease-out); }
-.ca-btn:hover { background:var(--green); color:#fff; border-color:var(--green); transform:translateY(-1px); }
+.card-actions { display:flex; flex-wrap:wrap; gap:.48rem; margin-top:.8rem; padding-top:.8rem; border-top:1px solid var(--border); }
+.ca-btn { display:inline-flex; align-items:center; gap:.33rem; padding:.34rem .82rem; border-radius:8px; font-size:.76rem; font-weight:600; border:1px solid rgba(129,178,154,.3); cursor:pointer; background:var(--btn-bg); color:var(--green); transition:background .2s,color .2s,border-color .2s; min-height:32px; -webkit-tap-highlight-color:transparent; }
+.ca-btn:hover { background:var(--green); color:#fff; border-color:var(--green); }
 .ca-btn:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
 .ca-btn svg { width:13px; height:13px; }
 
-.empty { text-align:center; color:var(--muted); padding:3.5rem 0; font-size:.9rem; }
+.empty { text-align:center; color:var(--muted); padding:3rem 0; font-size:.92rem; }
 
-.modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(5px); z-index:200; align-items:center; justify-content:center; padding:1rem; }
-.modal-bg.open { display:flex; animation:fadeIn .25s ease; }
-.modal { background:var(--modal-bg); border:1px solid var(--border); border-radius:20px; padding:1.6rem; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; animation:scaleIn .32s var(--ease-spring) both; color:var(--modal-text); }
-.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.9rem; }
+/* ── Modal ── */
+.modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:200; align-items:center; justify-content:center; padding:1rem; }
+/* backdrop-filter with safe fallback */
+@supports (backdrop-filter:blur(4px)) { .modal-bg { backdrop-filter:blur(4px); } }
+.modal-bg.open { display:flex; }
+.modal { background:var(--modal-bg); border:1px solid var(--border); border-radius:18px; padding:1.5rem; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; color:var(--modal-text); animation:scaleIn .3s var(--ease-spring) both; }
+.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.85rem; }
 .modal-header h2 { font-size:1.05rem; display:flex; align-items:center; gap:.45rem; }
 .modal-header h2 svg { width:18px; height:18px; color:var(--accent); }
-.modal-close { background:none; border:none; color:var(--muted); cursor:pointer; padding:.3rem .5rem; border-radius:8px; transition:all .18s; display:flex; align-items:center; }
+.modal-close { background:none; border:none; color:var(--muted); cursor:pointer; padding:.3rem .5rem; border-radius:8px; transition:all .18s; display:flex; align-items:center; min-height:36px; }
 .modal-close:hover { background:var(--border); color:var(--text); }
 .modal-close:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .modal-close svg { width:16px; height:16px; }
-.hint { font-size:.78rem; color:var(--modal-muted); margin-bottom:1rem; line-height:1.55; }
+.hint { font-size:.8rem; color:var(--modal-muted); margin-bottom:1rem; line-height:1.6; }
 
 @media print {
-  body::before,.toolbar,.hotline,.search-wrap,.pills,.count,.skip-link,.card-actions,.chev,.ctags { display:none !important; }
-  body { background:#fff !important; color:#000 !important; font-size:11pt; }
+  body::before,.toolbar,.hotline,.search-wrap,.pills,.count,.skip-link,.card-actions,.chev,.ctags { display:none!important; }
+  body { background:#fff!important; color:#000!important; font-size:11pt; }
   .wrap { max-width:100%; padding:0; }
-  header h1 { -webkit-text-fill-color:#222 !important; font-size:18pt; }
-  header p { color:#555 !important; }
-  .card { border:1px solid #ccc; border-radius:0; box-shadow:none; page-break-inside:avoid; padding:.6rem; margin-bottom:.5rem; animation:none; }
-  .cbody { display:block !important; opacity:1 !important; margin-top:.5rem !important; grid-template-rows:1fr !important; }
+  header h1 { -webkit-text-fill-color:#222!important; font-size:18pt; }
+  .card { border:1px solid #ccc; border-radius:0; box-shadow:none; page-break-inside:avoid; padding:.6rem; margin-bottom:.4rem; animation:none; }
+  .cbody { display:block!important; max-height:none!important; opacity:1!important; margin-top:.5rem!important; grid-template-rows:1fr!important; }
   .cbody-inner { border-top:1px solid #ddd; overflow:visible; }
-  .res-grid,.job-grid { grid-template-columns:repeat(2,1fr); gap:.4rem; }
-  .res-card,.job-card { border:1px solid #ddd; border-radius:4px; background:#fafafa !important; }
-  .rc-org,.jc-org,.ctitle { color:#000 !important; }
-  .rc-note,.jc-note,.csub,.rc-addr,.rc-phone { color:#555 !important; }
-  .notice { background:#fffbe6 !important; border-color:#ccc !important; color:#333 !important; }
-  .modal-bg { display:none !important; }
+  .res-grid,.job-grid { grid-template-columns:repeat(2,1fr); }
+  .res-card,.job-card { border:1px solid #ddd; border-radius:4px; background:#fafafa!important; }
 }
 
-@keyframes fadeUp   { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
-@keyframes fadeDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
-@keyframes fadeIn   { from{opacity:0} to{opacity:1} }
-@keyframes scaleIn  { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:none} }
-@media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+@keyframes fadeUp   { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-7px)} to{opacity:1;transform:none} }
+@keyframes scaleIn  { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:none} }
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
 </style>
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
 <div class="wrap">
 
-  <!-- Toolbar -->
   <div class="toolbar" role="toolbar" aria-label="Display options">
     <div class="font-control" role="group" aria-label="Text size">
       <button class="fc-btn" onclick="changeFont(-0.1)" aria-label="Decrease text size">A−</button>
       <span class="fc-label" aria-hidden="true" id="fontLabel">100%</span>
       <button class="fc-btn" onclick="changeFont(+0.1)" aria-label="Increase text size">A+</button>
     </div>
-    <button class="tb-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle dark mode" aria-pressed="false">
+    <button class="tb-btn" id="themeBtn" onclick="toggleTheme()" aria-pressed="false">
       <svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
         <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
@@ -208,14 +239,14 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
       <span id="themeLabel">Dark mode</span>
     </button>
     <div class="lang-wrap" id="langWrap">
-      <button class="tb-btn" id="langBtn" onclick="toggleLangMenu()" aria-haspopup="listbox" aria-expanded="false" aria-label="Select language">
+      <button class="tb-btn" id="langBtn" onclick="toggleLangMenu()" aria-haspopup="listbox" aria-expanded="false">
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
           <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
         </svg>
         <span id="langLabel">English</span>
       </button>
-      <div class="lang-menu" id="langMenu" role="listbox" aria-label="Language options">
+      <div class="lang-menu" id="langMenu" role="listbox">
         <button class="lang-opt active" role="option" aria-selected="true"  onclick="setLang('en')">🇺🇸 English</button>
         <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('es')">🇪🇸 Español</button>
         <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('fr')">🇫🇷 Français</button>
@@ -226,27 +257,26 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
         <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('ht')">🇭🇹 Kreyòl</button>
       </div>
     </div>
-  <button class="tb-btn" onclick="window.open('https://www.google.com/maps/search/community+center+near+me','_blank')" aria-label="Find a community center near me">
+    <button class="tb-btn" id="btnMapCenter" onclick="window.open('https://www.google.com/maps/search/community+center+near+me','_blank')">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
       </svg>
-      Find a Community Center Near Me
+      <span id="btnMapLabel">Find Community Center</span>
     </button>
-   <button class="tb-btn" onclick="window.print()" aria-label="Print or save as PDF">
+    <button class="tb-btn" id="btnPrint" onclick="window.print()">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="6 9 6 2 18 2 18 9"/>
-        <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2v5a2 2 0 01-2 2h-2"/>
+        <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
         <rect x="6" y="14" width="12" height="8"/>
       </svg>
-      Print / PDF
+      <span id="btnPrintLabel">Print / PDF</span>
     </button>
- <button class="tb-btn" onclick="window.open('portal.html','_blank')" aria-label="Open Neighborhood Portal">
-  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-    <polyline points="9 22 9 12 15 12 15 22"/>
-  </svg>
-  Neighborhood Portal
-</button>
+    <button class="tb-btn" id="btnPortal" onclick="window.open('portal.html','_blank')">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <span id="btnPortalLabel">Neighborhood Portal</span>
+    </button>
   </div>
 
   <header>
@@ -290,7 +320,6 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
   </div>
 </div>
 
-<!-- Feedback Modal -->
 <div class="modal-bg" id="feedbackModal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal">
     <div class="modal-header">
@@ -298,7 +327,7 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
-        Suggest an Update
+        <span id="modalTitle">Suggest an Update</span>
       </h2>
       <button class="modal-close" onclick="closeModal('feedbackModal')" aria-label="Close dialog">
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -306,7 +335,7 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.88rem; }
         </svg>
       </button>
     </div>
-    <p class="hint">Report outdated info, wrong numbers, changed addresses, or suggest a new resource.</p>
+    <p class="hint" id="modalHint">Report outdated info, wrong numbers, changed addresses, or suggest a new resource.</p>
     <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScseQ-VlGIuKw-d5dJl8rs_9WlwYY6XRwmEuyB3HeYvxycUXw/viewform?embedded=true"
       width="100%" height="520" frameborder="0" title="Suggest a resource update">Loading…</iframe>
   </div>
@@ -332,7 +361,7 @@ const ICONS = {
   'volunteers':   `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
 };
 
-// ── Translations ──────────────────────────────────────────────────
+// ── Translations ──────────────────────────────────────────────
 const T = {
   en: {
     search: "Search by need, resource, keyword…",
@@ -340,9 +369,15 @@ const T = {
     empty: "No results — try a different search or category.",
     suggest: "Suggest Update",
     volForm: "Sign Up / Volunteer Form",
-    hl1: "Emergency Shelter: Call 311 (24/7)", hl2: "Coalition Hotline:", hl3: "Mental Health:",
+    hl1: "Emergency Shelter: Call 311 (24/7)",
+    hl2: "Coalition Hotline:", hl3: "Mental Health:",
     sub: "Real links. Real addresses. Updated for NYC 2025–2026.",
     darkOn: "Dark mode", darkOff: "Light mode",
+    findCenter: "Find Community Center",
+    print: "Print / PDF",
+    portal: "Neighborhood Portal",
+    modalTitle: "Suggest an Update",
+    modalHint: "Report outdated info, wrong numbers, changed addresses, or suggest a new resource.",
     jobNotice: "⚠️ Check careers pages before sending clients — openings change.",
     jobSections: [
       { label: "🟢 Entry-Level",            key: "entryLevel" },
@@ -357,9 +392,15 @@ const T = {
     empty: "Sin resultados — intente otra búsqueda.",
     suggest: "Sugerir actualización",
     volForm: "Formulario de voluntariado",
-    hl1: "Refugio de emergencia: Llame al 311 (24/7)", hl2: "Línea directa:", hl3: "Salud mental:",
+    hl1: "Refugio de emergencia: Llame al 311 (24/7)",
+    hl2: "Línea directa:", hl3: "Salud mental:",
     sub: "Links reales. Direcciones reales. Actualizado para NYC 2025–2026.",
     darkOn: "Modo oscuro", darkOff: "Modo claro",
+    findCenter: "Buscar Centro Comunitario",
+    print: "Imprimir / PDF",
+    portal: "Portal Vecinal",
+    modalTitle: "Sugerir una actualización",
+    modalHint: "Reporta información desactualizada, números incorrectos o sugiere un nuevo recurso.",
     jobNotice: "⚠️ Verifique las páginas de empleo antes de enviar clientes — las vacantes cambian.",
     jobSections: [
       { label: "🟢 Nivel básico",             key: "entryLevel" },
@@ -374,9 +415,15 @@ const T = {
     empty: "Aucun résultat — essayez une autre recherche ou catégorie.",
     suggest: "Suggérer une mise à jour",
     volForm: "Formulaire de bénévolat",
-    hl1: "Hébergement d'urgence : Appelez le 311 (24h/24)", hl2: "Ligne directe :", hl3: "Santé mentale :",
+    hl1: "Hébergement d'urgence : Appelez le 311 (24h/24)",
+    hl2: "Ligne directe :", hl3: "Santé mentale :",
     sub: "Vrais liens. Vraies adresses. Mis à jour pour NYC 2025–2026.",
     darkOn: "Mode sombre", darkOff: "Mode clair",
+    findCenter: "Trouver un Centre Communautaire",
+    print: "Imprimer / PDF",
+    portal: "Portail de Voisinage",
+    modalTitle: "Suggérer une mise à jour",
+    modalHint: "Signalez des informations obsolètes, des numéros erronés ou suggérez une nouvelle ressource.",
     jobNotice: "⚠️ Vérifiez les pages carrières avant d'envoyer des clients — les postes changent.",
     jobSections: [
       { label: "🟢 Niveau débutant",              key: "entryLevel" },
@@ -391,9 +438,15 @@ const T = {
     empty: "Ничего не найдено — попробуйте другой запрос.",
     suggest: "Предложить обновление",
     volForm: "Форма для волонтёров",
-    hl1: "Экстренный приют: звоните 311 (24/7)", hl2: "Горячая линия:", hl3: "Психическое здоровье:",
+    hl1: "Экстренный приют: звоните 311 (24/7)",
+    hl2: "Горячая линия:", hl3: "Психическое здоровье:",
     sub: "Реальные ссылки. Реальные адреса. Обновлено для NYC 2025–2026.",
     darkOn: "Тёмная тема", darkOff: "Светлая тема",
+    findCenter: "Найти общественный центр",
+    print: "Печать / PDF",
+    portal: "Портал соседей",
+    modalTitle: "Предложить обновление",
+    modalHint: "Сообщите об устаревшей информации, неверных номерах или предложите новый ресурс.",
     jobNotice: "⚠️ Проверяйте страницы вакансий перед отправкой клиентов — позиции меняются.",
     jobSections: [
       { label: "🟢 Начальный уровень",                key: "entryLevel" },
@@ -408,9 +461,15 @@ const T = {
     empty: "无结果 — 请尝试其他搜索或类别。",
     suggest: "建议更新",
     volForm: "志愿者报名表",
-    hl1: "紧急收容所：拨打 311（24/7）", hl2: "联盟热线：", hl3: "心理健康：",
+    hl1: "紧急收容所：拨打 311（24/7）",
+    hl2: "联盟热线：", hl3: "心理健康：",
     sub: "真实链接。真实地址。已更新至 NYC 2025–2026。",
     darkOn: "深色模式", darkOff: "浅色模式",
+    findCenter: "查找社区中心",
+    print: "打印 / PDF",
+    portal: "邻里门户",
+    modalTitle: "建议更新",
+    modalHint: "报告过时的信息、错误号码、地址变更，或建议新资源。",
     jobNotice: "⚠️ 发送客户前请检查招聘页面——职位随时变化。",
     jobSections: [
       { label: "🟢 入门级职位",       key: "entryLevel" },
@@ -425,9 +484,15 @@ const T = {
     empty: "कोई परिणाम नहीं — अलग खोज या श्रेणी आज़माएं।",
     suggest: "अपडेट सुझाएं",
     volForm: "स्वयंसेवक फॉर्म",
-    hl1: "आपातकालीन आश्रय: 311 पर कॉल करें (24/7)", hl2: "कोएलिशन हेल्पलाइन:", hl3: "मानसिक स्वास्थ्य:",
+    hl1: "आपातकालीन आश्रय: 311 पर कॉल करें (24/7)",
+    hl2: "कोएलिशन हेल्पलाइन:", hl3: "मानसिक स्वास्थ्य:",
     sub: "असली लिंक। असली पते। NYC 2025–2026 के लिए अपडेट।",
     darkOn: "डार्क मोड", darkOff: "लाइट मोड",
+    findCenter: "सामुदायिक केंद्र खोजें",
+    print: "प्रिंट / PDF",
+    portal: "पड़ोस पोर्टल",
+    modalTitle: "अपडेट सुझाएं",
+    modalHint: "पुरानी जानकारी, गलत नंबर, बदले हुए पते की रिपोर्ट करें या नया संसाधन सुझाएं।",
     jobNotice: "⚠️ क्लाइंट भेजने से पहले करियर पेज जांचें — पद बदल सकते हैं।",
     jobSections: [
       { label: "🟢 प्रवेश-स्तर",            key: "entryLevel" },
@@ -442,9 +507,15 @@ const T = {
     empty: "কোনো ফলাফল নেই — অন্য খোঁজ বা বিভাগ চেষ্টা করুন।",
     suggest: "আপডেট সাজেস্ট করুন",
     volForm: "স্বেচ্ছাসেবী ফর্ম",
-    hl1: "জরুরি আশ্রয়: 311 কল করুন (24/7)", hl2: "কোয়ালিশন হটলাইন:", hl3: "মানসিক স্বাস্থ্য:",
+    hl1: "জরুরি আশ্রয়: 311 কল করুন (24/7)",
+    hl2: "কোয়ালিশন হটলাইন:", hl3: "মানসিক স্বাস্থ্য:",
     sub: "আসল লিংক। আসল ঠিকানা। NYC 2025–2026 আপডেট।",
     darkOn: "ডার্ক মোড", darkOff: "লাইট মোড",
+    findCenter: "কমিউনিটি সেন্টার খুঁজুন",
+    print: "প্রিন্ট / PDF",
+    portal: "প্রতিবেশী পোর্টাল",
+    modalTitle: "আপডেট সাজেস্ট করুন",
+    modalHint: "পুরানো তথ্য, ভুল নম্বর, পরিবর্তিত ঠিকানা রিপোর্ট করুন বা নতুন রিসোর্স সাজেস্ট করুন।",
     jobNotice: "⚠️ ক্লায়েন্ট পাঠানোর আগে চাকরির পেজ চেক করুন — পদ পরিবর্তন হতে পারে।",
     jobSections: [
       { label: "🟢 এন্ট্রি-লেভেল",             key: "entryLevel" },
@@ -459,9 +530,15 @@ const T = {
     empty: "Pa gen rezilta — eseye yon lòt rechèch oswa kategori.",
     suggest: "Sijere mizajou",
     volForm: "Fòm volontè",
-    hl1: "Abri ijans: Rele 311 (24/7)", hl2: "Liy koalisyon:", hl3: "Sante mantal:",
+    hl1: "Abri ijans: Rele 311 (24/7)",
+    hl2: "Liy koalisyon:", hl3: "Sante mantal:",
     sub: "Lyen reyèl. Adrès reyèl. Mete ajou pou NYC 2025–2026.",
     darkOn: "Mòd fènwa", darkOff: "Mòd klè",
+    findCenter: "Jwenn Sant Kominotè",
+    print: "Enprime / PDF",
+    portal: "Pòtal Vwazen",
+    modalTitle: "Sijere yon mizajou",
+    modalHint: "Rapòte enfòmasyon ki depase, nimewo ki mal, adrès ki chanje, oswa sijere yon nouvo resous.",
     jobNotice: "⚠️ Verifye paj karyè anvan voye kliyan — pozisyon yo ka chanje.",
     jobSections: [
       { label: "🟢 Nivo debutan",           key: "entryLevel" },
@@ -472,115 +549,104 @@ const T = {
   }
 };
 
+const LANG_NAMES = {en:'English',es:'Español',fr:'Français',ru:'Русский',zh:'中文',hi:'हिन्दी',bn:'বাংলা',ht:'Kreyòl'};
 const CHEVRON  = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 const BULB     = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/></svg>`;
 const EXT_LINK = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
 const SUN_SVG  = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
 const MOON_SVG = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
 
-let data = [], jobListingsData = null, active = 'All', open = null, lang = 'en', fontScale = 1, isDark = false;
+let data=[], jobListingsData=null, active='All', open=null, isDark=false, fontScale=1;
+// Sync lang with portal.html via sessionStorage
+let lang = sessionStorage.getItem('lang') || 'en';
 
-async function loadData() {
+// ── Load data ─────────────────────────────────────────────────
+async function loadData(){
   let json;
-  try { json = await fetch('data.json').then(r => r.json()); }
-  catch(e) {
-    document.getElementById('results').innerHTML =
-      '<div class="empty">Could not load data.json — make sure it is in the same folder as index.html.</div>';
+  try{ json=await fetch('data.json').then(r=>r.json()); }
+  catch(e){
+    document.getElementById('results').innerHTML='<div class="empty">Could not load data.json — make sure it is in the same folder as index.html.</div>';
     return;
   }
-  data = json.cards || [];
-  jobListingsData = json.jobListings || null;
+  data=json.cards||[];
+  jobListingsData=json.jobListings||null;
   rebuildPills();
   render();
 }
 
-function render() {
-  const t = T[lang];
-  const q = (document.getElementById('search').value || '').toLowerCase().trim();
-  document.getElementById('search').placeholder = t.search;
+// ── Render ────────────────────────────────────────────────────
+function render(){
+  const t=T[lang]||T.en;
+  const q=(document.getElementById('search').value||'').toLowerCase().trim();
+  document.getElementById('search').placeholder=t.search;
 
-  const filtered = data.map((d,i) => ({...d,_i:i})).filter(d => {
-    const matchCat = active === 'All' || (d.cats||[]).includes(active);
-    const matchQ   = !q || d.title.toLowerCase().includes(q) || d.sub.toLowerCase().includes(q)
-      || (d.tags||[]).some(tag => tag.includes(q)) || (d.notice||'').toLowerCase().includes(q);
-    return matchCat && matchQ;
+  const filtered=data.map((d,i)=>({...d,_i:i})).filter(d=>{
+    const matchCat=active==='All'||(d.cats||[]).includes(active);
+    const matchQ=!q||d.title.toLowerCase().includes(q)||d.sub.toLowerCase().includes(q)
+      ||(d.tags||[]).some(tag=>tag.includes(q))||(d.notice||'').toLowerCase().includes(q);
+    return matchCat&&matchQ;
   });
 
-  document.getElementById('count').textContent = t.found(filtered.length);
-  const res = document.getElementById('results');
-  if (!filtered.length) { res.innerHTML = `<div class="empty" role="listitem">${t.empty}</div>`; return; }
+  document.getElementById('count').textContent=t.found(filtered.length);
+  const res=document.getElementById('results');
+  if(!filtered.length){res.innerHTML=`<div class="empty" role="listitem">${t.empty}</div>`;return;}
 
-  res.innerHTML = filtered.map((d, pos) => {
-    const isOpen = open === d._i, bodyId = `body-${d._i}`;
-    const noticeHtml = d.notice ? `<div class="notice">${d.notice}</div>` : '';
-    const extraHtml  = d.extra  ? `<p style="margin-bottom:.6rem;font-size:.82rem">${d.extra}</p>` : '';
+  res.innerHTML=filtered.map((d,pos)=>{
+    const isOpen=open===d._i, bodyId=`body-${d._i}`;
+    const noticeHtml=d.notice?`<div class="notice">${d.notice}</div>`:'';
+    const extraHtml=d.extra?`<p style="margin-bottom:.6rem;font-size:.84rem">${d.extra}</p>`:'';
 
-    const jobBodyContent = (() => {
-      if (d.type !== 'job-listings' || !jobListingsData) return '';
-      let html = `<div class="notice">${t.jobNotice}</div>`;
-      t.jobSections.forEach(s => {
-        if (!jobListingsData[s.key]) return;
-        html += `<div class="section-label" role="heading" aria-level="3">${s.label}</div>
-                 <div class="job-grid" role="list">`;
-        html += jobListingsData[s.key].map(j =>
-          `<a class="job-card" href="${j.url}" target="_blank" rel="noopener noreferrer" role="listitem"
-              onclick="event.stopPropagation()"
-              aria-label="${j.org} — ${j.note} (opens in new tab)">
-            <div class="jc-org">${j.org}</div>
-            <div class="jc-note">${j.note}</div>
+    const jobBodyContent=(()=>{
+      if(d.type!=='job-listings'||!jobListingsData)return'';
+      let html=`<div class="notice">${t.jobNotice}</div>`;
+      t.jobSections.forEach(s=>{
+        if(!jobListingsData[s.key])return;
+        html+=`<div class="section-label" role="heading" aria-level="3">${s.label}</div><div class="job-grid" role="list">`;
+        html+=jobListingsData[s.key].map(j=>
+          `<a class="job-card" href="${j.url}" target="_blank" rel="noopener noreferrer" role="listitem" onclick="event.stopPropagation()">
+            <div class="jc-org">${j.org}</div><div class="jc-note">${j.note}</div>
           </a>`
         ).join('');
-        html += '</div>';
+        html+='</div>';
       });
       return html;
     })();
 
-    const volFormHtml = d.volunteerFormUrl
-      ? `<a class="vol-form-link" href="${d.volunteerFormUrl}" target="_blank" rel="noopener noreferrer"
-           onclick="event.stopPropagation()" aria-label="${t.volForm} (opens in new tab)">
-           ${EXT_LINK} ${t.volForm}
-         </a>`
-      : '';
+    const volFormHtml=d.volunteerFormUrl
+      ?`<a class="vol-form-link" href="${d.volunteerFormUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${EXT_LINK} ${t.volForm}</a>`:'';
 
-    const resHtml = (d.resources||[]).length ? `<div class="res-grid" role="list">${
-      d.resources.map(r => {
-        const tag  = r.url ? 'a' : 'div';
-        const href = r.url ? `href="${r.url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"` : '';
-        const al   = `aria-label="${r.org}${r.note?' — '+r.note:''}${r.url?' (opens in new tab)':''}"`;
-        return `<${tag} class="res-card${r.url?'':' no-link'}" ${href} ${al} role="listitem">
+    const resHtml=(d.resources||[]).length?`<div class="res-grid" role="list">${
+      d.resources.map(r=>{
+        const tag=r.url?'a':'div';
+        const href=r.url?`href="${r.url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"`:'';
+        return`<${tag} class="res-card${r.url?'':' no-link'}" ${href} role="listitem">
           <div class="rc-org">${r.org}</div>
-          ${r.note  ? `<div class="rc-note">${r.note}</div>`  : ''}
-          ${r.addr  ? `<div class="rc-addr"><span aria-label="Address">📍</span> ${r.addr}</div>` : ''}
-          ${r.phone ? `<div class="rc-phone"><span aria-label="Phone">📞</span> ${r.phone}</div>` : ''}
+          ${r.note?`<div class="rc-note">${r.note}</div>`:''}
+          ${r.addr?`<div class="rc-addr">📍 ${r.addr}</div>`:''}
+          ${r.phone?`<div class="rc-phone">📞 ${r.phone}</div>`:''}
         </${tag}>`;
       }).join('')
-    }</div>` : '';
+    }</div>`:'';
 
-    return `
+    return`
     <div class="card${isOpen?' is-open':''}" data-idx="${d._i}" role="listitem">
       <div class="ctop" role="button" tabindex="0"
            aria-expanded="${isOpen}" aria-controls="${bodyId}"
-           aria-label="${d.title} — ${d.sub}"
            onclick="tog(${d._i})" onkeydown="handleKey(event,${d._i})"
            style="animation-delay:${Math.min(pos*.045,.32)}s">
         <div class="cicon-wrap" aria-hidden="true">${ICONS[d.id]||''}</div>
         <div style="flex:1;min-width:0">
           <div class="ctitle">${d.title}</div>
           <div class="csub">${d.sub}</div>
-          <div class="ctags" aria-label="Tags" role="list">
-            ${(d.tags||[]).slice(0,5).map(tg=>`<span class="tag" role="listitem">${tg}</span>`).join('')}
-          </div>
+          <div class="ctags" role="list">${(d.tags||[]).slice(0,5).map(tg=>`<span class="tag" role="listitem">${tg}</span>`).join('')}</div>
         </div>
         <div class="chev" aria-hidden="true">${CHEVRON}</div>
       </div>
-      <div class="cbody${isOpen?' open':''}" id="${bodyId}" role="region" aria-label="${d.title} details">
+      <div class="cbody${isOpen?' open':''}" id="${bodyId}" role="region">
         <div class="cbody-inner">
           ${noticeHtml}${extraHtml}${jobBodyContent}${volFormHtml}${resHtml}
           <div class="card-actions">
-            <button class="ca-btn" onclick="openFeedback('${d.title.replace(/'/g,"\\'")}',event)"
-              aria-label="Suggest an update for ${d.title}">
-              ${BULB} ${t.suggest}
-            </button>
+            <button class="ca-btn" onclick="openFeedback('${d.title.replace(/'/g,"\\'")}',event)">${BULB} ${t.suggest}</button>
           </div>
         </div>
       </div>
@@ -588,81 +654,89 @@ function render() {
   }).join('');
 }
 
-function handleKey(e,i) { if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(i);} }
+function handleKey(e,i){if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(i);}}
 
-function tog(i) {
-  const scrollY = window.scrollY;
-  open = open === i ? null : i;
-  document.querySelectorAll('.card').forEach(card => {
-    const idx = parseInt(card.dataset.idx), isOpen = idx===open;
+function tog(i){
+  const scrollY=window.scrollY;
+  open=open===i?null:i;
+  document.querySelectorAll('.card').forEach(card=>{
+    const idx=parseInt(card.dataset.idx),isOpen=idx===open;
     card.classList.toggle('is-open',isOpen);
-    const body = card.querySelector('.cbody'); if(body) body.classList.toggle('open',isOpen);
-    const btn  = card.querySelector('[role="button"]'); if(btn) btn.setAttribute('aria-expanded',isOpen);
+    const body=card.querySelector('.cbody');if(body)body.classList.toggle('open',isOpen);
+    const btn=card.querySelector('[role="button"]');if(btn)btn.setAttribute('aria-expanded',isOpen);
   });
-  requestAnimationFrame(() => window.scrollTo({top:scrollY,behavior:'instant'}));
+  requestAnimationFrame(()=>window.scrollTo({top:scrollY,behavior:'instant'}));
 }
 
-function rebuildPills() {
-  const pw = document.getElementById('pills');
-  pw.innerHTML = '';
-  ['All',...new Set(data.flatMap(d=>d.cats||[]))].forEach(c => {
-    const el = document.createElement('button');
-    el.className = 'pill'+(c===active?' active':'');
-    el.textContent = c;
-    el.setAttribute('aria-pressed', c===active?'true':'false');
-    el.onclick = () => {
-      active=c; open=null;
+function rebuildPills(){
+  const pw=document.getElementById('pills');
+  pw.innerHTML='';
+  ['All',...new Set(data.flatMap(d=>d.cats||[]))].forEach(c=>{
+    const el=document.createElement('button');
+    el.className='pill'+(c===active?' active':'');
+    el.textContent=c;
+    el.setAttribute('aria-pressed',c===active?'true':'false');
+    el.onclick=()=>{
+      active=c;open=null;
       document.querySelectorAll('.pill').forEach(p=>{p.classList.remove('active');p.setAttribute('aria-pressed','false');});
-      el.classList.add('active'); el.setAttribute('aria-pressed','true');
+      el.classList.add('active');el.setAttribute('aria-pressed','true');
       render();
     };
     pw.appendChild(el);
   });
 }
 
-function toggleTheme() {
-  isDark = !isDark;
-  document.documentElement.setAttribute('data-theme', isDark?'dark':'light');
-  const btn=document.getElementById('themeBtn'), lbl=document.getElementById('themeLabel');
-  btn.setAttribute('aria-pressed',isDark);
-  document.getElementById('themeIcon').outerHTML = isDark ? MOON_SVG : SUN_SVG;
-  lbl.textContent = isDark ? T[lang].darkOff : T[lang].darkOn;
+function toggleTheme(){
+  isDark=!isDark;
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  document.getElementById('themeBtn').setAttribute('aria-pressed',isDark);
+  document.getElementById('themeIcon').outerHTML=isDark?MOON_SVG:SUN_SVG;
+  document.getElementById('themeLabel').textContent=isDark?(T[lang]||T.en).darkOff:(T[lang]||T.en).darkOn;
 }
 
-function changeFont(delta) {
-  fontScale = Math.min(1.4, Math.max(0.8, +(fontScale + delta).toFixed(1)));
-  document.documentElement.style.fontSize = (fontScale * 16) + 'px';
-  document.getElementById('fontLabel').textContent = Math.round(fontScale * 100) + '%';
+function changeFont(delta){
+  fontScale=Math.min(1.4,Math.max(0.8,+(fontScale+delta).toFixed(1)));
+  document.documentElement.style.fontSize=(fontScale*16)+'px';
+  document.getElementById('fontLabel').textContent=Math.round(fontScale*100)+'%';
 }
 
-function toggleLangMenu() {
-  const menu=document.getElementById('langMenu'), btn=document.getElementById('langBtn');
+function toggleLangMenu(){
+  const menu=document.getElementById('langMenu'),btn=document.getElementById('langBtn');
   const isOpen=menu.classList.toggle('open');
   btn.setAttribute('aria-expanded',isOpen);
-  if(isOpen) menu.querySelector('button').focus();
+  if(isOpen)menu.querySelector('button').focus();
 }
 
-function setLang(code) {
+function setLang(code){
   lang=code;
+  sessionStorage.setItem('lang',code);
   document.documentElement.setAttribute('lang',code);
-  const names={en:'English',es:'Español',fr:'Français',ru:'Русский',zh:'中文',hi:'हिन्दी',bn:'বাংলা',ht:'Kreyòl'};
-  document.getElementById('langLabel').textContent = names[code];
+  document.getElementById('langLabel').textContent=LANG_NAMES[code]||'English';
   document.getElementById('langMenu').classList.remove('open');
   document.getElementById('langBtn').setAttribute('aria-expanded','false');
   document.querySelectorAll('.lang-opt').forEach(o=>{
-    const active=o.getAttribute('onclick').includes(`'${code}'`);
-    o.classList.toggle('active',active); o.setAttribute('aria-selected',active);
+    const sel=o.getAttribute('onclick').includes(`'${code}'`);
+    o.classList.toggle('active',sel);o.setAttribute('aria-selected',sel);
   });
-  const t=T[code];
-  document.getElementById('hl1').textContent = t.hl1;
-  document.getElementById('hl2').innerHTML   = `${t.hl2} <strong>1-888-358-2384</strong>`;
-  document.getElementById('hl3').innerHTML   = `${t.hl3} <strong>NYC Well 1-888-NYC-WELL</strong>`;
-  document.getElementById('subtext').textContent = t.sub;
-  document.getElementById('themeLabel').textContent = isDark ? t.darkOff : t.darkOn;
+  applyStaticTranslations();
   render();
 }
 
-document.addEventListener('click', e => {
+function applyStaticTranslations(){
+  const t=T[lang]||T.en;
+  document.getElementById('hl1').textContent=t.hl1;
+  document.getElementById('hl2').innerHTML=`${t.hl2} <strong>1-888-358-2384</strong>`;
+  document.getElementById('hl3').innerHTML=`${t.hl3} <strong>NYC Well 1-888-NYC-WELL</strong>`;
+  document.getElementById('subtext').textContent=t.sub;
+  document.getElementById('themeLabel').textContent=isDark?t.darkOff:t.darkOn;
+  document.getElementById('btnMapLabel').textContent=t.findCenter;
+  document.getElementById('btnPrintLabel').textContent=t.print;
+  document.getElementById('btnPortalLabel').textContent=t.portal;
+  document.getElementById('modalTitle').textContent=t.modalTitle;
+  document.getElementById('modalHint').textContent=t.modalHint;
+}
+
+document.addEventListener('click',e=>{
   const w=document.getElementById('langWrap');
   if(w&&!w.contains(e.target)){document.getElementById('langMenu').classList.remove('open');document.getElementById('langBtn').setAttribute('aria-expanded','false');}
 });
@@ -684,6 +758,7 @@ document.querySelectorAll('.modal-bg').forEach(m=>{
   });
 });
 
+applyStaticTranslations();
 loadData();
 </script>
 </body>

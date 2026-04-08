@@ -9,246 +9,303 @@
 :root[data-theme="light"]{
   --bg:#f5f0eb;--card:#fff;--border:#e0d8d0;
   --accent:#c9624a;--accent2:#d4a830;--green:#5a9478;--blue:#4a6fa5;
-  --text:#2a2d45;--muted:#5a5050;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.1);
+  --text:#2a2d45;--muted:#6a6060;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 14px rgba(0,0,0,.09);
 }
 :root[data-theme="dark"]{
   --bg:#16161e;--card:#1f1f2e;--border:#2e2e42;
   --accent:#e07a5f;--accent2:#f2cc8f;--green:#81b29a;--blue:#7aa2d4;
   --text:#e8e4f0;--muted:#9a90b0;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.4);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 14px rgba(0,0,0,.4);
 }
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
-.wrap{max-width:940px;margin:0 auto;padding:2rem 1.2rem 5rem}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:940px;margin:0 auto;padding:1.6rem 1.1rem 5rem}
 
-.top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;margin-bottom:1.8rem}
-.tb-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s}
+/* ── Top bar ── */
+.top-bar{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:1.6rem}
+.tb-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.38rem .8rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s;min-height:36px;white-space:nowrap;-webkit-tap-highlight-color:transparent}
 .tb-btn:hover{border-color:var(--accent);color:var(--accent)}
 .tb-btn svg{width:14px;height:14px;flex-shrink:0}
+.tb-sep{flex:1}
 
-header{margin-bottom:1.3rem}
+/* Language dropdown */
+.lang-wrap{position:relative}
+.lang-menu{display:none;position:absolute;top:calc(100% + 4px);right:0;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:.3rem;min-width:150px;z-index:100;box-shadow:var(--shadow-md);flex-direction:column;gap:.1rem}
+.lang-menu.open{display:flex}
+.lang-opt{padding:.4rem .8rem;border-radius:6px;font-size:.8rem;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text);text-align:left;transition:background .15s;white-space:nowrap}
+.lang-opt:hover{background:rgba(201,98,74,.1)}
+.lang-opt.active{color:var(--accent);font-weight:700}
+
+header{margin-bottom:1.2rem}
 header h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--accent),var(--accent2),var(--green));background-size:200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:grad 7s ease infinite}
-@keyframes grad{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
+@keyframes grad{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+header p{color:var(--muted);font-size:.86rem;margin-top:.3rem}
 
-.status-bar{border-radius:9px;padding:.42rem .9rem;font-size:.76rem;font-weight:600;margin-bottom:.85rem;display:none;text-align:center}
-.status-bar.loading{background:rgba(74,111,165,.1);border:1px solid rgba(74,111,165,.2);color:var(--blue);animation:pulse 1.6s ease infinite}
+/* ── Status bar ── */
+.status-bar{border-radius:9px;padding:.45rem .9rem;font-size:.78rem;font-weight:600;margin-bottom:.8rem;display:none;text-align:center}
+.status-bar.loading{background:rgba(74,111,165,.1);border:1px solid rgba(74,111,165,.2);color:var(--blue)}
 .status-bar.error{background:rgba(201,98,74,.08);border:1px solid rgba(201,98,74,.22);color:var(--accent);text-align:left}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
 
-.zip-gate{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:.9rem 1.2rem;margin-bottom:1.3rem;display:flex;align-items:center;flex-wrap:wrap;gap:.6rem;box-shadow:var(--shadow-sm)}
-.zip-gate label{font-size:.8rem;font-weight:600;color:var(--muted)}
-.zip-gate input{padding:.38rem .7rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.88rem;width:130px;outline:none;transition:border-color .2s}
+/* ── ZIP gate ── */
+.zip-gate{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:.85rem 1.1rem;margin-bottom:1.2rem;display:flex;align-items:center;flex-wrap:wrap;gap:.55rem;box-shadow:var(--shadow-sm)}
+.zip-gate label{font-size:.82rem;font-weight:600;color:var(--muted)}
+.zip-gate input{padding:.4rem .75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.9rem;width:130px;outline:none;transition:border-color .2s;min-height:36px}
 .zip-gate input:focus{border-color:var(--accent)}
-.zip-pill{background:rgba(201,98,74,.1);border:1.5px solid rgba(201,98,74,.3);color:var(--accent);border-radius:999px;padding:.2rem .7rem;font-size:.76rem;font-weight:700;display:none;align-items:center;gap:.3rem}
+.zip-pill{background:rgba(201,98,74,.1);border:1.5px solid rgba(201,98,74,.3);color:var(--accent);border-radius:999px;padding:.22rem .75rem;font-size:.78rem;font-weight:700;display:none;align-items:center;gap:.35rem}
 .zip-pill.show{display:inline-flex}
-.zip-pill button{background:none;border:none;cursor:pointer;color:var(--accent);font-size:.85rem;opacity:.7;padding:0 0 0 3px;line-height:1}
+.zip-pill button{background:none;border:none;cursor:pointer;color:var(--accent);font-size:.88rem;opacity:.7;padding:2px 0 2px 4px;line-height:1;min-width:20px;min-height:20px}
 .zip-pill button:hover{opacity:1}
 
-.tabs{display:flex;border-bottom:1.5px solid var(--border);margin-bottom:1.3rem;overflow-x:auto}
-.tab{padding:.58rem 1.05rem;font-size:.83rem;font-weight:600;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--muted);cursor:pointer;margin-bottom:-1.5px;white-space:nowrap;transition:all .2s;flex-shrink:0}
+/* ── Tabs ── */
+.tabs{display:flex;border-bottom:1.5px solid var(--border);margin-bottom:1.2rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:.6rem 1rem;font-size:.84rem;font-weight:600;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--muted);cursor:pointer;margin-bottom:-1.5px;white-space:nowrap;transition:color .2s,border-color .2s;flex-shrink:0;min-height:44px}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .tab:hover:not(.active){color:var(--text)}
 
-.filter-row{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;margin-bottom:.85rem}
-.filter-row label{font-size:.74rem;font-weight:600;color:var(--muted)}
-.filter-row select{padding:.28rem .52rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.76rem;cursor:pointer;outline:none}
+/* ── Filters ── */
+.filter-row{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;margin-bottom:.8rem}
+.filter-row label{font-size:.76rem;font-weight:600;color:var(--muted)}
+.filter-row select{padding:.3rem .55rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.78rem;cursor:pointer;outline:none;min-height:32px}
 .filter-row select:focus{border-color:var(--accent)}
 
-.cpills{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.85rem}
-.cpill{padding:.22rem .65rem;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:.7rem;font-weight:600;transition:all .18s}
+/* ── Category pills ── */
+.cpills{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.8rem}
+.cpill{padding:.24rem .7rem;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:.72rem;font-weight:600;transition:all .18s;min-height:30px;display:inline-flex;align-items:center;-webkit-tap-highlight-color:transparent}
 .cpill:hover{border-color:var(--accent);color:var(--accent)}
 .cpill.on{background:var(--accent);border-color:var(--accent);color:#fff}
 
-.count{color:var(--muted);font-size:.72rem;font-weight:600;margin-bottom:.7rem}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:.7rem}
+.count{color:var(--muted);font-size:.74rem;font-weight:600;margin-bottom:.65rem}
 
-.ncard{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:.95rem 1.1rem;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:.45rem;transition:border-color .2s,box-shadow .2s}
-.ncard:hover{border-color:rgba(201,98,74,.3);box-shadow:var(--shadow-md)}
-.ncard.offer-card:hover{border-color:rgba(90,148,120,.35)}
-.ncard.fulfilled{opacity:.6}
+/* ── Card grid ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.7rem}
+.ncard{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:.9rem 1.05rem;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:.42rem;transition:border-color .2s,box-shadow .2s}
+.ncard:hover{border-color:rgba(201,98,74,.28);box-shadow:var(--shadow-md)}
+.ncard.offer-card:hover{border-color:rgba(90,148,120,.32)}
+.ncard.fulfilled{opacity:.55}
 
 .badges{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center}
 .ncard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem}
-.type-badge{font-size:.62rem;font-weight:800;padding:.16rem .48rem;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}
+.type-badge{font-size:.63rem;font-weight:800;padding:.16rem .5rem;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}
 .type-need{background:#FAECE7;color:#712B13}
 .type-offer{background:#E1F5EE;color:#085041}
-.cat-badge{font-size:.64rem;font-weight:700;padding:.16rem .48rem;border-radius:999px}
+.cat-badge{font-size:.65rem;font-weight:700;padding:.16rem .5rem;border-radius:999px}
 .urg-mini{display:flex;align-items:center;gap:.28rem}
 .urg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.urg-lbl{font-size:.64rem;font-weight:600}
+.urg-lbl{font-size:.65rem;font-weight:600}
 .urg-urgent .urg-dot{background:#e24b4a}.urg-urgent .urg-lbl{color:#e24b4a}
 .urg-week   .urg-dot{background:#ef9f27}.urg-week   .urg-lbl{color:#ef9f27}
 .urg-flex   .urg-dot{background:#639922}.urg-flex   .urg-lbl{color:#639922}
 
-.ncard-name{font-weight:700;font-size:.86rem}
-.ncard-meta{font-size:.68rem;color:var(--muted);font-weight:500}
-.ncard-desc{font-size:.78rem;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.ncard-name{font-weight:700;font-size:.88rem}
+.ncard-meta{font-size:.7rem;color:var(--muted);font-weight:500}
+.ncard-desc{font-size:.8rem;color:var(--muted);line-height:1.6;overflow:hidden;flex:1;
+  display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical}
+/* Firefox fallback for line-clamp */
+@supports not (-webkit-line-clamp:3){.ncard-desc{max-height:4.8em}}
+
 .ncard-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.3rem;margin-top:auto;padding-top:.4rem}
-.ncard-time{font-size:.66rem;color:var(--muted)}
+.ncard-time{font-size:.67rem;color:var(--muted)}
 .ncard-btns{display:flex;gap:.3rem;flex-wrap:wrap}
 
-.chip{font-size:.62rem;font-weight:700;padding:.15rem .48rem;border-radius:999px}
+.chip{font-size:.63rem;font-weight:700;padding:.16rem .5rem;border-radius:999px}
 .chip-open{background:rgba(90,148,120,.12);color:var(--green)}
 .chip-done{background:rgba(201,98,74,.1);color:var(--accent)}
 
-.btn{padding:.22rem .6rem;border-radius:7px;border:1.5px solid;font-size:.68rem;font-weight:600;cursor:pointer;transition:all .18s;background:none;white-space:nowrap}
-.btn-g{border-color:rgba(90,148,120,.3);color:var(--green);background:rgba(90,148,120,.07)}
-.btn-g:hover{background:var(--green);color:#fff;border-color:var(--green)}
-.btn-b{border-color:rgba(74,111,165,.3);color:var(--blue);background:rgba(74,111,165,.07)}
-.btn-b:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
-.btn-r{border-color:rgba(201,98,74,.3);color:var(--accent);background:rgba(201,98,74,.07)}
-.btn-r:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* ── Buttons — larger touch targets ── */
+.btn{padding:.28rem .65rem;border-radius:7px;border:1.5px solid;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .18s;background:none;white-space:nowrap;min-height:32px;-webkit-tap-highlight-color:transparent}
+.btn-g{border-color:rgba(90,148,120,.35);color:var(--green);background:rgba(90,148,120,.07)}
+.btn-g:hover,.btn-g:focus{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-b{border-color:rgba(74,111,165,.35);color:var(--blue);background:rgba(74,111,165,.07)}
+.btn-b:hover,.btn-b:focus{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-r{border-color:rgba(201,98,74,.35);color:var(--accent);background:rgba(201,98,74,.07)}
+.btn-r:hover,.btn-r:focus{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn-del{border-color:rgba(180,50,50,.3);color:#c0392b;background:rgba(180,50,50,.07)}
-.btn-del:hover{background:#c0392b;color:#fff;border-color:#c0392b}
+.btn-del:hover,.btn-del:focus{background:#c0392b;color:#fff;border-color:#c0392b}
 
-.expand-box{padding:.6rem .8rem;border-radius:10px;font-size:.77rem;line-height:1.65;display:none;margin-top:.1rem}
-.expand-box.show{display:block}
-.expand-green{background:rgba(90,148,120,.07);border:1px solid rgba(90,148,120,.22)}
-.expand-blue{background:rgba(74,111,165,.06);border:1px solid rgba(74,111,165,.18)}
+/* ── Expand boxes — max-height transition (all browsers) ── */
+.expand-box{
+  overflow:hidden;
+  max-height:0;
+  transition:max-height .3s ease,opacity .25s ease,margin-top .25s ease;
+  opacity:0;
+  margin-top:0;
+  border-radius:10px;
+  font-size:.79rem;
+  line-height:1.65
+}
+.expand-box.show{max-height:400px;opacity:1;margin-top:.4rem}
+.expand-green{background:rgba(90,148,120,.07);border:1px solid rgba(90,148,120,.22);padding:.6rem .85rem}
+.expand-blue{background:rgba(74,111,165,.06);border:1px solid rgba(74,111,165,.18);padding:.6rem .85rem}
 
-.msg-form{display:flex;flex-direction:column;gap:.38rem;margin-top:.35rem}
-.msg-form textarea,.msg-form input[type=text]{width:100%;padding:.38rem .6rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.76rem;font-family:inherit;outline:none;transition:border-color .2s}
-.msg-form textarea{height:66px;resize:vertical;line-height:1.45}
+/* ── Message form ── */
+.msg-form{display:flex;flex-direction:column;gap:.38rem}
+.msg-form textarea,.msg-form input[type=text]{width:100%;padding:.42rem .65rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.79rem;font-family:inherit;outline:none;transition:border-color .2s}
+.msg-form textarea{height:68px;resize:vertical;line-height:1.5}
 .msg-form textarea:focus,.msg-form input[type=text]:focus{border-color:var(--blue)}
-.anon-note{font-size:.67rem;color:var(--muted);font-style:italic}
-.msg-sent{font-size:.72rem;color:var(--green);font-weight:600;display:none}
+.anon-note{font-size:.69rem;color:var(--muted);font-style:italic}
+.msg-sent{font-size:.73rem;color:var(--green);font-weight:600;display:none}
 
+/* ── Post form ── */
 .form-wrap{max-width:540px}
 .type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.1rem}
-.type-opt{padding:.62rem;border-radius:10px;border:2px solid var(--border);background:var(--card);cursor:pointer;text-align:center;transition:all .2s;user-select:none}
+.type-opt{padding:.65rem;border-radius:10px;border:2px solid var(--border);background:var(--card);cursor:pointer;text-align:center;transition:all .2s;user-select:none;-webkit-tap-highlight-color:transparent}
 .type-opt.sel-need{border-color:var(--accent);background:rgba(201,98,74,.07)}
 .type-opt.sel-offer{border-color:var(--green);background:rgba(90,148,120,.07)}
 .t-emoji{font-size:1.35rem;display:block;margin-bottom:.15rem}
-.t-label{font-size:.8rem;font-weight:700;color:var(--text)}
-.t-desc{font-size:.68rem;color:var(--muted);margin-top:.08rem}
+.t-label{font-size:.82rem;font-weight:700;color:var(--text)}
+.t-desc{font-size:.7rem;color:var(--muted);margin-top:.08rem}
 
 .fg{margin-bottom:.95rem}
-.fg>label,.fg-label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:.28rem;text-transform:uppercase;letter-spacing:.04em}
-.fg input,.fg select,.fg textarea{width:100%;padding:.45rem .72rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.84rem;font-family:inherit;outline:none;transition:border-color .2s}
+.fg>label,.fg-label{display:block;font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.04em}
+.fg input,.fg select,.fg textarea{width:100%;padding:.48rem .76rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.86rem;font-family:inherit;outline:none;transition:border-color .2s;min-height:40px}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
-.fg textarea{height:88px;resize:vertical;line-height:1.5}
-.fg .hint{font-size:.67rem;color:var(--muted);margin-top:.25rem;line-height:1.4}
+.fg textarea{height:90px;resize:vertical;line-height:1.5;min-height:auto}
+.fg .hint{font-size:.69rem;color:var(--muted);margin-top:.25rem;line-height:1.4}
 
 .urg-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.42rem}
-.urg-opt{padding:.45rem .3rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);font-size:.71rem;font-weight:600;cursor:pointer;text-align:center;color:var(--muted);transition:all .18s;user-select:none}
+.urg-opt{padding:.5rem .3rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);font-size:.73rem;font-weight:600;cursor:pointer;text-align:center;color:var(--muted);transition:all .18s;user-select:none;min-height:44px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
 .urg-opt.sel-urgent{background:#FCEBEB;border-color:#E24B4A;color:#A32D2D}
 .urg-opt.sel-week{background:#FAEEDA;border-color:#EF9F27;color:#854F0B}
 .urg-opt.sel-flexible{background:#EAF3DE;border-color:#639922;color:#3B6D11}
 
-.popt{display:flex;align-items:flex-start;gap:.55rem;padding:.55rem .75rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;margin-bottom:.4rem;transition:all .2s;user-select:none}
+.popt{display:flex;align-items:flex-start;gap:.55rem;padding:.55rem .8rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;margin-bottom:.4rem;transition:all .2s;user-select:none;-webkit-tap-highlight-color:transparent}
 .popt:hover{border-color:var(--accent)}
 .popt.sel{border-color:var(--accent);background:rgba(201,98,74,.06)}
-.popt input[type=radio]{margin-top:.1rem;flex-shrink:0;accent-color:var(--accent);cursor:pointer}
-.popt-lbl{font-size:.78rem;font-weight:700;color:var(--text)}
-.popt-desc{font-size:.67rem;color:var(--muted);margin-top:.08rem;line-height:1.4}
+.popt input[type=radio]{margin-top:.1rem;flex-shrink:0;accent-color:var(--accent);cursor:pointer;width:16px;height:16px}
+.popt-lbl{font-size:.8rem;font-weight:700;color:var(--text)}
+.popt-desc{font-size:.69rem;color:var(--muted);margin-top:.08rem;line-height:1.4}
 
-.sub-btn{width:100%;padding:.7rem;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;margin-top:.5rem;transition:opacity .18s}
+/* ── Inline form error ── */
+.form-error{padding:.5rem .8rem;border-radius:9px;font-size:.8rem;font-weight:600;color:#8b2000;background:rgba(201,98,74,.08);border:1.5px solid rgba(201,98,74,.3);margin-bottom:.75rem;display:none}
+.form-error.show{display:block}
+
+.sub-btn{width:100%;padding:.72rem;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:.92rem;font-weight:700;cursor:pointer;margin-top:.5rem;transition:opacity .18s;min-height:44px}
 .sub-btn:hover{opacity:.88}
 .sub-btn:disabled{opacity:.45;cursor:not-allowed}
 
-.success-box{background:rgba(90,148,120,.09);border:2px solid rgba(90,148,120,.28);border-radius:13px;padding:1.1rem 1.3rem;margin-bottom:1.3rem;display:none;position:relative}
+/* ── Success box ── */
+.success-box{background:rgba(90,148,120,.09);border:2px solid rgba(90,148,120,.28);border-radius:13px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;display:none;position:relative}
 .success-box.show{display:block}
-.success-box h3{font-size:.88rem;color:var(--green);margin-bottom:.5rem}
+.success-box h3{font-size:.9rem;color:var(--green);margin-bottom:.5rem}
 .code-display{background:var(--card);border:2.5px dashed var(--green);border-radius:9px;padding:.45rem 1rem;font-size:1.5rem;font-weight:800;letter-spacing:.18em;color:var(--green);text-align:center;font-family:'Courier New',monospace;margin:.4rem 0;cursor:pointer;transition:background .2s}
 .code-display:hover{background:rgba(90,148,120,.08)}
-.code-warn{font-size:.7rem;color:var(--muted);line-height:1.5;background:rgba(212,168,48,.1);border:1px solid rgba(212,168,48,.3);border-radius:7px;padding:.38rem .65rem;margin-top:.4rem}
-.close-success{position:absolute;top:.7rem;right:.9rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;opacity:.6;transition:opacity .15s}
+.code-warn{font-size:.72rem;color:var(--muted);line-height:1.5;background:rgba(212,168,48,.1);border:1px solid rgba(212,168,48,.3);border-radius:7px;padding:.38rem .65rem;margin-top:.4rem}
+.close-success{position:absolute;top:.7rem;right:.9rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;opacity:.7;padding:.2rem .4rem;min-width:28px;min-height:28px}
 .close-success:hover{opacity:1}
 
-.manage-intro{font-size:.83rem;color:var(--muted);margin-bottom:1rem;line-height:1.55}
+/* ── Manage tab ── */
+.manage-intro{font-size:.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.6}
 .code-search{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
-.code-search input{padding:.48rem .85rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.96rem;font-family:'Courier New',monospace;letter-spacing:.12em;width:200px;text-transform:uppercase;outline:none;transition:border-color .2s}
+.code-search input{padding:.5rem .9rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.98rem;font-family:'Courier New',monospace;letter-spacing:.12em;width:200px;text-transform:uppercase;outline:none;transition:border-color .2s;min-height:44px}
 .code-search input:focus{border-color:var(--accent)}
-
 .manage-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:1.1rem 1.3rem;box-shadow:var(--shadow-sm);display:none}
 .manage-card.show{display:block}
-.manage-desc-block{font-size:.84rem;color:var(--text);line-height:1.65;margin:.55rem 0}
-.manage-meta{font-size:.7rem;color:var(--muted);margin-bottom:.7rem}
-
+.manage-desc-block{font-size:.86rem;color:var(--text);line-height:1.7;margin:.55rem 0}
+.manage-meta{font-size:.72rem;color:var(--muted);margin-bottom:.7rem}
 .msgs-section{margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--border)}
-.msgs-section h4{font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem}
-.msg-item{background:rgba(74,111,165,.07);border:1px solid rgba(74,111,165,.16);border-radius:9px;padding:.55rem .75rem;margin-bottom:.4rem;font-size:.78rem;line-height:1.55}
-.msg-item .msg-reply{font-size:.67rem;color:var(--blue);margin-top:.2rem;font-style:italic}
-.msg-item .msg-time{font-size:.63rem;color:var(--muted);margin-top:.15rem}
-.no-msgs{font-size:.78rem;color:var(--muted);font-style:italic}
+.msgs-section h4{font-size:.76rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem}
+.msg-item{background:rgba(74,111,165,.07);border:1px solid rgba(74,111,165,.16);border-radius:9px;padding:.55rem .8rem;margin-bottom:.4rem;font-size:.8rem;line-height:1.6}
+.msg-item .msg-reply{font-size:.69rem;color:var(--blue);margin-top:.2rem;font-style:italic}
+.msg-item .msg-time{font-size:.65rem;color:var(--muted);margin-top:.15rem}
+.no-msgs{font-size:.8rem;color:var(--muted);font-style:italic}
 .manage-actions{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--border)}
-
 .edit-box{margin-top:.85rem;display:none}
-.edit-box textarea{width:100%;padding:.48rem .72rem;border-radius:9px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.84rem;font-family:inherit;height:88px;outline:none;resize:vertical;line-height:1.5;transition:border-color .2s}
+.edit-box textarea{width:100%;padding:.5rem .75rem;border-radius:9px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.86rem;font-family:inherit;height:90px;outline:none;resize:vertical;line-height:1.5;transition:border-color .2s}
 .edit-box textarea:focus{border-color:var(--accent)}
 .edit-actions{display:flex;gap:.4rem;margin-top:.4rem}
-
-.m-alert{padding:.5rem .8rem;border-radius:9px;font-size:.78rem;font-weight:600;margin-bottom:.8rem;display:none}
+.m-alert{padding:.52rem .85rem;border-radius:9px;font-size:.8rem;font-weight:600;margin-bottom:.8rem;display:none}
 .m-alert.show{display:block}
 .m-alert.warn{background:rgba(212,168,48,.1);border:1.5px solid rgba(212,168,48,.3);color:#5a3f00}
 .m-alert.ok{background:rgba(90,148,120,.1);border:1.5px solid rgba(90,148,120,.28);color:var(--green)}
 [data-theme="dark"] .m-alert.warn{color:var(--accent2)}
 
-.empty-state{text-align:center;padding:2.8rem 1rem;color:var(--muted)}
-.empty-state .e-icon{font-size:2.1rem;margin-bottom:.55rem}
-.empty-state p{font-size:.84rem;line-height:1.6}
+/* ── Empty state ── */
+.empty-state{text-align:center;padding:2.6rem 1rem;color:var(--muted)}
+.empty-state .e-icon{font-size:2rem;margin-bottom:.5rem}
+.empty-state p{font-size:.86rem;line-height:1.6}
 
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media(max-width:520px){
   .type-toggle,.urg-row{grid-template-columns:1fr}
-  .tab{padding:.48rem .7rem;font-size:.76rem}
+  .tab{padding:.5rem .7rem;font-size:.78rem}
+  .grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <!-- Status bar — loading / errors -->
   <div id="statusBar" class="status-bar"></div>
 
   <div class="top-bar">
-    <a class="tb-btn" href="index.html">
+    <a class="tb-btn" href="index.html" id="btnBack">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      Back to Resource Navigator
+      <span data-i="back">Back to Resource Navigator</span>
     </a>
-    <button class="tb-btn" onclick="load()" title="Refresh posts from server">
+    <div class="tb-sep"></div>
+    <button class="tb-btn" onclick="load()" title="Refresh">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-      Refresh
+      <span data-i="refresh">Refresh</span>
     </button>
     <button class="tb-btn" onclick="toggleTheme()" id="themeBtn">
       <svg id="themeIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      <span id="themeLabel">Dark mode</span>
+      <span id="themeLabel" data-i="dark">Dark mode</span>
     </button>
+    <div class="lang-wrap" id="langWrap">
+      <button class="tb-btn" id="langBtn" onclick="toggleLangMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        <span id="langLabel">English</span>
+      </button>
+      <div class="lang-menu" id="langMenu">
+        <button class="lang-opt active" onclick="setLang('en')">🇺🇸 English</button>
+        <button class="lang-opt" onclick="setLang('es')">🇪🇸 Español</button>
+        <button class="lang-opt" onclick="setLang('fr')">🇫🇷 Français</button>
+        <button class="lang-opt" onclick="setLang('ru')">🇷🇺 Русский</button>
+        <button class="lang-opt" onclick="setLang('zh')">🇨🇳 中文</button>
+        <button class="lang-opt" onclick="setLang('hi')">🇮🇳 हिन्दी</button>
+        <button class="lang-opt" onclick="setLang('bn')">🇧🇩 বাংলা</button>
+        <button class="lang-opt" onclick="setLang('ht')">🇭🇹 Kreyòl</button>
+      </div>
+    </div>
   </div>
 
   <header>
-    <h1>🏘️ Neighborhood Portal</h1>
-    <p>Mutual aid by ZIP — post a need or offer help. All posts are anonymous by default. Powered by Google Sheets.</p>
+    <h1>🏘️ <span data-i="title">Neighborhood Portal</span></h1>
+    <p data-i="subtitle">Mutual aid by ZIP — post a need or offer help. All posts are anonymous by default.</p>
   </header>
 
   <div class="zip-gate">
-    <label for="gZip">Your ZIP:</label>
-    <input type="text" id="gZip" maxlength="5" placeholder="e.g. 10031" oninput="onGlobalZip()" autocomplete="postal-code">
+    <label for="gZip" data-i="yourZip">Your ZIP:</label>
+    <input type="text" id="gZip" maxlength="5" placeholder="e.g. 10031" oninput="onGlobalZip()" inputmode="numeric" autocomplete="postal-code">
     <span class="zip-pill" id="zipPill">
       <span id="zipPillTxt"></span>
       <button onclick="clearZip()" title="Clear">✕</button>
     </span>
-    <span id="zipHint" style="font-size:.73rem;color:var(--muted)">Enter your ZIP to filter nearby posts and pre-fill the form.</span>
+    <span id="zipHint" style="font-size:.75rem;color:var(--muted)" data-i="zipHint">Enter your ZIP to filter nearby posts.</span>
   </div>
 
   <div class="tabs">
-    <button class="tab active" id="t-needs"  onclick="switchTab('needs')">🙋 Needs</button>
-    <button class="tab"        id="t-offers" onclick="switchTab('offers')">🤝 Offers</button>
-    <button class="tab"        id="t-post"   onclick="switchTab('post')">➕ Post</button>
-    <button class="tab"        id="t-manage" onclick="switchTab('manage')">🔑 Manage My Post</button>
+    <button class="tab active" id="t-needs"  onclick="switchTab('needs')"  data-i="tabNeeds">🙋 Needs</button>
+    <button class="tab"        id="t-offers" onclick="switchTab('offers')" data-i="tabOffers">🤝 Offers</button>
+    <button class="tab"        id="t-post"   onclick="switchTab('post')"   data-i="tabPost">➕ Post</button>
+    <button class="tab"        id="t-manage" onclick="switchTab('manage')" data-i="tabManage">🔑 Manage</button>
   </div>
 
   <!-- NEEDS -->
   <div id="p-needs">
     <div class="filter-row">
-      <label>ZIP:</label><select id="nZip" onchange="renderNeeds()"><option value="">All</option></select>
-      <label>Urgency:</label>
+      <label data-i="filterZip">ZIP:</label><select id="nZip" onchange="renderNeeds()"><option value="" data-i="all">All</option></select>
+      <label data-i="filterUrg">Urgency:</label>
       <select id="nUrg" onchange="renderNeeds()">
-        <option value="">All</option><option value="urgent">Urgent</option>
-        <option value="week">This week</option><option value="flexible">Flexible</option>
+        <option value="" data-i="urgAll">All</option>
+        <option value="urgent" data-i="urgent">Urgent</option>
+        <option value="week"   data-i="thisWeek">This week</option>
+        <option value="flexible" data-i="flexible">Flexible</option>
       </select>
-      <label>Show:</label>
+      <label data-i="filterShow">Show:</label>
       <select id="nStat" onchange="renderNeeds()">
-        <option value="open">Open</option><option value="">All</option><option value="claimed">Fulfilled</option>
+        <option value="open" data-i="open">Open</option>
+        <option value=""     data-i="all">All</option>
+        <option value="claimed" data-i="fulfilled">Fulfilled</option>
       </select>
     </div>
     <div class="cpills" id="nCats"></div>
@@ -259,10 +316,12 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
   <!-- OFFERS -->
   <div id="p-offers" style="display:none">
     <div class="filter-row">
-      <label>ZIP:</label><select id="oZip" onchange="renderOffers()"><option value="">All</option></select>
-      <label>Show:</label>
+      <label data-i="filterZip">ZIP:</label><select id="oZip" onchange="renderOffers()"><option value="" data-i="all">All</option></select>
+      <label data-i="filterShow">Show:</label>
       <select id="oStat" onchange="renderOffers()">
-        <option value="open">Active</option><option value="">All</option><option value="claimed">Closed</option>
+        <option value="open"    data-i="active">Active</option>
+        <option value=""        data-i="all">All</option>
+        <option value="claimed" data-i="closedStat">Closed</option>
       </select>
     </div>
     <div class="cpills" id="oCats"></div>
@@ -273,40 +332,40 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
   <!-- POST -->
   <div id="p-post" style="display:none">
     <div class="success-box" id="successBox">
-      <button class="close-success" onclick="document.getElementById('successBox').className='success-box'" title="Dismiss">✕</button>
-      <h3>✅ Posted to Google Sheets!</h3>
-      <p style="font-size:.79rem;color:var(--text);margin-bottom:.4rem">Save your <strong>secret management code</strong> — use it to view responses, edit, mark as done, or delete from any device.</p>
-      <div class="code-display" id="codeDisplay" title="Click to copy" onclick="copyCode()"></div>
-      <div class="code-warn">⚠️ This code is shown <strong>once</strong>. Screenshot it or write it down now. Click to copy.</div>
+      <button class="close-success" onclick="document.getElementById('successBox').className='success-box'">✕</button>
+      <h3 data-i="successTitle">✅ Posted!</h3>
+      <p style="font-size:.81rem;color:var(--text);margin-bottom:.4rem" data-i="successText">Save your <strong>secret management code</strong> — use it to view responses, edit, or delete.</p>
+      <div class="code-display" id="codeDisplay" onclick="copyCode()"></div>
+      <div class="code-warn" data-i="codeWarn">⚠️ Shown <strong>once</strong>. Screenshot it now. Click to copy.</div>
     </div>
     <div class="form-wrap">
       <div class="fg" style="margin-bottom:1.2rem">
-        <span class="fg-label">I want to…</span>
+        <span class="fg-label" data-i="wantTo">I want to…</span>
         <div class="type-toggle">
-          <div class="type-opt sel-need" id="optNeed" onclick="setPostType('need')">
+          <div class="type-opt sel-need" id="optNeed" onclick="setPostType('need')" role="button" tabindex="0">
             <span class="t-emoji">🙋</span>
-            <span class="t-label">Post a Need</span>
-            <span class="t-desc">I need help with something</span>
+            <span class="t-label" data-i="postNeedLabel">Post a Need</span>
+            <span class="t-desc"  data-i="postNeedDesc">I need help with something</span>
           </div>
-          <div class="type-opt" id="optOffer" onclick="setPostType('offer')">
+          <div class="type-opt" id="optOffer" onclick="setPostType('offer')" role="button" tabindex="0">
             <span class="t-emoji">🤝</span>
-            <span class="t-label">Offer Help</span>
-            <span class="t-desc">I can help my neighbors</span>
+            <span class="t-label" data-i="postOfferLabel">Offer Help</span>
+            <span class="t-desc"  data-i="postOfferDesc">I can help my neighbors</span>
           </div>
         </div>
       </div>
       <div class="fg">
-        <label for="fZip">ZIP code *</label>
-        <input type="text" id="fZip" maxlength="5" placeholder="5-digit ZIP" style="max-width:160px" oninput="onFZip()">
+        <label for="fZip" data-i="zipFieldLabel">ZIP code *</label>
+        <input type="text" id="fZip" maxlength="5" placeholder="5-digit ZIP" style="max-width:160px" inputmode="numeric" oninput="onFZip()">
       </div>
       <div class="fg">
-        <label for="fName">Display name or alias</label>
-        <input type="text" id="fName" placeholder="e.g. Maria, or leave blank to appear as 'Neighbor'">
+        <label for="fName" data-i="nameFieldLabel">Display name or alias</label>
+        <input type="text" id="fName" data-i-ph="namePlaceholder" placeholder="e.g. Maria, or leave blank for 'Neighbor'">
       </div>
       <div class="fg">
-        <label for="fCat">Category *</label>
+        <label for="fCat" data-i="catFieldLabel">Category *</label>
         <select id="fCat" onchange="onCatChange()">
-          <option value="">Select…</option>
+          <option value="" data-i="catSelect">Select…</option>
           <option>Food</option><option>Clothing</option><option>Housing</option>
           <option>Childcare</option><option>Transportation</option><option>Employment</option>
           <option>Education</option><option>Legal</option><option>Mental Health</option>
@@ -315,56 +374,58 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
         </select>
       </div>
       <div class="fg" id="fOtherWrap" style="display:none">
-        <label for="fOther">Describe your category *</label>
-        <input type="text" id="fOther" placeholder="e.g. Pet care, Moving help, Language exchange…">
+        <label for="fOther" data-i="otherCatLabel">Describe your category *</label>
+        <input type="text" id="fOther" data-i-ph="otherCatPh" placeholder="e.g. Pet care, Moving help…">
       </div>
       <div class="fg">
-        <label for="fDesc" id="fDescLbl">What do you need? *</label>
-        <textarea id="fDesc" maxlength="800" placeholder="Be specific — what, when, where, any constraints."></textarea>
-        <p class="hint">Max 800 characters.</p>
+        <label for="fDesc" id="fDescLbl" data-i="descNeedLabel">What do you need? *</label>
+        <textarea id="fDesc" maxlength="800" data-i-ph="descNeedPh" placeholder="Be specific — what, when, where, any constraints."></textarea>
+        <p class="hint" data-i="descHint">Max 800 characters.</p>
       </div>
       <div class="fg" id="fUrgWrap">
-        <span class="fg-label">How urgent?</span>
+        <span class="fg-label" data-i="urgLabel">How urgent?</span>
         <div class="urg-row">
-          <div class="urg-opt" data-v="urgent"   onclick="selUrg('urgent')">🔴 Urgent</div>
-          <div class="urg-opt" data-v="week"     onclick="selUrg('week')">🟡 This week</div>
-          <div class="urg-opt" data-v="flexible" onclick="selUrg('flexible')">🟢 Flexible / Ongoing</div>
+          <div class="urg-opt" data-v="urgent"   onclick="selUrg('urgent')"   data-i="urgUrgent">🔴 Urgent</div>
+          <div class="urg-opt" data-v="week"     onclick="selUrg('week')"     data-i="urgWeek">🟡 This week</div>
+          <div class="urg-opt" data-v="flexible" onclick="selUrg('flexible')" data-i="urgFlex">🟢 Flexible / Ongoing</div>
         </div>
       </div>
       <div class="fg">
-        <span class="fg-label">Contact privacy *</span>
+        <span class="fg-label" data-i="privLabel">Contact privacy *</span>
         <label class="popt sel" id="poptAnon">
           <input type="radio" name="priv" value="anon" checked onchange="setPrivacy('anon')">
           <div>
-            <div class="popt-lbl">🔒 Fully anonymous (recommended)</div>
-            <div class="popt-desc">No contact info shown. Helpers leave you a private message; you read it with your secret code.</div>
+            <div class="popt-lbl" data-i="privAnonLabel">🔒 Fully anonymous (recommended)</div>
+            <div class="popt-desc" data-i="privAnonDesc">No contact info shown. Helpers leave you a private message; read it with your secret code.</div>
           </div>
         </label>
         <label class="popt" id="poptReveal">
           <input type="radio" name="priv" value="reveal" onchange="setPrivacy('reveal')">
           <div>
-            <div class="popt-lbl">👁️ Reveal my contact when someone responds</div>
-            <div class="popt-desc">Your info is shown only after someone clicks the help button. Never shown publicly.</div>
+            <div class="popt-lbl" data-i="privRevealLabel">👁️ Reveal my contact when someone responds</div>
+            <div class="popt-desc" data-i="privRevealDesc">Your info is shown only after someone clicks the help button.</div>
           </div>
         </label>
       </div>
       <div class="fg" id="fContactWrap" style="display:none">
-        <label for="fContact">Your contact info *</label>
-        <input type="text" id="fContact" placeholder="Email, phone, Signal, etc.">
-        <p class="hint">Only revealed when a neighbor clicks the respond button. Never shown publicly on the card.</p>
+        <label for="fContact" data-i="contactFieldLabel">Your contact info *</label>
+        <input type="text" id="fContact" data-i-ph="contactPh" placeholder="Email, phone, Signal, etc.">
+        <p class="hint" data-i="contactHint">Only revealed when a neighbor clicks the respond button. Never shown publicly.</p>
       </div>
-      <button class="sub-btn" id="subBtn" onclick="submitPost()">Post →</button>
+      <!-- Inline form error — replaces alert() for cross-browser reliability -->
+      <div id="formError" class="form-error" role="alert"></div>
+      <button class="sub-btn" id="subBtn" onclick="submitPost()" data-i="submitBtn">Post →</button>
     </div>
   </div>
 
   <!-- MANAGE -->
   <div id="p-manage" style="display:none">
-    <p class="manage-intro">Enter the secret code from when you posted — view messages, edit, mark as done, or delete. Works from any device.</p>
+    <p class="manage-intro" data-i="manageIntro">Enter the secret code from when you posted — view messages, edit, mark as done, or delete.</p>
     <div class="code-search">
       <input type="text" id="codeIn" maxlength="8" placeholder="ABCD1234"
         oninput="this.value=this.value.toUpperCase()"
         onkeydown="if(event.key==='Enter')lookupCode()">
-      <button class="sub-btn" style="width:auto;padding:.48rem 1.1rem;margin-top:0" onclick="lookupCode()">Find My Post</button>
+      <button class="sub-btn" style="width:auto;padding:.48rem 1.1rem;margin-top:0" onclick="lookupCode()" data-i="findBtn">Find My Post</button>
     </div>
     <div class="m-alert" id="mAlert"></div>
     <div class="manage-card" id="manageCard"></div>
@@ -373,10 +434,477 @@ header p{color:var(--muted);font-size:.84rem;margin-top:.3rem}
 </div>
 
 <script>
-// ── !! REQUIRED: paste your Apps Script web app URL here !! ──
+// ── Required: paste your Apps Script URL ──────────────────────
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRCwLlIrC_y8srwuns65SQwS8cMKEpnC4knnyZAP1f6vilnGSaHp1XQQ4UKYMiiz9pbg/exec';
 
-const CATS = ['Food','Clothing','Housing','Childcare','Transportation','Employment','Education','Legal','Mental Health','Medical','Technology','Errands','Companionship','Skills / Tutoring','Other'];
+// ── Translations ──────────────────────────────────────────────
+const LANG_NAMES = {en:'English',es:'Español',fr:'Français',ru:'Русский',zh:'中文',hi:'हिन्दी',bn:'বাংলা',ht:'Kreyòl'};
+const T = {
+  en:{
+    back:'Back to Resource Navigator',refresh:'Refresh',dark:'Dark mode',light:'Light mode',
+    title:'Neighborhood Portal',subtitle:'Mutual aid by ZIP — post a need or offer help.',
+    yourZip:'Your ZIP:',zipHint:'Enter your ZIP to filter nearby posts.',
+    tabNeeds:'🙋 Needs',tabOffers:'🤝 Offers',tabPost:'➕ Post',tabManage:'🔑 Manage',
+    filterZip:'ZIP:',filterUrg:'Urgency:',filterShow:'Show:',
+    all:'All',urgent:'Urgent',thisWeek:'This week',flexible:'Flexible',
+    open:'Open',fulfilled:'Fulfilled',active:'Active',closedStat:'Closed',
+    wantTo:'I want to…',
+    postNeedLabel:'Post a Need',postNeedDesc:'I need help with something',
+    postOfferLabel:'Offer Help',postOfferDesc:'I can help my neighbors',
+    zipFieldLabel:'ZIP code *',nameFieldLabel:'Display name or alias',
+    namePlaceholder:"e.g. Maria, or leave blank for 'Neighbor'",
+    catFieldLabel:'Category *',catSelect:'Select…',
+    otherCatLabel:'Describe your category *',otherCatPh:'e.g. Pet care, Moving help…',
+    descNeedLabel:'What do you need? *',descOfferLabel:'What can you help with? *',
+    descNeedPh:'Be specific — what, when, where, any constraints.',
+    descOfferPh:'Describe what you can offer, your availability, and area.',
+    descHint:'Max 800 characters.',
+    urgLabel:'How urgent?',urgUrgent:'🔴 Urgent',urgWeek:'🟡 This week',urgFlex:'🟢 Flexible / Ongoing',
+    privLabel:'Contact privacy *',
+    privAnonLabel:'🔒 Fully anonymous (recommended)',
+    privAnonDesc:"No contact info shown. Helpers leave you a private message; read it with your secret code.",
+    privRevealLabel:'👁️ Reveal my contact when someone responds',
+    privRevealDesc:'Your info is shown only after someone clicks the help button.',
+    contactFieldLabel:'Your contact info *',contactPh:'Email, phone, Signal, etc.',
+    contactHint:'Only revealed when a neighbor clicks the respond button.',
+    submitBtn:'Post →',submitting:'Posting…',
+    successTitle:'✅ Posted!',
+    successText:'Save your <strong>secret management code</strong> — use it to view responses, edit, or delete.',
+    codeWarn:'⚠️ Shown <strong>once</strong>. Screenshot it now. Click to copy.',
+    manageIntro:'Enter the secret code from when you posted — view messages, edit, mark as done, or delete.',
+    findBtn:'Find My Post',
+    markFulfilled:'✓ Mark fulfilled',markClosed:'✓ Mark closed',editBtn:'✏️ Edit',
+    deleteBtn:'🗑️ Delete',saveChanges:'Save changes',cancelBtn:'Cancel',
+    deleteConfirm:'Delete this post permanently? This cannot be undone.',
+    noMsgs:'No messages yet — share your post so neighbors can reach you.',
+    canHelp:'I can help',needThis:'I need this',
+    msgBtnLabel:'💬 Message',hideBtn:'Hide',sendBtn:'Send',
+    msgSent:'✓ Sent!',msgAnonNote:'Your identity is not revealed.',
+    msgPlaceholder:'Write your message…',msgReplyPh:'Optional: your contact info (only visible to poster)',
+    contactAnonMsg:"Poster chose full anonymity. Leave a private message and they'll read it with their secret code.",
+    contactNoInfo:'No contact left — try leaving a message below.',
+    loadingMsg:'⏳ Loading posts…',savingMsg:'💾 Saving…',lookingMsg:'🔍 Looking up your post…',
+    updatingMsg:'Updating…',deletingMsg:'Deleting…',
+    openCount:(o,t,z,c)=>`${o} open · ${t-o} fulfilled`+(z?` in ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    offerCount:(o,t,z,c)=>`${o} active · ${t-o} closed`+(z?` in ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    emptyNeeds:'No needs match your filters.\nBe the first to post!',
+    emptyOffers:'No offers match your filters.\nBe the first to post!',
+    urgLabels:{urgent:'Urgent',week:'This week',flexible:'Flexible'},
+    errZip:'Please enter a valid 5-digit ZIP.',errCat:'Please select a category.',
+    errOtherCat:'Please describe your "Other" category.',
+    errDesc:'Please add a bit more detail (at least 10 characters).',
+    errUrg:'Please select an urgency level.',
+    errContact:'Please enter your contact info, or choose "Fully anonymous."',
+    errCode:'Please enter your 8-character secret code.',errDescShort:'Description too short.',
+    deletedOk:'Post deleted successfully.',msgUpdated:'Messages (%(n))',
+  },
+  es:{
+    back:'Volver al Navegador',refresh:'Actualizar',dark:'Modo oscuro',light:'Modo claro',
+    title:'Portal Vecinal',subtitle:'Ayuda mutua por código postal.',
+    yourZip:'Tu ZIP:',zipHint:'Ingresa tu ZIP para filtrar publicaciones cercanas.',
+    tabNeeds:'🙋 Necesidades',tabOffers:'🤝 Ofertas',tabPost:'➕ Publicar',tabManage:'🔑 Gestionar',
+    filterZip:'ZIP:',filterUrg:'Urgencia:',filterShow:'Mostrar:',
+    all:'Todos',urgent:'Urgente',thisWeek:'Esta semana',flexible:'Flexible',
+    open:'Abierto',fulfilled:'Cumplido',active:'Activo',closedStat:'Cerrado',
+    wantTo:'Quiero…',
+    postNeedLabel:'Publicar Necesidad',postNeedDesc:'Necesito ayuda con algo',
+    postOfferLabel:'Ofrecer Ayuda',postOfferDesc:'Puedo ayudar a mis vecinos',
+    zipFieldLabel:'Código ZIP *',nameFieldLabel:'Nombre o alias',
+    namePlaceholder:"p.ej. María, o deja en blanco para 'Vecino'",
+    catFieldLabel:'Categoría *',catSelect:'Seleccionar…',
+    otherCatLabel:'Describe tu categoría *',otherCatPh:'p.ej. Cuidado de mascotas…',
+    descNeedLabel:'¿Qué necesitas? *',descOfferLabel:'¿Con qué puedes ayudar? *',
+    descNeedPh:'Sé específico/a — qué, cuándo, dónde.',descOfferPh:'Describe tu oferta y disponibilidad.',
+    descHint:'Máx. 800 caracteres.',
+    urgLabel:'¿Qué tan urgente?',urgUrgent:'🔴 Urgente',urgWeek:'🟡 Esta semana',urgFlex:'🟢 Flexible',
+    privLabel:'Privacidad de contacto *',
+    privAnonLabel:'🔒 Totalmente anónimo (recomendado)',
+    privAnonDesc:'No se muestra información de contacto. Los vecinos te dejan un mensaje privado.',
+    privRevealLabel:'👁️ Revelar mi contacto cuando alguien responda',
+    privRevealDesc:'Tu info se muestra solo cuando alguien hace clic en el botón de ayuda.',
+    contactFieldLabel:'Tu información de contacto *',contactPh:'Correo, teléfono, Signal, etc.',
+    contactHint:'Solo se revela cuando un vecino hace clic en responder.',
+    submitBtn:'Publicar →',submitting:'Publicando…',
+    successTitle:'✅ Publicado!',
+    successText:'Guarda tu <strong>código secreto</strong> — úsalo para ver respuestas, editar o eliminar.',
+    codeWarn:'⚠️ Se muestra <strong>una vez</strong>. Tómale una captura ahora. Haz clic para copiar.',
+    manageIntro:'Ingresa el código secreto para ver mensajes, editar, marcar como hecho o eliminar.',
+    findBtn:'Buscar Mi Publicación',
+    markFulfilled:'✓ Marcar como cumplido',markClosed:'✓ Marcar como cerrado',editBtn:'✏️ Editar',
+    deleteBtn:'🗑️ Eliminar',saveChanges:'Guardar cambios',cancelBtn:'Cancelar',
+    deleteConfirm:'¿Eliminar esta publicación permanentemente? No se puede deshacer.',
+    noMsgs:'Sin mensajes todavía.',canHelp:'Puedo ayudar',needThis:'Lo necesito',
+    msgBtnLabel:'💬 Mensaje',hideBtn:'Ocultar',sendBtn:'Enviar',
+    msgSent:'✓ ¡Enviado!',msgAnonNote:'Tu identidad no se revela.',
+    msgPlaceholder:'Escribe tu mensaje…',msgReplyPh:'Opcional: tu contacto (solo visible para el autor)',
+    contactAnonMsg:'El autor eligió anonimato total. Deja un mensaje privado.',
+    contactNoInfo:'Sin contacto — intenta dejar un mensaje.',
+    loadingMsg:'⏳ Cargando…',savingMsg:'💾 Guardando…',lookingMsg:'🔍 Buscando…',
+    updatingMsg:'Actualizando…',deletingMsg:'Eliminando…',
+    openCount:(o,t,z,c)=>`${o} abierto · ${t-o} cumplido`+(z?` en ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    offerCount:(o,t,z,c)=>`${o} activo · ${t-o} cerrado`+(z?` en ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    emptyNeeds:'Sin necesidades. ¡Sé el primero en publicar!',emptyOffers:'Sin ofertas. ¡Sé el primero en publicar!',
+    urgLabels:{urgent:'Urgente',week:'Esta semana',flexible:'Flexible'},
+    errZip:'Ingresa un ZIP válido de 5 dígitos.',errCat:'Selecciona una categoría.',
+    errOtherCat:'Describe tu categoría "Otro".',errDesc:'Agrega más detalle (mínimo 10 caracteres).',
+    errUrg:'Selecciona el nivel de urgencia.',errContact:'Ingresa tu contacto o elige "Totalmente anónimo".',
+    errCode:'Ingresa tu código secreto de 8 caracteres.',errDescShort:'Descripción muy corta.',
+    deletedOk:'Publicación eliminada.',msgUpdated:'Mensajes (%(n))',
+  },
+  fr:{
+    back:'Retour au Navigateur',refresh:'Actualiser',dark:'Mode sombre',light:'Mode clair',
+    title:'Portail de Voisinage',subtitle:'Entraide par code postal.',
+    yourZip:'Votre ZIP :',zipHint:'Entrez votre ZIP pour filtrer les publications proches.',
+    tabNeeds:'🙋 Besoins',tabOffers:'🤝 Offres',tabPost:'➕ Publier',tabManage:'🔑 Gérer',
+    filterZip:'ZIP :',filterUrg:'Urgence :',filterShow:'Afficher :',
+    all:'Tous',urgent:'Urgent',thisWeek:'Cette semaine',flexible:'Flexible',
+    open:'Ouvert',fulfilled:'Rempli',active:'Actif',closedStat:'Fermé',
+    wantTo:'Je veux…',
+    postNeedLabel:'Publier un besoin',postNeedDesc:"J'ai besoin d'aide",
+    postOfferLabel:'Proposer de l\'aide',postOfferDesc:'Je peux aider mes voisins',
+    zipFieldLabel:'Code ZIP *',nameFieldLabel:'Nom ou alias',
+    namePlaceholder:"ex. Marie, ou laissez vide pour 'Voisin'",
+    catFieldLabel:'Catégorie *',catSelect:'Sélectionner…',
+    otherCatLabel:'Décrivez votre catégorie *',otherCatPh:'ex. Garde d\'animaux…',
+    descNeedLabel:'De quoi avez-vous besoin ? *',descOfferLabel:'Que pouvez-vous offrir ? *',
+    descNeedPh:'Soyez précis — quoi, quand, où.',descOfferPh:'Décrivez votre offre et disponibilité.',
+    descHint:'Max 800 caractères.',
+    urgLabel:'Niveau d\'urgence ?',urgUrgent:'🔴 Urgent',urgWeek:'🟡 Cette semaine',urgFlex:'🟢 Flexible',
+    privLabel:'Confidentialité *',
+    privAnonLabel:'🔒 Totalement anonyme (recommandé)',
+    privAnonDesc:'Aucune info de contact affichée. Les voisins laissent un message privé.',
+    privRevealLabel:'👁️ Révéler mon contact quand quelqu\'un répond',
+    privRevealDesc:'Vos infos ne sont affichées qu\'après un clic sur le bouton d\'aide.',
+    contactFieldLabel:'Vos coordonnées *',contactPh:'E-mail, téléphone, Signal, etc.',
+    contactHint:'Révélé uniquement quand un voisin clique pour répondre.',
+    submitBtn:'Publier →',submitting:'Publication…',
+    successTitle:'✅ Publié !',
+    successText:'Sauvegardez votre <strong>code secret</strong> pour gérer votre publication.',
+    codeWarn:'⚠️ Affiché <strong>une fois</strong>. Faites une capture maintenant. Cliquez pour copier.',
+    manageIntro:'Entrez le code secret pour voir les messages, modifier ou supprimer.',
+    findBtn:'Trouver ma publication',
+    markFulfilled:'✓ Marquer comme rempli',markClosed:'✓ Marquer comme fermé',editBtn:'✏️ Modifier',
+    deleteBtn:'🗑️ Supprimer',saveChanges:'Enregistrer',cancelBtn:'Annuler',
+    deleteConfirm:'Supprimer définitivement ? Cette action est irréversible.',
+    noMsgs:'Aucun message pour l\'instant.',canHelp:'Je peux aider',needThis:'J\'en ai besoin',
+    msgBtnLabel:'💬 Message',hideBtn:'Masquer',sendBtn:'Envoyer',
+    msgSent:'✓ Envoyé !',msgAnonNote:'Votre identité n\'est pas révélée.',
+    msgPlaceholder:'Rédigez votre message…',msgReplyPh:'Optionnel : votre contact (visible uniquement par l\'auteur)',
+    contactAnonMsg:'L\'auteur a choisi l\'anonymat total. Laissez un message privé.',
+    contactNoInfo:'Pas de contact — essayez de laisser un message.',
+    loadingMsg:'⏳ Chargement…',savingMsg:'💾 Enregistrement…',lookingMsg:'🔍 Recherche…',
+    updatingMsg:'Mise à jour…',deletingMsg:'Suppression…',
+    openCount:(o,t,z,c)=>`${o} ouvert · ${t-o} rempli`+(z?` en ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    offerCount:(o,t,z,c)=>`${o} actif · ${t-o} fermé`+(z?` en ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    emptyNeeds:'Aucun besoin correspondant. Soyez le premier à publier !',
+    emptyOffers:'Aucune offre correspondante. Soyez le premier à publier !',
+    urgLabels:{urgent:'Urgent',week:'Cette semaine',flexible:'Flexible'},
+    errZip:'Entrez un ZIP valide à 5 chiffres.',errCat:'Sélectionnez une catégorie.',
+    errOtherCat:'Décrivez votre catégorie "Autre".',errDesc:'Ajoutez plus de détails (10 caractères min.).',
+    errUrg:'Sélectionnez le niveau d\'urgence.',errContact:'Entrez vos coordonnées ou choisissez "Anonyme".',
+    errCode:'Entrez votre code secret à 8 caractères.',errDescShort:'Description trop courte.',
+    deletedOk:'Publication supprimée.',msgUpdated:'Messages (%(n))',
+  },
+  ru:{
+    back:'Назад к навигатору',refresh:'Обновить',dark:'Тёмная тема',light:'Светлая тема',
+    title:'Портал соседей',subtitle:'Взаимопомощь по ZIP-коду.',
+    yourZip:'Ваш ZIP:',zipHint:'Введите ZIP, чтобы фильтровать ближайшие публикации.',
+    tabNeeds:'🙋 Нужды',tabOffers:'🤝 Предложения',tabPost:'➕ Опубликовать',tabManage:'🔑 Управление',
+    filterZip:'ZIP:',filterUrg:'Срочность:',filterShow:'Показать:',
+    all:'Все',urgent:'Срочно',thisWeek:'На этой неделе',flexible:'Гибко',
+    open:'Открыто',fulfilled:'Выполнено',active:'Активно',closedStat:'Закрыто',
+    wantTo:'Я хочу…',
+    postNeedLabel:'Опубликовать нужду',postNeedDesc:'Мне нужна помощь',
+    postOfferLabel:'Предложить помощь',postOfferDesc:'Я могу помочь соседям',
+    zipFieldLabel:'ZIP-код *',nameFieldLabel:'Имя или псевдоним',
+    namePlaceholder:"напр. Мария, или оставьте пустым для 'Сосед'",
+    catFieldLabel:'Категория *',catSelect:'Выберите…',
+    otherCatLabel:'Опишите категорию *',otherCatPh:'напр. Уход за животными…',
+    descNeedLabel:'Что вам нужно? *',descOfferLabel:'Чем вы можете помочь? *',
+    descNeedPh:'Будьте конкретны — что, когда, где.',descOfferPh:'Опишите предложение и доступность.',
+    descHint:'Макс. 800 символов.',
+    urgLabel:'Насколько срочно?',urgUrgent:'🔴 Срочно',urgWeek:'🟡 На этой неделе',urgFlex:'🟢 Гибко',
+    privLabel:'Конфиденциальность *',
+    privAnonLabel:'🔒 Полная анонимность (рекомендуется)',
+    privAnonDesc:'Контактные данные не отображаются. Соседи оставляют личное сообщение.',
+    privRevealLabel:'👁️ Раскрыть контакт при ответе',
+    privRevealDesc:'Данные показываются только после нажатия кнопки помощи.',
+    contactFieldLabel:'Ваши контактные данные *',contactPh:'Email, телефон, Signal и т.д.',
+    contactHint:'Показывается только когда сосед нажимает кнопку ответа.',
+    submitBtn:'Опубликовать →',submitting:'Публикация…',
+    successTitle:'✅ Опубликовано!',
+    successText:'Сохраните <strong>секретный код</strong> для управления публикацией.',
+    codeWarn:'⚠️ Показывается <strong>один раз</strong>. Сделайте скриншот. Нажмите для копирования.',
+    manageIntro:'Введите секретный код для просмотра сообщений, редактирования или удаления.',
+    findBtn:'Найти мою публикацию',
+    markFulfilled:'✓ Отметить выполненным',markClosed:'✓ Отметить закрытым',editBtn:'✏️ Редактировать',
+    deleteBtn:'🗑️ Удалить',saveChanges:'Сохранить',cancelBtn:'Отмена',
+    deleteConfirm:'Удалить публикацию навсегда? Это нельзя отменить.',
+    noMsgs:'Сообщений пока нет.',canHelp:'Могу помочь',needThis:'Мне это нужно',
+    msgBtnLabel:'💬 Сообщение',hideBtn:'Скрыть',sendBtn:'Отправить',
+    msgSent:'✓ Отправлено!',msgAnonNote:'Ваша личность не раскрывается.',
+    msgPlaceholder:'Напишите сообщение…',msgReplyPh:'Необязательно: ваш контакт (виден только автору)',
+    contactAnonMsg:'Автор выбрал полную анонимность. Оставьте личное сообщение.',
+    contactNoInfo:'Контакт не указан — оставьте сообщение.',
+    loadingMsg:'⏳ Загрузка…',savingMsg:'💾 Сохранение…',lookingMsg:'🔍 Поиск…',
+    updatingMsg:'Обновление…',deletingMsg:'Удаление…',
+    openCount:(o,t,z,c)=>`${o} открыто · ${t-o} выполнено`+(z?` в ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    offerCount:(o,t,z,c)=>`${o} активно · ${t-o} закрыто`+(z?` в ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    emptyNeeds:'Нет подходящих нужд. Будьте первым!',emptyOffers:'Нет подходящих предложений. Будьте первым!',
+    urgLabels:{urgent:'Срочно',week:'На этой неделе',flexible:'Гибко'},
+    errZip:'Введите корректный 5-значный ZIP.',errCat:'Выберите категорию.',
+    errOtherCat:'Опишите категорию "Другое".',errDesc:'Добавьте больше деталей (мин. 10 символов).',
+    errUrg:'Выберите уровень срочности.',errContact:'Введите контакт или выберите "Анонимно".',
+    errCode:'Введите 8-символьный секретный код.',errDescShort:'Описание слишком короткое.',
+    deletedOk:'Публикация удалена.',msgUpdated:'Сообщения (%(n))',
+  },
+  zh:{
+    back:'返回资源导航',refresh:'刷新',dark:'深色模式',light:'浅色模式',
+    title:'邻里门户',subtitle:'按邮编互助——发布需求或提供帮助。',
+    yourZip:'您的邮编:',zipHint:'输入邮编以筛选附近的帖子。',
+    tabNeeds:'🙋 需求',tabOffers:'🤝 提供',tabPost:'➕ 发帖',tabManage:'🔑 管理',
+    filterZip:'邮编:',filterUrg:'紧急程度:',filterShow:'显示:',
+    all:'全部',urgent:'紧急',thisWeek:'本周',flexible:'灵活',
+    open:'开放',fulfilled:'已满足',active:'活跃',closedStat:'已关闭',
+    wantTo:'我想…',
+    postNeedLabel:'发布需求',postNeedDesc:'我需要帮助',
+    postOfferLabel:'提供帮助',postOfferDesc:'我可以帮助邻居',
+    zipFieldLabel:'邮编 *',nameFieldLabel:'显示名称或别名',
+    namePlaceholder:"如：小明，或留空显示为'邻居'",
+    catFieldLabel:'类别 *',catSelect:'请选择…',
+    otherCatLabel:'描述您的类别 *',otherCatPh:'如：宠物护理…',
+    descNeedLabel:'您需要什么？*',descOfferLabel:'您能提供什么帮助？*',
+    descNeedPh:'请具体说明——什么、何时、何地。',descOfferPh:'描述您的帮助内容和时间安排。',
+    descHint:'最多800字符。',
+    urgLabel:'有多紧急？',urgUrgent:'🔴 紧急',urgWeek:'🟡 本周',urgFlex:'🟢 灵活',
+    privLabel:'联系方式隐私 *',
+    privAnonLabel:'🔒 完全匿名（推荐）',privAnonDesc:'不显示联系信息。帮助者留下私信，您用密码查看。',
+    privRevealLabel:'👁️ 有人回应时显示我的联系方式',privRevealDesc:'只有在有人点击帮助按钮后才会显示。',
+    contactFieldLabel:'您的联系方式 *',contactPh:'邮箱、电话、Signal等',
+    contactHint:'只有邻居点击回应按钮时才会显示。',
+    submitBtn:'发布 →',submitting:'发布中…',
+    successTitle:'✅ 已发布！',successText:'保存您的<strong>密码</strong>以管理帖子。',
+    codeWarn:'⚠️ 仅显示<strong>一次</strong>。请截图保存。点击复制。',
+    manageIntro:'输入发帖时的密码——查看消息、编辑、标记完成或删除。',
+    findBtn:'查找我的帖子',
+    markFulfilled:'✓ 标记为已满足',markClosed:'✓ 标记为已关闭',editBtn:'✏️ 编辑',
+    deleteBtn:'🗑️ 删除',saveChanges:'保存更改',cancelBtn:'取消',
+    deleteConfirm:'永久删除此帖子？此操作无法撤销。',
+    noMsgs:'暂无消息。',canHelp:'我可以帮助',needThis:'我需要这个',
+    msgBtnLabel:'💬 留言',hideBtn:'隐藏',sendBtn:'发送',
+    msgSent:'✓ 已发送！',msgAnonNote:'您的身份不会被透露。',
+    msgPlaceholder:'写下您的留言…',msgReplyPh:'可选：您的联系方式（仅发帖人可见）',
+    contactAnonMsg:'发帖人选择完全匿名。请留下私信。',contactNoInfo:'没有联系方式——请留言。',
+    loadingMsg:'⏳ 加载中…',savingMsg:'💾 保存中…',lookingMsg:'🔍 查找中…',
+    updatingMsg:'更新中…',deletingMsg:'删除中…',
+    openCount:(o,t,z,c)=>`${o}个开放 · ${t-o}个已完成`+(z?` 邮编${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    offerCount:(o,t,z,c)=>`${o}个活跃 · ${t-o}个已关闭`+(z?` 邮编${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    emptyNeeds:'没有符合条件的需求。来发第一个吧！',emptyOffers:'没有符合条件的提供。来发第一个吧！',
+    urgLabels:{urgent:'紧急',week:'本周',flexible:'灵活'},
+    errZip:'请输入有效的5位邮编。',errCat:'请选择一个类别。',
+    errOtherCat:'请描述您的"其他"类别。',errDesc:'请添加更多详细信息（至少10个字符）。',
+    errUrg:'请选择紧急程度。',errContact:'请输入联系方式或选择"完全匿名"。',
+    errCode:'请输入8位密码。',errDescShort:'描述太短。',
+    deletedOk:'帖子已删除。',msgUpdated:'消息 (%(n))',
+  },
+  hi:{
+    back:'संसाधन नेविगेटर पर वापस',refresh:'रीफ्रेश',dark:'डार्क मोड',light:'लाइट मोड',
+    title:'पड़ोस पोर्टल',subtitle:'ZIP द्वारा पारस्परिक सहायता।',
+    yourZip:'आपका ZIP:',zipHint:'नज़दीकी पोस्ट देखने के लिए ZIP दर्ज करें।',
+    tabNeeds:'🙋 ज़रूरतें',tabOffers:'🤝 ऑफर',tabPost:'➕ पोस्ट',tabManage:'🔑 प्रबंधित करें',
+    filterZip:'ZIP:',filterUrg:'तात्कालिकता:',filterShow:'दिखाएं:',
+    all:'सभी',urgent:'तत्काल',thisWeek:'इस सप्ताह',flexible:'लचीला',
+    open:'खुला',fulfilled:'पूर्ण',active:'सक्रिय',closedStat:'बंद',
+    wantTo:'मैं चाहता/चाहती हूँ…',
+    postNeedLabel:'ज़रूरत पोस्ट करें',postNeedDesc:'मुझे मदद चाहिए',
+    postOfferLabel:'मदद ऑफर करें',postOfferDesc:'मैं पड़ोसियों की मदद कर सकता/सकती हूँ',
+    zipFieldLabel:'ZIP कोड *',nameFieldLabel:'नाम या उपनाम',
+    namePlaceholder:"जैसे: मारिया, या खाली छोड़ें 'पड़ोसी' के लिए",
+    catFieldLabel:'श्रेणी *',catSelect:'चुनें…',
+    otherCatLabel:'अपनी श्रेणी बताएं *',otherCatPh:'जैसे: पालतू जानवर की देखभाल…',
+    descNeedLabel:'आपको क्या चाहिए? *',descOfferLabel:'आप क्या मदद कर सकते हैं? *',
+    descNeedPh:'स्पष्ट करें — क्या, कब, कहाँ।',descOfferPh:'अपनी पेशकश और उपलब्धता बताएं।',
+    descHint:'अधिकतम 800 अक्षर।',
+    urgLabel:'कितना तत्काल?',urgUrgent:'🔴 तत्काल',urgWeek:'🟡 इस सप्ताह',urgFlex:'🟢 लचीला',
+    privLabel:'संपर्क गोपनीयता *',
+    privAnonLabel:'🔒 पूरी तरह गुमनाम (अनुशंसित)',privAnonDesc:'कोई संपर्क जानकारी नहीं दिखाई जाती।',
+    privRevealLabel:'👁️ जवाब मिलने पर संपर्क दिखाएं',privRevealDesc:'जानकारी केवल तभी दिखती है जब कोई मदद बटन दबाए।',
+    contactFieldLabel:'आपकी संपर्क जानकारी *',contactPh:'ईमेल, फ़ोन, Signal आदि',
+    contactHint:'केवल तभी दिखाई जाती है जब कोई पड़ोसी जवाब दे।',
+    submitBtn:'पोस्ट करें →',submitting:'पोस्ट हो रहा है…',
+    successTitle:'✅ पोस्ट हो गया!',successText:'अपना <strong>गुप्त कोड</strong> सहेजें।',
+    codeWarn:'⚠️ <strong>एक बार</strong> दिखाया जाएगा। अभी स्क्रीनशॉट लें। कॉपी करने के लिए क्लिक करें।',
+    manageIntro:'अपनी पोस्ट देखने, संपादित करने या हटाने के लिए गुप्त कोड दर्ज करें।',
+    findBtn:'मेरी पोस्ट खोजें',
+    markFulfilled:'✓ पूर्ण के रूप में चिह्नित करें',markClosed:'✓ बंद के रूप में चिह्नित करें',editBtn:'✏️ संपादित करें',
+    deleteBtn:'🗑️ हटाएं',saveChanges:'परिवर्तन सहेजें',cancelBtn:'रद्द करें',
+    deleteConfirm:'इस पोस्ट को स्थायी रूप से हटाएं? यह पूर्ववत नहीं किया जा सकता।',
+    noMsgs:'अभी तक कोई संदेश नहीं।',canHelp:'मैं मदद कर सकता/सकती हूँ',needThis:'मुझे यह चाहिए',
+    msgBtnLabel:'💬 संदेश',hideBtn:'छुपाएं',sendBtn:'भेजें',
+    msgSent:'✓ भेज दिया!',msgAnonNote:'आपकी पहचान नहीं बताई जाती।',
+    msgPlaceholder:'अपना संदेश लिखें…',msgReplyPh:'वैकल्पिक: आपका संपर्क (केवल पोस्टर को दिखेगा)',
+    contactAnonMsg:'पोस्टर ने पूर्ण गुमनामी चुनी है। एक निजी संदेश छोड़ें।',
+    contactNoInfo:'कोई संपर्क नहीं — संदेश छोड़ने का प्रयास करें।',
+    loadingMsg:'⏳ लोड हो रहा है…',savingMsg:'💾 सहेज रहा है…',lookingMsg:'🔍 खोज रहा है…',
+    updatingMsg:'अपडेट हो रहा है…',deletingMsg:'हटा रहा है…',
+    openCount:(o,t,z,c)=>`${o} खुला · ${t-o} पूर्ण`+(z?` ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    offerCount:(o,t,z,c)=>`${o} सक्रिय · ${t-o} बंद`+(z?` ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    emptyNeeds:'कोई ज़रूरत नहीं मिली। पहले पोस्ट करें!',emptyOffers:'कोई ऑफर नहीं मिला। पहले पोस्ट करें!',
+    urgLabels:{urgent:'तत्काल',week:'इस सप्ताह',flexible:'लचीला'},
+    errZip:'कृपया 5 अंकों का वैध ZIP दर्ज करें।',errCat:'कृपया एक श्रेणी चुनें।',
+    errOtherCat:'कृपया अपनी "अन्य" श्रेणी बताएं।',errDesc:'कृपया अधिक विवरण जोड़ें (कम से कम 10 अक्षर)।',
+    errUrg:'कृपया तात्कालिकता स्तर चुनें।',errContact:'कृपया संपर्क जानकारी दर्ज करें या "गुमनाम" चुनें।',
+    errCode:'कृपया 8 अक्षर का गुप्त कोड दर्ज करें।',errDescShort:'विवरण बहुत छोटा है।',
+    deletedOk:'पोस्ट हटा दी गई।',msgUpdated:'संदेश (%(n))',
+  },
+  bn:{
+    back:'রিসোর্স নেভিগেটরে ফিরুন',refresh:'রিফ্রেশ',dark:'ডার্ক মোড',light:'লাইট মোড',
+    title:'প্রতিবেশী পোর্টাল',subtitle:'ZIP দ্বারা পারস্পরিক সহায়তা।',
+    yourZip:'আপনার ZIP:',zipHint:'কাছাকাছি পোস্ট ফিল্টার করতে ZIP লিখুন।',
+    tabNeeds:'🙋 প্রয়োজন',tabOffers:'🤝 অফার',tabPost:'➕ পোস্ট',tabManage:'🔑 পরিচালনা',
+    filterZip:'ZIP:',filterUrg:'জরুরিতা:',filterShow:'দেখান:',
+    all:'সব',urgent:'জরুরি',thisWeek:'এই সপ্তাহ',flexible:'নমনীয়',
+    open:'খোলা',fulfilled:'পূর্ণ',active:'সক্রিয়',closedStat:'বন্ধ',
+    wantTo:'আমি চাই…',
+    postNeedLabel:'প্রয়োজন পোস্ট করুন',postNeedDesc:'আমার সাহায্য দরকার',
+    postOfferLabel:'সাহায্য অফার করুন',postOfferDesc:'আমি প্রতিবেশীদের সাহায্য করতে পারি',
+    zipFieldLabel:'ZIP কোড *',nameFieldLabel:'নাম বা ছদ্মনাম',
+    namePlaceholder:"যেমন: রিমা, বা খালি রাখুন 'প্রতিবেশী' হিসেবে",
+    catFieldLabel:'বিভাগ *',catSelect:'নির্বাচন করুন…',
+    otherCatLabel:'আপনার বিভাগ বর্ণনা করুন *',otherCatPh:'যেমন: পোষা প্রাণীর যত্ন…',
+    descNeedLabel:'আপনার কী দরকার? *',descOfferLabel:'আপনি কীভাবে সাহায্য করতে পারেন? *',
+    descNeedPh:'সুনির্দিষ্ট করুন — কী, কখন, কোথায়।',descOfferPh:'আপনার অফার এবং সময় বর্ণনা করুন।',
+    descHint:'সর্বোচ্চ ৮০০ অক্ষর।',
+    urgLabel:'কতটা জরুরি?',urgUrgent:'🔴 জরুরি',urgWeek:'🟡 এই সপ্তাহ',urgFlex:'🟢 নমনীয়',
+    privLabel:'যোগাযোগের গোপনীয়তা *',
+    privAnonLabel:'🔒 সম্পূর্ণ বেনামী (প্রস্তাবিত)',privAnonDesc:'কোনো যোগাযোগের তথ্য দেখানো হয় না।',
+    privRevealLabel:'👁️ কেউ সাড়া দিলে আমার যোগাযোগ দেখান',privRevealDesc:'শুধুমাত্র সাহায্য বাটন ক্লিকের পরে দেখানো হয়।',
+    contactFieldLabel:'আপনার যোগাযোগের তথ্য *',contactPh:'ইমেইল, ফোন, Signal ইত্যাদি',
+    contactHint:'শুধুমাত্র যখন কোনো প্রতিবেশী সাড়া দেয় তখন দেখানো হয়।',
+    submitBtn:'পোস্ট করুন →',submitting:'পোস্ট হচ্ছে…',
+    successTitle:'✅ পোস্ট হয়েছে!',successText:'আপনার <strong>গোপন কোড</strong> সংরক্ষণ করুন।',
+    codeWarn:'⚠️ <strong>একবার</strong> দেখানো হবে। এখনই স্ক্রিনশট নিন। কপি করতে ক্লিক করুন।',
+    manageIntro:'বার্তা দেখতে, সম্পাদনা করতে বা মুছতে গোপন কোড লিখুন।',
+    findBtn:'আমার পোস্ট খুঁজুন',
+    markFulfilled:'✓ পূর্ণ হিসেবে চিহ্নিত করুন',markClosed:'✓ বন্ধ হিসেবে চিহ্নিত করুন',editBtn:'✏️ সম্পাদনা',
+    deleteBtn:'🗑️ মুছুন',saveChanges:'পরিবর্তন সংরক্ষণ',cancelBtn:'বাতিল',
+    deleteConfirm:'এই পোস্টটি স্থায়ীভাবে মুছবেন? এটি পূর্বাবস্থায় ফেরানো যাবে না।',
+    noMsgs:'এখনো কোনো বার্তা নেই।',canHelp:'আমি সাহায্য করতে পারি',needThis:'এটা আমার দরকার',
+    msgBtnLabel:'💬 বার্তা',hideBtn:'লুকান',sendBtn:'পাঠান',
+    msgSent:'✓ পাঠানো হয়েছে!',msgAnonNote:'আপনার পরিচয় প্রকাশ করা হয় না।',
+    msgPlaceholder:'আপনার বার্তা লিখুন…',msgReplyPh:'ঐচ্ছিক: আপনার যোগাযোগ (শুধু পোস্টকারী দেখতে পাবেন)',
+    contactAnonMsg:'পোস্টকারী সম্পূর্ণ বেনামিতা বেছে নিয়েছেন। একটি ব্যক্তিগত বার্তা রাখুন।',
+    contactNoInfo:'যোগাযোগ নেই — বার্তা রাখার চেষ্টা করুন।',
+    loadingMsg:'⏳ লোড হচ্ছে…',savingMsg:'💾 সংরক্ষণ হচ্ছে…',lookingMsg:'🔍 খোঁজা হচ্ছে…',
+    updatingMsg:'আপডেট হচ্ছে…',deletingMsg:'মুছে ফেলা হচ্ছে…',
+    openCount:(o,t,z,c)=>`${o}টি খোলা · ${t-o}টি পূর্ণ`+(z?` ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    offerCount:(o,t,z,c)=>`${o}টি সক্রিয় · ${t-o}টি বন্ধ`+(z?` ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    emptyNeeds:'কোনো প্রয়োজন মেলেনি। প্রথমে পোস্ট করুন!',emptyOffers:'কোনো অফার মেলেনি। প্রথমে পোস্ট করুন!',
+    urgLabels:{urgent:'জরুরি',week:'এই সপ্তাহ',flexible:'নমনীয়'},
+    errZip:'অনুগ্রহ করে একটি বৈধ ৫-সংখ্যার ZIP লিখুন।',errCat:'অনুগ্রহ করে একটি বিভাগ নির্বাচন করুন।',
+    errOtherCat:'অনুগ্রহ করে আপনার "অন্যান্য" বিভাগ বর্ণনা করুন।',
+    errDesc:'অনুগ্রহ করে আরো বিস্তারিত যোগ করুন (কমপক্ষে ১০ অক্ষর)।',
+    errUrg:'অনুগ্রহ করে জরুরিতার স্তর নির্বাচন করুন।',
+    errContact:'অনুগ্রহ করে যোগাযোগের তথ্য লিখুন বা "বেনামী" বেছে নিন।',
+    errCode:'অনুগ্রহ করে ৮-অক্ষরের গোপন কোড লিখুন।',errDescShort:'বিবরণ খুব সংক্ষিপ্ত।',
+    deletedOk:'পোস্ট মুছে ফেলা হয়েছে।',msgUpdated:'বার্তা (%(n))',
+  },
+  ht:{
+    back:'Retounen nan Navigatè a',refresh:'Aktualize',dark:'Mòd fènwa',light:'Mòd klè',
+    title:'Pòtal Vwazen',subtitle:'Èd mityèl pa ZIP.',
+    yourZip:'ZIP ou:',zipHint:'Antre ZIP ou pou filtre piblikasyon pre ou.',
+    tabNeeds:'🙋 Bezwen',tabOffers:'🤝 Ofri',tabPost:'➕ Pibliye',tabManage:'🔑 Jere',
+    filterZip:'ZIP:',filterUrg:'Ijijans:',filterShow:'Montre:',
+    all:'Tout',urgent:'Ijan',thisWeek:'Semèn sa',flexible:'Fleksib',
+    open:'Ouvè',fulfilled:'Ranpli',active:'Aktif',closedStat:'Fèmen',
+    wantTo:'Mwen vle…',
+    postNeedLabel:'Pibliye Yon Bezwen',postNeedDesc:'Mwen bezwen èd',
+    postOfferLabel:'Ofri Èd',postOfferDesc:'Mwen ka ede vwazen mwen',
+    zipFieldLabel:'Kòd ZIP *',nameFieldLabel:'Non oswa non plim',
+    namePlaceholder:"ex. Maria, oswa kite vid pou 'Vwazen'",
+    catFieldLabel:'Kategori *',catSelect:'Chwazi…',
+    otherCatLabel:'Dekri kategori ou *',otherCatPh:'ex. Swen bèt kay…',
+    descNeedLabel:'Kisa ou bezwen? *',descOfferLabel:'Kijan ou ka ede? *',
+    descNeedPh:'Soyez presi — kisa, kilè, kote.',descOfferPh:'Dekri sa ou ofri ak disponiblite ou.',
+    descHint:'Maks 800 karaktè.',
+    urgLabel:'Ki jan sa ijan?',urgUrgent:'🔴 Ijan',urgWeek:'🟡 Semèn sa',urgFlex:'🟢 Fleksib',
+    privLabel:'Konfidansyalite *',
+    privAnonLabel:'🔒 Konplètman anonim (rekòmande)',privAnonDesc:'Okenn enfòmasyon kontak montre. Vwazen kite mesaj prive.',
+    privRevealLabel:'👁️ Revele kontak mwen lè yon moun reponn',privRevealDesc:'Enfò ou montre sèlman apre yon moun klike sou bouton èd.',
+    contactFieldLabel:'Enfòmasyon kontak ou *',contactPh:'Imèl, telefòn, Signal, elatriye',
+    contactHint:'Sèlman revele lè yon vwazen klike pou reponn.',
+    submitBtn:'Pibliye →',submitting:'Ap pibliye…',
+    successTitle:'✅ Pibliye!',successText:'Sove <strong>kòd sekrè</strong> ou pou jere piblikasyon ou.',
+    codeWarn:'⚠️ Montre <strong>yon fwa</strong>. Pran yon ekrankopi kounye a. Klike pou kopye.',
+    manageIntro:'Antre kòd sekrè pou wè mesaj, modifye, make fini, oswa efase.',
+    findBtn:'Jwenn Piblikasyon Mwen',
+    markFulfilled:'✓ Make kòm ranpli',markClosed:'✓ Make kòm fèmen',editBtn:'✏️ Modifye',
+    deleteBtn:'🗑️ Efase',saveChanges:'Sove chanjman',cancelBtn:'Anile',
+    deleteConfirm:'Efase piblikasyon sa pou toujou? Sa pa ka defèt.',
+    noMsgs:'Pa gen mesaj pou kounye a.',canHelp:'Mwen ka ede',needThis:'Mwen bezwen sa',
+    msgBtnLabel:'💬 Mesaj',hideBtn:'Kache',sendBtn:'Voye',
+    msgSent:'✓ Voye!',msgAnonNote:'Idantite ou pa revele.',
+    msgPlaceholder:'Ekri mesaj ou…',msgReplyPh:'Opsyonèl: kontak ou (sèlman poste a ka wè)',
+    contactAnonMsg:'Poste a chwazi anonim total. Kite yon mesaj prive.',contactNoInfo:'Pa gen kontak — eseye kite yon mesaj.',
+    loadingMsg:'⏳ Ap chaje…',savingMsg:'💾 Ap sove…',lookingMsg:'🔍 Ap chèche…',
+    updatingMsg:'Ap aktualize…',deletingMsg:'Ap efase…',
+    openCount:(o,t,z,c)=>`${o} ouvè · ${t-o} ranpli`+(z?` nan ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    offerCount:(o,t,z,c)=>`${o} aktif · ${t-o} fèmen`+(z?` nan ZIP ${z}`:'')+((c&&c!=='All')?` · ${c}`:''),
+    emptyNeeds:'Pa gen bezwen. Soyez premye pou pibliye!',emptyOffers:'Pa gen ofri. Soyez premye pou pibliye!',
+    urgLabels:{urgent:'Ijan',week:'Semèn sa',flexible:'Fleksib'},
+    errZip:'Tanpri antre ZIP 5 chif valid.',errCat:'Tanpri chwazi yon kategori.',
+    errOtherCat:'Tanpri dekri kategori "Lòt" ou.',errDesc:'Tanpri ajoute plis detay (omwen 10 karaktè).',
+    errUrg:'Tanpri chwazi nivo ijijans.',errContact:'Tanpri antre kontak ou oswa chwazi "Anonim".',
+    errCode:'Tanpri antre kòd sekrè 8 karaktè.',errDescShort:'Deskripsyon twò kout.',
+    deletedOk:'Piblikasyon efase.',msgUpdated:'Mesaj (%(n))',
+  }
+};
+
+// ── Lang helpers ──────────────────────────────────────────────
+let lang = sessionStorage.getItem('lang') || 'en';
+function tl(key){ return (T[lang]&&T[lang][key]!==undefined) ? T[lang][key] : (T.en[key]||key); }
+
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.getElementById('langLabel').textContent = LANG_NAMES[lang]||'English';
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    const k = el.getAttribute('data-i');
+    const v = tl(k);
+    if(typeof v === 'string') el.textContent = v;
+  });
+  document.querySelectorAll('[data-i-ph]').forEach(el=>{
+    const k = el.getAttribute('data-i-ph');
+    const v = tl(k);
+    if(typeof v === 'string') el.placeholder = v;
+  });
+  document.getElementById('themeLabel').textContent = isDark ? tl('light') : tl('dark');
+  document.querySelectorAll('.lang-opt').forEach(o=>{
+    const fn = o.getAttribute('onclick')||'';
+    const active = fn.includes(`'${lang}'`);
+    o.classList.toggle('active',active);
+  });
+  // Re-render to apply translated strings in cards
+  renderNeeds(); renderOffers();
+}
+
+function toggleLangMenu(){
+  const m = document.getElementById('langMenu');
+  m.classList.toggle('open');
+}
+function setLang(code){
+  lang = code;
+  sessionStorage.setItem('lang', code);
+  document.getElementById('langMenu').classList.remove('open');
+  applyLang();
+}
+document.addEventListener('click', e=>{
+  const w = document.getElementById('langWrap');
+  if(w && !w.contains(e.target)) document.getElementById('langMenu').classList.remove('open');
+});
+
+// ── Data & state ──────────────────────────────────────────────
+const CATS = ['Food','Clothing','Housing','Childcare','Transportation','Employment','Education',
+  'Legal','Mental Health','Medical','Technology','Errands','Companionship','Skills / Tutoring','Other'];
 const CS = {
   'Food':{bg:'#FAEEDA',tc:'#633806'},'Clothing':{bg:'#FAECE7',tc:'#712B13'},
   'Housing':{bg:'#E6F1FB',tc:'#0C447C'},'Childcare':{bg:'#FBEAF0',tc:'#72243E'},
@@ -406,47 +934,72 @@ function genCode(){
   return Array.from({length:8},()=>a[Math.floor(Math.random()*a.length)]).join('');
 }
 function copyCode(){
-  const t=document.getElementById('codeDisplay').textContent.trim();
+  const el=document.getElementById('codeDisplay');
+  const t=el.textContent.trim();
+  if(!navigator.clipboard){selectText(el);return;}
   navigator.clipboard.writeText(t).then(()=>{
-    const el=document.getElementById('codeDisplay');
     const orig=el.textContent; el.textContent='Copied!';
     setTimeout(()=>el.textContent=orig,1400);
-  });
+  }).catch(()=>selectText(el));
+}
+function selectText(el){
+  const r=document.createRange(); r.selectNode(el);
+  window.getSelection().removeAllRanges(); window.getSelection().addRange(r);
+}
+
+// ── Inline form error (replaces alert() for cross-browser) ────
+function showFormError(msg){
+  const el=document.getElementById('formError');
+  if(!el)return;
+  el.textContent=msg;
+  el.className='form-error'+(msg?' show':'');
+  if(msg) el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 // ── API ───────────────────────────────────────────────────────
-async function api(action, payload={}) {
-  if (!SCRIPT_URL || SCRIPT_URL.includes('PASTE')) {
-    throw new Error('SCRIPT_URL not set — open portal.html in a text editor and paste your Apps Script URL.');
+async function api(action, payload={}){
+  if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE'))
+    throw new Error('SCRIPT_URL not set in portal.html');
+
+  // Strip empty values to keep URL short (cross-browser safe)
+  const clean=Object.fromEntries(
+    Object.entries(payload).filter(([,v])=>v!==''&&v!==null&&v!==undefined&&!(Array.isArray(v)&&!v.length))
+  );
+
+  const url=SCRIPT_URL+'?action='+encodeURIComponent(action)+'&payload='+encodeURIComponent(JSON.stringify(clean));
+
+  const ctrl=new AbortController();
+  const tid=setTimeout(()=>ctrl.abort(),20000);
+  try{
+    const r=await fetch(url,{redirect:'follow',signal:ctrl.signal});
+    clearTimeout(tid);
+    if(!r.ok) throw new Error('Server error '+r.status);
+    return r.json();
+  }catch(e){
+    clearTimeout(tid);
+    if(e.name==='AbortError') throw new Error('Request timed out — please try again.');
+    throw e;
   }
-  const url = SCRIPT_URL
-    + '?action=' + encodeURIComponent(action)
-    + '&payload=' + encodeURIComponent(JSON.stringify(payload));
-  const r = await fetch(url, { redirect: 'follow' });
-  if (!r.ok) throw new Error('Server returned ' + r.status);
-  return r.json();
 }
 
 // ── Status bar ────────────────────────────────────────────────
-function setStatus(type, msg) {
-  const el = document.getElementById('statusBar');
-  el.className = 'status-bar' + (type ? ' ' + type : '');
-  el.textContent = msg || '';
-  el.style.display = msg ? 'block' : 'none';
+function setStatus(type,msg){
+  const el=document.getElementById('statusBar');
+  el.className='status-bar'+(type?' '+type:'');
+  el.textContent=msg||'';
+  el.style.display=msg?'block':'none';
 }
 
-// ── Load posts ────────────────────────────────────────────────
-async function load() {
-  setStatus('loading', '⏳ Loading posts from Google Sheets…');
-  try {
-    const res = await api('load');
-    if (!res.ok) throw new Error(res.error || 'Load failed');
-    posts = res.posts || [];
+// ── Load ──────────────────────────────────────────────────────
+async function load(){
+  setStatus('loading',tl('loadingMsg'));
+  try{
+    const res=await api('load');
+    if(!res.ok) throw new Error(res.error||'Load failed');
+    posts=res.posts||[];
     rebuildFilters(); renderNeeds(); renderOffers();
-    setStatus('', '');
-  } catch(e) {
-    setStatus('error', '⚠️ ' + e.message);
-  }
+    setStatus('','');
+  }catch(e){ setStatus('error','⚠️ '+e.message); }
 }
 
 // ── Filters ───────────────────────────────────────────────────
@@ -462,12 +1015,12 @@ function rebuildFilters(){
 function buildZip(id,arr){
   const el=document.getElementById(id),cur=el.value;
   const zips=[...new Set(arr.map(p=>p.zip))].sort();
-  el.innerHTML='<option value="">All</option>'+zips.map(z=>`<option${z===cur?' selected':''}>${esc(z)}</option>`).join('');
+  el.innerHTML='<option value="">'+tl('all')+'</option>'+zips.map(z=>`<option${z===cur?' selected':''}>${esc(z)}</option>`).join('');
 }
 function buildCats(id,arr,active,fn){
   const used=['All',...CATS.filter(c=>arr.some(p=>p.category===c||displayCat(p)===c))];
   document.getElementById(id).innerHTML=used.map(c=>
-    `<button class="cpill${c===active?' on':''}" onclick="${fn}('${esc(c)}')">${esc(c)}</button>`
+    `<button class="cpill${c===active?' on':''}" onclick="${fn}('${esc(c)}')">${esc(c==='All'?tl('all'):c)}</button>`
   ).join('');
 }
 function setNCat(c){nCat=c;openContact=openMsg=null;rebuildFilters();renderNeeds();}
@@ -490,8 +1043,8 @@ function renderNeeds(){
   const ord={urgent:0,week:1,flexible:2};
   f.sort((a,b)=>(ord[a.urgency]||2)-(ord[b.urgency]||2)||(new Date(b.timestamp)-new Date(a.timestamp)));
   const open=f.filter(p=>p.status==='open').length;
-  document.getElementById('nCount').textContent=f.length
-    ?`${open} open · ${f.length-open} fulfilled`+(zipF?' in ZIP '+zipF:'')+(nCat!=='All'?' · '+nCat:''):'';
+  const fn=tl('openCount');
+  document.getElementById('nCount').textContent=f.length?(typeof fn==='function'?fn(open,f.length,zipF,nCat):''):'';
   renderList('nList',f,'need');
 }
 function renderOffers(){
@@ -507,16 +1060,16 @@ function renderOffers(){
   });
   f.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
   const open=f.filter(p=>p.status==='open').length;
-  document.getElementById('oCount').textContent=f.length
-    ?`${open} active · ${f.length-open} closed`+(zipF?' in ZIP '+zipF:'')+(oCat!=='All'?' · '+oCat:''):'';
+  const fn=tl('offerCount');
+  document.getElementById('oCount').textContent=f.length?(typeof fn==='function'?fn(open,f.length,zipF,oCat):''):'';
   renderList('oList',f,'offer');
 }
 
 function renderList(id,items,type){
   const el=document.getElementById(id);
   if(!items.length){
-    el.innerHTML=`<div class="empty-state"><div class="e-icon">${type==='need'?'🌱':'🤝'}</div>
-      <p>No ${type==='need'?'needs':'offers'} match your filters.<br>Be the first to post!</p></div>`;
+    const msg=(type==='need'?tl('emptyNeeds'):tl('emptyOffers')).replace('\\n','\n');
+    el.innerHTML=`<div class="empty-state"><div class="e-icon">${type==='need'?'🌱':'🤝'}</div><p>${esc(msg)}</p></div>`;
     return;
   }
   el.innerHTML=`<div class="grid">${items.map(p=>card(p,type)).join('')}</div>`;
@@ -524,45 +1077,47 @@ function renderList(id,items,type){
 
 function card(p,type){
   const dc=displayCat(p),c=cs(p.category);
+  const urgLabels=tl('urgLabels')||{urgent:'Urgent',week:'This week',flexible:'Flexible'};
   const urgCls={urgent:'urg-urgent',week:'urg-week',flexible:'urg-flex'}[p.urgency]||'urg-flex';
-  const urgLbl={urgent:'Urgent',week:'This week',flexible:'Flexible'}[p.urgency]||'Flexible';
+  const urgLbl=urgLabels[p.urgency]||urgLabels.flexible;
   const done=p.status==='claimed';
   const msgs=(p.messages||[]).length;
   const isC=openContact===p.id,isM=openMsg===p.id;
   const contactInner=p.privacy==='reveal'&&p.contact
     ?`<strong>Contact:</strong> ${esc(p.contact)}`
     :p.privacy==='reveal'&&!p.contact
-    ?`<em>No contact left — try leaving a message below.</em>`
-    :`<em>Poster chose full anonymity. Leave a private message and they'll read it with their secret code.</em>`;
+    ?`<em>${tl('contactNoInfo')}</em>`
+    :`<em>${tl('contactAnonMsg')}</em>`;
+  const helpBtn=type==='need'?tl('canHelp'):tl('needThis');
+  const msgsSuffix=msgs?` · 💬 ${msgs}`:''
   return`<div class="ncard${done?' fulfilled':''}${type==='offer'?' offer-card':''}" id="pc-${p.id}">
     <div class="ncard-top">
       <div class="badges">
-        <span class="type-badge ${type==='need'?'type-need':'type-offer'}">${type}</span>
+        <span class="type-badge ${type==='need'?'type-need':'type-offer'}">${esc(tl(type==='need'?'tabNeeds':'tabOffers').replace(/[🙋🤝]\s*/,''))}</span>
         <span class="cat-badge" style="background:${c.bg};color:${c.tc}">${esc(dc)}</span>
       </div>
       ${type==='need'?`<div class="urg-mini ${urgCls}"><div class="urg-dot"></div><span class="urg-lbl">${urgLbl}</span></div>`:''}
     </div>
     <div class="ncard-name">${esc(p.firstName||'Neighbor')}</div>
-    <div class="ncard-meta">ZIP ${esc(p.zip)}${p.updatedAt&&p.updatedAt!==p.timestamp?' · updated '+timeAgo(p.updatedAt):''}</div>
+    <div class="ncard-meta">ZIP ${esc(p.zip)}${p.updatedAt&&p.updatedAt!==p.timestamp?' · '+timeAgo(p.updatedAt):''}</div>
     <div class="ncard-desc">${esc(p.description)}</div>
     <div class="ncard-footer">
-      <span class="ncard-time">Posted ${timeAgo(p.timestamp)}${msgs?' · 💬 '+msgs+' msg'+(msgs>1?'s':''):''}</span>
+      <span class="ncard-time">Posted ${timeAgo(p.timestamp)}${msgsSuffix}</span>
       <div class="ncard-btns">
-        <span class="chip ${done?'chip-done':'chip-open'}">${done?(type==='need'?'Fulfilled':'Closed'):'Open'}</span>
-        ${!done?`<button class="btn btn-g" onclick="togContact('${p.id}')">${isC?'Hide':type==='need'?'I can help':'I need this'}</button>`:''}
-        <button class="btn btn-b" onclick="togMsg('${p.id}')">${isM?'Hide':'💬 Message'}</button>
+        <span class="chip ${done?'chip-done':'chip-open'}">${done?(type==='need'?tl('fulfilled'):tl('closedStat')):tl('open')}</span>
+        ${!done?`<button class="btn btn-g" onclick="togContact('${p.id}')">${isC?tl('hideBtn'):helpBtn}</button>`:''}
+        <button class="btn btn-b" onclick="togMsg('${p.id}')">${isM?tl('hideBtn'):tl('msgBtnLabel')}</button>
       </div>
     </div>
     <div class="expand-box expand-green${isC?' show':''}">${contactInner}</div>
     <div class="expand-box expand-blue${isM?' show':''}">
       <div class="msg-form">
-        <div class="anon-note">Messages are private — only the poster sees them with their secret code.</div>
-        <textarea id="mt-${p.id}" placeholder="Write your message…" maxlength="600"></textarea>
-        <input type="text" id="mr-${p.id}" placeholder="Optional: your contact info (only visible to poster)" maxlength="200">
+        <div class="anon-note">${tl('msgAnonNote')}</div>
+        <textarea id="mt-${p.id}" placeholder="${tl('msgPlaceholder')}" maxlength="600"></textarea>
+        <input type="text" id="mr-${p.id}" placeholder="${tl('msgReplyPh')}" maxlength="200">
         <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
-          <button class="btn btn-b" onclick="sendMsg('${p.id}')">Send</button>
-          <span class="anon-note">Your identity is not revealed.</span>
-          <span class="msg-sent" id="ms-${p.id}">✓ Sent!</span>
+          <button class="btn btn-b" onclick="sendMsg('${p.id}')">${tl('sendBtn')}</button>
+          <span class="msg-sent" id="ms-${p.id}">${tl('msgSent')}</span>
         </div>
       </div>
     </div>
@@ -577,15 +1132,13 @@ async function sendMsg(id){
   const mr=document.getElementById('mr-'+id);
   const txt=(mt||{}).value||'';
   const rpl=(mr||{}).value||'';
-  if(!txt.trim()){alert('Please write a message.');return;}
+  if(!txt.trim()){showFormError(tl('errDesc'));return;}
   const message={
     id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
-    text:txt.trim(), replyTo:rpl.trim(),
-    timestamp:new Date().toISOString()
+    text:txt.trim(),replyTo:rpl.trim(),timestamp:new Date().toISOString()
   };
-  try {
+  try{
     await api('message',{id,message});
-    // Optimistic local update
     const idx=posts.findIndex(p=>p.id===id);
     if(idx>-1){
       if(!posts[idx].messages)posts[idx].messages=[];
@@ -594,9 +1147,8 @@ async function sendMsg(id){
     }
     const s=document.getElementById('ms-'+id);
     if(s){s.style.display='inline';setTimeout(()=>s.style.display='none',2500);}
-    if(mt)mt.value='';
-    if(mr)mr.value='';
-  } catch(e){ alert('Could not send: '+e.message); }
+    if(mt)mt.value=''; if(mr)mr.value='';
+  }catch(e){setStatus('error','⚠️ Could not send: '+e.message);}
 }
 
 // ── Post form ─────────────────────────────────────────────────
@@ -604,11 +1156,13 @@ function setPostType(t){
   postType=t;
   document.getElementById('optNeed').className='type-opt'+(t==='need'?' sel-need':'');
   document.getElementById('optOffer').className='type-opt'+(t==='offer'?' sel-offer':'');
-  document.getElementById('fDescLbl').textContent=t==='need'?'What do you need? *':'What can you help with? *';
-  document.getElementById('fDesc').placeholder=t==='need'
-    ?'Be specific — what, when, where, any constraints.'
-    :'Describe what you can offer, your availability, and area.';
+  const lbl=document.getElementById('fDescLbl');
+  if(lbl) lbl.setAttribute('data-i', t==='need'?'descNeedLabel':'descOfferLabel');
+  applyLang();
+  const ta=document.getElementById('fDesc');
+  if(ta) ta.placeholder=tl(t==='need'?'descNeedPh':'descOfferPh');
   document.getElementById('fUrgWrap').style.display=t==='need'?'':'none';
+  showFormError('');
 }
 function setPrivacy(v){
   privacy=v;
@@ -620,12 +1174,14 @@ function selUrg(v){
   urgency=v;
   document.querySelectorAll('.urg-opt').forEach(el=>{
     el.className='urg-opt';
-    if(el.dataset.v===v)el.className='urg-opt sel-'+v;
+    if(el.dataset.v===v) el.className='urg-opt sel-'+v;
   });
+  showFormError('');
 }
 function onCatChange(){
   document.getElementById('fOtherWrap').style.display=
     document.getElementById('fCat').value==='Other'?'block':'none';
+  showFormError('');
 }
 function onFZip(){
   const v=document.getElementById('fZip').value;
@@ -634,77 +1190,76 @@ function onFZip(){
   }
 }
 
+// ── Submit (uses inline errors instead of alert()) ────────────
 async function submitPost(){
+  showFormError('');
   const zip=document.getElementById('fZip').value.trim();
   const name=document.getElementById('fName').value.trim();
   const cat=document.getElementById('fCat').value;
   const customCat=cat==='Other'?document.getElementById('fOther').value.trim():'';
   const desc=document.getElementById('fDesc').value.trim();
   const contact=document.getElementById('fContact').value.trim();
-  if(!zip||!/^\d{5}$/.test(zip)){alert('Please enter a valid 5-digit ZIP.');return;}
-  if(!cat){alert('Please select a category.');return;}
-  if(cat==='Other'&&!customCat){alert('Please describe your "Other" category.');return;}
-  if(desc.length<10){alert('Please add a bit more detail to your description.');return;}
-  if(postType==='need'&&!urgency){alert('Please select an urgency level.');return;}
-  if(privacy==='reveal'&&!contact){alert('Please enter your contact info, or choose "Fully anonymous."');return;}
+
+  if(!zip||!/^\d{5}$/.test(zip)){showFormError(tl('errZip'));return;}
+  if(!cat){showFormError(tl('errCat'));return;}
+  if(cat==='Other'&&!customCat){showFormError(tl('errOtherCat'));return;}
+  if(desc.length<10){showFormError(tl('errDesc'));return;}
+  if(postType==='need'&&!urgency){showFormError(tl('errUrg'));return;}
+  if(privacy==='reveal'&&!contact){showFormError(tl('errContact'));return;}
 
   const btn=document.getElementById('subBtn');
-  btn.disabled=true; btn.textContent='Posting…';
-  setStatus('loading','💾 Saving to Google Sheets…');
+  btn.disabled=true; btn.textContent=tl('submitting');
+  setStatus('loading',tl('savingMsg'));
 
   const code=genCode();
   const newPost={
     id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
-    type:postType, zip, firstName:name||'Neighbor',
-    category:cat, customCat, description:desc,
+    type:postType,zip,firstName:name||'Neighbor',
+    category:cat,customCat,description:desc,
     urgency:postType==='need'?(urgency||'flexible'):'',
-    privacy, contact:privacy==='reveal'?contact:'',
-    timestamp:new Date().toISOString(), updatedAt:new Date().toISOString(),
-    status:'open', secretCode:code, messages:[]
+    privacy,contact:privacy==='reveal'?contact:'',
+    timestamp:new Date().toISOString(),updatedAt:new Date().toISOString(),
+    status:'open',secretCode:code
   };
 
-  try {
+  try{
     const res=await api('add',newPost);
     if(!res.ok) throw new Error(res.error||'Save failed');
     document.getElementById('codeDisplay').textContent=code;
     const sb=document.getElementById('successBox');
     sb.className='success-box show';
     sb.scrollIntoView({behavior:'smooth',block:'nearest'});
-    ['fName','fDesc','fContact','fOther'].forEach(id=>{
-      const e=document.getElementById(id); if(e)e.value='';
-    });
+    ['fName','fDesc','fContact','fOther'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
     document.getElementById('fCat').value='';
     document.getElementById('fOtherWrap').style.display='none';
     urgency=''; document.querySelectorAll('.urg-opt').forEach(e=>e.className='urg-opt');
     setPostType('need'); setPrivacy('anon');
     setStatus('','');
     await load();
-  } catch(e){
-    setStatus('error','⚠️ Could not post: '+e.message);
+  }catch(e){
+    setStatus('error','⚠️ '+e.message);
   }
-  btn.disabled=false; btn.textContent='Post →';
+  btn.disabled=false; btn.textContent=tl('submitBtn');
 }
 
 // ── Manage ────────────────────────────────────────────────────
 function showMAlert(msg,ok){
   const el=document.getElementById('mAlert');
   el.textContent=msg; el.className='m-alert '+(ok?'ok':'warn')+' show';
-  if(!ok)document.getElementById('manageCard').className='manage-card';
+  if(!ok) document.getElementById('manageCard').className='manage-card';
 }
 
 async function lookupCode(){
   const code=document.getElementById('codeIn').value.trim().toUpperCase();
-  if(code.length<6){showMAlert('Please enter your 8-character secret code.');return;}
-  setStatus('loading','🔍 Looking up your post…');
+  if(code.length<6){showMAlert(tl('errCode'));return;}
+  setStatus('loading',tl('lookingMsg'));
   document.getElementById('mAlert').className='m-alert';
-  try {
+  try{
     const res=await api('lookup',{code});
     setStatus('','');
     if(!res.ok){showMAlert(res.error||'Not found.');return;}
     renderManageCard(res.post,code);
-  } catch(e){
-    setStatus('error','⚠️ '+e.message);
-  }
+  }catch(e){ setStatus('error','⚠️ '+e.message); }
 }
 
 function renderManageCard(p,code){
@@ -713,11 +1268,11 @@ function renderManageCard(p,code){
   const msgsHtml=msgs.length
     ?msgs.map(m=>`<div class="msg-item">
         <div>${esc(m.text)}</div>
-        ${m.replyTo?`<div class="msg-reply">📧 Their contact: ${esc(m.replyTo)}</div>`:''}
+        ${m.replyTo?`<div class="msg-reply">📧 ${esc(m.replyTo)}</div>`:''}
         <div class="msg-time">${timeAgo(m.timestamp)}</div>
       </div>`).join('')
-    :`<div class="no-msgs">No messages yet — share your post so neighbors can reach you.</div>`;
-
+    :`<div class="no-msgs">${tl('noMsgs')}</div>`;
+  const msgTitle=tl('msgUpdated').replace('%(n)',msgs.length)||`💬 Messages (${msgs.length})`;
   document.getElementById('manageCard').className='manage-card show';
   document.getElementById('manageCard').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem">
@@ -725,24 +1280,24 @@ function renderManageCard(p,code){
         <span class="type-badge ${p.type==='need'?'type-need':'type-offer'}">${p.type}</span>
         <span class="cat-badge" style="background:${c.bg};color:${c.tc}">${esc(dc)}</span>
       </div>
-      <span class="chip ${p.status==='open'?'chip-open':'chip-done'}">${p.status==='open'?'Open':p.type==='need'?'Fulfilled':'Closed'}</span>
+      <span class="chip ${p.status==='open'?'chip-open':'chip-done'}">${p.status==='open'?tl('open'):p.type==='need'?tl('fulfilled'):tl('closedStat')}</span>
     </div>
     <div class="manage-desc-block">${esc(p.description)}</div>
-    <div class="manage-meta">ZIP ${esc(p.zip)} · Posted ${timeAgo(p.timestamp)}${p.updatedAt&&p.updatedAt!==p.timestamp?' · Updated '+timeAgo(p.updatedAt):''}</div>
+    <div class="manage-meta">ZIP ${esc(p.zip)} · ${timeAgo(p.timestamp)}</div>
     <div class="msgs-section">
-      <h4>💬 Messages from neighbors (${msgs.length})</h4>
+      <h4>💬 ${msgTitle}</h4>
       ${msgsHtml}
     </div>
     <div class="manage-actions">
-      ${p.status==='open'?`<button class="btn btn-g" onclick="mMark('${p.id}','${code}')">${p.type==='need'?'✓ Mark fulfilled':'✓ Mark closed'}</button>`:''}
-      <button class="btn btn-r" onclick="mEdit('${p.id}','${code}')">✏️ Edit</button>
-      <button class="btn btn-del" onclick="mDelete('${p.id}','${code}')">🗑️ Delete</button>
+      ${p.status==='open'?`<button class="btn btn-g" onclick="mMark('${p.id}','${code}')">${p.type==='need'?tl('markFulfilled'):tl('markClosed')}</button>`:''}
+      <button class="btn btn-r" onclick="mEdit('${p.id}','${code}')">${tl('editBtn')}</button>
+      <button class="btn btn-del" onclick="mDelete('${p.id}','${code}')">${tl('deleteBtn')}</button>
     </div>
     <div class="edit-box" id="editBox">
       <textarea id="editTxt" maxlength="800">${esc(p.description)}</textarea>
       <div class="edit-actions">
-        <button class="btn btn-g" onclick="mSaveEdit('${p.id}','${code}')">Save changes</button>
-        <button class="btn btn-r" onclick="document.getElementById('editBox').style.display='none'">Cancel</button>
+        <button class="btn btn-g" onclick="mSaveEdit('${p.id}','${code}')">${tl('saveChanges')}</button>
+        <button class="btn btn-r" onclick="document.getElementById('editBox').style.display='none'">${tl('cancelBtn')}</button>
       </div>
     </div>`;
 }
@@ -751,44 +1306,41 @@ function mEdit(){
   const eb=document.getElementById('editBox');
   if(eb) eb.style.display=eb.style.display==='block'?'none':'block';
 }
-
 async function mSaveEdit(id,code){
   const t=(document.getElementById('editTxt')||{}).value||'';
-  if(t.trim().length<5){alert('Description too short.');return;}
-  setStatus('loading','Saving changes…');
-  try {
-    const res=await api('lookup',{code}); if(!res.ok)throw new Error(res.error);
+  if(t.trim().length<5){setStatus('error',tl('errDescShort'));return;}
+  setStatus('loading',tl('savingMsg'));
+  try{
+    const res=await api('lookup',{code}); if(!res.ok) throw new Error(res.error);
     const p=res.post; p.description=t.trim(); p.updatedAt=new Date().toISOString();
-    const up=await api('update',p); if(!up.ok)throw new Error(up.error);
+    const up=await api('update',p); if(!up.ok) throw new Error(up.error);
     await load();
-    const res2=await api('lookup',{code}); if(res2.ok)renderManageCard(res2.post,code);
+    const res2=await api('lookup',{code}); if(res2.ok) renderManageCard(res2.post,code);
     setStatus('','');
-  } catch(e){ setStatus('error','⚠️ '+e.message); }
+  }catch(e){ setStatus('error','⚠️ '+e.message); }
 }
-
 async function mMark(id,code){
-  setStatus('loading','Updating…');
-  try {
-    const res=await api('lookup',{code}); if(!res.ok)throw new Error(res.error);
+  setStatus('loading',tl('updatingMsg'));
+  try{
+    const res=await api('lookup',{code}); if(!res.ok) throw new Error(res.error);
     const p=res.post; p.status='claimed'; p.updatedAt=new Date().toISOString();
-    const up=await api('update',p); if(!up.ok)throw new Error(up.error);
+    const up=await api('update',p); if(!up.ok) throw new Error(up.error);
     await load();
-    const res2=await api('lookup',{code}); if(res2.ok)renderManageCard(res2.post,code);
+    const res2=await api('lookup',{code}); if(res2.ok) renderManageCard(res2.post,code);
     setStatus('','');
-  } catch(e){ setStatus('error','⚠️ '+e.message); }
+  }catch(e){ setStatus('error','⚠️ '+e.message); }
 }
-
 async function mDelete(id,code){
-  if(!confirm('Delete this post permanently? This cannot be undone.'))return;
-  setStatus('loading','Deleting…');
-  try {
-    const res=await api('lookup',{code}); if(!res.ok)throw new Error(res.error);
+  if(!confirm(tl('deleteConfirm')))return;
+  setStatus('loading',tl('deletingMsg'));
+  try{
+    const res=await api('lookup',{code}); if(!res.ok) throw new Error(res.error);
     const p=res.post; p.status='deleted'; p.updatedAt=new Date().toISOString();
-    const up=await api('update',p); if(!up.ok)throw new Error(up.error);
+    const up=await api('update',p); if(!up.ok) throw new Error(up.error);
     await load();
-    showMAlert('Post deleted successfully.',true);
+    showMAlert(tl('deletedOk'),true);
     setStatus('','');
-  } catch(e){ setStatus('error','⚠️ '+e.message); }
+  }catch(e){ setStatus('error','⚠️ '+e.message); }
 }
 
 // ── ZIP gate ──────────────────────────────────────────────────
@@ -801,10 +1353,10 @@ function onGlobalZip(){
     document.getElementById('fZip').value=z;
     ['nZip','oZip'].forEach(id=>{
       const s=document.getElementById(id);
-      if([...s.options].some(o=>o.value===z))s.value=z;
+      if([...s.options].some(o=>o.value===z)) s.value=z;
     });
     renderNeeds(); renderOffers();
-  } else {
+  }else{
     document.getElementById('zipPill').className='zip-pill';
     document.getElementById('zipHint').style.display='';
   }
@@ -824,18 +1376,21 @@ function switchTab(t){
     document.getElementById('p-'+k).style.display=k===t?'block':'none';
     document.getElementById('t-'+k).className='tab'+(k===t?' active':'');
   });
+  showFormError('');
 }
 
 // ── Theme ─────────────────────────────────────────────────────
+const SUN=`<svg id="themeIco" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+const MOON=`<svg id="themeIco" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
 function toggleTheme(){
   isDark=!isDark;
   document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
-  document.getElementById('themeLabel').textContent=isDark?'Light mode':'Dark mode';
-  document.getElementById('themeIco').outerHTML=isDark
-    ?`<svg id="themeIco" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`
-    :`<svg id="themeIco" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+  document.getElementById('themeLabel').textContent=isDark?tl('light'):tl('dark');
+  document.getElementById('themeIco').outerHTML=isDark?MOON:SUN;
 }
 
+// ── Init ──────────────────────────────────────────────────────
+applyLang();
 load();
 </script>
 </body>

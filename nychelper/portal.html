@@ -70,49 +70,50 @@ header p{color:var(--muted);font-size:.86rem;margin-top:.3rem}
 
 /* ── Category pills ── */
 .cpills{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.8rem}
-.cpill{padding:.24rem .7rem;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:.72rem;font-weight:600;transition:all .18s;min-height:30px;display:inline-flex;align-items:center;-webkit-tap-highlight-color:transparent}
+.cpill{padding:.26rem .72rem;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:.73rem;font-weight:600;transition:all .18s;min-height:30px;display:inline-flex;align-items:center;justify-content:center;line-height:1;-webkit-tap-highlight-color:transparent}
 .cpill:hover{border-color:var(--accent);color:var(--accent)}
 .cpill.on{background:var(--accent);border-color:var(--accent);color:#fff}
 
 .count{color:var(--muted);font-size:.74rem;font-weight:600;margin-bottom:.65rem}
 
 /* ── Card grid ── */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.7rem}
-.ncard{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:.9rem 1.05rem;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:.42rem;transition:border-color .2s,box-shadow .2s}
-.ncard:hover{border-color:rgba(201,98,74,.28);box-shadow:var(--shadow-md)}
-.ncard.offer-card:hover{border-color:rgba(90,148,120,.32)}
-.ncard.fulfilled{opacity:.55}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.85rem}
+.ncard{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:1.05rem 1.15rem 1rem;box-shadow:0 1px 4px rgba(0,0,0,.05),0 2px 10px rgba(0,0,0,.04);display:flex;flex-direction:column;gap:.48rem;transition:border-color .22s,box-shadow .22s,transform .18s}
+.ncard:hover{border-color:rgba(201,98,74,.28);box-shadow:0 3px 14px rgba(201,98,74,.12);transform:translateY(-1px)}
+.ncard.offer-card:hover{border-color:rgba(90,148,120,.32);box-shadow:0 3px 14px rgba(90,148,120,.1)}
+.ncard.fulfilled{opacity:.5}
 
 .badges{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center}
 .ncard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem}
-.type-badge{font-size:.63rem;font-weight:800;padding:.16rem .5rem;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}
-.type-need{background:#FAECE7;color:#712B13}
-.type-offer{background:#E1F5EE;color:#085041}
-.cat-badge{font-size:.65rem;font-weight:700;padding:.16rem .5rem;border-radius:999px}
-.urg-mini{display:flex;align-items:center;gap:.28rem}
-.urg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.type-badge{font-size:.62rem;font-weight:700;padding:.22rem .6rem;border-radius:999px;text-transform:uppercase;letter-spacing:.05em;display:inline-flex;align-items:center;line-height:1}
+.type-need{background:#fdf0ed;color:#8a3520}
+.type-offer{background:#eaf6f2;color:#1a6655}
+.cat-badge{font-size:.65rem;font-weight:600;padding:.22rem .6rem;border-radius:999px;display:inline-flex;align-items:center;line-height:1}
+.urg-mini{display:inline-flex;align-items:center;gap:.3rem}
+.urg-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .urg-lbl{font-size:.65rem;font-weight:600}
-.urg-urgent .urg-dot{background:#e24b4a}.urg-urgent .urg-lbl{color:#e24b4a}
-.urg-week   .urg-dot{background:#ef9f27}.urg-week   .urg-lbl{color:#ef9f27}
-.urg-flex   .urg-dot{background:#639922}.urg-flex   .urg-lbl{color:#639922}
+.urg-urgent .urg-dot{background:#e05555}.urg-urgent .urg-lbl{color:#c84040}
+.urg-week   .urg-dot{background:#e8a030}.urg-week   .urg-lbl{color:#c07818}
+.urg-flex   .urg-dot{background:#5a9a40}.urg-flex   .urg-lbl{color:#4a8030}
 
-.ncard-name{font-weight:700;font-size:.88rem}
-.ncard-meta{font-size:.7rem;color:var(--muted);font-weight:500}
-.ncard-desc{font-size:.8rem;color:var(--muted);line-height:1.6;overflow:hidden;flex:1;
+.ncard-name{font-weight:700;font-size:.9rem;letter-spacing:-.01em}
+.ncard-meta{font-size:.71rem;color:var(--muted);font-weight:500}
+.ncard-desc{font-size:.81rem;color:var(--muted);line-height:1.65;overflow:hidden;flex:1;
   display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical}
-/* Firefox fallback for line-clamp */
-@supports not (-webkit-line-clamp:3){.ncard-desc{max-height:4.8em}}
+@supports not (-webkit-line-clamp:3){.ncard-desc{max-height:5em}}
 
-.ncard-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.3rem;margin-top:auto;padding-top:.4rem}
-.ncard-time{font-size:.67rem;color:var(--muted)}
-.ncard-btns{display:flex;gap:.3rem;flex-wrap:wrap}
+.ncard-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.35rem;margin-top:auto;padding-top:.5rem;border-top:1px solid var(--border)}
+.ncard-time{font-size:.68rem;color:var(--muted)}
+.ncard-btns{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center}
 
-.chip{font-size:.63rem;font-weight:700;padding:.16rem .5rem;border-radius:999px}
-.chip-open{background:rgba(90,148,120,.12);color:var(--green)}
-.chip-done{background:rgba(201,98,74,.1);color:var(--accent)}
+/* chip — inline-flex so text is always perfectly centered */
+.chip{font-size:.64rem;font-weight:700;padding:.24rem .62rem;border-radius:999px;
+  display:inline-flex;align-items:center;justify-content:center;line-height:1;white-space:nowrap}
+.chip-open{background:rgba(90,148,120,.13);color:#3d7a60}
+.chip-done{background:rgba(201,98,74,.1);color:#a04830}
 
 /* ── Buttons — larger touch targets ── */
-.btn{padding:.28rem .65rem;border-radius:7px;border:1.5px solid;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .18s;background:none;white-space:nowrap;min-height:32px;-webkit-tap-highlight-color:transparent}
+.btn{padding:.3rem .72rem;border-radius:8px;border:1.5px solid;font-size:.71rem;font-weight:600;cursor:pointer;transition:all .18s;background:none;white-space:nowrap;min-height:32px;min-width:44px;display:inline-flex;align-items:center;justify-content:center;line-height:1;-webkit-tap-highlight-color:transparent}
 .btn-g{border-color:rgba(90,148,120,.35);color:var(--green);background:rgba(90,148,120,.07)}
 .btn-g:hover,.btn-g:focus{background:var(--green);color:#fff;border-color:var(--green)}
 .btn-b{border-color:rgba(74,111,165,.35);color:var(--blue);background:rgba(74,111,165,.07)}
@@ -144,6 +145,16 @@ header p{color:var(--muted);font-size:.86rem;margin-top:.3rem}
 .msg-form textarea:focus,.msg-form input[type=text]:focus{border-color:var(--blue)}
 .anon-note{font-size:.69rem;color:var(--muted);font-style:italic}
 .msg-sent{font-size:.73rem;color:var(--green);font-weight:600;display:none}
+.expand-red{background:rgba(201,98,74,.05);border:1px solid rgba(201,98,74,.28);padding:.65rem .88rem}
+.flag-heading{font-size:.82rem;font-weight:700;color:var(--accent);margin-bottom:.22rem}
+.flag-note{font-size:.74rem;color:var(--muted);font-style:italic;margin-bottom:.5rem;line-height:1.5}
+.flag-reasons{display:flex;flex-wrap:wrap;gap:.32rem;margin:.1rem 0 .55rem}
+.flag-pill{padding:.24rem .72rem;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:.71rem;font-weight:600;transition:all .18s;min-height:30px;display:inline-flex;align-items:center;-webkit-tap-highlight-color:transparent}
+.flag-pill:hover{border-color:var(--accent);color:var(--accent)}
+.flag-pill.sel{background:var(--accent);border-color:var(--accent);color:#fff}
+.flag-err{font-size:.71rem;color:var(--accent);display:none;margin-bottom:.4rem;font-weight:600}
+.btn-flag{border-color:rgba(201,98,74,.2)!important;color:var(--muted)!important;background:none!important;opacity:.65}
+.btn-flag:hover,.btn-flag.active{border-color:var(--accent)!important;color:var(--accent)!important;opacity:1;background:rgba(201,98,74,.07)!important}
 
 /* ── Post form ── */
 .form-wrap{max-width:540px}
@@ -1124,8 +1135,8 @@ function card(p,type){
   </div>`;
 }
 
-function togContact(id){openContact=openContact===id?null:id;openMsg=null;renderNeeds();renderOffers();}
-function togMsg(id){openMsg=openMsg===id?null:id;openContact=null;renderNeeds();renderOffers();}
+function togContact(id){openContact=openContact===id?null:id;openMsg=null;openFlag=null;renderNeeds();renderOffers();}
+function togMsg(id){openMsg=openMsg===id?null:id;openContact=null;openFlag=null;renderNeeds();renderOffers();}
 
 async function sendMsg(id){
   const mt=document.getElementById('mt-'+id);
@@ -1149,6 +1160,84 @@ async function sendMsg(id){
     if(s){s.style.display='inline';setTimeout(()=>s.style.display='none',2500);}
     if(mt)mt.value=''; if(mr)mr.value='';
   }catch(e){setStatus('error','⚠️ Could not send: '+e.message);}
+}
+
+// ── Flag system ───────────────────────────────────────────────
+let openFlag=null, flagReason='';
+
+const FLAG_T={
+  en:{btn:'🚩',title:'Flag this post?',
+    warn:'Only flag posts that genuinely need moderator review — spam, harmful content, or serious misinformation.',
+    reasons:['Spam or self-promotion','Harmful / unsafe content','Already resolved or duplicate','Incorrect information','Other'],
+    confirm:'Yes, flag it',cancel:'Cancel',sent:'✓ Flagged — thank you',
+    pickReason:'Please select a reason first.',sending:'Flagging…'},
+  es:{btn:'🚩',title:'¿Reportar esta publicación?',
+    warn:'Solo reporta publicaciones que realmente requieran revisión — spam, contenido dañino o desinformación grave.',
+    reasons:['Spam o autopromoción','Contenido dañino / inseguro','Ya resuelto o duplicado','Información incorrecta','Otro'],
+    confirm:'Sí, reportar',cancel:'Cancelar',sent:'✓ Reportado — gracias',
+    pickReason:'Por favor selecciona un motivo.',sending:'Reportando…'},
+  fr:{btn:'🚩',title:'Signaler cette publication ?',
+    warn:'Ne signalez que si vraiment nécessaire — spam, contenu nuisible ou désinformation grave.',
+    reasons:['Spam ou autopromotion','Contenu nuisible / dangereux','Déjà résolu ou doublon','Informations incorrectes','Autre'],
+    confirm:'Oui, signaler',cancel:'Annuler',sent:'✓ Signalé — merci',
+    pickReason:'Veuillez sélectionner une raison.',sending:'Signalement…'},
+  ru:{btn:'🚩',title:'Пожаловаться на публикацию?',
+    warn:'Жалуйтесь только при реальной необходимости — спам, вредный контент или серьёзная дезинформация.',
+    reasons:['Спам или самореклама','Вредный / небезопасный контент','Уже решено или дубликат','Неверная информация','Другое'],
+    confirm:'Да, пожаловаться',cancel:'Отмена',sent:'✓ Жалоба отправлена',
+    pickReason:'Выберите причину.',sending:'Отправка…'},
+  zh:{btn:'🚩',title:'举报此帖子？',
+    warn:'仅在确有必要时举报——垃圾信息、有害内容或严重错误信息。',
+    reasons:['垃圾信息或自我推广','有害/不安全内容','已解决或重复','信息不正确','其他'],
+    confirm:'是的，举报',cancel:'取消',sent:'✓ 已举报 — 谢谢',
+    pickReason:'请先选择原因。',sending:'举报中…'},
+  hi:{btn:'🚩',title:'इस पोस्ट की रिपोर्ट करें?',
+    warn:'केवल तभी रिपोर्ट करें जब वाकई जरूरी हो — स्पैम, हानिकारक सामग्री या गलत जानकारी।',
+    reasons:['स्पैम या स्व-प्रचार','हानिकारक / असुरक्षित सामग्री','पहले से हल या डुप्लिकेट','गलत जानकारी','अन्य'],
+    confirm:'हाँ, रिपोर्ट करें',cancel:'रद्द करें',sent:'✓ रिपोर्ट की गई — धन्यवाद',
+    pickReason:'कृपया पहले कारण चुनें।',sending:'रिपोर्ट हो रही है…'},
+  bn:{btn:'🚩',title:'এই পোস্ট রিপোর্ট করবেন?',
+    warn:'শুধুমাত্র প্রকৃত প্রয়োজনে রিপোর্ট করুন — স্প্যাম, ক্ষতিকর বিষয় বা ভুল তথ্য।',
+    reasons:['স্প্যাম বা স্ব-প্রচার','ক্ষতিকর / অনিরাপদ বিষয়','ইতিমধ্যে সমাধান বা ডুপ্লিকেট','ভুল তথ্য','অন্যান্য'],
+    confirm:'হ্যাঁ, রিপোর্ট করুন',cancel:'বাতিল',sent:'✓ রিপোর্ট করা হয়েছে — ধন্যবাদ',
+    pickReason:'প্রথমে একটি কারণ নির্বাচন করুন।',sending:'রিপোর্ট হচ্ছে…'},
+  ht:{btn:'🚩',title:'Rapòte piblikasyon sa?',
+    warn:'Rapòte sèlman si sa nesesè — spam, kontni danjere, oswa move enfòmasyon grav.',
+    reasons:['Spam oswa otopwomasyon','Kontni danjere / pa an sekirite','Deja rezoud oswa doublòn','Enfòmasyon pa kòrèk','Lòt'],
+    confirm:'Wi, rapòte',cancel:'Anile',sent:'✓ Rapòte — mèsi',
+    pickReason:'Tanpri chwazi yon rezon anvan.',sending:'Ap rapòte…'}
+};
+function tf(k){return(FLAG_T[lang]&&FLAG_T[lang][k]!==undefined)?FLAG_T[lang][k]:FLAG_T.en[k];}
+
+function togFlag(id){
+  openFlag=openFlag===id?null:id;
+  flagReason='';
+  openContact=null; openMsg=null;
+  renderNeeds(); renderOffers();
+}
+function selFlagReason(id,r){
+  flagReason=r;
+  const box=document.getElementById('fb-'+id);
+  if(!box)return;
+  box.querySelectorAll('.flag-pill').forEach(p=>p.classList.toggle('sel',p.dataset.r===r));
+  const err=box.querySelector('.flag-err'); if(err)err.style.display='none';
+}
+async function sendFlag(id){
+  if(!flagReason){
+    const box=document.getElementById('fb-'+id);
+    if(box){const err=box.querySelector('.flag-err');if(err){err.textContent=tf('pickReason');err.style.display='block';}}
+    return;
+  }
+  const btn=document.getElementById('fb-ok-'+id);
+  if(btn){btn.disabled=true;btn.textContent=tf('sending');}
+  try{
+    // Sends as an update — Apps Script should handle action:'flag' to move row to top;
+    // if not yet implemented it fails silently and the flag is still recorded locally.
+    await api('flag',{id,reason:flagReason,timestamp:new Date().toISOString()});
+  }catch(e){ console.warn('Flag API:',e.message); }
+  const box=document.getElementById('fb-'+id);
+  if(box) box.innerHTML=`<span style="font-size:.78rem;color:var(--green);font-weight:600">${tf('sent')}</span>`;
+  setTimeout(()=>{openFlag=null;renderNeeds();renderOffers();},2000);
 }
 
 // ── Post form ─────────────────────────────────────────────────

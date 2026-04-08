@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bulk AI Image Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root {
+  --bg: #0e0e10; --bg2: #18181b; --bg3: #1e1e22; --border: #2a2a2e;
+  --text: #e4e4e7; --text2: #a1a1aa; --accent: #f5c542; --accent2: #e0a800;
+  --green: #4ade80; --red: #f87171; --blue: #60a5fa;
+  --radius: 8px; --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+.container { max-width: 820px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+h1 span { font-size: 1.6rem; }
+.subtitle { color: var(--text2); font-size: 0.82rem; margin: 2px 0 20px; }
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 14px; }
+.card-title { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text2); margin-bottom: 14px; }
+label { display: block; font-size: 0.82rem; color: var(--text2); margin-bottom: 4px; font-weight: 500; }
+textarea, select, input[type="number"], input[type="text"], input[type="password"] {
+  width: 100%; padding: 9px 12px; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--text); font-size: 0.88rem; font-family: var(--font);
+  outline: none; transition: border-color 0.15s;
+}
+textarea:focus, select:focus, input:focus { border-color: var(--accent); }
+textarea { resize: vertical; min-height: 80px; }
+select { cursor: pointer; appearance: auto; }
+.row { display: flex; gap: 12px; margin-bottom: 12px; }
+.row > div { flex: 1; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 20px; border-radius: var(--radius); border: 1px solid var(--border);
+  font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
+  font-family: var(--font); background: var(--bg3); color: var(--text);
+}
+.btn:hover { border-color: var(--text2); }
+.btn-primary { background: var(--accent); color: #000; border-color: var(--accent); }
+.btn-primary:hover { background: var(--accent2); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-danger { background: var(--red); color: #000; border-color: var(--red); }
+.btn-danger:hover { opacity: 0.85; }
+.btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+.file-upload-area {
+  border: 2px dashed var(--border); border-radius: var(--radius); padding: 28px;
+  text-align: center; cursor: pointer; transition: border-color 0.15s;
+}
+.file-upload-area:hover { border-color: var(--accent); }
+.file-upload-area.has-files { border-color: var(--green); border-style: solid; }
+.file-upload-area input { display: none; }
+.file-count { font-size: 0.82rem; color: var(--green); margin-top: 6px; font-weight: 600; }
+.toggle-header {
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; padding: 6px 0; user-select: none;
+}
+.toggle-header .arrow { transition: transform 0.2s; font-size: 0.7rem; color: var(--text2); }
+.toggle-header .arrow.open { transform: rotate(90deg); }
+.toggle-body { display: none; padding-top: 14px; }
+.toggle-body.open { display: block; }
+.tree { font-size: 0.8rem; font-family: 'Consolas', 'Monaco', monospace; max-height: 200px; overflow-y: auto; padding: 10px; background: var(--bg); border-radius: var(--radius); }
+.tree div { padding: 1px 0; color: var(--text2); white-space: nowrap; }
+.tree .folder { color: var(--accent); }
+.tree .file { color: var(--text2); }
+.progress-area { display: none; }
+.progress-area.active { display: block; }
+.progress-bar-bg { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; margin: 8px 0; }
+.progress-bar { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; width: 0%; }
+.progress-status { font-size: 0.82rem; color: var(--text2); margin-bottom: 4px; }
+.progress-detail { font-size: 0.78rem; color: var(--text2); }
+.log { max-height: 180px; overflow-y: auto; margin-top: 10px; font-size: 0.78rem; font-family: 'Consolas', monospace; background: var(--bg); border-radius: var(--radius); padding: 10px; }
+.log div { padding: 2px 0; }
+.log .ok { color: var(--green); }
+.log .err { color: var(--red); }
+.log .info { color: var(--blue); }
+.summary { font-size: 0.85rem; padding: 12px; background: var(--bg); border-radius: var(--radius); margin-top: 10px; line-height: 1.6; }
+.mb { margin-bottom: 12px; }
+.range-row { display: flex; align-items: center; gap: 10px; }
+.range-row input[type="range"] { flex: 1; accent-color: var(--accent); }
+.range-val { font-size: 0.82rem; color: var(--accent); min-width: 32px; text-align: right; font-weight: 600; }
+.api-error { background: #2d1215; border: 1px solid var(--red); color: var(--red); padding: 12px; border-radius: var(--radius); font-size: 0.85rem; margin-bottom: 14px; display: none; }
+.dl-area { display: none; text-align: center; padding: 16px 0; }
+.dl-area.active { display: block; }
+.model-note { font-size: 0.75rem; color: var(--text2); margin-top: 4px; line-height: 1.4; }
+.model-note.free { color: var(--green); }
+.tag { display: inline-block; font-size: 0.68rem; padding: 1px 6px; border-radius: 3px; font-weight: 600; vertical-align: middle; margin-left: 4px; }
+.tag-free { background: #166534; color: var(--green); }
+.tag-paid { background: #713f12; color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1><span>🍌</span> Bulk Image Generator</h1>
+  <p class="subtitle">Gemini Nano Banana &middot; Image-to-image with a single prompt across entire folders</p>
+
+  <div class="api-error" id="apiError"></div>
+
+  <!-- API key loaded from apikey.txt -->
+  <div class="api-status" id="apiStatus" style="font-size:0.78rem;color:var(--text2);margin-bottom:14px;display:none"></div>
+
+  <!-- ===== INPUT ===== -->
+  <div class="card">
+    <div class="card-title">Input</div>
+    <div class="file-upload-area" id="uploadArea" onclick="document.getElementById('folderInput').click()">
+      <input type="file" id="folderInput" webkitdirectory directory multiple>
+      <div style="font-size:1.6rem;margin-bottom:6px">📁</div>
+      <div style="font-size:0.88rem;font-weight:600">Click to select a folder</div>
+      <div style="font-size:0.78rem;color:var(--text2);margin-top:4px">Supports nested folders &middot; JPG, PNG, WebP, GIF, BMP, TIFF, SVG</div>
+      <div class="file-count" id="fileCount" style="display:none"></div>
+    </div>
+    <div id="treeWrap" style="display:none;margin-top:12px">
+      <label>File preview</label>
+      <div class="tree" id="fileTree"></div>
+    </div>
+  </div>
+
+  <!-- ===== PROMPT ===== -->
+  <div class="card">
+    <div class="card-title">Prompt</div>
+    <label for="prompt">Applied to every input image</label>
+    <textarea id="prompt" placeholder="e.g. Transform this image into a watercolor painting with soft pastel tones..."></textarea>
+  </div>
+
+  <!-- ===== SETTINGS ===== -->
+  <div class="card">
+    <div class="card-title">Settings</div>
+
+    <div class="mb">
+      <label for="model">Model</label>
+      <select id="model" onchange="onModelChange()">
+        <option value="gemini-3-pro-image-preview">🍌 Nano Banana Pro — best quality, $0.134/img</option>
+        <option value="gemini-3.1-flash-image-preview">🍌 Nano Banana 2 — good balance, ~$0.067/img</option>
+        <option value="gemini-2.5-flash-image">🍌 Nano Banana (original) — cheapest, $0.039/img</option>
+      </select>
+      <div class="model-note" id="modelNote">Highest fidelity. Supports thinking mode, 4K output. Requires billing enabled.</div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="aspectRatio">Aspect Ratio</label>
+        <select id="aspectRatio">
+          <option value="maintain" selected>Maintain Original</option>
+          <option value="1:1">1:1 (Square)</option>
+          <option value="2:3">2:3 (Portrait)</option>
+          <option value="3:2">3:2 (Landscape)</option>
+          <option value="3:4">3:4</option>
+          <option value="4:3">4:3</option>
+          <option value="4:5">4:5</option>
+          <option value="5:4">5:4</option>
+          <option value="9:16">9:16 (Vertical)</option>
+          <option value="16:9">16:9 (Wide)</option>
+          <option value="21:9">21:9 (Ultrawide)</option>
+          <option value="1:4">1:4</option>
+          <option value="4:1">4:1</option>
+          <option value="1:8">1:8</option>
+          <option value="8:1">8:1</option>
+        </select>
+      </div>
+      <div>
+        <label for="resolution">Output Resolution</label>
+        <select id="resolution">
+          <option value="512">512px</option>
+          <option value="1K" selected>1K (~1024px)</option>
+          <option value="2K">2K (~2048px)</option>
+          <option value="4K">4K (~4096px)</option>
+        </select>
+      </div>
+      <div>
+        <label for="variants">Variants per Image</label>
+        <input type="number" id="variants" value="1" min="1" max="10">
+      </div>
+    </div>
+
+    <!-- Advanced Settings Toggle -->
+    <div class="toggle-header" onclick="toggleAdvanced()">
+      <span style="font-size:0.82rem;font-weight:600;color:var(--text2)">Advanced Settings</span>
+      <span class="arrow" id="advArrow">▶</span>
+    </div>
+    <div class="toggle-body" id="advBody">
+      <div class="mb">
+        <label>Temperature <span style="color:var(--text2);font-weight:400">(creativity)</span></label>
+        <div class="range-row">
+          <input type="range" id="temperature" min="0" max="2" step="0.1" value="1.0" oninput="document.getElementById('tempVal').textContent=this.value">
+          <span class="range-val" id="tempVal">1</span>
+        </div>
+      </div>
+      <div class="mb">
+        <label>Request Delay <span style="color:var(--text2);font-weight:400">(ms between API calls)</span></label>
+        <input type="number" id="requestDelay" value="600" min="0" max="10000" step="100">
+      </div>
+      <div class="row mb">
+        <div>
+          <label>
+            <input type="checkbox" id="thinkingMode" style="width:auto;margin-right:6px;vertical-align:middle">
+            Thinking Mode <span style="color:var(--text2);font-weight:400">(Pro only — slower, better for complex prompts)</span>
+          </label>
+        </div>
+      </div>
+      <div class="mb">
+        <label>Safety Filters</label>
+        <div class="row" style="margin-top:6px">
+          <div>
+            <label style="font-size:0.75rem">Harassment</label>
+            <select id="safety_harassment" class="safety-sel">
+              <option value="OFF">Off</option>
+              <option value="BLOCK_ONLY_HIGH">Block Only High</option>
+              <option value="BLOCK_MEDIUM_AND_ABOVE" selected>Block Medium+</option>
+              <option value="BLOCK_LOW_AND_ABOVE">Block Low+</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.75rem">Hate Speech</label>
+            <select id="safety_hate" class="safety-sel">
+              <option value="OFF">Off</option>
+              <option value="BLOCK_ONLY_HIGH">Block Only High</option>
+              <option value="BLOCK_MEDIUM_AND_ABOVE" selected>Block Medium+</option>
+              <option value="BLOCK_LOW_AND_ABOVE">Block Low+</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" style="margin-top:6px">
+          <div>
+            <label style="font-size:0.75rem">Sexually Explicit</label>
+            <select id="safety_sexual" class="safety-sel">
+              <option value="OFF">Off</option>
+              <option value="BLOCK_ONLY_HIGH">Block Only High</option>
+              <option value="BLOCK_MEDIUM_AND_ABOVE" selected>Block Medium+</option>
+              <option value="BLOCK_LOW_AND_ABOVE">Block Low+</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.75rem">Dangerous Content</label>
+            <select id="safety_dangerous" class="safety-sel">
+              <option value="OFF">Off</option>
+              <option value="BLOCK_ONLY_HIGH">Block Only High</option>
+              <option value="BLOCK_MEDIUM_AND_ABOVE" selected>Block Medium+</option>
+              <option value="BLOCK_LOW_AND_ABOVE">Block Low+</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RUN ===== -->
+  <div style="display:flex;gap:10px;margin-bottom:14px">
+    <button class="btn btn-primary" id="runBtn" onclick="startRun()" disabled>🚀 Generate All</button>
+    <button class="btn btn-danger" id="stopBtn" onclick="stopRun()" style="display:none">⏹ Stop</button>
+  </div>
+
+  <!-- ===== PROGRESS ===== -->
+  <div class="card progress-area" id="progressArea">
+    <div class="card-title">Progress</div>
+    <div class="progress-status" id="progressStatus">Preparing...</div>
+    <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-detail" id="progressDetail"></div>
+    <div class="log" id="logArea"></div>
+    <div class="summary" id="summary" style="display:none"></div>
+  </div>
+
+  <!-- ===== DOWNLOAD ===== -->
+  <div class="dl-area" id="dlArea">
+    <button class="btn btn-primary" id="dlBtn" onclick="downloadZip()">📥 Download Output ZIP</button>
+    <div style="font-size:0.78rem;color:var(--text2);margin-top:6px" id="dlInfo"></div>
+  </div>
+
+</div>
+
+<script>
+/* ===========================================================
+   CONFIG
+   =========================================================== */
+const MODELS = {
+  'gemini-3-pro-image-preview': {
+    name: 'Nano Banana Pro',
+    note: 'Highest fidelity. Supports thinking mode, 4K output. Requires billing enabled.',
+    free: false,
+    cost: { '512': 0.067, '1K': 0.134, '2K': 0.134, '4K': 0.24 }
+  },
+  'gemini-3.1-flash-image-preview': {
+    name: 'Nano Banana 2',
+    note: 'Good quality at Flash speed. 4K support. Requires billing enabled.',
+    free: false,
+    cost: { '512': 0.045, '1K': 0.067, '2K': 0.101, '4K': 0.151 }
+  },
+  'gemini-2.5-flash-image': {
+    name: 'Nano Banana (original)',
+    note: 'Free tier: ~500 req/day, 1K max. Lowest quality but great for testing. Shutting down Oct 2026.',
+    free: true,
+    cost: { '512': 0.02, '1K': 0.039, '2K': 0.039, '4K': 0.039 }
+  }
+};
+
+const CFG = {
+  API_BASE: 'https://generativelanguage.googleapis.com/v1beta',
+  IMG_EXTS: new Set(['jpg','jpeg','png','gif','webp','bmp','tiff','tif','svg']),
+  RATIOS: [[1,1],[1,4],[1,8],[2,3],[3,2],[3,4],[4,1],[4,3],[4,5],[5,4],[8,1],[9,16],[16,9],[21,9]]
+};
+
+/* ===========================================================
+   STATE
+   =========================================================== */
+let apiKey = null;
+let inputFiles = [];
+let outputBlobs = [];
+let running = false;
+let aborted = false;
+
+/* ===========================================================
+   API KEY — loaded from apikey.txt in same directory
+   =========================================================== */
+(async function initKey() {
+  try {
+    const r = await fetch('apikey.txt');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    apiKey = (await r.text()).trim();
+    if (!apiKey) throw new Error('File is empty');
+    const el = $('apiStatus');
+    el.textContent = '🔑 API key loaded (ends in ...' + apiKey.slice(-4) + ')';
+    el.style.color = 'var(--green)';
+    el.style.display = 'block';
+    checkRunnable();
+  } catch (e) {
+    showError('Could not load <b>apikey.txt</b> — make sure it exists in the same folder as index.html and contains your Gemini API key. (' + e.message + ')');
+  }
+})();
+
+/* ===========================================================
+   MODEL HANDLING
+   =========================================================== */
+function onModelChange() {
+  const id = $('model').value;
+  const m = MODELS[id];
+  const el = $('modelNote');
+  el.textContent = m.note;
+  el.className = m.free ? 'model-note free' : 'model-note';
+
+  // Restrict resolution for original Nano Banana (only supports up to 1K)
+  const res = $('resolution');
+  if (id === 'gemini-2.5-flash-image') {
+    for (const opt of res.options) {
+      opt.disabled = (opt.value === '2K' || opt.value === '4K');
+    }
+    if (res.value === '2K' || res.value === '4K') res.value = '1K';
+  } else {
+    for (const opt of res.options) opt.disabled = false;
+  }
+}
+
+/* ===========================================================
+   UI HELPERS
+   =========================================================== */
+const $ = id => document.getElementById(id);
+function showError(msg) { $('apiError').innerHTML = msg; $('apiError').style.display = 'block'; }
+function hideError() { $('apiError').style.display = 'none'; }
+function toggleAdvanced() {
+  const b = $('advBody'), a = $('advArrow');
+  b.classList.toggle('open'); a.classList.toggle('open');
+}
+function log(msg, cls = '') {
+  const d = document.createElement('div');
+  d.className = cls; d.textContent = msg;
+  $('logArea').appendChild(d);
+  $('logArea').scrollTop = $('logArea').scrollHeight;
+}
+function checkRunnable() {
+  $('runBtn').disabled = !(apiKey && inputFiles.length > 0);
+}
+
+/* ===========================================================
+   FILE HANDLING
+   =========================================================== */
+$('folderInput').addEventListener('change', function() {
+  const files = Array.from(this.files);
+  inputFiles = [];
+  for (const f of files) {
+    const ext = f.name.split('.').pop().toLowerCase();
+    if (CFG.IMG_EXTS.has(ext)) {
+      inputFiles.push({ file: f, path: f.webkitRelativePath, name: f.name });
+    }
+  }
+  inputFiles.sort((a, b) => a.path.localeCompare(b.path));
+  const area = $('uploadArea');
+  if (inputFiles.length > 0) {
+    area.classList.add('has-files');
+    $('fileCount').textContent = inputFiles.length + ' image' + (inputFiles.length > 1 ? 's' : '') + ' found';
+    $('fileCount').style.display = 'block';
+    $('fileCount').style.color = '';
+    buildTree();
+  } else {
+    area.classList.remove('has-files');
+    $('fileCount').textContent = 'No supported images found in this folder';
+    $('fileCount').style.display = 'block';
+    $('fileCount').style.color = 'var(--red)';
+  }
+  checkRunnable();
+});
+
+function buildTree() {
+  const tree = {};
+  for (const f of inputFiles) {
+    const parts = f.path.split('/');
+    let node = tree;
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (!node[parts[i]]) node[parts[i]] = {};
+      node = node[parts[i]];
+    }
+    node[parts[parts.length - 1]] = null;
+  }
+  $('fileTree').innerHTML = renderTree(tree, 0);
+  $('treeWrap').style.display = 'block';
+}
+
+function renderTree(node, depth) {
+  let html = '';
+  const indent = '&nbsp;&nbsp;'.repeat(depth);
+  const keys = Object.keys(node).sort((a, b) => {
+    const aDir = node[a] !== null, bDir = node[b] !== null;
+    if (aDir && !bDir) return -1;
+    if (!aDir && bDir) return 1;
+    return a.localeCompare(b);
+  });
+  for (const k of keys) {
+    if (node[k] !== null) {
+      html += `<div class="folder">${indent}📁 ${k}/</div>`;
+      html += renderTree(node[k], depth + 1);
+    } else {
+      html += `<div class="file">${indent}🖼 ${k}</div>`;
+    }
+  }
+  return html;
+}
+
+/* ===========================================================
+   IMAGE UTILITIES
+   =========================================================== */
+function readAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result.split(',')[1]);
+    r.onerror = () => reject(new Error('Failed to read ' + file.name));
+    r.readAsDataURL(file);
+  });
+}
+
+function getImageDims(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve({ w: img.naturalWidth, h: img.naturalHeight }); };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve({ w: 1, h: 1 }); };
+    img.src = url;
+  });
+}
+
+function closestRatio(w, h) {
+  const actual = w / h;
+  let best = CFG.RATIOS[0], bestD = Infinity;
+  for (const [rw, rh] of CFG.RATIOS) {
+    const d = Math.abs(actual - rw / rh);
+    if (d < bestD) { bestD = d; best = [rw, rh]; }
+  }
+  return best[0] + ':' + best[1];
+}
+
+function mimeFromName(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  const m = { jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', gif:'image/gif',
+    webp:'image/webp', bmp:'image/bmp', tiff:'image/tiff', tif:'image/tiff', svg:'image/svg+xml' };
+  return m[ext] || 'image/png';
+}
+
+function extFromMime(mime) {
+  return { 'image/jpeg':'jpg', 'image/png':'png', 'image/gif':'gif', 'image/webp':'webp', 'image/bmp':'bmp' }[mime] || 'png';
+}
+
+/* ===========================================================
+   GEMINI API
+   =========================================================== */
+async function callGemini(prompt, imgBase64, imgMime, settings) {
+  const url = `${CFG.API_BASE}/models/${settings.model}:generateContent?key=${apiKey}`;
+  const body = {
+    contents: [{ parts: [
+      { text: prompt },
+      { inline_data: { mime_type: imgMime, data: imgBase64 } }
+    ]}],
+    generationConfig: {
+      responseModalities: ['TEXT', 'IMAGE'],
+      temperature: settings.temperature,
+      imageConfig: {}
+    },
+    safetySettings: [
+      { category: 'HARM_CATEGORY_HARASSMENT', threshold: settings.safety.harassment },
+      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: settings.safety.hate },
+      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: settings.safety.sexual },
+      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: settings.safety.dangerous }
+    ]
+  };
+
+  if (settings.aspectRatio) body.generationConfig.imageConfig.aspectRatio = settings.aspectRatio;
+  if (settings.resolution)  body.generationConfig.imageConfig.imageSize = settings.resolution;
+  if (settings.thinking && settings.model === 'gemini-3-pro-image-preview') {
+    body.generationConfig.thinkingConfig = { thinkingLevel: 'HIGH' };
+  }
+  if (!Object.keys(body.generationConfig.imageConfig).length) delete body.generationConfig.imageConfig;
+
+  const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    const msg = err?.error?.message || ('HTTP ' + resp.status);
+    if (resp.status === 429) throw new Error('RATE_LIMIT: ' + msg);
+    throw new Error(msg);
+  }
+
+  const data = await resp.json();
+  if (!data.candidates?.[0]?.content?.parts) {
+    const br = data.candidates?.[0]?.finishReason;
+    throw new Error(br === 'SAFETY' ? 'Blocked by safety filters' : 'No candidates (' + (br || 'unknown') + ')');
+  }
+
+  for (const part of data.candidates[0].content.parts) {
+    if (part.inlineData) {
+      return { data: part.inlineData.data, mimeType: part.inlineData.mimeType || 'image/png' };
+    }
+  }
+
+  const finish = data.candidates[0].finishReason;
+  throw new Error('No image returned (finishReason: ' + (finish || 'unknown') + ')');
+}
+
+async function callWithRetry(prompt, imgBase64, imgMime, settings, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await callGemini(prompt, imgBase64, imgMime, settings);
+    } catch (e) {
+      if (e.message.startsWith('RATE_LIMIT') && i < retries - 1) {
+        const wait = Math.pow(2, i + 1) * 1000 + Math.random() * 1000;
+        log(`  ⏳ Rate limited, retrying in ${(wait/1000).toFixed(1)}s...`, 'info');
+        await sleep(wait);
+        continue;
+      }
+      throw e;
+    }
+  }
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ===========================================================
+   GATHER SETTINGS
+   =========================================================== */
+function gatherSettings() {
+  const modelId = $('model').value;
+  return {
+    model: modelId,
+    modelInfo: MODELS[modelId],
+    prompt: $('prompt').value.trim(),
+    aspectRatioMode: $('aspectRatio').value,
+    aspectRatio: null,
+    resolution: $('resolution').value,
+    variants: Math.max(1, Math.min(10, parseInt($('variants').value) || 1)),
+    temperature: parseFloat($('temperature').value),
+    thinking: $('thinkingMode').checked,
+    delay: parseInt($('requestDelay').value) || 0,
+    safety: {
+      harassment: $('safety_harassment').value,
+      hate: $('safety_hate').value,
+      sexual: $('safety_sexual').value,
+      dangerous: $('safety_dangerous').value
+    }
+  };
+}
+
+/* ===========================================================
+   OUTPUT PATH HELPER
+   =========================================================== */
+function makeOutputPath(originalPath, variantNum, totalVariants, outMime) {
+  const parts = originalPath.split('/');
+  if (parts.length > 1) parts[0] = parts[0] + '_output';
+  else parts.unshift('output');
+
+  const filename = parts.pop();
+  const dotIdx = filename.lastIndexOf('.');
+  const stem = dotIdx > 0 ? filename.substring(0, dotIdx) : filename;
+  const outExt = extFromMime(outMime);
+
+  let newName;
+  if (totalVariants > 1) {
+    newName = stem + '_v' + variantNum + '.' + outExt;
+  } else {
+    newName = stem + '.' + outExt;
+  }
+  parts.push(newName);
+  return parts.join('/');
+}
+
+/* ===========================================================
+   MAIN RUN LOOP
+   =========================================================== */
+async function startRun() {
+  hideError();
+  const s = gatherSettings();
+  if (!s.prompt) { showError('Please enter a prompt.'); return; }
+  if (!apiKey) { showError('Please save your API key first.'); return; }
+  if (inputFiles.length === 0) { showError('No input files loaded.'); return; }
+
+  running = true; aborted = false;
+  outputBlobs = [];
+  $('runBtn').style.display = 'none';
+  $('stopBtn').style.display = 'inline-flex';
+  $('progressArea').classList.add('active');
+  $('dlArea').classList.remove('active');
+  $('logArea').innerHTML = '';
+  $('summary').style.display = 'none';
+
+  const totalTasks = inputFiles.length * s.variants;
+  let done = 0, ok = 0, failed = 0;
+  const startTime = Date.now();
+
+  log(`Starting: ${inputFiles.length} images × ${s.variants} variant(s) = ${totalTasks} tasks`, 'info');
+  log(`Model: ${s.modelInfo.name} | Resolution: ${s.resolution} | Delay: ${s.delay}ms`, 'info');
+
+  for (let i = 0; i < inputFiles.length; i++) {
+    if (aborted) break;
+    const { file, path, name } = inputFiles[i];
+
+    let imgBase64, imgMime, aspectRatio;
+    try {
+      imgBase64 = await readAsBase64(file);
+      imgMime = mimeFromName(name);
+    } catch (e) {
+      log('✗ ' + path + ' — failed to read: ' + e.message, 'err');
+      failed += s.variants; done += s.variants;
+      updateProgress(done, totalTasks, path, 0, s.variants, startTime);
+      continue;
+    }
+
+    if (s.aspectRatioMode === 'maintain') {
+      try {
+        const dims = await getImageDims(file);
+        aspectRatio = closestRatio(dims.w, dims.h);
+      } catch { aspectRatio = null; }
+    } else {
+      aspectRatio = s.aspectRatioMode;
+    }
+
+    for (let v = 1; v <= s.variants; v++) {
+      if (aborted) break;
+      updateProgress(done, totalTasks, path, v, s.variants, startTime);
+
+      try {
+        const perCall = { ...s, aspectRatio };
+        const result = await callWithRetry(s.prompt, imgBase64, imgMime, perCall);
+        const outPath = makeOutputPath(path, v, s.variants, result.mimeType);
+        const bytes = Uint8Array.from(atob(result.data), c => c.charCodeAt(0));
+        outputBlobs.push({ path: outPath, data: bytes, mimeType: result.mimeType });
+        const vLabel = s.variants > 1 ? (' v' + v) : '';
+        log('✓ ' + path + vLabel + ' → ' + outPath.split('/').pop(), 'ok');
+        ok++;
+      } catch (e) {
+        const vLabel = s.variants > 1 ? (' v' + v) : '';
+        log('✗ ' + path + vLabel + ' — ' + e.message, 'err');
+        failed++;
+      }
+      done++;
+      updateProgress(done, totalTasks, path, v, s.variants, startTime);
+
+      if (done < totalTasks && !aborted && s.delay > 0) await sleep(s.delay);
+    }
+  }
+
+  running = false;
+  $('runBtn').style.display = 'inline-flex';
+  $('stopBtn').style.display = 'none';
+
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  const costPer = s.modelInfo.cost[s.resolution] || 0.039;
+  const estCost = (ok * costPer).toFixed(3);
+
+  $('summary').style.display = 'block';
+  $('summary').innerHTML =
+    (aborted ? '⏹ <b>Stopped by user.</b><br>' : '✅ <b>Complete.</b><br>') +
+    `Processed: <b>${ok}</b> succeeded, <b>${failed}</b> failed out of <b>${done}</b> tasks<br>` +
+    `Time: <b>${elapsed}s</b> &middot; Est. cost: <b>$${estCost}</b> (${s.modelInfo.name} at $${costPer}/img, ${s.resolution})` +
+    (s.modelInfo.free ? '<br><span style="color:var(--green)">Free tier — no charge if under daily limit</span>' : '');
+
+  if (outputBlobs.length > 0) {
+    $('dlArea').classList.add('active');
+    $('dlInfo').textContent = outputBlobs.length + ' output image(s) ready';
+  }
+}
+
+function stopRun() { aborted = true; log('⏹ Stop requested — finishing current request...', 'info'); }
+
+function updateProgress(done, total, currentFile, variant, totalVariants, startTime) {
+  const pct = total > 0 ? (done / total * 100) : 0;
+  $('progressBar').style.width = pct.toFixed(1) + '%';
+  $('progressStatus').textContent = done + ' / ' + total + ' tasks (' + pct.toFixed(0) + '%)';
+  let detail = 'Processing: ' + currentFile;
+  if (totalVariants > 1) detail += ' — variant ' + variant + '/' + totalVariants;
+  if (done > 0) {
+    const avg = (Date.now() - startTime) / done;
+    const eta = ((total - done) * avg / 1000).toFixed(0);
+    detail += ' · ~' + eta + 's remaining';
+  }
+  $('progressDetail').textContent = detail;
+}
+
+/* ===========================================================
+   ZIP & DOWNLOAD
+   =========================================================== */
+async function downloadZip() {
+  $('dlBtn').disabled = true;
+  $('dlBtn').textContent = '⏳ Packaging ZIP...';
+  const zip = new JSZip();
+  for (const o of outputBlobs) zip.file(o.path, o.data);
+  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'generated_output_' + new Date().toISOString().slice(0,19).replace(/[T:]/g, '-') + '.zip';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  $('dlBtn').disabled = false;
+  $('dlBtn').textContent = '📥 Download Output ZIP';
+}
+</script>
+</body>
+</html>

@@ -110,7 +110,7 @@ async function init() {
 
 function onDragMove(e) {
   if (!dragState) return;
-  const { piece: c, startPx, railPos, pathTaken } = dragState;
+  const { piece: c, startPx, railPos } = dragState;
   dragState.lastPx = { x: e.global.x, y: e.global.y };
   
   const targetPx = railPos.x * CELL + (e.global.x - startPx.x);
@@ -135,7 +135,6 @@ function onDragMove(e) {
           p.x = p.pieceData.x * CELL; p.y = p.pieceData.y * CELL;
         }
         dragState.railPos = { x: railPos.x + sx, y: railPos.y + sy };
-        pathTaken.push({ x: dragState.railPos.x, y: dragState.railPos.y, pushed: moveResult.toPush.length });
         addToGrid(c.pieceData, dragState.railPos.x, dragState.railPos.y);
         dragState.startPx = { x: e.global.x, y: e.global.y };
         break;
@@ -160,7 +159,7 @@ function onDragMove(e) {
 
 function onDragEnd() {
   if (!dragState) return;
-  const { piece: c, origStartPx, startGrid, railPos, lastPx, startTime, pathTaken } = dragState;
+  const { piece: c, origStartPx, startGrid, railPos, lastPx, startTime, snapshot } = dragState;
   const FLICK_TH = CELL * 0.15, TAP_TH = CELL * 0.12, TAP_TIME = 250;
   
   c.cursor = 'grab';
@@ -168,12 +167,19 @@ function onDragEnd() {
   const elapsed = Date.now() - startTime;
   const totalDx = lastPx.x - origStartPx.x, totalDy = lastPx.y - origStartPx.y;
   const dist = Math.sqrt(totalDx * totalDx + totalDy * totalDy);
-  const cellsMoved = pathTaken.length - 1;
-  const pushedCount = pathTaken.reduce((sum, p) => sum + (p.pushed || 0), 0);
   
+  // Net displacement of the dragged piece (grid cells)
+  const netDx = Math.abs(railPos.x - startGrid.x);
+  const netDy = Math.abs(railPos.y - startGrid.y);
+  const netDisplacement = netDx + netDy;
+  
+  const localDragState = dragState;
   dragState = null;
   
-  if (dist < TAP_TH && elapsed < TAP_TIME && cellsMoved === 0) {
+  // Tap: no pixel movement, short time, no grid movement
+  if (dist < TAP_TH && elapsed < TAP_TIME && netDisplacement === 0) {
+    // Restore everything from snapshot first (in case rocking happened)
+    restoreSnapshot(snapshot);
     const validMoves = getValidSingleMoves(c.pieceData, startGrid.x, startGrid.y);
     if (validMoves.length === 1) {
       const m = validMoves[0];
@@ -184,16 +190,31 @@ function onDragEnd() {
     return;
   }
   
-  if (dist > FLICK_TH && dist < CELL * 0.9 && elapsed < 300 && cellsMoved === 0) {
+  // Flick: short fast gesture, no grid movement yet
+  if (dist > FLICK_TH && dist < CELL * 0.9 && elapsed < 300 && netDisplacement === 0) {
+    // Restore everything from snapshot first
+    restoreSnapshot(snapshot);
     const dir = Math.abs(totalDx) > Math.abs(totalDy) ? { x: Math.sign(totalDx), y: 0 } : { x: 0, y: Math.sign(totalDy) };
     executeFlickMove(c, startGrid.x, startGrid.y, dir.x, dir.y);
     return;
   }
   
-  if (cellsMoved > 0) {
+  // Drag resulted in net movement
+  if (netDisplacement > 0) {
     c.pieceData.x = railPos.x; c.pieceData.y = railPos.y;
     c.x = railPos.x * CELL; c.y = railPos.y * CELL;
-    moves += cellsMoved + pushedCount;
+    
+    // Count net displacement of dragged piece + net displacement of all pushed pieces
+    let pushedMoves = 0;
+    for (const snap of snapshot) {
+      if (snap.id === c.pieceData.id) continue;
+      const p = pieces.find(pp => pp.pieceData.id === snap.id);
+      if (p && (p.pieceData.x !== snap.x || p.pieceData.y !== snap.y)) {
+        pushedMoves += Math.abs(p.pieceData.x - snap.x) + Math.abs(p.pieceData.y - snap.y);
+      }
+    }
+    
+    moves += netDisplacement + pushedMoves;
     document.getElementById('moves').textContent = moves;
     document.getElementById('reset-btn').classList.add('visible');
     if (!timerStart) startTimer();
@@ -202,8 +223,23 @@ function onDragEnd() {
       if (c.pieceData.y >= ROWS - 1) winGame(c);
     }
   } else {
+    // No net movement — restore everything from snapshot
+    restoreSnapshot(snapshot);
     c.x = startGrid.x * CELL; c.y = startGrid.y * CELL;
   }
+}
+
+function restoreSnapshot(snapshot) {
+  for (const snap of snapshot) {
+    const p = pieces.find(pp => pp.pieceData.id === snap.id);
+    if (p) {
+      p.pieceData.x = snap.x;
+      p.pieceData.y = snap.y;
+      p.x = snap.x * CELL;
+      p.y = snap.y * CELL;
+    }
+  }
+  buildGrid();
 }
 
 function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
@@ -246,7 +282,6 @@ function drawFace(c, face, w, h) {
   const es = Math.max(3, CELL * 0.07), esp = Math.min(w, h) * 0.15, lw = Math.max(2, CELL * 0.035);
   const lE = new PIXI.Graphics(), rE = new PIXI.Graphics();
   
-  // Eyes
   if (face === 'sleepy') {
     lE.lineStyle(lw, 0x000000); lE.moveTo(-esp - es, 0); lE.lineTo(-esp + es, 0);
     rE.lineStyle(lw, 0x000000); rE.moveTo(esp - es, 0); rE.lineTo(esp + es, 0);
@@ -254,11 +289,9 @@ function drawFace(c, face, w, h) {
     lE.beginFill(0x000000); lE.drawCircle(-esp, -es * 0.5, es); lE.endFill();
     rE.lineStyle(lw, 0x000000); rE.moveTo(esp - es, -es); rE.lineTo(esp + es, 0); rE.moveTo(esp - es, 0); rE.lineTo(esp + es, -es);
   } else if (face === 'chill') {
-    // Half-closed relaxed eyes (arcs facing down)
     lE.lineStyle(lw * 1.2, 0x000000); lE.arc(-esp, 0, es, 0.3, Math.PI - 0.3);
     rE.lineStyle(lw * 1.2, 0x000000); rE.arc(esp, 0, es, 0.3, Math.PI - 0.3);
   } else if (face === 'focused') {
-    // Slightly squinted/narrowed eyes (horizontal ovals)
     lE.beginFill(0x000000); lE.drawEllipse(-esp, -es * 0.3, es * 1.1, es * 0.6); lE.endFill();
     rE.beginFill(0x000000); rE.drawEllipse(esp, -es * 0.3, es * 1.1, es * 0.6); rE.endFill();
   } else {
@@ -268,7 +301,6 @@ function drawFace(c, face, w, h) {
   }
   f.addChild(lE); f.addChild(rE);
   
-  // Eyebrows
   if (face === 'worried') {
     const lB = new PIXI.Graphics(), rB = new PIXI.Graphics();
     lB.lineStyle(lw, 0x000000); lB.moveTo(-esp - es, -es * 2.8); lB.lineTo(-esp + es, -es * 2);
@@ -282,36 +314,27 @@ function drawFace(c, face, w, h) {
     f.addChild(lB); f.addChild(rB);
   }
   if (face === 'determined') {
-    // Determined eyebrows - angled down toward outside (heroic look)
     const lB = new PIXI.Graphics(), rB = new PIXI.Graphics();
     lB.lineStyle(lw * 1.2, 0x000000); lB.moveTo(-esp - es, -es * 2.2); lB.lineTo(-esp + es, -es * 2.6);
     rB.lineStyle(lw * 1.2, 0x000000); rB.moveTo(esp + es, -es * 2.2); rB.lineTo(esp - es, -es * 2.6);
     f.addChild(lB); f.addChild(rB);
   }
   if (face === 'focused') {
-    // Focused eyebrows - flat and low, showing concentration
     const lB = new PIXI.Graphics(), rB = new PIXI.Graphics();
     lB.lineStyle(lw, 0x000000); lB.moveTo(-esp - es, -es * 1.8); lB.lineTo(-esp + es, -es * 1.8);
     rB.lineStyle(lw, 0x000000); rB.moveTo(esp - es, -es * 1.8); rB.lineTo(esp + es, -es * 1.8);
     f.addChild(lB); f.addChild(rB);
   }
   
-  // Mouth
   const m = new PIXI.Graphics(); m.lineStyle(lw, 0x000000);
   const my = es * 2.5;
   if (face === 'happy') m.arc(0, my - es, esp * 0.7, 0.2, Math.PI - 0.2);
-  else if (face === 'chill') {
-    // Slight relaxed smile, smaller than happy
-    m.arc(0, my - es * 0.5, esp * 0.5, 0.3, Math.PI - 0.3);
-  }
+  else if (face === 'chill') m.arc(0, my - es * 0.5, esp * 0.5, 0.3, Math.PI - 0.3);
   else if (face === 'cheeky') m.arc(0, my - es, esp * 0.7, 0.2, Math.PI - 0.2);
   else if (face === 'worried' || face === 'grumpy') m.arc(0, my + es * 1.5, esp * 0.6, Math.PI + 0.3, -0.3);
   else if (face === 'surprised') { m.beginFill(0x000000); m.drawEllipse(0, my, es * 0.8, es * 1.2); m.endFill(); }
   else if (face === 'confused') { m.moveTo(-esp * 0.4, my); m.bezierCurveTo(-esp * 0.1, my - es * 0.8, esp * 0.1, my + es * 0.8, esp * 0.4, my); }
-  else if (face === 'focused') {
-    // Small tense mouth
-    m.moveTo(-esp * 0.3, my); m.lineTo(esp * 0.3, my);
-  }
+  else if (face === 'focused') { m.moveTo(-esp * 0.3, my); m.lineTo(esp * 0.3, my); }
   else m.moveTo(-esp * 0.5, my), m.lineTo(esp * 0.5, my);
   f.addChild(m);
   c.face = f; c.mouth = m; c.faceParams = { es, esp, lw, my };
@@ -348,6 +371,8 @@ function createPiece(data) {
   c.on('pointerdown', e => {
     if (gameWon || dragState) return;
     c.cursor = 'grabbing';
+    // Snapshot all piece positions at drag start
+    const snapshot = pieces.map(p => ({ id: p.pieceData.id, x: p.pieceData.x, y: p.pieceData.y }));
     dragState = {
       piece: c,
       startPx: { x: e.global.x, y: e.global.y },
@@ -355,8 +380,8 @@ function createPiece(data) {
       lastPx: { x: e.global.x, y: e.global.y },
       startGrid: { x: c.pieceData.x, y: c.pieceData.y },
       railPos: { x: c.pieceData.x, y: c.pieceData.y },
-      pathTaken: [{ x: c.pieceData.x, y: c.pieceData.y }],
-      startTime: Date.now()
+      startTime: Date.now(),
+      snapshot: snapshot
     };
     piecesContainer.addChild(c);
   });

@@ -1,16 +1,14 @@
 {
   "jobListings": {
     "entryLevel": [
-      { "org": "NYC Civic Corps",      "note": "Community & city service",  "url": "https://www.nyc.gov/site/opportunity/jobs-and-programs/civic-corps.page" },
-      { "org": "Goodwill NY/NJ",       "note": "Supported placements",      "url": "https://www.goodwillnynj.org/find-a-job" },
+      { "org": "NYC Civic Corps",      "note": "Community & city service",  "url": "https://www.nycservice.org/national_service" },
+      { "org": "Goodwill NY/NJ",       "note": "Supported placements",      "url": "https://www.goodtemps.org/job-seekers/" },
       { "org": "NYC Jobs Portal",      "note": "City government openings",  "url": "https://www.nyc.gov/jobs/index.page" },
-      { "org": "Phipps Neighborhoods", "note": "Direct placement",          "url": "https://www.phipps.org/about/careers" },
-      { "org": "CAMBA",                "note": "Admin & community roles",   "url": "https://www.camba.org/about-camba/careers" },
+      { "org": "Phipps Neighborhoods", "note": "Direct placement",          "url": "https://www.phippsny.org/career-network/" },
       { "org": "BronxWorks",           "note": "Multiple openings",         "url": "https://www.bronxworks.org/about/careers" }
     ],
     "healthcare": [
-      { "org": "Incare Home Health",           "note": "HHA positions",           "url": "https://www.incarehomecare.com/careers" },
-      { "org": "VNS Health",                   "note": "Home care & clinical",    "url": "https://careers.vnshealth.org" },
+      { "org": "VNS Health",                   "note": "Home care & clinical",    "url": "https://jobs.vnshealth.org/careers-home/jobs?categories=Home%20Health%20Aide&tags3=Brooklyn%7CQueens%7CManhattan%7CThe%20Bronx&page=1" },
       { "org": "RiverSpring Health",           "note": "CNA, HHA & support",      "url": "https://www.riverspringhealth.org/careers" },
       { "org": "NYC Health + Hospitals",       "note": "Clinical & non-clinical", "url": "https://www.nychealthandhospitals.org/careers" },
       { "org": "Sunnyside Community Services", "note": "Home health aide",        "url": "https://www.sunnysidecommservices.org/about-us/job-openings" },

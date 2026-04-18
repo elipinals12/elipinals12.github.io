@@ -22,6 +22,7 @@
   --hotline-bg: linear-gradient(135deg,rgba(201,98,74,.08),rgba(212,168,48,.06));
   --modal-bg: #fff; --modal-text: #2a2d45; --modal-muted: #6a6060;
   --tab-active: #c9624a; --tab-active-text: #fff;
+  --tile-hover: rgba(201,98,74,.04);
 }
 :root[data-theme="dark"] {
   --bg: #16161e; --card: #1f1f2e; --border: #2e2e42;
@@ -38,6 +39,7 @@
   --hotline-bg: linear-gradient(135deg,rgba(224,122,95,.1),rgba(242,204,143,.07));
   --modal-bg: #1f1f2e; --modal-text: #e8e4f0; --modal-muted: #9a90b0;
   --tab-active: #e07a5f; --tab-active-text: #fff;
+  --tile-hover: rgba(224,122,95,.06);
 }
 :root { --ease-spring: cubic-bezier(0.34,1.56,0.64,1); --ease-out: cubic-bezier(0.4,0,0.2,1); }
 
@@ -45,16 +47,15 @@
 .skip-link:focus { top:0; }
 
 body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; min-height:100vh; font-size:17px; line-height:1.65; -webkit-font-smoothing:antialiased; transition:background .3s,color .3s; }
-
 body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
   background: radial-gradient(ellipse at 18% 18%,rgba(224,122,95,.08) 0%,transparent 52%),
               radial-gradient(ellipse at 82% 82%,rgba(129,178,154,.06) 0%,transparent 52%); }
 
-.wrap { position:relative; z-index:1; max-width:780px; margin:0 auto; padding:1.8rem 1.2rem 5rem; }
+.wrap { position:relative; z-index:1; max-width:900px; margin:0 auto; padding:1.8rem 1.2rem 5rem; }
 
 /* ── Toolbar ── */
 .toolbar { display:flex; align-items:center; justify-content:flex-end; gap:.4rem; margin-bottom:1.2rem; flex-wrap:wrap; }
-.tb-btn { display:inline-flex; align-items:center; gap:.3rem; padding:.34rem .75rem; border-radius:8px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); font-size:.78rem; font-weight:600; cursor:pointer; transition:border-color .2s,color .2s; white-space:nowrap; min-height:36px; -webkit-tap-highlight-color:transparent; }
+.tb-btn { display:inline-flex; align-items:center; gap:.3rem; padding:.34rem .75rem; border-radius:8px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); font-size:.78rem; font-weight:600; cursor:pointer; transition:border-color .2s,color .2s; white-space:nowrap; min-height:36px; -webkit-tap-highlight-color:transparent; text-decoration:none; }
 .tb-btn:hover { border-color:var(--accent); color:var(--accent); }
 .tb-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .tb-btn svg { width:13px; height:13px; flex-shrink:0; }
@@ -65,12 +66,10 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
 .lang-opt { padding:.42rem .8rem; border-radius:6px; font-size:.82rem; font-weight:500; cursor:pointer; border:none; background:none; color:var(--text); text-align:left; transition:background .15s; white-space:nowrap; }
 .lang-opt:hover { background:var(--res-bg); }
 .lang-opt.active { color:var(--accent); font-weight:700; }
-.lang-opt:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
 
 .font-control { display:inline-flex; align-items:center; border:1.5px solid var(--border); border-radius:8px; overflow:hidden; background:var(--card); }
 .fc-btn { padding:.34rem .62rem; background:none; border:none; color:var(--muted); font-size:.84rem; font-weight:700; cursor:pointer; transition:all .15s; min-height:36px; }
 .fc-btn:hover { background:var(--res-bg); color:var(--accent); }
-.fc-btn:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
 .fc-label { padding:0 .42rem; font-size:.72rem; font-weight:600; color:var(--muted); user-select:none; border-left:1px solid var(--border); border-right:1px solid var(--border); line-height:2; }
 
 /* ── Header ── */
@@ -100,99 +99,111 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
 .pill[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:0 2px 10px rgba(224,122,95,.28); }
 
 .count { color:var(--muted); font-size:.78rem; margin-bottom:.85rem; font-weight:600; }
-.results { display:flex; flex-direction:column; gap:.7rem; }
 
-/* ── Cards ── */
-.card { background:var(--card); border:1.5px solid var(--border); border-radius:14px; padding:1.05rem 1.25rem; box-shadow:var(--shadow-sm); transition:border-color .22s,box-shadow .22s; animation:fadeUp .4s var(--ease-out) both; }
-.card:hover { border-color:var(--accent); box-shadow:var(--shadow-hover); }
-.card.is-open { border-color:var(--accent); box-shadow:var(--shadow-md); }
+/* ── TILE GRID (replaces stacked accordion list) ── */
+.tile-grid { 
+  display:grid; 
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); 
+  gap:.7rem; 
+}
 
-.ctop { display:flex; gap:.95rem; align-items:flex-start; cursor:pointer; }
-.ctop:focus-visible { outline:3px solid var(--accent); outline-offset:3px; border-radius:8px; }
-.cicon-wrap { width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,var(--res-bg),var(--job-bg)); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--accent); box-shadow:0 2px 6px rgba(224,122,95,.1); transition:transform .28s var(--ease-spring); }
-.card:hover .cicon-wrap { transform:scale(1.08); }
-.chev { margin-left:auto; flex-shrink:0; color:var(--muted); transition:transform .32s var(--ease-out),color .22s; padding-top:.1rem; }
-.card.is-open .chev { transform:rotate(180deg); color:var(--accent); }
-.chev svg { width:18px; height:18px; display:block; }
-.ctitle { font-weight:700; font-size:.97rem; margin-bottom:.15rem; }
-.csub { color:var(--muted); font-size:.82rem; line-height:1.6; }
-.ctags { display:flex; flex-wrap:wrap; gap:.28rem; margin-top:.5rem; }
-.tag { padding:.14rem .52rem; background:var(--tag-bg); border:1px solid var(--tag-border); border-radius:999px; font-size:.71rem; color:var(--accent); font-weight:500; }
+/* ── Tile card ── */
+.tile {
+  background:var(--card);
+  border:1.5px solid var(--border);
+  border-radius:16px;
+  padding:1rem 1.1rem 1rem;
+  box-shadow:var(--shadow-sm);
+  cursor:pointer;
+  transition:border-color .22s,box-shadow .22s,background .18s;
+  display:flex;
+  flex-direction:column;
+  gap:.5rem;
+  position:relative;
+  -webkit-tap-highlight-color:transparent;
+  animation:fadeUp .4s var(--ease-out) both;
+  outline:none;
+}
+.tile:hover { border-color:var(--accent); box-shadow:var(--shadow-hover); background:var(--tile-hover); }
+.tile.is-open { border-color:var(--accent); box-shadow:var(--shadow-md); }
+.tile:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
 
-/* ── Jobs card special: external-link indicator ── */
-.card[data-type="job-listings"] .chev svg { display:none; }
-.card[data-type="job-listings"] .chev::after {
-  content:'';
-  display:block;
-  width:16px; height:16px;
-  background:currentColor;
+.tile-top { display:flex; align-items:flex-start; gap:.75rem; }
+.tile-icon { width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg,var(--res-bg),var(--job-bg)); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--accent); transition:transform .28s var(--ease-spring); }
+.tile:hover .tile-icon { transform:scale(1.08); }
+.tile-text { flex:1; min-width:0; }
+.tile-title { font-weight:700; font-size:.95rem; margin-bottom:.1rem; line-height:1.3; }
+.tile-sub { color:var(--muted); font-size:.79rem; line-height:1.55; }
+.tile-chev { color:var(--muted); transition:transform .32s var(--ease-out),color .22s; flex-shrink:0; margin-top:.1rem; }
+.tile.is-open .tile-chev { transform:rotate(180deg); color:var(--accent); }
+.tile-chev svg { width:16px; height:16px; }
+
+/* job tile — no chevron, external link icon */
+.tile[data-type="job-listings"] .tile-chev svg { display:none; }
+.tile[data-type="job-listings"] .tile-chev::after {
+  content:''; display:block; width:15px; height:15px; background:currentColor;
   -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E") center/contain no-repeat;
   mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
-/* ── Accordion body ── */
-.cbody {
+.tile-tags { display:flex; flex-wrap:wrap; gap:.25rem; }
+.tag { padding:.12rem .48rem; background:var(--tag-bg); border:1px solid var(--tag-border); border-radius:999px; font-size:.68rem; color:var(--accent); font-weight:500; }
+
+/* ── Expanded body (inside tile) ── */
+.tile-body {
   overflow:hidden;
   max-height:0;
   opacity:0;
-  margin-top:0;
   transition:max-height .38s ease,opacity .3s ease,margin-top .3s ease;
+  margin-top:0;
 }
-.cbody.open {
+.tile-body.open {
   max-height:3000px;
   opacity:1;
-  margin-top:.85rem;
+  margin-top:.6rem;
 }
 @supports (grid-template-rows: 0fr) {
-  .cbody {
-    display:grid;
-    grid-template-rows:0fr;
-    max-height:none;
-    transition:grid-template-rows .36s ease,opacity .3s ease,margin-top .3s ease;
-  }
-  .cbody.open {
-    grid-template-rows:1fr;
-    max-height:none;
-  }
-  .cbody-inner { min-height:0; }
+  .tile-body { display:grid; grid-template-rows:0fr; max-height:none; transition:grid-template-rows .36s ease,opacity .3s ease,margin-top .3s ease; }
+  .tile-body.open { grid-template-rows:1fr; max-height:none; }
+  .tile-body-inner { min-height:0; }
 }
+.tile-body-inner { overflow:hidden; padding-top:.8rem; border-top:1px solid var(--border); font-size:.84rem; line-height:1.75; }
+.tile-body a { color:var(--link-color); text-decoration:underline; }
+.tile-body a:hover { opacity:.8; }
 
-.cbody-inner { overflow:hidden; padding-top:.9rem; border-top:1px solid var(--border); font-size:.85rem; line-height:1.75; color:var(--text); }
-.cbody a { color:var(--link-color); text-decoration:underline; }
-.cbody a:hover { opacity:.8; }
-.cbody a:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
+.notice { background:var(--notice-bg); border:1px solid var(--notice-border); border-left:3px solid var(--accent2); border-radius:8px; padding:.5rem .88rem; font-size:.79rem; color:var(--notice-text); margin-bottom:.7rem; font-weight:500; }
 
-.notice { background:var(--notice-bg); border:1px solid var(--notice-border); border-left:3px solid var(--accent2); border-radius:8px; padding:.5rem .88rem; font-size:.8rem; color:var(--notice-text); margin-bottom:.7rem; font-weight:500; }
-.section-label { font-size:.76rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin:1.1rem 0 .45rem; }
-
-.job-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(195px,1fr)); gap:.52rem; margin-top:.65rem; }
-.job-card { background:var(--job-bg); border:1px solid var(--job-border); border-radius:10px; padding:.68rem .88rem; text-decoration:none; display:block; transition:background .2s,border-color .2s; }
-.job-card:hover { background:rgba(129,178,154,.18); border-color:var(--green); }
-.job-card:focus-visible { outline:2px solid var(--green); outline-offset:2px; border-radius:10px; }
-.jc-org { font-size:.87rem; font-weight:600; color:var(--text); }
-.jc-note { font-size:.75rem; color:var(--muted); margin-top:.18rem; }
-
-.res-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(205px,1fr)); gap:.52rem; margin-top:.75rem; }
-.res-card { background:var(--res-bg); border:1px solid var(--res-border); border-radius:10px; padding:.72rem .95rem; text-decoration:none; display:block; transition:background .2s,border-color .2s; }
+/* ── Resource grid inside expanded tile ── */
+.res-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:.48rem; margin-top:.6rem; }
+.res-card { background:var(--res-bg); border:1px solid var(--res-border); border-radius:10px; padding:.65rem .88rem; text-decoration:none; display:block; transition:background .2s,border-color .2s; }
 .res-card:hover { background:rgba(224,122,95,.13); border-color:var(--accent); }
-.res-card:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:10px; }
 .res-card.no-link { cursor:default; }
 .res-card.no-link:hover { background:var(--res-bg); border-color:var(--res-border); }
-.rc-org { font-size:.9rem; font-weight:700; color:var(--text); margin-bottom:.18rem; }
-.rc-note { font-size:.77rem; color:var(--muted); margin-bottom:.3rem; }
-.rc-addr { font-size:.74rem; color:var(--muted); font-style:italic; }
-.rc-phone { font-size:.74rem; color:var(--phone-color); margin-top:.18rem; }
+.rc-org { font-size:.88rem; font-weight:700; color:var(--text); margin-bottom:.14rem; }
+.rc-note { font-size:.75rem; color:var(--muted); margin-bottom:.25rem; }
+.rc-addr { font-size:.72rem; color:var(--muted); font-style:italic; }
+.rc-phone { font-size:.72rem; color:var(--phone-color); margin-top:.15rem; }
 
-.vol-form-link { display:inline-flex; align-items:center; gap:.48rem; margin-top:.75rem; padding:.52rem 1.05rem; background:var(--job-bg); border:1.5px solid var(--job-border); border-radius:10px; text-decoration:none; color:var(--green); font-size:.85rem; font-weight:600; transition:background .2s,border-color .2s; }
-.vol-form-link:hover { background:rgba(129,178,154,.18); border-color:var(--green); text-decoration:none; }
-.vol-form-link:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
-.vol-form-link svg { width:14px; height:14px; flex-shrink:0; }
+/* ── Job grids ── */
+.job-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:.48rem; margin-top:.6rem; }
+.job-card { background:var(--job-bg); border:1px solid var(--job-border); border-radius:10px; padding:.62rem .82rem; text-decoration:none; display:block; transition:background .2s,border-color .2s; }
+.job-card:hover { background:rgba(129,178,154,.18); border-color:var(--green); }
+.jc-org { font-size:.86rem; font-weight:600; color:var(--text); }
+.jc-note { font-size:.73rem; color:var(--muted); margin-top:.15rem; }
 
-.card-actions { display:flex; flex-wrap:wrap; gap:.48rem; margin-top:.8rem; padding-top:.8rem; border-top:1px solid var(--border); }
-.ca-btn { display:inline-flex; align-items:center; gap:.33rem; padding:.34rem .82rem; border-radius:8px; font-size:.76rem; font-weight:600; border:1px solid rgba(129,178,154,.3); cursor:pointer; background:var(--btn-bg); color:var(--green); transition:background .2s,color .2s,border-color .2s; min-height:32px; -webkit-tap-highlight-color:transparent; }
+.section-label { font-size:.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin:1rem 0 .4rem; }
+.sub-section { margin-top:1rem; padding-top:.85rem; border-top:1px dashed var(--border); }
+.sub-section:first-child { margin-top:0; padding-top:0; border-top:none; }
+.sub-label { font-size:.71rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.07em; margin-bottom:.45rem; }
+
+.card-actions { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.75rem; padding-top:.75rem; border-top:1px solid var(--border); }
+.ca-btn { display:inline-flex; align-items:center; gap:.3rem; padding:.32rem .78rem; border-radius:8px; font-size:.74rem; font-weight:600; border:1px solid rgba(129,178,154,.3); cursor:pointer; background:var(--btn-bg); color:var(--green); transition:background .2s,color .2s,border-color .2s; min-height:30px; }
 .ca-btn:hover { background:var(--green); color:#fff; border-color:var(--green); }
-.ca-btn:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
-.ca-btn svg { width:13px; height:13px; }
+.ca-btn svg { width:12px; height:12px; }
+
+.vol-form-link { display:inline-flex; align-items:center; gap:.45rem; margin-top:.65rem; padding:.48rem 1rem; background:var(--job-bg); border:1.5px solid var(--job-border); border-radius:10px; text-decoration:none; color:var(--green); font-size:.83rem; font-weight:600; transition:background .2s,border-color .2s; }
+.vol-form-link:hover { background:rgba(129,178,154,.18); border-color:var(--green); }
+.vol-form-link svg { width:13px; height:13px; flex-shrink:0; }
 
 .empty { text-align:center; color:var(--muted); padding:3rem 0; font-size:.92rem; }
 
@@ -200,43 +211,34 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
 .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:200; align-items:center; justify-content:center; padding:1rem; }
 @supports (backdrop-filter:blur(4px)) { .modal-bg { backdrop-filter:blur(4px); } }
 .modal-bg.open { display:flex; }
-.modal { background:var(--modal-bg); border:1px solid var(--border); border-radius:18px; padding:1.5rem; width:100%; max-width:680px; max-height:90vh; overflow-y:auto; color:var(--modal-text); animation:scaleIn .3s var(--ease-spring) both; }
+.modal { background:var(--modal-bg); border:1px solid var(--border); border-radius:18px; padding:1.5rem; width:100%; max-width:700px; max-height:90vh; overflow-y:auto; color:var(--modal-text); animation:scaleIn .3s var(--ease-spring) both; }
 .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
-.modal-header h2 { font-size:1.1rem; font-weight:800; display:flex; align-items:center; gap:.45rem; color:var(--modal-text); }
+.modal-header h2 { font-size:1.1rem; font-weight:800; display:flex; align-items:center; gap:.45rem; }
 .modal-header h2 svg { width:18px; height:18px; color:var(--accent); flex-shrink:0; }
 .modal-close { background:none; border:none; color:var(--muted); cursor:pointer; padding:.3rem .5rem; border-radius:8px; transition:all .18s; display:flex; align-items:center; min-height:36px; }
 .modal-close:hover { background:var(--border); color:var(--text); }
-.modal-close:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .modal-close svg { width:16px; height:16px; }
 .hint { font-size:.8rem; color:var(--modal-muted); margin-bottom:1rem; line-height:1.6; }
 
-/* ── Jobs Modal Tabs ── */
 .jobs-tabs { display:flex; gap:.4rem; margin-bottom:1.1rem; flex-wrap:wrap; }
-.jobs-tab { padding:.42rem 1rem; border-radius:999px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); font-size:.8rem; font-weight:700; cursor:pointer; transition:all .18s; min-height:34px; -webkit-tap-highlight-color:transparent; }
+.jobs-tab { padding:.4rem .95rem; border-radius:999px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); font-size:.79rem; font-weight:700; cursor:pointer; transition:all .18s; min-height:33px; }
 .jobs-tab:hover { border-color:var(--accent); color:var(--accent); }
-.jobs-tab.active { background:var(--tab-active,var(--accent)); border-color:var(--tab-active,var(--accent)); color:var(--tab-active-text,#fff); }
-.jobs-tab:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.jobs-tab.active { background:var(--tab-active); border-color:var(--tab-active); color:var(--tab-active-text); }
 .jobs-panel { display:none; }
 .jobs-panel.active { display:block; }
 
-/* subsection divider inside modal */
-.sub-section { margin-top:1.1rem; padding-top:.9rem; border-top:1px dashed var(--border); }
-.sub-section:first-child { margin-top:0; padding-top:0; border-top:none; }
-.sub-label { font-size:.73rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.07em; margin-bottom:.5rem; }
-
 @media print {
-  body::before,.toolbar,.hotline,.search-wrap,.pills,.count,.skip-link,.card-actions,.chev,.ctags { display:none!important; }
+  body::before,.toolbar,.hotline,.search-wrap,.pills,.count,.skip-link,.card-actions,.tile-chev,.tile-tags { display:none!important; }
   body { background:#fff!important; color:#000!important; font-size:11pt; }
   .wrap { max-width:100%; padding:0; }
   header h1 { -webkit-text-fill-color:#222!important; font-size:18pt; }
-  .card { border:1px solid #ccc; border-radius:0; box-shadow:none; page-break-inside:avoid; padding:.6rem; margin-bottom:.4rem; animation:none; }
-  .cbody { display:block!important; max-height:none!important; opacity:1!important; margin-top:.5rem!important; grid-template-rows:1fr!important; }
-  .cbody-inner { border-top:1px solid #ddd; overflow:visible; }
+  .tile { border:1px solid #ccc; border-radius:0; box-shadow:none; page-break-inside:avoid; animation:none; }
+  .tile-body { display:block!important; max-height:none!important; opacity:1!important; margin-top:.5rem!important; grid-template-rows:1fr!important; }
+  .tile-body-inner { border-top:1px solid #ddd; overflow:visible; }
   .res-grid,.job-grid { grid-template-columns:repeat(2,1fr); }
-  .res-card,.job-card { border:1px solid #ddd; border-radius:4px; background:#fafafa!important; }
 }
 
-@keyframes fadeUp   { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+@keyframes fadeUp   { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
 @keyframes fadeDown { from{opacity:0;transform:translateY(-7px)} to{opacity:1;transform:none} }
 @keyframes scaleIn  { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:none} }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
@@ -280,13 +282,13 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
         <button class="lang-opt"        role="option" aria-selected="false" onclick="setLang('ht')">🇭🇹 Kreyòl</button>
       </div>
     </div>
-    <button class="tb-btn" id="btnMapCenter" onclick="window.open('https://www.google.com/maps/search/community+center+near+me','_blank')">
+    <button class="tb-btn" onclick="window.open('https://www.google.com/maps/search/community+center+near+me','_blank')">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
       </svg>
       <span id="btnMapLabel">Find Community Center</span>
     </button>
-    <button class="tb-btn" id="btnPrint" onclick="window.print()">
+    <button class="tb-btn" onclick="window.print()">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="6 9 6 2 18 2 18 9"/>
         <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
@@ -294,7 +296,7 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
       </svg>
       <span id="btnPrintLabel">Print / PDF</span>
     </button>
-    <button class="tb-btn" id="btnPortal" onclick="window.open('portal.html','_blank')">
+    <button class="tb-btn" onclick="window.open('portal.html','_blank')">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
       </svg>
@@ -339,7 +341,7 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
     </div>
     <div class="pills" id="pills" role="group" aria-label="Filter by category"></div>
     <div class="count" id="count" aria-live="polite" aria-atomic="true"></div>
-    <div class="results" id="results" role="list"></div>
+    <div class="tile-grid" id="results" role="list"></div>
   </div>
 </div>
 
@@ -389,450 +391,159 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
 
 <script>
 const ICONS = {
-  'jobs-apply':   `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>`,
-  'food':         `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,
-  'clothing':     `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-.16 3.42l4.29 2.87a1 1 0 01.45.83V21a1 1 0 001 1h5.6a1 1 0 001-1V10.58a1 1 0 01.45-.83l4.29-2.87a2 2 0 00-.16-3.42z"/></svg>`,
-  'housing':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-  'benefits':     `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`,
-  'childcare':    `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>`,
-  'education':    `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>`,
-  'legal':        `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M4 6l-2 8h4z"/><path d="M20 6l-2 8h4z"/><line x1="8" y1="21" x2="16" y2="21"/></svg>`,
-  'mentalhealth': `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
-  'transit':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`,
-  'immigrant':    `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
-  'digital':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>`,
-  'anchors':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0020 0h-3"/></svg>`,
-  'volunteers':   `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  'jobs-apply':   `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>`,
+  'food':         `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,
+  'clothing':     `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-.16 3.42l4.29 2.87a1 1 0 01.45.83V21a1 1 0 001 1h5.6a1 1 0 001-1V10.58a1 1 0 01.45-.83l4.29-2.87a2 2 0 00-.16-3.42z"/></svg>`,
+  'housing':      `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  'benefits':     `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`,
+  'childcare':    `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>`,
+  'education':    `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>`,
+  'legal':        `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M4 6l-2 8h4z"/><path d="M20 6l-2 8h4z"/><line x1="8" y1="21" x2="16" y2="21"/></svg>`,
+  'mentalhealth': `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+  'transit':      `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`,
+  'immigrant':    `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
+  'digital':      `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>`,
+  'anchors':      `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0020 0h-3"/></svg>`,
+  'volunteers':   `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
 };
 
-// ── Translations ──────────────────────────────────────────────
 const T = {
   en: {
-    search: "Search by need, resource, keyword…",
-    found: n => `${n} resource${n!==1?'s':''} found`,
-    empty: "No results — try a different search or category.",
-    suggest: "Suggest Update",
-    volForm: "Sign Up / Volunteer Form",
-    hl1: "Emergency Shelter: Call 311 (24/7)",
-    hl2: "Coalition Hotline:", hl3: "Mental Health:",
-    sub: "Real links. Real addresses. Updated for NYC 2025–2026.",
-    darkOn: "Dark mode", darkOff: "Light mode",
-    findCenter: "Find Community Center",
-    print: "Print / PDF",
-    portal: "Neighborhood Portal",
-    modalTitle: "Suggest an Update",
-    modalHint: "Report outdated info, wrong numbers, changed addresses, or suggest a new resource.",
-    jobsNotice: "⚠️ Check employer pages before sending clients — openings change frequently.",
-    jobsTabs: [
-      { key: "hiring",   label: "💼 Direct Hiring" },
-      { key: "training", label: "🎓 Job Training"  },
-      { key: "support",  label: "🤝 Support Orgs"  }
-    ],
-    jobsHiringSections: [
-      { label: "🟢 Entry-Level",            key: "entryLevel" },
-      { label: "🏥 HHA / CNA — Hiring",     key: "healthcareHiring" },
-      { label: "🍽️ Food & Hospitality",    key: "food"       },
-      { label: "🔧 Trades & Labor",         key: "trades"     }
-    ]
+    search:"Search by need, resource, keyword…",
+    found:n=>`${n} resource${n!==1?'s':''} found`,
+    empty:"No results — try a different search or category.",
+    suggest:"Suggest Update",volForm:"Sign Up / Volunteer Form",
+    hl1:"Emergency Shelter: Call 311 (24/7)",hl2:"Coalition Hotline:",hl3:"Mental Health:",
+    sub:"Real links. Real addresses. Updated for NYC 2025–2026.",
+    darkOn:"Dark mode",darkOff:"Light mode",findCenter:"Find Community Center",
+    print:"Print / PDF",portal:"Neighborhood Portal",
+    modalTitle:"Suggest an Update",
+    modalHint:"Report outdated info, wrong numbers, changed addresses, or suggest a new resource.",
+    jobsNotice:"⚠️ Check employer pages before sending clients — openings change frequently.",
+    jobsTabs:[{key:"hiring",label:"💼 Direct Hiring"},{key:"training",label:"🎓 Job Training"},{key:"support",label:"🤝 Support Orgs"}],
+    jobsHiringSections:[{label:"🟢 Entry-Level",key:"entryLevel"},{label:"🏥 HHA / CNA — Hiring",key:"healthcareHiring"},{label:"🍽️ Food & Hospitality",key:"food"},{label:"🔧 Trades & Labor",key:"trades"}]
   },
-  es: {
-    search: "Buscar por necesidad, recurso, palabra clave…",
-    found: n => `${n} recurso${n!==1?'s':''} encontrado${n!==1?'s':''}`,
-    empty: "Sin resultados — intente otra búsqueda.",
-    suggest: "Sugerir actualización",
-    volForm: "Formulario de voluntariado",
-    hl1: "Refugio de emergencia: Llame al 311 (24/7)",
-    hl2: "Línea directa:", hl3: "Salud mental:",
-    sub: "Links reales. Direcciones reales. Actualizado para NYC 2025–2026.",
-    darkOn: "Modo oscuro", darkOff: "Modo claro",
-    findCenter: "Buscar Centro Comunitario",
-    print: "Imprimir / PDF",
-    portal: "Portal Vecinal",
-    modalTitle: "Sugerir una actualización",
-    modalHint: "Reporta información desactualizada, números incorrectos o sugiere un nuevo recurso.",
-    jobsNotice: "⚠️ Verifique las páginas de empleo antes de enviar clientes — las vacantes cambian.",
-    jobsTabs: [
-      { key: "hiring",   label: "💼 Empleo Directo" },
-      { key: "training", label: "🎓 Capacitación"   },
-      { key: "support",  label: "🤝 Organizaciones" }
-    ],
-    jobsHiringSections: [
-      { label: "🟢 Nivel básico",             key: "entryLevel" },
-      { label: "🏥 HHA / CNA — Empleo",       key: "healthcareHiring" },
-      { label: "🍽️ Comida y hospitalidad",   key: "food"       },
-      { label: "🔧 Oficios y trabajo manual", key: "trades"     }
-    ]
-  },
-  fr: {
-    search: "Rechercher par besoin, ressource, mot-clé…",
-    found: n => `${n} ressource${n!==1?'s':''} trouvée${n!==1?'s':''}`,
-    empty: "Aucun résultat — essayez une autre recherche ou catégorie.",
-    suggest: "Suggérer une mise à jour",
-    volForm: "Formulaire de bénévolat",
-    hl1: "Hébergement d'urgence : Appelez le 311 (24h/24)",
-    hl2: "Ligne directe :", hl3: "Santé mentale :",
-    sub: "Vrais liens. Vraies adresses. Mis à jour pour NYC 2025–2026.",
-    darkOn: "Mode sombre", darkOff: "Mode clair",
-    findCenter: "Trouver un Centre Communautaire",
-    print: "Imprimer / PDF",
-    portal: "Portail de Voisinage",
-    modalTitle: "Suggérer une mise à jour",
-    modalHint: "Signalez des informations obsolètes, des numéros erronés ou suggérez une nouvelle ressource.",
-    jobsNotice: "⚠️ Vérifiez les pages carrières avant d'envoyer des clients — les postes changent.",
-    jobsTabs: [
-      { key: "hiring",   label: "💼 Recrutement Direct" },
-      { key: "training", label: "🎓 Formation"          },
-      { key: "support",  label: "🤝 Organisations"      }
-    ],
-    jobsHiringSections: [
-      { label: "🟢 Niveau débutant",              key: "entryLevel" },
-      { label: "🏥 HHA / CNA — Recrutement",      key: "healthcareHiring" },
-      { label: "🍽️ Alimentation et hôtellerie",  key: "food"       },
-      { label: "🔧 Métiers et main-d'œuvre",      key: "trades"     }
-    ]
-  },
-  ru: {
-    search: "Поиск по потребности, ресурсу, ключевому слову…",
-    found: n => `Найдено ресурсов: ${n}`,
-    empty: "Ничего не найдено — попробуйте другой запрос.",
-    suggest: "Предложить обновление",
-    volForm: "Форма для волонтёров",
-    hl1: "Экстренный приют: звоните 311 (24/7)",
-    hl2: "Горячая линия:", hl3: "Психическое здоровье:",
-    sub: "Реальные ссылки. Реальные адреса. Обновлено для NYC 2025–2026.",
-    darkOn: "Тёмная тема", darkOff: "Светлая тема",
-    findCenter: "Найти общественный центр",
-    print: "Печать / PDF",
-    portal: "Портал соседей",
-    modalTitle: "Предложить обновление",
-    modalHint: "Сообщите об устаревшей информации, неверных номерах или предложите новый ресурс.",
-    jobsNotice: "⚠️ Проверяйте страницы вакансий перед отправкой клиентов — позиции меняются.",
-    jobsTabs: [
-      { key: "hiring",   label: "💼 Прямой найм"   },
-      { key: "training", label: "🎓 Обучение"       },
-      { key: "support",  label: "🤝 Организации"   }
-    ],
-    jobsHiringSections: [
-      { label: "🟢 Начальный уровень",           key: "entryLevel" },
-      { label: "🏥 HHA / CNA — Найм",            key: "healthcareHiring" },
-      { label: "🍽️ Питание и гостеприимство",   key: "food"       },
-      { label: "🔧 Рабочие специальности",       key: "trades"     }
-    ]
-  },
-  zh: {
-    search: "按需求、资源、关键字搜索…",
-    found: n => `找到 ${n} 个资源`,
-    empty: "无结果 — 请尝试其他搜索或类别。",
-    suggest: "建议更新",
-    volForm: "志愿者报名表",
-    hl1: "紧急收容所：拨打 311（24/7）",
-    hl2: "联盟热线：", hl3: "心理健康：",
-    sub: "真实链接。真实地址。已更新至 NYC 2025–2026。",
-    darkOn: "深色模式", darkOff: "浅色模式",
-    findCenter: "查找社区中心",
-    print: "打印 / PDF",
-    portal: "邻里门户",
-    modalTitle: "建议更新",
-    modalHint: "报告过时的信息、错误号码、地址变更，或建议新资源。",
-    jobsNotice: "⚠️ 发送客户前请检查招聘页面——职位随时变化。",
-    jobsTabs: [
-      { key: "hiring",   label: "💼 直接招聘" },
-      { key: "training", label: "🎓 职业培训" },
-      { key: "support",  label: "🤝 支持机构" }
-    ],
-    jobsHiringSections: [
-      { label: "🟢 入门级职位",           key: "entryLevel" },
-      { label: "🏥 HHA / CNA — 招聘",    key: "healthcareHiring" },
-      { label: "🍽️ 餐饮与酒店",         key: "food"       },
-      { label: "🔧 技工与劳务",          key: "trades"     }
-    ]
-  },
-  hi: {
-    search: "जरूरत, संसाधन, कीवर्ड से खोजें…",
-    found: n => `${n} संसाधन मिले`,
-    empty: "कोई परिणाम नहीं — अलग खोज या श्रेणी आज़माएं।",
-    suggest: "अपडेट सुझाएं",
-    volForm: "स्वयंसेवक फॉर्म",
-    hl1: "आपातकालीन आश्रय: 311 पर कॉल करें (24/7)",
-    hl2: "कोएलिशन हेल्पलाइन:", hl3: "मानसिक स्वास्थ्य:",
-    sub: "असली लिंक। असली पते। NYC 2025–2026 के लिए अपडेट।",
-    darkOn: "डार्क मोड", darkOff: "लाइट मोड",
-    findCenter: "सामुदायिक केंद्र खोजें",
-    print: "प्रिंट / PDF",
-    portal: "पड़ोस पोर्टल",
-    modalTitle: "अपडेट सुझाएं",
-    modalHint: "पुरानी जानकारी, गलत नंबर, बदले हुए पते की रिपोर्ट करें या नया संसाधन सुझाएं।",
-    jobsNotice: "⚠️ क्लाइंट भेजने से पहले करियर पेज जांचें — पद बदल सकते हैं।",
-    jobsTabs: [
-      { key: "hiring",   label: "💼 सीधी भर्ती"  },
-      { key: "training", label: "🎓 प्रशिक्षण"    },
-      { key: "support",  label: "🤝 सहायक संस्थाएं" }
-    ],
-    jobsHiringSections: [
-      { label: "🟢 प्रवेश-स्तर",           key: "entryLevel" },
-      { label: "🏥 HHA / CNA — भर्ती",    key: "healthcareHiring" },
-      { label: "🍽️ खाद्य और आतिथ्य",    key: "food"       },
-      { label: "🔧 कारीगरी और श्रम",      key: "trades"     }
-    ]
-  },
-  bn: {
-    search: "প্রয়োজন, সম্পদ, কীওয়ার্ড দিয়ে খুঁজুন…",
-    found: n => `${n}টি রিসোর্স পাওয়া গেছে`,
-    empty: "কোনো ফলাফল নেই — অন্য খোঁজ বা বিভাগ চেষ্টা করুন।",
-    suggest: "আপডেট সাজেস্ট করুন",
-    volForm: "স্বেচ্ছাসেবী ফর্ম",
-    hl1: "জরুরি আশ্রয়: 311 কল করুন (24/7)",
-    hl2: "কোয়ালিশন হটলাইন:", hl3: "মানসিক স্বাস্থ্য:",
-    sub: "আসল লিংক। আসল ঠিকানা। NYC 2025–2026 আপডেট।",
-    darkOn: "ডার্ক মোড", darkOff: "লাইট মোড",
-    findCenter: "কমিউনিটি সেন্টার খুঁজুন",
-    print: "প্রিন্ট / PDF",
-    portal: "প্রতিবেশী পোর্টাল",
-    modalTitle: "আপডেট সাজেস্ট করুন",
-    modalHint: "পুরানো তথ্য, ভুল নম্বর, পরিবর্তিত ঠিকানা রিপোর্ট করুন বা নতুন রিসোর্স সাজেস্ট করুন।",
-    jobsNotice: "⚠️ ক্লায়েন্ট পাঠানোর আগে চাকরির পেজ চেক করুন — পদ পরিবর্তন হতে পারে।",
-    jobsTabs: [
-      { key: "hiring",   label: "💼 সরাসরি নিয়োগ" },
-      { key: "training", label: "🎓 প্রশিক্ষণ"     },
-      { key: "support",  label: "🤝 সাপোর্ট সংস্থা" }
-    ],
-    jobsHiringSections: [
-      { label: "🟢 এন্ট্রি-লেভেল",            key: "entryLevel" },
-      { label: "🏥 HHA / CNA — নিয়োগ",       key: "healthcareHiring" },
-      { label: "🍽️ খাদ্য ও আতিথেয়তা",      key: "food"       },
-      { label: "🔧 ট্রেড ও শ্রম",             key: "trades"     }
-    ]
-  },
-  ht: {
-    search: "Chèche pa bezwen, resous, mo kle…",
-    found: n => `${n} resous jwenn`,
-    empty: "Pa gen rezilta — eseye yon lòt rechèch oswa kategori.",
-    suggest: "Sijere mizajou",
-    volForm: "Fòm volontè",
-    hl1: "Abri ijans: Rele 311 (24/7)",
-    hl2: "Liy koalisyon:", hl3: "Sante mantal:",
-    sub: "Lyen reyèl. Adrès reyèl. Mete ajou pou NYC 2025–2026.",
-    darkOn: "Mòd fènwa", darkOff: "Mòd klè",
-    findCenter: "Jwenn Sant Kominotè",
-    print: "Enprime / PDF",
-    portal: "Pòtal Vwazen",
-    modalTitle: "Sijere yon mizajou",
-    modalHint: "Rapòte enfòmasyon ki depase, nimewo ki mal, adrès ki chanje, oswa sijere yon nouvo resous.",
-    jobsNotice: "⚠️ Verifye paj karyè anvan voye kliyan — pozisyon yo ka chanje.",
-    jobsTabs: [
-      { key: "hiring",   label: "💼 Anplwaman Dirèk" },
-      { key: "training", label: "🎓 Fòmasyon"         },
-      { key: "support",  label: "🤝 Òganizasyon"      }
-    ],
-    jobsHiringSections: [
-      { label: "🟢 Nivo debutan",         key: "entryLevel" },
-      { label: "🏥 HHA / CNA — Travay",  key: "healthcareHiring" },
-      { label: "🍽️ Manje ak ospitalite", key: "food"       },
-      { label: "🔧 Métye ak travay",      key: "trades"     }
-    ]
-  }
+  es:{search:"Buscar por necesidad, recurso, palabra clave…",found:n=>`${n} recurso${n!==1?'s':''} encontrado${n!==1?'s':''}`,empty:"Sin resultados — intente otra búsqueda.",suggest:"Sugerir actualización",volForm:"Formulario de voluntariado",hl1:"Refugio de emergencia: Llame al 311 (24/7)",hl2:"Línea directa:",hl3:"Salud mental:",sub:"Links reales. Direcciones reales. Actualizado para NYC 2025–2026.",darkOn:"Modo oscuro",darkOff:"Modo claro",findCenter:"Buscar Centro Comunitario",print:"Imprimir / PDF",portal:"Portal Vecinal",modalTitle:"Sugerir una actualización",modalHint:"Reporta información desactualizada, números incorrectos o sugiere un nuevo recurso.",jobsNotice:"⚠️ Verifique las páginas de empleo antes de enviar clientes.",jobsTabs:[{key:"hiring",label:"💼 Empleo Directo"},{key:"training",label:"🎓 Capacitación"},{key:"support",label:"🤝 Organizaciones"}],jobsHiringSections:[{label:"🟢 Nivel básico",key:"entryLevel"},{label:"🏥 HHA / CNA — Empleo",key:"healthcareHiring"},{label:"🍽️ Comida y hospitalidad",key:"food"},{label:"🔧 Oficios y trabajo",key:"trades"}]},
+  fr:{search:"Rechercher par besoin, ressource, mot-clé…",found:n=>`${n} ressource${n!==1?'s':''} trouvée${n!==1?'s':''}`,empty:"Aucun résultat — essayez une autre recherche.",suggest:"Suggérer une mise à jour",volForm:"Formulaire de bénévolat",hl1:"Hébergement d'urgence : Appelez le 311 (24h/24)",hl2:"Ligne directe :",hl3:"Santé mentale :",sub:"Vrais liens. Vraies adresses. Mis à jour pour NYC 2025–2026.",darkOn:"Mode sombre",darkOff:"Mode clair",findCenter:"Trouver un Centre Communautaire",print:"Imprimer / PDF",portal:"Portail de Voisinage",modalTitle:"Suggérer une mise à jour",modalHint:"Signalez des informations obsolètes ou suggérez une nouvelle ressource.",jobsNotice:"⚠️ Vérifiez les pages carrières avant d'envoyer des clients.",jobsTabs:[{key:"hiring",label:"💼 Recrutement Direct"},{key:"training",label:"🎓 Formation"},{key:"support",label:"🤝 Organisations"}],jobsHiringSections:[{label:"🟢 Niveau débutant",key:"entryLevel"},{label:"🏥 HHA / CNA — Recrutement",key:"healthcareHiring"},{label:"🍽️ Alimentation et hôtellerie",key:"food"},{label:"🔧 Métiers et main-d'œuvre",key:"trades"}]},
+  ru:{search:"Поиск по потребности, ресурсу, ключевому слову…",found:n=>`Найдено ресурсов: ${n}`,empty:"Ничего не найдено — попробуйте другой запрос.",suggest:"Предложить обновление",volForm:"Форма для волонтёров",hl1:"Экстренный приют: звоните 311 (24/7)",hl2:"Горячая линия:",hl3:"Психическое здоровье:",sub:"Реальные ссылки. Реальные адреса. Обновлено для NYC 2025–2026.",darkOn:"Тёмная тема",darkOff:"Светлая тема",findCenter:"Найти общественный центр",print:"Печать / PDF",portal:"Портал соседей",modalTitle:"Предложить обновление",modalHint:"Сообщите об устаревшей информации или предложите новый ресурс.",jobsNotice:"⚠️ Проверяйте страницы вакансий перед отправкой клиентов.",jobsTabs:[{key:"hiring",label:"💼 Прямой найм"},{key:"training",label:"🎓 Обучение"},{key:"support",label:"🤝 Организации"}],jobsHiringSections:[{label:"🟢 Начальный уровень",key:"entryLevel"},{label:"🏥 HHA / CNA — Найм",key:"healthcareHiring"},{label:"🍽️ Питание и гостеприимство",key:"food"},{label:"🔧 Рабочие специальности",key:"trades"}]},
+  zh:{search:"按需求、资源、关键字搜索…",found:n=>`找到 ${n} 个资源`,empty:"无结果 — 请尝试其他搜索。",suggest:"建议更新",volForm:"志愿者报名表",hl1:"紧急收容所：拨打 311（24/7）",hl2:"联盟热线：",hl3:"心理健康：",sub:"真实链接。真实地址。已更新至 NYC 2025–2026。",darkOn:"深色模式",darkOff:"浅色模式",findCenter:"查找社区中心",print:"打印 / PDF",portal:"邻里门户",modalTitle:"建议更新",modalHint:"报告过时的信息或建议新资源。",jobsNotice:"⚠️ 发送客户前请检查招聘页面。",jobsTabs:[{key:"hiring",label:"💼 直接招聘"},{key:"training",label:"🎓 职业培训"},{key:"support",label:"🤝 支持机构"}],jobsHiringSections:[{label:"🟢 入门级职位",key:"entryLevel"},{label:"🏥 HHA / CNA — 招聘",key:"healthcareHiring"},{label:"🍽️ 餐饮与酒店",key:"food"},{label:"🔧 技工与劳务",key:"trades"}]},
+  hi:{search:"जरूरत, संसाधन, कीवर्ड से खोजें…",found:n=>`${n} संसाधन मिले`,empty:"कोई परिणाम नहीं।",suggest:"अपडेट सुझाएं",volForm:"स्वयंसेवक फॉर्म",hl1:"आपातकालीन आश्रय: 311 पर कॉल करें",hl2:"कोएलिशन हेल्पलाइन:",hl3:"मानसिक स्वास्थ्य:",sub:"असली लिंक। असली पते। NYC 2025–2026 के लिए अपडेट।",darkOn:"डार्क मोड",darkOff:"लाइट मोड",findCenter:"सामुदायिक केंद्र खोजें",print:"प्रिंट / PDF",portal:"पड़ोस पोर्टल",modalTitle:"अपडेट सुझाएं",modalHint:"पुरानी जानकारी या नया संसाधन सुझाएं।",jobsNotice:"⚠️ क्लाइंट भेजने से पहले करियर पेज जांचें।",jobsTabs:[{key:"hiring",label:"💼 सीधी भर्ती"},{key:"training",label:"🎓 प्रशिक्षण"},{key:"support",label:"🤝 सहायक संस्थाएं"}],jobsHiringSections:[{label:"🟢 प्रवेश-स्तर",key:"entryLevel"},{label:"🏥 HHA / CNA — भर्ती",key:"healthcareHiring"},{label:"🍽️ खाद्य और आतिथ्य",key:"food"},{label:"🔧 कारीगरी और श्रम",key:"trades"}]},
+  bn:{search:"প্রয়োজন, সম্পদ, কীওয়ার্ড দিয়ে খুঁজুন…",found:n=>`${n}টি রিসোর্স পাওয়া গেছে`,empty:"কোনো ফলাফল নেই।",suggest:"আপডেট সাজেস্ট করুন",volForm:"স্বেচ্ছাসেবী ফর্ম",hl1:"জরুরি আশ্রয়: 311 কল করুন",hl2:"কোয়ালিশন হটলাইন:",hl3:"মানসিক স্বাস্থ্য:",sub:"আসল লিংক। আসল ঠিকানা। NYC 2025–2026 আপডেট।",darkOn:"ডার্ক মোড",darkOff:"লাইট মোড",findCenter:"কমিউনিটি সেন্টার খুঁজুন",print:"প্রিন্ট / PDF",portal:"প্রতিবেশী পোর্টাল",modalTitle:"আপডেট সাজেস্ট করুন",modalHint:"পুরানো তথ্য বা নতুন রিসোর্স সাজেস্ট করুন।",jobsNotice:"⚠️ ক্লায়েন্ট পাঠানোর আগে চাকরির পেজ চেক করুন।",jobsTabs:[{key:"hiring",label:"💼 সরাসরি নিয়োগ"},{key:"training",label:"🎓 প্রশিক্ষণ"},{key:"support",label:"🤝 সাপোর্ট সংস্থা"}],jobsHiringSections:[{label:"🟢 এন্ট্রি-লেভেল",key:"entryLevel"},{label:"🏥 HHA / CNA — নিয়োগ",key:"healthcareHiring"},{label:"🍽️ খাদ্য ও আতিথেয়তা",key:"food"},{label:"🔧 ট্রেড ও শ্রম",key:"trades"}]},
+  ht:{search:"Chèche pa bezwen, resous, mo kle…",found:n=>`${n} resous jwenn`,empty:"Pa gen rezilta.",suggest:"Sijere mizajou",volForm:"Fòm volontè",hl1:"Abri ijans: Rele 311 (24/7)",hl2:"Liy koalisyon:",hl3:"Sante mantal:",sub:"Lyen reyèl. Adrès reyèl. Mete ajou pou NYC 2025–2026.",darkOn:"Mòd fènwa",darkOff:"Mòd klè",findCenter:"Jwenn Sant Kominotè",print:"Enprime / PDF",portal:"Pòtal Vwazen",modalTitle:"Sijere yon mizajou",modalHint:"Rapòte enfòmasyon ki depase oswa sijere yon nouvo resous.",jobsNotice:"⚠️ Verifye paj karyè anvan voye kliyan.",jobsTabs:[{key:"hiring",label:"💼 Anplwaman Dirèk"},{key:"training",label:"🎓 Fòmasyon"},{key:"support",label:"🤝 Òganizasyon"}],jobsHiringSections:[{label:"🟢 Nivo debutan",key:"entryLevel"},{label:"🏥 HHA / CNA — Travay",key:"healthcareHiring"},{label:"🍽️ Manje ak ospitalite",key:"food"},{label:"🔧 Métye ak travay",key:"trades"}]}
 };
 
-const LANG_NAMES = {en:'English',es:'Español',fr:'Français',ru:'Русский',zh:'中文',hi:'हिन्दी',bn:'বাংলা',ht:'Kreyòl'};
-const CHEVRON  = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
-const BULB     = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/></svg>`;
-const EXT_LINK = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
-const SUN_SVG  = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
-const MOON_SVG = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
+const LANG_NAMES={en:'English',es:'Español',fr:'Français',ru:'Русский',zh:'中文',hi:'हिन्दी',bn:'বাংলা',ht:'Kreyòl'};
+const CHEVRON=`<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+const BULB=`<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/></svg>`;
+const EXT_LINK=`<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+const SUN_SVG=`<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+const MOON_SVG=`<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
 
-let data=[], jobListingsData=null, active='All', open=null, isDark=false, fontScale=1;
-let lang = sessionStorage.getItem('lang') || 'en';
-let activeJobTab = 'hiring';
+let data=[],jobListingsData=null,active='All',open=null,isDark=false,fontScale=1;
+let lang=sessionStorage.getItem('lang')||'en';
+let activeJobTab='hiring';
 
-// ── Load data ─────────────────────────────────────────────────
 async function loadData(){
   let json;
   try{ json=await fetch('data.json').then(r=>r.json()); }
-  catch(e){
-    document.getElementById('results').innerHTML='<div class="empty">Could not load data.json — make sure it is in the same folder as index.html.</div>';
-    return;
-  }
+  catch(e){ document.getElementById('results').innerHTML='<div class="empty">Could not load data.json</div>'; return; }
   data=json.cards||[];
   jobListingsData=json.jobListings||null;
-  rebuildPills();
-  render();
+  rebuildPills(); render();
 }
 
-// ── Build a grid of job-style cards (green) ───────────────────
 function jobGrid(items){
-  if(!items||!items.length) return '';
-  return `<div class="job-grid" role="list">${items.map(j=>
-    `<a class="job-card" href="${j.url}" target="_blank" rel="noopener noreferrer" role="listitem">
-      <div class="jc-org">${j.org}</div><div class="jc-note">${j.note}</div>
-    </a>`
-  ).join('')}</div>`;
+  if(!items||!items.length)return'';
+  return`<div class="job-grid">${items.map(j=>`<a class="job-card" href="${j.url}" target="_blank" rel="noopener noreferrer"><div class="jc-org">${j.org}</div><div class="jc-note">${j.note}</div></a>`).join('')}</div>`;
 }
 
-// ── Build a grid of resource-style cards (terracotta) ─────────
 function resGrid(items){
-  if(!items||!items.length) return '';
-  return `<div class="res-grid" role="list">${items.map(r=>{
-    const tag=r.url?'a':'div';
-    const href=r.url?`href="${r.url}" target="_blank" rel="noopener noreferrer"`:'';
-    return`<${tag} class="res-card${r.url?'':' no-link'}" ${href} role="listitem">
-      <div class="rc-org">${r.org}</div>
-      ${r.note?`<div class="rc-note">${r.note}</div>`:''}
-      ${r.addr?`<div class="rc-addr">📍 ${r.addr}</div>`:''}
-      ${r.phone?`<div class="rc-phone">📞 ${r.phone}</div>`:''}
-    </${tag}>`;
+  if(!items||!items.length)return'';
+  return`<div class="res-grid">${items.map(r=>{
+    const tag=r.url?'a':'div',href=r.url?`href="${r.url}" target="_blank" rel="noopener noreferrer"`:'';
+    return`<${tag} class="res-card${r.url?'':' no-link'}" ${href}><div class="rc-org">${r.org}</div>${r.note?`<div class="rc-note">${r.note}</div>`:''}${r.addr?`<div class="rc-addr">📍 ${r.addr}</div>`:''}${r.phone?`<div class="rc-phone">📞 ${r.phone}</div>`:''}</${tag}>`;
   }).join('')}</div>`;
 }
 
-// ── Open Jobs Modal ───────────────────────────────────────────
 function openJobsModal(){
-  if(!jobListingsData) return;
+  if(!jobListingsData)return;
   buildJobsModal();
   openModal('jobsModal');
 }
 
 function buildJobsModal(){
-  const t = T[lang]||T.en;
-  const jl = jobListingsData;
-
-  // ── Tab bar ──
-  const tabsEl = document.getElementById('jobsTabs');
-  tabsEl.innerHTML = t.jobsTabs.map(tab=>
-    `<button class="jobs-tab${tab.key===activeJobTab?' active':''}" role="tab"
-       aria-selected="${tab.key===activeJobTab}" onclick="switchJobTab('${tab.key}')">${tab.label}</button>`
+  const t=T[lang]||T.en,jl=jobListingsData;
+  document.getElementById('jobsTabs').innerHTML=t.jobsTabs.map(tab=>
+    `<button class="jobs-tab${tab.key===activeJobTab?' active':''}" onclick="switchJobTab('${tab.key}')">${tab.label}</button>`
   ).join('');
-
-  // ── Panels ──
-  const panelsEl = document.getElementById('jobsPanels');
-
-  // Panel 1: Direct Hiring — subsections by type
-  let hiringHtml = '';
-  t.jobsHiringSections.forEach(sec => {
-    let items;
-    if(sec.key === 'healthcareHiring'){
-      items = jl.healthcare && jl.healthcare.hiring ? jl.healthcare.hiring : [];
-    } else {
-      items = jl[sec.key] || [];
-    }
-    if(!items.length) return;
-    hiringHtml += `<div class="sub-section">
-      <div class="sub-label">${sec.label}</div>
-      ${jobGrid(items)}
-    </div>`;
+  let hiringHtml='';
+  t.jobsHiringSections.forEach(sec=>{
+    const items=sec.key==='healthcareHiring'?(jl.healthcare&&jl.healthcare.hiring?jl.healthcare.hiring:[]):(jl[sec.key]||[]);
+    if(!items.length)return;
+    hiringHtml+=`<div class="sub-section"><div class="sub-label">${sec.label}</div>${jobGrid(items)}</div>`;
   });
-
-  // Panel 2: Job Training — includes HHA/CNA training subsection
-  let trainingHtml = '';
-  const hhaCnaTraining = jl.healthcare && jl.healthcare.training ? jl.healthcare.training : [];
-  if(hhaCnaTraining.length){
-    trainingHtml += `<div class="sub-section">
-      <div class="sub-label">🏥 HHA / CNA — Training Programs</div>
-      ${jobGrid(hhaCnaTraining)}
-    </div>`;
-  }
-  if((jl.jobTraining||[]).length){
-    trainingHtml += `<div class="sub-section">
-      <div class="sub-label">🎓 Career Training & Workforce Centers</div>
-      ${jobGrid(jl.jobTraining)}
-    </div>`;
-  }
-
-  // Panel 3: Support Orgs
-  const supportHtml = resGrid(jl.jobSupportOrgs||[]);
-
-  panelsEl.innerHTML = `
-    <div class="jobs-panel${activeJobTab==='hiring'?' active':''}" id="jpanel-hiring" role="tabpanel">${hiringHtml}</div>
-    <div class="jobs-panel${activeJobTab==='training'?' active':''}" id="jpanel-training" role="tabpanel">${trainingHtml}</div>
-    <div class="jobs-panel${activeJobTab==='support'?' active':''}" id="jpanel-support" role="tabpanel">${supportHtml}</div>
-  `;
+  let trainingHtml='';
+  const hhaTrain=jl.healthcare&&jl.healthcare.training?jl.healthcare.training:[];
+  if(hhaTrain.length)trainingHtml+=`<div class="sub-section"><div class="sub-label">🏥 HHA / CNA — Training Programs</div>${jobGrid(hhaTrain)}</div>`;
+  if((jl.jobTraining||[]).length)trainingHtml+=`<div class="sub-section"><div class="sub-label">🎓 Career Training & Workforce Centers</div>${jobGrid(jl.jobTraining)}</div>`;
+  document.getElementById('jobsPanels').innerHTML=
+    `<div class="jobs-panel${activeJobTab==='hiring'?' active':''}" id="jpanel-hiring">${hiringHtml}</div>
+     <div class="jobs-panel${activeJobTab==='training'?' active':''}" id="jpanel-training">${trainingHtml}</div>
+     <div class="jobs-panel${activeJobTab==='support'?' active':''}" id="jpanel-support">${resGrid(jl.jobSupportOrgs||[])}</div>`;
 }
 
 function switchJobTab(key){
-  activeJobTab = key;
-  document.querySelectorAll('.jobs-tab').forEach(btn=>{
-    const active = btn.getAttribute('onclick').includes(`'${key}'`);
-    btn.classList.toggle('active', active);
-    btn.setAttribute('aria-selected', active);
-  });
-  document.querySelectorAll('.jobs-panel').forEach(p=>{
-    p.classList.toggle('active', p.id===`jpanel-${key}`);
-  });
+  activeJobTab=key;
+  document.querySelectorAll('.jobs-tab').forEach(btn=>{ const a=btn.getAttribute('onclick').includes(`'${key}'`); btn.classList.toggle('active',a); });
+  document.querySelectorAll('.jobs-panel').forEach(p=>p.classList.toggle('active',p.id===`jpanel-${key}`));
 }
 
-// ── Render main card list ─────────────────────────────────────
 function render(){
   const t=T[lang]||T.en;
   const q=(document.getElementById('search').value||'').toLowerCase().trim();
   document.getElementById('search').placeholder=t.search;
-
   const filtered=data.map((d,i)=>({...d,_i:i})).filter(d=>{
     const matchCat=active==='All'||(d.cats||[]).includes(active);
-    const matchQ=!q||d.title.toLowerCase().includes(q)||d.sub.toLowerCase().includes(q)
-      ||(d.tags||[]).some(tag=>tag.includes(q))||(d.notice||'').toLowerCase().includes(q);
+    const matchQ=!q||d.title.toLowerCase().includes(q)||d.sub.toLowerCase().includes(q)||(d.tags||[]).some(tag=>tag.includes(q))||(d.notice||'').toLowerCase().includes(q);
     return matchCat&&matchQ;
   });
-
   document.getElementById('count').textContent=t.found(filtered.length);
   const res=document.getElementById('results');
-  if(!filtered.length){res.innerHTML=`<div class="empty" role="listitem">${t.empty}</div>`;return;}
+  if(!filtered.length){res.innerHTML=`<div class="empty" style="grid-column:1/-1">${t.empty}</div>`;return;}
 
   res.innerHTML=filtered.map((d,pos)=>{
-    const isJobsCard = d.type==='job-listings';
-    const isOpen=open===d._i, bodyId=`body-${d._i}`;
+    const isJobsCard=d.type==='job-listings';
+    const isOpen=open===d._i,bodyId=`body-${d._i}`;
     const noticeHtml=d.notice?`<div class="notice">${d.notice}</div>`:'';
-    const extraHtml=d.extra?`<p style="margin-bottom:.6rem;font-size:.84rem">${d.extra}</p>`:'';
+    const resHtml=(d.resources||[]).length?resGrid(d.resources):'';
+    const volFormHtml=d.volunteerFormUrl?`<a class="vol-form-link" href="${d.volunteerFormUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${EXT_LINK} ${t.volForm}</a>`:'';
+    const tagsHtml=(d.tags||[]).slice(0,5).map(tg=>`<span class="tag">${tg}</span>`).join('');
 
-    const volFormHtml=d.volunteerFormUrl
-      ?`<a class="vol-form-link" href="${d.volunteerFormUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${EXT_LINK} ${t.volForm}</a>`:'';
-
-    const resHtml=(d.resources||[]).length?`<div class="res-grid" role="list">${
-      d.resources.map(r=>{
-        const tag=r.url?'a':'div';
-        const href=r.url?`href="${r.url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"`:'';
-        return`<${tag} class="res-card${r.url?'':' no-link'}" ${href} role="listitem">
-          <div class="rc-org">${r.org}</div>
-          ${r.note?`<div class="rc-note">${r.note}</div>`:''}
-          ${r.addr?`<div class="rc-addr">📍 ${r.addr}</div>`:''}
-          ${r.phone?`<div class="rc-phone">📞 ${r.phone}</div>`:''}
-        </${tag}>`;
-      }).join('')
-    }</div>`:'';
-
-    // Jobs card: clicking opens modal, no accordion
     if(isJobsCard){
-      return`
-      <div class="card" data-idx="${d._i}" data-type="job-listings" role="listitem" style="animation-delay:${Math.min(pos*.045,.32)}s">
-        <div class="ctop" role="button" tabindex="0"
-             aria-haspopup="dialog"
-             onclick="openJobsModal()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openJobsModal();}">
-          <div class="cicon-wrap" aria-hidden="true">${ICONS[d.id]||''}</div>
-          <div style="flex:1;min-width:0">
-            <div class="ctitle">${d.title}</div>
-            <div class="csub">${d.sub}</div>
-            <div class="ctags" role="list">${(d.tags||[]).slice(0,5).map(tg=>`<span class="tag" role="listitem">${tg}</span>`).join('')}</div>
-          </div>
-          <div class="chev" aria-hidden="true"></div>
+      return`<div class="tile" data-type="job-listings" role="listitem" tabindex="0" style="animation-delay:${Math.min(pos*.04,.28)}s"
+        onclick="openJobsModal()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openJobsModal();}">
+        <div class="tile-top">
+          <div class="tile-icon">${ICONS[d.id]||''}</div>
+          <div class="tile-text"><div class="tile-title">${d.title}</div><div class="tile-sub">${d.sub}</div></div>
+          <div class="tile-chev"></div>
         </div>
+        ${tagsHtml?`<div class="tile-tags">${tagsHtml}</div>`:''}
       </div>`;
     }
 
-    // Normal accordion card
-    return`
-    <div class="card${isOpen?' is-open':''}" data-idx="${d._i}" role="listitem">
-      <div class="ctop" role="button" tabindex="0"
-           aria-expanded="${isOpen}" aria-controls="${bodyId}"
-           onclick="tog(${d._i})" onkeydown="handleKey(event,${d._i})"
-           style="animation-delay:${Math.min(pos*.045,.32)}s">
-        <div class="cicon-wrap" aria-hidden="true">${ICONS[d.id]||''}</div>
-        <div style="flex:1;min-width:0">
-          <div class="ctitle">${d.title}</div>
-          <div class="csub">${d.sub}</div>
-          <div class="ctags" role="list">${(d.tags||[]).slice(0,5).map(tg=>`<span class="tag" role="listitem">${tg}</span>`).join('')}</div>
-        </div>
-        <div class="chev" aria-hidden="true">${CHEVRON}</div>
+    return`<div class="tile${isOpen?' is-open':''}" data-idx="${d._i}" role="listitem" tabindex="0"
+      style="animation-delay:${Math.min(pos*.04,.28)}s"
+      onclick="tog(${d._i})" onkeydown="handleKey(event,${d._i})"
+      aria-expanded="${isOpen}" aria-controls="${bodyId}">
+      <div class="tile-top">
+        <div class="tile-icon">${ICONS[d.id]||''}</div>
+        <div class="tile-text"><div class="tile-title">${d.title}</div><div class="tile-sub">${d.sub}</div></div>
+        <div class="tile-chev">${CHEVRON}</div>
       </div>
-      <div class="cbody${isOpen?' open':''}" id="${bodyId}" role="region">
-        <div class="cbody-inner">
-          ${noticeHtml}${extraHtml}${volFormHtml}${resHtml}
+      ${tagsHtml?`<div class="tile-tags">${tagsHtml}</div>`:''}
+      <div class="tile-body${isOpen?' open':''}" id="${bodyId}" role="region">
+        <div class="tile-body-inner">
+          ${noticeHtml}${volFormHtml}${resHtml}
           <div class="card-actions">
             <button class="ca-btn" onclick="openFeedback('${d.title.replace(/'/g,"\\'")}',event)">${BULB} ${t.suggest}</button>
           </div>
@@ -847,11 +558,11 @@ function handleKey(e,i){if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(
 function tog(i){
   const scrollY=window.scrollY;
   open=open===i?null:i;
-  document.querySelectorAll('.card:not([data-type="job-listings"])').forEach(card=>{
-    const idx=parseInt(card.dataset.idx),isOpen=idx===open;
-    card.classList.toggle('is-open',isOpen);
-    const body=card.querySelector('.cbody');if(body)body.classList.toggle('open',isOpen);
-    const btn=card.querySelector('[role="button"]');if(btn)btn.setAttribute('aria-expanded',isOpen);
+  document.querySelectorAll('.tile:not([data-type="job-listings"])').forEach(tile=>{
+    const idx=parseInt(tile.dataset.idx),isO=idx===open;
+    tile.classList.toggle('is-open',isO);
+    const body=tile.querySelector('.tile-body');if(body)body.classList.toggle('open',isO);
+    tile.setAttribute('aria-expanded',isO);
   });
   requestAnimationFrame(()=>window.scrollTo({top:scrollY,behavior:'instant'}));
 }
@@ -862,14 +573,8 @@ function rebuildPills(){
   ['All',...new Set(data.flatMap(d=>d.cats||[]))].forEach(c=>{
     const el=document.createElement('button');
     el.className='pill'+(c===active?' active':'');
-    el.textContent=c;
-    el.setAttribute('aria-pressed',c===active?'true':'false');
-    el.onclick=()=>{
-      active=c;open=null;
-      document.querySelectorAll('.pill').forEach(p=>{p.classList.remove('active');p.setAttribute('aria-pressed','false');});
-      el.classList.add('active');el.setAttribute('aria-pressed','true');
-      render();
-    };
+    el.textContent=c; el.setAttribute('aria-pressed',c===active?'true':'false');
+    el.onclick=()=>{ active=c;open=null; document.querySelectorAll('.pill').forEach(p=>{p.classList.remove('active');p.setAttribute('aria-pressed','false');}); el.classList.add('active');el.setAttribute('aria-pressed','true'); render(); };
     pw.appendChild(el);
   });
 }
@@ -881,34 +586,9 @@ function toggleTheme(){
   document.getElementById('themeIcon').outerHTML=isDark?MOON_SVG:SUN_SVG;
   document.getElementById('themeLabel').textContent=isDark?(T[lang]||T.en).darkOff:(T[lang]||T.en).darkOn;
 }
-
-function changeFont(delta){
-  fontScale=Math.min(1.4,Math.max(0.8,+(fontScale+delta).toFixed(1)));
-  document.documentElement.style.fontSize=(fontScale*16)+'px';
-  document.getElementById('fontLabel').textContent=Math.round(fontScale*100)+'%';
-}
-
-function toggleLangMenu(){
-  const menu=document.getElementById('langMenu'),btn=document.getElementById('langBtn');
-  const isOpen=menu.classList.toggle('open');
-  btn.setAttribute('aria-expanded',isOpen);
-  if(isOpen)menu.querySelector('button').focus();
-}
-
-function setLang(code){
-  lang=code;
-  sessionStorage.setItem('lang',code);
-  document.documentElement.setAttribute('lang',code);
-  document.getElementById('langLabel').textContent=LANG_NAMES[code]||'English';
-  document.getElementById('langMenu').classList.remove('open');
-  document.getElementById('langBtn').setAttribute('aria-expanded','false');
-  document.querySelectorAll('.lang-opt').forEach(o=>{
-    const sel=o.getAttribute('onclick').includes(`'${code}'`);
-    o.classList.toggle('active',sel);o.setAttribute('aria-selected',sel);
-  });
-  applyStaticTranslations();
-  render();
-}
+function changeFont(delta){ fontScale=Math.min(1.4,Math.max(0.8,+(fontScale+delta).toFixed(1))); document.documentElement.style.fontSize=(fontScale*16)+'px'; document.getElementById('fontLabel').textContent=Math.round(fontScale*100)+'%'; }
+function toggleLangMenu(){ const menu=document.getElementById('langMenu'),btn=document.getElementById('langBtn'); const isOpen=menu.classList.toggle('open'); btn.setAttribute('aria-expanded',isOpen); if(isOpen)menu.querySelector('button').focus(); }
+function setLang(code){ lang=code; sessionStorage.setItem('lang',code); document.documentElement.setAttribute('lang',code); document.getElementById('langLabel').textContent=LANG_NAMES[code]||'English'; document.getElementById('langMenu').classList.remove('open'); document.getElementById('langBtn').setAttribute('aria-expanded','false'); document.querySelectorAll('.lang-opt').forEach(o=>{const sel=o.getAttribute('onclick').includes(`'${code}'`);o.classList.toggle('active',sel);o.setAttribute('aria-selected',sel);}); applyStaticTranslations(); render(); }
 
 function applyStaticTranslations(){
   const t=T[lang]||T.en;
@@ -922,37 +602,20 @@ function applyStaticTranslations(){
   document.getElementById('btnPortalLabel').textContent=t.portal;
   document.getElementById('modalTitle').textContent=t.modalTitle;
   document.getElementById('modalHint').textContent=t.modalHint;
-  if(t.jobsNotice) document.getElementById('jobsNotice').textContent=t.jobsNotice;
+  if(t.jobsNotice)document.getElementById('jobsNotice').textContent=t.jobsNotice;
 }
 
-document.addEventListener('click',e=>{
-  const w=document.getElementById('langWrap');
-  if(w&&!w.contains(e.target)){document.getElementById('langMenu').classList.remove('open');document.getElementById('langBtn').setAttribute('aria-expanded','false');}
-});
+document.addEventListener('click',e=>{ const w=document.getElementById('langWrap'); if(w&&!w.contains(e.target)){document.getElementById('langMenu').classList.remove('open');document.getElementById('langBtn').setAttribute('aria-expanded','false');} });
 
 let lastFocus=null;
 function openFeedback(title,e){e.stopPropagation();openModal('feedbackModal');}
-function openModal(id){
-  lastFocus=document.activeElement;
-  const m=document.getElementById(id);
-  m.classList.add('open');
-  const closeBtn=m.querySelector('.modal-close');
-  if(closeBtn) closeBtn.focus();
-}
-function closeModal(id){
-  document.getElementById(id).classList.remove('open');
-  if(lastFocus)lastFocus.focus();
-}
+function openModal(id){ lastFocus=document.activeElement; const m=document.getElementById(id); m.classList.add('open'); const cb=m.querySelector('.modal-close'); if(cb)cb.focus(); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); if(lastFocus)lastFocus.focus(); }
 document.querySelectorAll('.modal-bg').forEach(m=>{
   m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);});
   m.addEventListener('keydown',e=>{
     if(e.key==='Escape')closeModal(m.id);
-    if(e.key==='Tab'){
-      const els=m.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');
-      const first=els[0],last=els[els.length-1];
-      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
-      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
-    }
+    if(e.key==='Tab'){const els=m.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');const first=els[0],last=els[els.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
   });
 });
 

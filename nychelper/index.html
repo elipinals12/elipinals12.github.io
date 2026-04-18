@@ -21,6 +21,7 @@
   --btn-bg: rgba(90,148,120,.09);
   --hotline-bg: linear-gradient(135deg,rgba(201,98,74,.08),rgba(212,168,48,.06));
   --modal-bg: #fff; --modal-text: #2a2d45; --modal-muted: #6a6060;
+  --tab-active: #c9624a; --tab-active-text: #fff;
 }
 :root[data-theme="dark"] {
   --bg: #16161e; --card: #1f1f2e; --border: #2e2e42;
@@ -36,6 +37,7 @@
   --btn-bg: rgba(129,178,154,.1);
   --hotline-bg: linear-gradient(135deg,rgba(224,122,95,.1),rgba(242,204,143,.07));
   --modal-bg: #1f1f2e; --modal-text: #e8e4f0; --modal-muted: #9a90b0;
+  --tab-active: #e07a5f; --tab-active-text: #fff;
 }
 :root { --ease-spring: cubic-bezier(0.34,1.56,0.64,1); --ease-out: cubic-bezier(0.4,0,0.2,1); }
 
@@ -44,7 +46,6 @@
 
 body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; min-height:100vh; font-size:17px; line-height:1.65; -webkit-font-smoothing:antialiased; transition:background .3s,color .3s; }
 
-/* Simplified background — static gradient, no animation to reduce eye strain */
 body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
   background: radial-gradient(ellipse at 18% 18%,rgba(224,122,95,.08) 0%,transparent 52%),
               radial-gradient(ellipse at 82% 82%,rgba(129,178,154,.06) 0%,transparent 52%); }
@@ -118,8 +119,18 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
 .ctags { display:flex; flex-wrap:wrap; gap:.28rem; margin-top:.5rem; }
 .tag { padding:.14rem .52rem; background:var(--tag-bg); border:1px solid var(--tag-border); border-radius:999px; font-size:.71rem; color:var(--accent); font-weight:500; }
 
-/* ── Accordion body
-   Max-height fallback for all browsers, grid-template-rows enhancement for modern ones ── */
+/* ── Jobs card special: external-link indicator ── */
+.card[data-type="job-listings"] .chev svg { display:none; }
+.card[data-type="job-listings"] .chev::after {
+  content:'';
+  display:block;
+  width:16px; height:16px;
+  background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+/* ── Accordion body ── */
 .cbody {
   overflow:hidden;
   max-height:0;
@@ -132,7 +143,6 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
   opacity:1;
   margin-top:.85rem;
 }
-/* Progressive enhancement: smoother animation in browsers that support it */
 @supports (grid-template-rows: 0fr) {
   .cbody {
     display:grid;
@@ -186,20 +196,33 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
 
 .empty { text-align:center; color:var(--muted); padding:3rem 0; font-size:.92rem; }
 
-/* ── Modal ── */
+/* ── Jobs Modal ── */
 .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:200; align-items:center; justify-content:center; padding:1rem; }
-/* backdrop-filter with safe fallback */
 @supports (backdrop-filter:blur(4px)) { .modal-bg { backdrop-filter:blur(4px); } }
 .modal-bg.open { display:flex; }
-.modal { background:var(--modal-bg); border:1px solid var(--border); border-radius:18px; padding:1.5rem; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; color:var(--modal-text); animation:scaleIn .3s var(--ease-spring) both; }
-.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.85rem; }
-.modal-header h2 { font-size:1.05rem; display:flex; align-items:center; gap:.45rem; }
-.modal-header h2 svg { width:18px; height:18px; color:var(--accent); }
+.modal { background:var(--modal-bg); border:1px solid var(--border); border-radius:18px; padding:1.5rem; width:100%; max-width:680px; max-height:90vh; overflow-y:auto; color:var(--modal-text); animation:scaleIn .3s var(--ease-spring) both; }
+.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+.modal-header h2 { font-size:1.1rem; font-weight:800; display:flex; align-items:center; gap:.45rem; color:var(--modal-text); }
+.modal-header h2 svg { width:18px; height:18px; color:var(--accent); flex-shrink:0; }
 .modal-close { background:none; border:none; color:var(--muted); cursor:pointer; padding:.3rem .5rem; border-radius:8px; transition:all .18s; display:flex; align-items:center; min-height:36px; }
 .modal-close:hover { background:var(--border); color:var(--text); }
 .modal-close:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .modal-close svg { width:16px; height:16px; }
 .hint { font-size:.8rem; color:var(--modal-muted); margin-bottom:1rem; line-height:1.6; }
+
+/* ── Jobs Modal Tabs ── */
+.jobs-tabs { display:flex; gap:.4rem; margin-bottom:1.1rem; flex-wrap:wrap; }
+.jobs-tab { padding:.42rem 1rem; border-radius:999px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); font-size:.8rem; font-weight:700; cursor:pointer; transition:all .18s; min-height:34px; -webkit-tap-highlight-color:transparent; }
+.jobs-tab:hover { border-color:var(--accent); color:var(--accent); }
+.jobs-tab.active { background:var(--tab-active,var(--accent)); border-color:var(--tab-active,var(--accent)); color:var(--tab-active-text,#fff); }
+.jobs-tab:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.jobs-panel { display:none; }
+.jobs-panel.active { display:block; }
+
+/* subsection divider inside modal */
+.sub-section { margin-top:1.1rem; padding-top:.9rem; border-top:1px dashed var(--border); }
+.sub-section:first-child { margin-top:0; padding-top:0; border-top:none; }
+.sub-label { font-size:.73rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.07em; margin-bottom:.5rem; }
 
 @media print {
   body::before,.toolbar,.hotline,.search-wrap,.pills,.count,.skip-link,.card-actions,.chev,.ctags { display:none!important; }
@@ -320,6 +343,29 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
   </div>
 </div>
 
+<!-- ── Jobs Modal ── -->
+<div class="modal-bg" id="jobsModal" role="dialog" aria-modal="true" aria-labelledby="jobs-modal-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="jobs-modal-title">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+        </svg>
+        <span id="jobsModalTitle">Jobs</span>
+      </h2>
+      <button class="modal-close" onclick="closeModal('jobsModal')" aria-label="Close">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <p class="notice" id="jobsNotice">⚠️ Check employer pages before sending clients — openings change frequently.</p>
+    <div class="jobs-tabs" role="tablist" id="jobsTabs"></div>
+    <div id="jobsPanels"></div>
+  </div>
+</div>
+
+<!-- ── Feedback Modal ── -->
 <div class="modal-bg" id="feedbackModal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal">
     <div class="modal-header">
@@ -344,8 +390,6 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
 <script>
 const ICONS = {
   'jobs-apply':   `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>`,
-  'jobs-training':`<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
-  'jobs-field':   `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>`,
   'food':         `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,
   'clothing':     `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-.16 3.42l4.29 2.87a1 1 0 01.45.83V21a1 1 0 001 1h5.6a1 1 0 001-1V10.58a1 1 0 01.45-.83l4.29-2.87a2 2 0 00-.16-3.42z"/></svg>`,
   'housing':      `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
@@ -378,10 +422,15 @@ const T = {
     portal: "Neighborhood Portal",
     modalTitle: "Suggest an Update",
     modalHint: "Report outdated info, wrong numbers, changed addresses, or suggest a new resource.",
-    jobNotice: "⚠️ Check careers pages before sending clients — openings change.",
-    jobSections: [
+    jobsNotice: "⚠️ Check employer pages before sending clients — openings change frequently.",
+    jobsTabs: [
+      { key: "hiring",   label: "💼 Direct Hiring" },
+      { key: "training", label: "🎓 Job Training"  },
+      { key: "support",  label: "🤝 Support Orgs"  }
+    ],
+    jobsHiringSections: [
       { label: "🟢 Entry-Level",            key: "entryLevel" },
-      { label: "🏥 Healthcare / HHA / CNA", key: "healthcare" },
+      { label: "🏥 HHA / CNA — Hiring",     key: "healthcareHiring" },
       { label: "🍽️ Food & Hospitality",    key: "food"       },
       { label: "🔧 Trades & Labor",         key: "trades"     }
     ]
@@ -401,10 +450,15 @@ const T = {
     portal: "Portal Vecinal",
     modalTitle: "Sugerir una actualización",
     modalHint: "Reporta información desactualizada, números incorrectos o sugiere un nuevo recurso.",
-    jobNotice: "⚠️ Verifique las páginas de empleo antes de enviar clientes — las vacantes cambian.",
-    jobSections: [
+    jobsNotice: "⚠️ Verifique las páginas de empleo antes de enviar clientes — las vacantes cambian.",
+    jobsTabs: [
+      { key: "hiring",   label: "💼 Empleo Directo" },
+      { key: "training", label: "🎓 Capacitación"   },
+      { key: "support",  label: "🤝 Organizaciones" }
+    ],
+    jobsHiringSections: [
       { label: "🟢 Nivel básico",             key: "entryLevel" },
-      { label: "🏥 Salud / HHA / CNA",        key: "healthcare" },
+      { label: "🏥 HHA / CNA — Empleo",       key: "healthcareHiring" },
       { label: "🍽️ Comida y hospitalidad",   key: "food"       },
       { label: "🔧 Oficios y trabajo manual", key: "trades"     }
     ]
@@ -424,10 +478,15 @@ const T = {
     portal: "Portail de Voisinage",
     modalTitle: "Suggérer une mise à jour",
     modalHint: "Signalez des informations obsolètes, des numéros erronés ou suggérez une nouvelle ressource.",
-    jobNotice: "⚠️ Vérifiez les pages carrières avant d'envoyer des clients — les postes changent.",
-    jobSections: [
+    jobsNotice: "⚠️ Vérifiez les pages carrières avant d'envoyer des clients — les postes changent.",
+    jobsTabs: [
+      { key: "hiring",   label: "💼 Recrutement Direct" },
+      { key: "training", label: "🎓 Formation"          },
+      { key: "support",  label: "🤝 Organisations"      }
+    ],
+    jobsHiringSections: [
       { label: "🟢 Niveau débutant",              key: "entryLevel" },
-      { label: "🏥 Santé / HHA / CNA",            key: "healthcare" },
+      { label: "🏥 HHA / CNA — Recrutement",      key: "healthcareHiring" },
       { label: "🍽️ Alimentation et hôtellerie",  key: "food"       },
       { label: "🔧 Métiers et main-d'œuvre",      key: "trades"     }
     ]
@@ -447,12 +506,17 @@ const T = {
     portal: "Портал соседей",
     modalTitle: "Предложить обновление",
     modalHint: "Сообщите об устаревшей информации, неверных номерах или предложите новый ресурс.",
-    jobNotice: "⚠️ Проверяйте страницы вакансий перед отправкой клиентов — позиции меняются.",
-    jobSections: [
-      { label: "🟢 Начальный уровень",                key: "entryLevel" },
-      { label: "🏥 Здравоохранение / HHA / CNA",      key: "healthcare" },
-      { label: "🍽️ Питание и гостеприимство",        key: "food"       },
-      { label: "🔧 Рабочие специальности",            key: "trades"     }
+    jobsNotice: "⚠️ Проверяйте страницы вакансий перед отправкой клиентов — позиции меняются.",
+    jobsTabs: [
+      { key: "hiring",   label: "💼 Прямой найм"   },
+      { key: "training", label: "🎓 Обучение"       },
+      { key: "support",  label: "🤝 Организации"   }
+    ],
+    jobsHiringSections: [
+      { label: "🟢 Начальный уровень",           key: "entryLevel" },
+      { label: "🏥 HHA / CNA — Найм",            key: "healthcareHiring" },
+      { label: "🍽️ Питание и гостеприимство",   key: "food"       },
+      { label: "🔧 Рабочие специальности",       key: "trades"     }
     ]
   },
   zh: {
@@ -470,12 +534,17 @@ const T = {
     portal: "邻里门户",
     modalTitle: "建议更新",
     modalHint: "报告过时的信息、错误号码、地址变更，或建议新资源。",
-    jobNotice: "⚠️ 发送客户前请检查招聘页面——职位随时变化。",
-    jobSections: [
-      { label: "🟢 入门级职位",       key: "entryLevel" },
-      { label: "🏥 医疗 / HHA / CNA", key: "healthcare" },
-      { label: "🍽️ 餐饮与酒店",      key: "food"       },
-      { label: "🔧 技工与劳务",       key: "trades"     }
+    jobsNotice: "⚠️ 发送客户前请检查招聘页面——职位随时变化。",
+    jobsTabs: [
+      { key: "hiring",   label: "💼 直接招聘" },
+      { key: "training", label: "🎓 职业培训" },
+      { key: "support",  label: "🤝 支持机构" }
+    ],
+    jobsHiringSections: [
+      { label: "🟢 入门级职位",           key: "entryLevel" },
+      { label: "🏥 HHA / CNA — 招聘",    key: "healthcareHiring" },
+      { label: "🍽️ 餐饮与酒店",         key: "food"       },
+      { label: "🔧 技工与劳务",          key: "trades"     }
     ]
   },
   hi: {
@@ -493,12 +562,17 @@ const T = {
     portal: "पड़ोस पोर्टल",
     modalTitle: "अपडेट सुझाएं",
     modalHint: "पुरानी जानकारी, गलत नंबर, बदले हुए पते की रिपोर्ट करें या नया संसाधन सुझाएं।",
-    jobNotice: "⚠️ क्लाइंट भेजने से पहले करियर पेज जांचें — पद बदल सकते हैं।",
-    jobSections: [
-      { label: "🟢 प्रवेश-स्तर",            key: "entryLevel" },
-      { label: "🏥 स्वास्थ्य / HHA / CNA",  key: "healthcare" },
-      { label: "🍽️ खाद्य और आतिथ्य",      key: "food"       },
-      { label: "🔧 कारीगरी और श्रम",        key: "trades"     }
+    jobsNotice: "⚠️ क्लाइंट भेजने से पहले करियर पेज जांचें — पद बदल सकते हैं।",
+    jobsTabs: [
+      { key: "hiring",   label: "💼 सीधी भर्ती"  },
+      { key: "training", label: "🎓 प्रशिक्षण"    },
+      { key: "support",  label: "🤝 सहायक संस्थाएं" }
+    ],
+    jobsHiringSections: [
+      { label: "🟢 प्रवेश-स्तर",           key: "entryLevel" },
+      { label: "🏥 HHA / CNA — भर्ती",    key: "healthcareHiring" },
+      { label: "🍽️ खाद्य और आतिथ्य",    key: "food"       },
+      { label: "🔧 कारीगरी और श्रम",      key: "trades"     }
     ]
   },
   bn: {
@@ -516,12 +590,17 @@ const T = {
     portal: "প্রতিবেশী পোর্টাল",
     modalTitle: "আপডেট সাজেস্ট করুন",
     modalHint: "পুরানো তথ্য, ভুল নম্বর, পরিবর্তিত ঠিকানা রিপোর্ট করুন বা নতুন রিসোর্স সাজেস্ট করুন।",
-    jobNotice: "⚠️ ক্লায়েন্ট পাঠানোর আগে চাকরির পেজ চেক করুন — পদ পরিবর্তন হতে পারে।",
-    jobSections: [
-      { label: "🟢 এন্ট্রি-লেভেল",             key: "entryLevel" },
-      { label: "🏥 স্বাস্থ্যসেবা / HHA / CNA",  key: "healthcare" },
-      { label: "🍽️ খাদ্য ও আতিথেয়তা",        key: "food"       },
-      { label: "🔧 ট্রেড ও শ্রম",              key: "trades"     }
+    jobsNotice: "⚠️ ক্লায়েন্ট পাঠানোর আগে চাকরির পেজ চেক করুন — পদ পরিবর্তন হতে পারে।",
+    jobsTabs: [
+      { key: "hiring",   label: "💼 সরাসরি নিয়োগ" },
+      { key: "training", label: "🎓 প্রশিক্ষণ"     },
+      { key: "support",  label: "🤝 সাপোর্ট সংস্থা" }
+    ],
+    jobsHiringSections: [
+      { label: "🟢 এন্ট্রি-লেভেল",            key: "entryLevel" },
+      { label: "🏥 HHA / CNA — নিয়োগ",       key: "healthcareHiring" },
+      { label: "🍽️ খাদ্য ও আতিথেয়তা",      key: "food"       },
+      { label: "🔧 ট্রেড ও শ্রম",             key: "trades"     }
     ]
   },
   ht: {
@@ -539,12 +618,17 @@ const T = {
     portal: "Pòtal Vwazen",
     modalTitle: "Sijere yon mizajou",
     modalHint: "Rapòte enfòmasyon ki depase, nimewo ki mal, adrès ki chanje, oswa sijere yon nouvo resous.",
-    jobNotice: "⚠️ Verifye paj karyè anvan voye kliyan — pozisyon yo ka chanje.",
-    jobSections: [
-      { label: "🟢 Nivo debutan",           key: "entryLevel" },
-      { label: "🏥 Sante / HHA / CNA",      key: "healthcare" },
-      { label: "🍽️ Manje ak ospitalite",   key: "food"       },
-      { label: "🔧 Métye ak travay",         key: "trades"     }
+    jobsNotice: "⚠️ Verifye paj karyè anvan voye kliyan — pozisyon yo ka chanje.",
+    jobsTabs: [
+      { key: "hiring",   label: "💼 Anplwaman Dirèk" },
+      { key: "training", label: "🎓 Fòmasyon"         },
+      { key: "support",  label: "🤝 Òganizasyon"      }
+    ],
+    jobsHiringSections: [
+      { label: "🟢 Nivo debutan",         key: "entryLevel" },
+      { label: "🏥 HHA / CNA — Travay",  key: "healthcareHiring" },
+      { label: "🍽️ Manje ak ospitalite", key: "food"       },
+      { label: "🔧 Métye ak travay",      key: "trades"     }
     ]
   }
 };
@@ -557,8 +641,8 @@ const SUN_SVG  = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fil
 const MOON_SVG = `<svg aria-hidden="true" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
 
 let data=[], jobListingsData=null, active='All', open=null, isDark=false, fontScale=1;
-// Sync lang with portal.html via sessionStorage
 let lang = sessionStorage.getItem('lang') || 'en';
+let activeJobTab = 'hiring';
 
 // ── Load data ─────────────────────────────────────────────────
 async function loadData(){
@@ -574,7 +658,107 @@ async function loadData(){
   render();
 }
 
-// ── Render ────────────────────────────────────────────────────
+// ── Build a grid of job-style cards (green) ───────────────────
+function jobGrid(items){
+  if(!items||!items.length) return '';
+  return `<div class="job-grid" role="list">${items.map(j=>
+    `<a class="job-card" href="${j.url}" target="_blank" rel="noopener noreferrer" role="listitem">
+      <div class="jc-org">${j.org}</div><div class="jc-note">${j.note}</div>
+    </a>`
+  ).join('')}</div>`;
+}
+
+// ── Build a grid of resource-style cards (terracotta) ─────────
+function resGrid(items){
+  if(!items||!items.length) return '';
+  return `<div class="res-grid" role="list">${items.map(r=>{
+    const tag=r.url?'a':'div';
+    const href=r.url?`href="${r.url}" target="_blank" rel="noopener noreferrer"`:'';
+    return`<${tag} class="res-card${r.url?'':' no-link'}" ${href} role="listitem">
+      <div class="rc-org">${r.org}</div>
+      ${r.note?`<div class="rc-note">${r.note}</div>`:''}
+      ${r.addr?`<div class="rc-addr">📍 ${r.addr}</div>`:''}
+      ${r.phone?`<div class="rc-phone">📞 ${r.phone}</div>`:''}
+    </${tag}>`;
+  }).join('')}</div>`;
+}
+
+// ── Open Jobs Modal ───────────────────────────────────────────
+function openJobsModal(){
+  if(!jobListingsData) return;
+  buildJobsModal();
+  openModal('jobsModal');
+}
+
+function buildJobsModal(){
+  const t = T[lang]||T.en;
+  const jl = jobListingsData;
+
+  // ── Tab bar ──
+  const tabsEl = document.getElementById('jobsTabs');
+  tabsEl.innerHTML = t.jobsTabs.map(tab=>
+    `<button class="jobs-tab${tab.key===activeJobTab?' active':''}" role="tab"
+       aria-selected="${tab.key===activeJobTab}" onclick="switchJobTab('${tab.key}')">${tab.label}</button>`
+  ).join('');
+
+  // ── Panels ──
+  const panelsEl = document.getElementById('jobsPanels');
+
+  // Panel 1: Direct Hiring — subsections by type
+  let hiringHtml = '';
+  t.jobsHiringSections.forEach(sec => {
+    let items;
+    if(sec.key === 'healthcareHiring'){
+      items = jl.healthcare && jl.healthcare.hiring ? jl.healthcare.hiring : [];
+    } else {
+      items = jl[sec.key] || [];
+    }
+    if(!items.length) return;
+    hiringHtml += `<div class="sub-section">
+      <div class="sub-label">${sec.label}</div>
+      ${jobGrid(items)}
+    </div>`;
+  });
+
+  // Panel 2: Job Training — includes HHA/CNA training subsection
+  let trainingHtml = '';
+  const hhaCnaTraining = jl.healthcare && jl.healthcare.training ? jl.healthcare.training : [];
+  if(hhaCnaTraining.length){
+    trainingHtml += `<div class="sub-section">
+      <div class="sub-label">🏥 HHA / CNA — Training Programs</div>
+      ${jobGrid(hhaCnaTraining)}
+    </div>`;
+  }
+  if((jl.jobTraining||[]).length){
+    trainingHtml += `<div class="sub-section">
+      <div class="sub-label">🎓 Career Training & Workforce Centers</div>
+      ${jobGrid(jl.jobTraining)}
+    </div>`;
+  }
+
+  // Panel 3: Support Orgs
+  const supportHtml = resGrid(jl.jobSupportOrgs||[]);
+
+  panelsEl.innerHTML = `
+    <div class="jobs-panel${activeJobTab==='hiring'?' active':''}" id="jpanel-hiring" role="tabpanel">${hiringHtml}</div>
+    <div class="jobs-panel${activeJobTab==='training'?' active':''}" id="jpanel-training" role="tabpanel">${trainingHtml}</div>
+    <div class="jobs-panel${activeJobTab==='support'?' active':''}" id="jpanel-support" role="tabpanel">${supportHtml}</div>
+  `;
+}
+
+function switchJobTab(key){
+  activeJobTab = key;
+  document.querySelectorAll('.jobs-tab').forEach(btn=>{
+    const active = btn.getAttribute('onclick').includes(`'${key}'`);
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', active);
+  });
+  document.querySelectorAll('.jobs-panel').forEach(p=>{
+    p.classList.toggle('active', p.id===`jpanel-${key}`);
+  });
+}
+
+// ── Render main card list ─────────────────────────────────────
 function render(){
   const t=T[lang]||T.en;
   const q=(document.getElementById('search').value||'').toLowerCase().trim();
@@ -592,25 +776,10 @@ function render(){
   if(!filtered.length){res.innerHTML=`<div class="empty" role="listitem">${t.empty}</div>`;return;}
 
   res.innerHTML=filtered.map((d,pos)=>{
+    const isJobsCard = d.type==='job-listings';
     const isOpen=open===d._i, bodyId=`body-${d._i}`;
     const noticeHtml=d.notice?`<div class="notice">${d.notice}</div>`:'';
     const extraHtml=d.extra?`<p style="margin-bottom:.6rem;font-size:.84rem">${d.extra}</p>`:'';
-
-    const jobBodyContent=(()=>{
-      if(d.type!=='job-listings'||!jobListingsData)return'';
-      let html=`<div class="notice">${t.jobNotice}</div>`;
-      t.jobSections.forEach(s=>{
-        if(!jobListingsData[s.key])return;
-        html+=`<div class="section-label" role="heading" aria-level="3">${s.label}</div><div class="job-grid" role="list">`;
-        html+=jobListingsData[s.key].map(j=>
-          `<a class="job-card" href="${j.url}" target="_blank" rel="noopener noreferrer" role="listitem" onclick="event.stopPropagation()">
-            <div class="jc-org">${j.org}</div><div class="jc-note">${j.note}</div>
-          </a>`
-        ).join('');
-        html+='</div>';
-      });
-      return html;
-    })();
 
     const volFormHtml=d.volunteerFormUrl
       ?`<a class="vol-form-link" href="${d.volunteerFormUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${EXT_LINK} ${t.volForm}</a>`:'';
@@ -628,6 +797,25 @@ function render(){
       }).join('')
     }</div>`:'';
 
+    // Jobs card: clicking opens modal, no accordion
+    if(isJobsCard){
+      return`
+      <div class="card" data-idx="${d._i}" data-type="job-listings" role="listitem" style="animation-delay:${Math.min(pos*.045,.32)}s">
+        <div class="ctop" role="button" tabindex="0"
+             aria-haspopup="dialog"
+             onclick="openJobsModal()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openJobsModal();}">
+          <div class="cicon-wrap" aria-hidden="true">${ICONS[d.id]||''}</div>
+          <div style="flex:1;min-width:0">
+            <div class="ctitle">${d.title}</div>
+            <div class="csub">${d.sub}</div>
+            <div class="ctags" role="list">${(d.tags||[]).slice(0,5).map(tg=>`<span class="tag" role="listitem">${tg}</span>`).join('')}</div>
+          </div>
+          <div class="chev" aria-hidden="true"></div>
+        </div>
+      </div>`;
+    }
+
+    // Normal accordion card
     return`
     <div class="card${isOpen?' is-open':''}" data-idx="${d._i}" role="listitem">
       <div class="ctop" role="button" tabindex="0"
@@ -644,7 +832,7 @@ function render(){
       </div>
       <div class="cbody${isOpen?' open':''}" id="${bodyId}" role="region">
         <div class="cbody-inner">
-          ${noticeHtml}${extraHtml}${jobBodyContent}${volFormHtml}${resHtml}
+          ${noticeHtml}${extraHtml}${volFormHtml}${resHtml}
           <div class="card-actions">
             <button class="ca-btn" onclick="openFeedback('${d.title.replace(/'/g,"\\'")}',event)">${BULB} ${t.suggest}</button>
           </div>
@@ -659,7 +847,7 @@ function handleKey(e,i){if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(
 function tog(i){
   const scrollY=window.scrollY;
   open=open===i?null:i;
-  document.querySelectorAll('.card').forEach(card=>{
+  document.querySelectorAll('.card:not([data-type="job-listings"])').forEach(card=>{
     const idx=parseInt(card.dataset.idx),isOpen=idx===open;
     card.classList.toggle('is-open',isOpen);
     const body=card.querySelector('.cbody');if(body)body.classList.toggle('open',isOpen);
@@ -734,6 +922,7 @@ function applyStaticTranslations(){
   document.getElementById('btnPortalLabel').textContent=t.portal;
   document.getElementById('modalTitle').textContent=t.modalTitle;
   document.getElementById('modalHint').textContent=t.modalHint;
+  if(t.jobsNotice) document.getElementById('jobsNotice').textContent=t.jobsNotice;
 }
 
 document.addEventListener('click',e=>{
@@ -743,8 +932,17 @@ document.addEventListener('click',e=>{
 
 let lastFocus=null;
 function openFeedback(title,e){e.stopPropagation();openModal('feedbackModal');}
-function openModal(id){lastFocus=document.activeElement;const m=document.getElementById(id);m.classList.add('open');m.querySelector('.modal-close').focus();}
-function closeModal(id){document.getElementById(id).classList.remove('open');if(lastFocus)lastFocus.focus();}
+function openModal(id){
+  lastFocus=document.activeElement;
+  const m=document.getElementById(id);
+  m.classList.add('open');
+  const closeBtn=m.querySelector('.modal-close');
+  if(closeBtn) closeBtn.focus();
+}
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+  if(lastFocus)lastFocus.focus();
+}
 document.querySelectorAll('.modal-bg').forEach(m=>{
   m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);});
   m.addEventListener('keydown',e=>{

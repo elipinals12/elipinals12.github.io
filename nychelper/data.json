@@ -4,16 +4,20 @@
       { "org": "NYC Civic Corps",      "note": "Community & city service",  "url": "https://www.nycservice.org/national_service" },
       { "org": "Goodwill NY/NJ",       "note": "Supported placements",      "url": "https://www.goodtemps.org/job-seekers/" },
       { "org": "NYC Jobs Portal",      "note": "City government openings",  "url": "https://www.nyc.gov/jobs/index.page" },
-      { "org": "Phipps Neighborhoods", "note": "Direct placement",          "url": "https://www.phippsny.org/career-network/" },
       { "org": "BronxWorks",           "note": "Multiple openings",         "url": "https://www.bronxworks.org/about/careers" }
     ],
-    "healthcare": [
-      { "org": "VNS Health",                   "note": "Home care & clinical",    "url": "https://jobs.vnshealth.org/careers-home/jobs?categories=Home%20Health%20Aide&tags3=Brooklyn%7CQueens%7CManhattan%7CThe%20Bronx&page=1" },
-      { "org": "RiverSpring Health",           "note": "CNA, HHA & support",      "url": "https://www.riverspringhealth.org/careers" },
-      { "org": "NYC Health + Hospitals",       "note": "Clinical & non-clinical", "url": "https://www.nychealthandhospitals.org/careers" },
-      { "org": "Sunnyside Community Services", "note": "Home health aide",        "url": "https://www.sunnysidecommservices.org/about-us/job-openings" },
-      { "org": "VNSNY",                        "note": "Home & community care",   "url": "https://www.vnsny.org/careers" }
-    ],
+    "healthcare": {
+      "hiring": [
+        { "org": "VNS Health",               "note": "Home care & clinical — direct hire",    "url": "https://jobs.vnshealth.org/careers-home/jobs?categories=Home%20Health%20Aide&tags3=Brooklyn%7CQueens%7CManhattan%7CThe%20Bronx&page=1" },
+        { "org": "NYC Health + Hospitals",   "note": "Clinical & non-clinical — direct hire", "url": "https://www.nychealthandhospitals.org/careers" },
+        { "org": "VNSNY",                    "note": "Home & community care — direct hire",   "url": "https://www.vnsny.org/careers" }
+      ],
+      "training": [
+        { "org": "NYS Free HHA Training List",   "note": "PDF — statewide program list",         "url": "https://www.health.ny.gov/facilities/home_care/docs/training_program_list.pdf" },
+        { "org": "Mosholu Montefiore CNA",       "note": "Free CNA training — Bronx",            "url": "https://www.mosholumontefiore.org" },
+        { "org": "Sunnyside Community Services", "note": "Free HHA training — Queens",           "url": "https://www.sunnysidecommservices.org/about-us/job-openings" }
+      ]
+    },
     "food": [
       { "org": "Kommissary",               "note": "Kitchen & food service",     "url": "https://www.kommissary.com/careers" },
       { "org": "Grubhub",                  "note": "Delivery — flexible",        "url": "https://careers.grubhub.com" },
@@ -27,6 +31,36 @@
       { "org": "32BJ SEIU",             "note": "Building service union",    "url": "https://www.seiu32bj.org/join" },
       { "org": "Laborers Local 79",     "note": "Construction & demolition", "url": "https://www.laborerslocal79.org/become-a-member" },
       { "org": "NYC SBS Industrial",    "note": "Construction pipelines",    "url": "https://www.nyc.gov/site/sbs/industries/industrial-manufacturing.page" }
+    ],
+    "jobTraining": [
+      { "org": "Workforce1 — Manhattan",         "note": "Walk-in career center · 330 W 34th St",             "url": "https://www.nyc.gov/workforce1" },
+      { "org": "Workforce1 — Bronx",             "note": "Walk-in career center · 2396 Third Ave",            "url": "https://www.nyc.gov/workforce1" },
+      { "org": "Workforce1 — Brooklyn",          "note": "Walk-in career center · 9 Bond St",                 "url": "https://www.nyc.gov/workforce1" },
+      { "org": "Workforce1 — Queens",            "note": "Walk-in career center · 168-25 Jamaica Ave",        "url": "https://www.nyc.gov/workforce1" },
+      { "org": "Workforce1 — Staten Island",     "note": "Walk-in career center · 120 Stuyvesant Pl",         "url": "https://www.nyc.gov/workforce1" },
+      { "org": "Per Scholas",                    "note": "Free IT & tech training",                            "url": "https://perscholas.org" },
+      { "org": "Brooklyn Workforce Innovations", "note": "Free trade training · 621 Degraw St, Brooklyn",     "url": "https://www.brooklynworkforce.org" },
+      { "org": "Mosholu Montefiore",             "note": "Job training programs · 3450 DeKalb Ave, Bronx",    "url": "https://www.mosholumontefiore.org" },
+      { "org": "NYPL Career Services",           "note": "Free at all branches",                               "url": "https://www.nypl.org/help/research-services/career-services" },
+      { "org": "CAMBA Workforce",                "note": "Career services · 875 Atlantic Ave, Brooklyn",      "url": "https://www.camba.org" },
+      { "org": "Grace Institute",                "note": "Women's job training · 1233 Second Ave",            "url": "https://www.graceinstitute.org" },
+      { "org": "African Communities Together",   "note": "Workforce services · 127 W 127th St",               "url": "" }
+    ],
+    "jobSupportOrgs": [
+      { "org": "Phipps Neighborhoods",  "note": "Direct placement & career support", "url": "https://www.phippsny.org/career-network/" },
+      { "org": "Access VR",             "note": "Disability vocational rehab — apply online", "url": "https://www.acces.nysed.gov" },
+      { "org": "NYC AT WORK — MOPD",   "note": "Disability employment · 100 Gold St, 2nd Fl", "url": "https://www.nyc.gov/site/mopd/programs/at-work.page" },
+      { "org": "OPWDD",                "note": "IDD support services · 1-866-946-9733",        "url": "https://opwdd.ny.gov/get-started/front-door" },
+      { "org": "NYC Carpenters Apprenticeship", "note": "Union construction training · 395 Hudson St", "url": "https://nycdistrictcouncil.com/apprenticeship" }
+    ],
+    "otherSocialServices": [
+      { "org": "BronxWorks",             "note": "Multi-service · 60 E Tremont Ave, Bronx",    "url": "https://www.bronxworks.org" },
+      { "org": "University Settlement",  "note": "Multi-service · 184 Eldridge St",             "url": "https://www.universitysettlement.org" },
+      { "org": "CAMBA",                  "note": "Multi-service · 875 Atlantic Ave, Brooklyn",  "url": "https://www.camba.org" },
+      { "org": "Sunnyside Community Svcs","note": "Multi-service · 43-31 39th St, Queens",     "url": "https://www.sunnysidecommservices.org" },
+      { "org": "Fifth Avenue Committee", "note": "Multi-service · 621 Degraw St, Brooklyn",    "url": "https://www.fifthave.org" },
+      { "org": "YMCA of Greater NY",     "note": "Community programs citywide",                 "url": "https://www.ymcanyc.org" },
+      { "org": "FindHelp.org",           "note": "Search any service by zip",                   "url": "https://www.findhelp.org" }
     ]
   },
 
@@ -34,51 +68,12 @@
     {
       "id":   "jobs-apply",
       "type": "job-listings",
-      "title": "Direct Hiring",
-      "sub":   "Entry-level, healthcare, food, trades — straight to employer pages",
-      "tags":  ["jobs", "work", "hiring", "hha", "cna", "construction", "food", "entry level", "trades"],
+      "title": "Jobs",
+      "sub":   "Direct hiring, job training, and support organizations — all in one place",
+      "tags":  ["jobs", "work", "hiring", "hha", "cna", "construction", "food", "entry level", "trades", "training", "career"],
       "cats":  ["Jobs"],
       "notice": "",
       "resources": []
-    },
-    {
-      "id":    "jobs-training",
-      "title": "Job Training",
-      "sub":   "Free training, career centers, certifications across NYC",
-      "tags":  ["training", "workforce", "career", "certificate", "per scholas", "cuny", "goodwill"],
-      "cats":  ["Jobs"],
-      "notice": "⚠️ Hours vary — call ahead before visiting.",
-      "resources": [
-        { "org": "Workforce1 — Manhattan",        "note": "Walk-in career center", "addr": "330 W 34th St",                 "url": "https://www.nyc.gov/workforce1" },
-        { "org": "Workforce1 — Bronx",            "note": "Walk-in career center", "addr": "2396 Third Ave",                "url": "https://www.nyc.gov/workforce1" },
-        { "org": "Workforce1 — Brooklyn",         "note": "Walk-in career center", "addr": "9 Bond St",                     "url": "https://www.nyc.gov/workforce1" },
-        { "org": "Workforce1 — Queens",           "note": "Walk-in career center", "addr": "168-25 Jamaica Ave",            "url": "https://www.nyc.gov/workforce1" },
-        { "org": "Workforce1 — Staten Island",    "note": "Walk-in career center", "addr": "120 Stuyvesant Pl",             "url": "https://www.nyc.gov/workforce1" },
-        { "org": "NYPL Career Services",          "note": "Free at all branches",                                           "url": "https://www.nypl.org/help/research-services/career-services" },
-        { "org": "BronxWorks",                    "note": "Training & placement",  "addr": "60 E Tremont Ave, Bronx",       "phone": "(718) 293-3134", "url": "https://www.bronxworks.org" },
-        { "org": "African Communities Together",  "note": "Workforce services",    "addr": "127 W 127th St" },
-        { "org": "Per Scholas",                   "note": "Free IT & tech training","addr": "25 Broadway 12th Fl / 718 Mace Ave, Bronx", "url": "https://perscholas.org" },
-        { "org": "Brooklyn Workforce Innovations","note": "Free trade training",   "addr": "621 Degraw St, Brooklyn",       "url": "https://www.brooklynworkforce.org" },
-        { "org": "Mosholu Montefiore",            "note": "Job training programs", "addr": "3450 DeKalb Ave, Bronx",        "url": "https://www.mosholumontefiore.org" },
-        { "org": "CAMBA Workforce",               "note": "Career services",       "addr": "875 Atlantic Ave, Brooklyn",   "url": "https://www.camba.org" }
-      ]
-    },
-    {
-      "id":    "jobs-field",
-      "title": "Field Training",
-      "sub":   "HHA/CNA, construction, disability & IDD",
-      "tags":  ["cna", "hha", "security", "construction", "disability", "idd", "access vr"],
-      "cats":  ["Jobs"],
-      "notice": "",
-      "resources": [
-        { "org": "NYS Free HHA Training List",    "note": "PDF — statewide program list",                                   "url": "https://www.health.ny.gov/facilities/home_care/docs/training_program_list.pdf" },
-        { "org": "Mosholu Montefiore CNA",        "note": "Free CNA training",          "addr": "3450 DeKalb Ave, Bronx",  "url": "https://www.mosholumontefiore.org" },
-        { "org": "Sunnyside Community Services",  "note": "Free HHA training",          "addr": "43-31 39th St, Queens",   "url": "https://www.sunnysidecommservices.org" },
-        { "org": "NYC Carpenters Apprenticeship", "note": "Union construction training","addr": "395 Hudson St",            "url": "https://nycdistrictcouncil.com/apprenticeship" },
-        { "org": "Access VR",                     "note": "Disability vocational rehab — apply online",                    "url": "https://www.acces.nysed.gov" },
-        { "org": "NYC AT WORK — MOPD",            "note": "Disability employment",      "addr": "100 Gold St, 2nd Fl",     "url": "https://www.nyc.gov/site/mopd/programs/at-work.page" },
-        { "org": "OPWDD",                         "note": "IDD support services",       "phone": "1-866-946-9733",         "url": "https://opwdd.ny.gov/get-started/front-door" }
-      ]
     },
     {
       "id":    "food",
@@ -270,7 +265,7 @@
     },
     {
       "id":    "anchors",
-      "title": "Community Anchors",
+      "title": "Other Social Service Agencies",
       "sub":   "Multi-service orgs across NYC — good MOU partners",
       "tags":  ["community", "anchor", "bronx", "brooklyn", "queens", "ymca", "settlement"],
       "cats":  ["Community"],

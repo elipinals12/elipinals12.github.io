@@ -399,7 +399,7 @@ header p{color:var(--muted);font-size:.86rem;margin-top:.3rem}
     <!-- NEEDS -->
     <div id="p-needs">
       <div class="filter-row">
-        <label>ZIP:</label><select id="nZip" onchange="renderNeeds()"><option value="">All</option></select>
+        <label>ZIP:</label><select id="nZip" onchange="setZipFilter(this.value)"><option value="">All</option></select>
         <label>Urgency:</label>
         <select id="nUrg" onchange="renderNeeds()">
           <option value="">All</option>
@@ -422,7 +422,7 @@ header p{color:var(--muted);font-size:.86rem;margin-top:.3rem}
     <!-- OFFERS -->
     <div id="p-offers" style="display:none">
       <div class="filter-row">
-        <label>ZIP:</label><select id="oZip" onchange="renderOffers()"><option value="">All</option></select>
+        <label>ZIP:</label><select id="oZip" onchange="setZipFilter(this.value)"><option value="">All</option></select>
         <label>Show:</label>
         <select id="oStat" onchange="renderOffers()">
           <option value="open">Active</option>
@@ -578,6 +578,7 @@ function showPortal(){
 
 function resetGate(){
   activeZip = '';
+  zipOverride = null;
   sessionStorage.removeItem('portalZip');
   document.getElementById('portalContent').classList.remove('unlocked');
   document.getElementById('zipGate').style.display = 'flex';
@@ -629,15 +630,26 @@ async function load(){
 
 function displayCat(p){return p.category==='Other'&&p.customCat?p.customCat:p.category;}
 
-// Build ZIP dropdowns — always include activeZip as an option even if no posts for it yet,
-// and always default the select to activeZip
+// Normalize a ZIP value for reliable comparison — trim whitespace, force string
+function normZip(z){ return String(z||'').trim(); }
+
+// The ZIP filter to apply: what the user picked in the dropdown, defaulting to activeZip
+// We store the user's override separately so "All ZIPs" is a deliberate opt-in
+let zipOverride = null; // null = use activeZip; '' = show all; '12345' = explicit choice
+
+function getZipFilter(){ return zipOverride === null ? activeZip : zipOverride; }
+
 function buildZip(id,arr){
   const el=document.getElementById(id);
-  const cur=el.value||activeZip; // keep user's current choice, or default to activeZip
-  const zips=[...new Set([...(activeZip?[activeZip]:[]),...arr.map(p=>p.zip)])].sort();
-  el.innerHTML='<option value="">All ZIPs</option>'+zips.map(z=>`<option value="${esc(z)}"${z===cur?' selected':''}>${esc(z)}</option>`).join('');
-  // If nothing selected yet, default to activeZip
-  if(!el.value && activeZip) el.value=activeZip;
+  const current=getZipFilter();
+  const zips=[...new Set([...(activeZip?[activeZip]:[]),...arr.map(p=>normZip(p.zip))])].filter(Boolean).sort();
+  el.innerHTML='<option value="">All ZIPs</option>'+zips.map(z=>`<option value="${esc(z)}"${z===current?' selected':''}>${esc(z)}</option>`).join('');
+  if(current) el.value=current;
+}
+
+function setZipFilter(v){
+  zipOverride = v===activeZip ? null : v; // snap back to null when user picks their own ZIP
+  rebuildFilters(); renderNeeds(); renderOffers();
 }
 
 function rebuildFilters(){
@@ -653,12 +665,11 @@ function setNCat(c){nCat=c;openContact=openMsg=null;rebuildFilters();renderNeeds
 function setOCat(c){oCat=c;openContact=openMsg=null;rebuildFilters();renderOffers();}
 
 function renderNeeds(){
-  // Read zip filter — fall back to activeZip if select is somehow empty
-  const zipF=document.getElementById('nZip').value||activeZip;
+  const zipF=getZipFilter();
   const urgF=document.getElementById('nUrg').value,stF=document.getElementById('nStat').value;
   let f=posts.filter(p=>{
     if(p.type!=='need')return false;
-    if(zipF&&p.zip!==zipF)return false;
+    if(zipF && normZip(p.zip)!==normZip(zipF))return false;
     if(nCat!=='All'&&displayCat(p)!==nCat&&p.category!==nCat)return false;
     if(urgF&&p.urgency!==urgF)return false;
     if(stF&&p.status!==stF)return false;
@@ -668,17 +679,17 @@ function renderNeeds(){
   const ord={urgent:0,week:1,flexible:2};f.sort((a,b)=>(ord[a.urgency]||2)-(ord[b.urgency]||2)||(new Date(b.timestamp)-new Date(a.timestamp)));
   const open=f.filter(p=>p.status==='open').length;
   document.getElementById('nCount').textContent=f.length
-    ?`${open} open · ${f.length-open} fulfilled in ZIP ${zipF}`+((nCat&&nCat!=='All')?` · ${nCat}`:'')
-    :`No open needs for ZIP ${zipF}`;
+    ?`${open} open · ${f.length-open} fulfilled`+(zipF?` in ZIP ${zipF}`:'')
+    :`No open needs`+(zipF?` for ZIP ${zipF}`:'');
   renderList('nList',f,'need');
 }
 
 function renderOffers(){
-  const zipF=document.getElementById('oZip').value||activeZip;
+  const zipF=getZipFilter();
   const stF=document.getElementById('oStat').value;
   let f=posts.filter(p=>{
     if(p.type!=='offer')return false;
-    if(zipF&&p.zip!==zipF)return false;
+    if(zipF && normZip(p.zip)!==normZip(zipF))return false;
     if(oCat!=='All'&&displayCat(p)!==oCat&&p.category!==oCat)return false;
     if(stF&&p.status!==stF)return false;
     if(!stF&&p.status==='claimed')return false;
@@ -687,8 +698,8 @@ function renderOffers(){
   f.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
   const open=f.filter(p=>p.status==='open').length;
   document.getElementById('oCount').textContent=f.length
-    ?`${open} active · ${f.length-open} closed in ZIP ${zipF}`+((oCat&&oCat!=='All')?` · ${oCat}`:'')
-    :`No active offers for ZIP ${zipF}`;
+    ?`${open} active · ${f.length-open} closed`+(zipF?` in ZIP ${zipF}`:'')
+    :`No active offers`+(zipF?` for ZIP ${zipF}`:'');
   renderList('oList',f,'offer');
 }
 

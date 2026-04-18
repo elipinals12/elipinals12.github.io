@@ -361,7 +361,7 @@ header p { color:var(--muted); margin-top:.4rem; font-size:.9rem; }
         </svg>
       </button>
     </div>
-    <p class="notice" id="jobsNotice">⚠️ Check employer pages — openings change frequently.</p>
+    <p class="notice" id="jobsNotice">⚠️ Check employer pages before sending clients — openings change frequently.</p>
     <div class="jobs-tabs" role="tablist" id="jobsTabs"></div>
     <div id="jobsPanels"></div>
   </div>
@@ -407,6 +407,138 @@ const ICONS = {
   'volunteers':   `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
 };
 
+// tile translations: keyed by card id -> {title, sub}
+const TILE_T = {
+  en: {
+    'jobs-apply':   {title:"Jobs",                          sub:"Direct hiring, job training, and support organizations"},
+    'food':         {title:"Food & Meals",                  sub:"Pantries, meal delivery, soup kitchens across NYC"},
+    'clothing':     {title:"Clothing & Hygiene",            sub:"Free professional clothing, everyday wear, hygiene products"},
+    'housing':      {title:"Housing & Shelter",             sub:"Emergency shelter, supportive housing, vouchers, rental search"},
+    'benefits':     {title:"Benefits",                      sub:"Medicaid, SNAP, cash assistance, HRA, SSA, energy help"},
+    'childcare':    {title:"Childcare & Family",            sub:"Subsidized childcare, Pre-K, after school, family support"},
+    'education':    {title:"Education & ESL",               sub:"ESOL classes, GED/HSE, college access for all immigration statuses"},
+    'legal':        {title:"Legal Help",                    sub:"Tenant rights, immigration, civil legal help, eviction defense"},
+    'mentalhealth': {title:"Mental Health",                 sub:"NYC Well, peer connectors, NAMI, warmlines, FQHCs"},
+    'transit':      {title:"Getting Around",                sub:"Access-A-Ride, NEMT, transit support"},
+    'immigrant':    {title:"Immigrant Support",             sub:"MOIA, immigration coalitions, multilingual services"},
+    'digital':      {title:"Digital Access",                sub:"Free internet, devices, digital literacy"},
+    'anchors':      {title:"Social Service Agencies",       sub:"Multi-service orgs across NYC — good MOU partners"},
+    'volunteers':   {title:"Volunteers",                    sub:"Structure, onboarding, tools for 50 volunteers"},
+  },
+  es: {
+    'jobs-apply':   {title:"Empleo",                        sub:"Contratación directa, capacitación laboral y organizaciones de apoyo"},
+    'food':         {title:"Alimentos",                     sub:"Despensas, entrega de comidas, comedores comunitarios en NYC"},
+    'clothing':     {title:"Ropa e Higiene",                sub:"Ropa gratuita, vestimenta diaria, productos de higiene"},
+    'housing':      {title:"Vivienda y Refugio",            sub:"Refugio de emergencia, vivienda de apoyo, vales, búsqueda de renta"},
+    'benefits':     {title:"Beneficios",                    sub:"Medicaid, SNAP, asistencia en efectivo, HRA, SSA, ayuda energética"},
+    'childcare':    {title:"Cuidado Infantil y Familia",    sub:"Cuidado subsidiado, Pre-K, después de la escuela, apoyo familiar"},
+    'education':    {title:"Educación e Inglés",            sub:"Clases de inglés, GED/HSE, acceso universitario sin importar estatus"},
+    'legal':        {title:"Ayuda Legal",                   sub:"Derechos del inquilino, inmigración, ayuda civil, defensa de desalojo"},
+    'mentalhealth': {title:"Salud Mental",                  sub:"NYC Well, pares, NAMI, líneas de apoyo, FQHCs"},
+    'transit':      {title:"Transporte",                    sub:"Access-A-Ride, NEMT, apoyo de tránsito"},
+    'immigrant':    {title:"Apoyo al Inmigrante",           sub:"MOIA, coaliciones de inmigración, servicios multilingües"},
+    'digital':      {title:"Acceso Digital",                sub:"Internet gratuito, dispositivos, alfabetización digital"},
+    'anchors':      {title:"Agencias de Servicios Sociales",sub:"Organizaciones multiservicios en NYC"},
+    'volunteers':   {title:"Voluntarios",                   sub:"Estructura, incorporación y herramientas para 50 voluntarios"},
+  },
+  fr: {
+    'jobs-apply':   {title:"Emploi",                        sub:"Recrutement direct, formation professionnelle et organismes d'aide"},
+    'food':         {title:"Alimentation",                  sub:"Épiceries solidaires, livraison de repas, soupes populaires"},
+    'clothing':     {title:"Vêtements et Hygiène",          sub:"Vêtements gratuits, tenues quotidiennes, produits d'hygiène"},
+    'housing':      {title:"Logement et Hébergement",       sub:"Hébergement d'urgence, logement soutenu, bons, recherche de location"},
+    'benefits':     {title:"Aides et Prestations",          sub:"Medicaid, SNAP, aide en espèces, HRA, SSA, aide énergie"},
+    'childcare':    {title:"Garde d'Enfants et Famille",    sub:"Garde subventionnée, Pré-K, parascolaire, soutien familial"},
+    'education':    {title:"Éducation et Anglais",          sub:"Cours d'anglais, GED/HSE, accès universitaire tous statuts"},
+    'legal':        {title:"Aide Juridique",                sub:"Droits des locataires, immigration, aide civile, défense expulsion"},
+    'mentalhealth': {title:"Santé Mentale",                 sub:"NYC Well, pairs aidants, NAMI, lignes d'écoute, FQHCs"},
+    'transit':      {title:"Se Déplacer",                   sub:"Access-A-Ride, NEMT, aide aux transports"},
+    'immigrant':    {title:"Soutien aux Immigrés",          sub:"MOIA, coalitions d'immigration, services multilingues"},
+    'digital':      {title:"Accès Numérique",               sub:"Internet gratuit, appareils, alphabétisation numérique"},
+    'anchors':      {title:"Agences de Services Sociaux",   sub:"Organisations multiservices à NYC"},
+    'volunteers':   {title:"Bénévoles",                     sub:"Structure, intégration et outils pour 50 bénévoles"},
+  },
+  ru: {
+    'jobs-apply':   {title:"Работа",                        sub:"Прямой найм, профобучение и организации поддержки"},
+    'food':         {title:"Питание",                       sub:"Продуктовые банки, доставка еды, столовые по всему NYC"},
+    'clothing':     {title:"Одежда и Гигиена",              sub:"Бесплатная одежда, предметы гигиены"},
+    'housing':      {title:"Жильё и Приюты",                sub:"Экстренное жильё, поддерживаемое жильё, ваучеры, аренда"},
+    'benefits':     {title:"Льготы и Пособия",              sub:"Medicaid, SNAP, денежная помощь, HRA, SSA, помощь с энергией"},
+    'childcare':    {title:"Уход за Детьми и Семья",        sub:"Субсидированный уход, Pre-K, продлёнка, поддержка семей"},
+    'education':    {title:"Образование и Английский",      sub:"Курсы английского, GED/HSE, поступление в колледж"},
+    'legal':        {title:"Юридическая Помощь",            sub:"Права арендаторов, иммиграция, гражданское право"},
+    'mentalhealth': {title:"Психическое Здоровье",          sub:"NYC Well, группы поддержки, NAMI, линии помощи"},
+    'transit':      {title:"Передвижение",                  sub:"Access-A-Ride, NEMT, транспортная поддержка"},
+    'immigrant':    {title:"Поддержка Иммигрантов",         sub:"MOIA, иммиграционные коалиции, многоязычные услуги"},
+    'digital':      {title:"Цифровой Доступ",               sub:"Бесплатный интернет, устройства, цифровая грамотность"},
+    'anchors':      {title:"Агентства Социальных Служб",    sub:"Многофункциональные организации по всему NYC"},
+    'volunteers':   {title:"Волонтёры",                     sub:"Структура, адаптация и инструменты для 50 волонтёров"},
+  },
+  zh: {
+    'jobs-apply':   {title:"就业",                          sub:"直接招聘、职业培训和支持机构"},
+    'food':         {title:"食物与餐食",                    sub:"食品库、送餐服务、纽约市各处汤厨"},
+    'clothing':     {title:"服装与卫生",                    sub:"免费职业装、日常服装、卫生用品"},
+    'housing':      {title:"住房与庇护",                    sub:"紧急庇护、支持性住房、住房券、租房搜索"},
+    'benefits':     {title:"福利救助",                      sub:"Medicaid、SNAP、现金援助、HRA、SSA、能源援助"},
+    'childcare':    {title:"托育与家庭",                    sub:"补贴托育、学前班、课后服务、家庭支持"},
+    'education':    {title:"教育与英语",                    sub:"英语课程、GED/HSE、所有移民身份可申请大学"},
+    'legal':        {title:"法律援助",                      sub:"租客权利、移民、民事法律帮助、驱逐辩护"},
+    'mentalhealth': {title:"心理健康",                      sub:"NYC Well、同伴支持、NAMI、热线、社区健康中心"},
+    'transit':      {title:"出行交通",                      sub:"Access-A-Ride、非紧急医疗接送、交通支持"},
+    'immigrant':    {title:"移民支持",                      sub:"MOIA、移民联盟、多语言服务"},
+    'digital':      {title:"数字接入",                      sub:"免费网络、设备、数字素养培训"},
+    'anchors':      {title:"社会服务机构",                  sub:"纽约市各处综合服务机构"},
+    'volunteers':   {title:"志愿者",                        sub:"50名志愿者的架构、培训与工具"},
+  },
+  hi: {
+    'jobs-apply':   {title:"रोजगार",                        sub:"सीधी भर्ती, प्रशिक्षण और सहायक संगठन"},
+    'food':         {title:"भोजन",                          sub:"खाद्य पैंट्री, भोजन वितरण, NYC में सूप किचन"},
+    'clothing':     {title:"कपड़े और स्वच्छता",             sub:"मुफ्त कपड़े, रोजमर्रा की वस्तुएं, स्वच्छता उत्पाद"},
+    'housing':      {title:"आवास और आश्रय",                 sub:"आपातकालीन आश्रय, सहायक आवास, वाउचर, किराया खोज"},
+    'benefits':     {title:"लाभ और सुविधाएं",               sub:"Medicaid, SNAP, नकद सहायता, HRA, SSA, ऊर्जा सहायता"},
+    'childcare':    {title:"बाल देखभाल और परिवार",          sub:"सब्सिडी देखभाल, Pre-K, स्कूल के बाद, परिवार सहायता"},
+    'education':    {title:"शिक्षा और अंग्रेजी",            sub:"अंग्रेजी कक्षाएं, GED/HSE, सभी के लिए कॉलेज"},
+    'legal':        {title:"कानूनी सहायता",                 sub:"किरायेदार अधिकार, आव्रजन, सिविल कानून, बेदखली बचाव"},
+    'mentalhealth': {title:"मानसिक स्वास्थ्य",              sub:"NYC Well, पीयर कनेक्टर, NAMI, हेल्पलाइन, FQHC"},
+    'transit':      {title:"आवागमन",                        sub:"Access-A-Ride, NEMT, परिवहन सहायता"},
+    'immigrant':    {title:"प्रवासी सहायता",                sub:"MOIA, आव्रजन गठबंधन, बहुभाषी सेवाएं"},
+    'digital':      {title:"डिजिटल पहुंच",                  sub:"मुफ्त इंटरनेट, उपकरण, डिजिटल साक्षरता"},
+    'anchors':      {title:"सामाजिक सेवा एजेंसियां",         sub:"NYC में बहु-सेवा संगठन"},
+    'volunteers':   {title:"स्वयंसेवक",                     sub:"50 स्वयंसेवकों के लिए संरचना और उपकरण"},
+  },
+  bn: {
+    'jobs-apply':   {title:"কর্মসংস্থান",                   sub:"সরাসরি নিয়োগ, চাকরি প্রশিক্ষণ ও সহায়ক সংস্থা"},
+    'food':         {title:"খাদ্য ও খাবার",                  sub:"ফুড প্যান্ট্রি, খাবার ডেলিভারি, NYC জুড়ে স্যুপ কিচেন"},
+    'clothing':     {title:"পোশাক ও স্বাস্থ্যবিধি",          sub:"বিনামূল্যে পোশাক, দৈনন্দিন পোশাক, স্বাস্থ্যবিধি পণ্য"},
+    'housing':      {title:"আবাসন ও আশ্রয়",                  sub:"জরুরি আশ্রয়, সহায়ক আবাসন, ভাউচার, ভাড়া অনুসন্ধান"},
+    'benefits':     {title:"সুবিধা ও ভাতা",                   sub:"Medicaid, SNAP, নগদ সহায়তা, HRA, SSA, শক্তি সাহায্য"},
+    'childcare':    {title:"শিশু পরিচর্যা ও পরিবার",           sub:"ভর্তুকিপ্রাপ্ত পরিচর্যা, Pre-K, স্কুল-পরবর্তী, পারিবারিক সহায়তা"},
+    'education':    {title:"শিক্ষা ও ইংরেজি",                 sub:"ইংরেজি ক্লাস, GED/HSE, সকলের জন্য কলেজ সুযোগ"},
+    'legal':        {title:"আইনি সহায়তা",                     sub:"ভাড়াটে অধিকার, অভিবাসন, সিভিল আইন, উচ্ছেদ প্রতিরোধ"},
+    'mentalhealth': {title:"মানসিক স্বাস্থ্য",                sub:"NYC Well, পিয়ার সংযোগ, NAMI, ওয়ার্মলাইন, FQHC"},
+    'transit':      {title:"যাতায়াত",                         sub:"Access-A-Ride, NEMT, পরিবহন সহায়তা"},
+    'immigrant':    {title:"অভিবাসী সহায়তা",                  sub:"MOIA, অভিবাসন জোট, বহুভাষিক সেবা"},
+    'digital':      {title:"ডিজিটাল অ্যাক্সেস",               sub:"বিনামূল্যে ইন্টারনেট, ডিভাইস, ডিজিটাল সাক্ষরতা"},
+    'anchors':      {title:"সামাজিক সেবা সংস্থা",              sub:"NYC জুড়ে বহু-পরিষেবা সংস্থা"},
+    'volunteers':   {title:"স্বেচ্ছাসেবী",                     sub:"৫০ স্বেচ্ছাসেবীর জন্য কাঠামো ও সরঞ্জাম"},
+  },
+  ht: {
+    'jobs-apply':   {title:"Travay",                         sub:"Anplwaman dirèk, fòmasyon pwofesyonèl ak òganizasyon sipò"},
+    'food':         {title:"Manje",                          sub:"Garde-manje, livrezon manje, soup kominote nan NYC"},
+    'clothing':     {title:"Rad ak Ijyèn",                   sub:"Rad gratis, vètman chak jou, pwodwi ijyèn"},
+    'housing':      {title:"Lojman ak Abri",                 sub:"Abri ijans, lojman sipò, bon, rechèch lwaye"},
+    'benefits':     {title:"Benefis",                        sub:"Medicaid, SNAP, èd lajan, HRA, SSA, èd enèji"},
+    'childcare':    {title:"Swen Timoun ak Fanmi",           sub:"Swen sibvansyone, Pre-K, apre lekòl, sipò fanmi"},
+    'education':    {title:"Edikasyon ak Anglè",             sub:"Klas anglè, GED/HSE, kolèj pou tout estati"},
+    'legal':        {title:"Èd Legal",                       sub:"Dwa lokatè, imigrasyon, èd sivil, defans ekspilsyon"},
+    'mentalhealth': {title:"Sante Mantal",                   sub:"NYC Well, konpayon, NAMI, liy èd, FQHC"},
+    'transit':      {title:"Transpò",                        sub:"Access-A-Ride, NEMT, sipò transpò"},
+    'immigrant':    {title:"Sipò pou Imigran",               sub:"MOIA, koalisyon imigrasyon, sèvis miltilenng"},
+    'digital':      {title:"Aksè Nimerik",                   sub:"Entènèt gratis, aparèy, alfabetizasyon nimerik"},
+    'anchors':      {title:"Ajans Sèvis Sosyal",             sub:"Òganizasyon milti-sèvis nan NYC"},
+    'volunteers':   {title:"Volontè",                        sub:"Estrikti ak zouti pou 50 volontè"},
+  },
+};
+
 const T = {
   en: {
     search:"Search by need, resource, keyword…",
@@ -419,7 +551,7 @@ const T = {
     print:"Print / PDF",portal:"Neighborhood Portal",
     modalTitle:"Suggest an Update",
     modalHint:"Report outdated info, wrong numbers, changed addresses, or suggest a new resource.",
-    jobsNotice:"⚠️ Check employer pages — openings change frequently.",
+    jobsNotice:"⚠️ Check employer pages before sending clients — openings change frequently.",
     jobsTabs:[{key:"hiring",label:"💼 Direct Hiring"},{key:"training",label:"🎓 Job Training"},{key:"support",label:"🤝 Support Orgs"}],
     jobsHiringSections:[{label:"🟢 Entry-Level",key:"entryLevel"},{label:"🏥 HHA / CNA — Hiring",key:"healthcareHiring"},{label:"🍽️ Food & Hospitality",key:"food"},{label:"🔧 Trades & Labor",key:"trades"}]
   },
@@ -518,13 +650,17 @@ function render(){
     const resHtml=(d.resources||[]).length?resGrid(d.resources):'';
     const volFormHtml=d.volunteerFormUrl?`<a class="vol-form-link" href="${d.volunteerFormUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${EXT_LINK} ${t.volForm}</a>`:'';
     const tagsHtml=(d.tags||[]).slice(0,5).map(tg=>`<span class="tag">${tg}</span>`).join('');
+    // Translated title/sub — fall back to data.json values if no translation
+    const tileMap=(TILE_T[lang]||TILE_T.en||{})[d.id];
+    const tileTitle=tileMap?tileMap.title:d.title;
+    const tileSub=tileMap?tileMap.sub:d.sub;
 
     if(isJobsCard){
       return`<div class="tile" data-type="job-listings" role="listitem" tabindex="0" style="animation-delay:${Math.min(pos*.04,.28)}s"
         onclick="openJobsModal()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openJobsModal();}">
         <div class="tile-top">
           <div class="tile-icon">${ICONS[d.id]||''}</div>
-          <div class="tile-text"><div class="tile-title">${d.title}</div><div class="tile-sub">${d.sub}</div></div>
+          <div class="tile-text"><div class="tile-title">${tileTitle}</div><div class="tile-sub">${tileSub}</div></div>
           <div class="tile-chev"></div>
         </div>
         ${tagsHtml?`<div class="tile-tags">${tagsHtml}</div>`:''}
@@ -537,7 +673,7 @@ function render(){
       aria-expanded="${isOpen}" aria-controls="${bodyId}">
       <div class="tile-top">
         <div class="tile-icon">${ICONS[d.id]||''}</div>
-        <div class="tile-text"><div class="tile-title">${d.title}</div><div class="tile-sub">${d.sub}</div></div>
+        <div class="tile-text"><div class="tile-title">${tileTitle}</div><div class="tile-sub">${tileSub}</div></div>
         <div class="tile-chev">${CHEVRON}</div>
       </div>
       ${tagsHtml?`<div class="tile-tags">${tagsHtml}</div>`:''}
@@ -545,7 +681,7 @@ function render(){
         <div class="tile-body-inner">
           ${noticeHtml}${volFormHtml}${resHtml}
           <div class="card-actions">
-            <button class="ca-btn" onclick="openFeedback('${d.title.replace(/'/g,"\\'")}',event)">${BULB} ${t.suggest}</button>
+            <button class="ca-btn" onclick="openFeedback('${tileTitle.replace(/'/g,"\\'")}',event)">${BULB} ${t.suggest}</button>
           </div>
         </div>
       </div>

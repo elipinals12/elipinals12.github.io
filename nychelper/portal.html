@@ -570,16 +570,9 @@ function showPortal(){
   const content = document.getElementById('portalContent');
   content.classList.add('unlocked');
   document.getElementById('activeBadgeZip').textContent = activeZip;
-  // pre-fill post form ZIP
   document.getElementById('fZip').value = activeZip;
-  // pre-select ZIP filters
-  setTimeout(()=>{
-    ['nZip','oZip'].forEach(id=>{
-      const s = document.getElementById(id);
-      if(s && [...s.options].some(o=>o.value===activeZip)) s.value = activeZip;
-    });
-    renderNeeds(); renderOffers();
-  }, 100);
+  document.getElementById('nCount').textContent = `Loading posts for ZIP ${activeZip}…`;
+  document.getElementById('oCount').textContent = `Loading posts for ZIP ${activeZip}…`;
   load();
 }
 
@@ -635,26 +628,67 @@ async function load(){
 }
 
 function displayCat(p){return p.category==='Other'&&p.customCat?p.customCat:p.category;}
-function rebuildFilters(){const needs=posts.filter(p=>p.type==='need');const offers=posts.filter(p=>p.type==='offer');buildZip('nZip',needs);buildZip('oZip',offers);buildCats('nCats',needs,nCat,'setNCat');buildCats('oCats',offers,oCat,'setOCat');}
-function buildZip(id,arr){const el=document.getElementById(id),cur=activeZip||el.value;const zips=[...new Set(arr.map(p=>p.zip))].sort();el.innerHTML='<option value="">All</option>'+zips.map(z=>`<option${z===cur?' selected':''}>${esc(z)}</option>`).join('');}
+
+// Build ZIP dropdowns — always include activeZip as an option even if no posts for it yet,
+// and always default the select to activeZip
+function buildZip(id,arr){
+  const el=document.getElementById(id);
+  const cur=el.value||activeZip; // keep user's current choice, or default to activeZip
+  const zips=[...new Set([...(activeZip?[activeZip]:[]),...arr.map(p=>p.zip)])].sort();
+  el.innerHTML='<option value="">All ZIPs</option>'+zips.map(z=>`<option value="${esc(z)}"${z===cur?' selected':''}>${esc(z)}</option>`).join('');
+  // If nothing selected yet, default to activeZip
+  if(!el.value && activeZip) el.value=activeZip;
+}
+
+function rebuildFilters(){
+  const needs=posts.filter(p=>p.type==='need');
+  const offers=posts.filter(p=>p.type==='offer');
+  buildZip('nZip',needs);
+  buildZip('oZip',offers);
+  buildCats('nCats',needs,nCat,'setNCat');
+  buildCats('oCats',offers,oCat,'setOCat');
+}
 function buildCats(id,arr,active,fn){const used=['All',...CATS.filter(c=>arr.some(p=>p.category===c||displayCat(p)===c))];document.getElementById(id).innerHTML=used.map(c=>`<button class="cpill${c===active?' on':''}" onclick="${fn}('${esc(c)}')">${esc(c==='All'?'All':c)}</button>`).join('');}
 function setNCat(c){nCat=c;openContact=openMsg=null;rebuildFilters();renderNeeds();}
 function setOCat(c){oCat=c;openContact=openMsg=null;rebuildFilters();renderOffers();}
 
 function renderNeeds(){
-  const zipF=document.getElementById('nZip').value,urgF=document.getElementById('nUrg').value,stF=document.getElementById('nStat').value;
-  let f=posts.filter(p=>{if(p.type!=='need')return false;if(zipF&&p.zip!==zipF)return false;if(nCat!=='All'&&displayCat(p)!==nCat&&p.category!==nCat)return false;if(urgF&&p.urgency!==urgF)return false;if(stF&&p.status!==stF)return false;if(!stF&&p.status==='claimed')return false;return true;});
+  // Read zip filter — fall back to activeZip if select is somehow empty
+  const zipF=document.getElementById('nZip').value||activeZip;
+  const urgF=document.getElementById('nUrg').value,stF=document.getElementById('nStat').value;
+  let f=posts.filter(p=>{
+    if(p.type!=='need')return false;
+    if(zipF&&p.zip!==zipF)return false;
+    if(nCat!=='All'&&displayCat(p)!==nCat&&p.category!==nCat)return false;
+    if(urgF&&p.urgency!==urgF)return false;
+    if(stF&&p.status!==stF)return false;
+    if(!stF&&p.status==='claimed')return false;
+    return true;
+  });
   const ord={urgent:0,week:1,flexible:2};f.sort((a,b)=>(ord[a.urgency]||2)-(ord[b.urgency]||2)||(new Date(b.timestamp)-new Date(a.timestamp)));
   const open=f.filter(p=>p.status==='open').length;
-  document.getElementById('nCount').textContent=f.length?`${open} open · ${f.length-open} fulfilled`+(zipF?` in ZIP ${zipF}`:'')+((nCat&&nCat!=='All')?` · ${nCat}`:''): '';
+  document.getElementById('nCount').textContent=f.length
+    ?`${open} open · ${f.length-open} fulfilled in ZIP ${zipF}`+((nCat&&nCat!=='All')?` · ${nCat}`:'')
+    :`No open needs for ZIP ${zipF}`;
   renderList('nList',f,'need');
 }
+
 function renderOffers(){
-  const zipF=document.getElementById('oZip').value,stF=document.getElementById('oStat').value;
-  let f=posts.filter(p=>{if(p.type!=='offer')return false;if(zipF&&p.zip!==zipF)return false;if(oCat!=='All'&&displayCat(p)!==oCat&&p.category!==oCat)return false;if(stF&&p.status!==stF)return false;if(!stF&&p.status==='claimed')return false;return true;});
+  const zipF=document.getElementById('oZip').value||activeZip;
+  const stF=document.getElementById('oStat').value;
+  let f=posts.filter(p=>{
+    if(p.type!=='offer')return false;
+    if(zipF&&p.zip!==zipF)return false;
+    if(oCat!=='All'&&displayCat(p)!==oCat&&p.category!==oCat)return false;
+    if(stF&&p.status!==stF)return false;
+    if(!stF&&p.status==='claimed')return false;
+    return true;
+  });
   f.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
   const open=f.filter(p=>p.status==='open').length;
-  document.getElementById('oCount').textContent=f.length?`${open} active · ${f.length-open} closed`+(zipF?` in ZIP ${zipF}`:'')+((oCat&&oCat!=='All')?` · ${oCat}`:''):'';
+  document.getElementById('oCount').textContent=f.length
+    ?`${open} active · ${f.length-open} closed in ZIP ${zipF}`+((oCat&&oCat!=='All')?` · ${oCat}`:'')
+    :`No active offers for ZIP ${zipF}`;
   renderList('oList',f,'offer');
 }
 

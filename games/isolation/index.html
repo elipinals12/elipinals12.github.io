@@ -794,20 +794,26 @@ function countRemainingRemovableTiles() {
 }
 
 // Phase-aware difficulty parameters. Branching ≈ ~8 king moves × maxCands.
+// Very-early-game has high randomness — board is open, all moves are roughly
+// equivalent, and full search just defaults to "remove tile next to human"
+// every time because mobility weight dominates. Random play is more natural.
 function getAIParams(diff, remTiles) {
   if (diff === 'easy') {
-    if (remTiles > 32) return { depth: 1, bfsDist: 4, maxCands: 8,  randomness: 0.55 };
-    if (remTiles > 18) return { depth: 1, bfsDist: 5, maxCands: 10, randomness: 0.40 };
-    return                       { depth: 2, bfsDist: 6, maxCands: 10, randomness: 0.25 };
+    if (remTiles > 40) return { depth: 1, bfsDist: 6, maxCands: 14, randomness: 1.00 };
+    if (remTiles > 32) return { depth: 1, bfsDist: 5, maxCands: 12, randomness: 0.70 };
+    if (remTiles > 18) return { depth: 1, bfsDist: 5, maxCands: 10, randomness: 0.50 };
+    return                       { depth: 2, bfsDist: 6, maxCands: 10, randomness: 0.30 };
   }
   if (diff === 'medium') {
-    if (remTiles > 32) return { depth: 2, bfsDist: 4, maxCands: 12, randomness: 0.30 };
-    if (remTiles > 18) return { depth: 2, bfsDist: 5, maxCands: 14, randomness: 0.10 };
+    if (remTiles > 40) return { depth: 2, bfsDist: 6, maxCands: 14, randomness: 1.00 };
+    if (remTiles > 32) return { depth: 2, bfsDist: 5, maxCands: 12, randomness: 0.55 };
+    if (remTiles > 18) return { depth: 2, bfsDist: 5, maxCands: 14, randomness: 0.15 };
     return                       { depth: 3, bfsDist: 8, maxCands: 14, randomness: 0    };
   }
   // hard
-  if (remTiles > 32) return { depth: 2, bfsDist: 5, maxCands: 14, randomness: 0.20 };
-  if (remTiles > 18) return { depth: 3, bfsDist: 6, maxCands: 16, randomness: 0    };
+  if (remTiles > 40) return { depth: 2, bfsDist: 6, maxCands: 14, randomness: 1.00 };
+  if (remTiles > 32) return { depth: 2, bfsDist: 5, maxCands: 14, randomness: 0.45 };
+  if (remTiles > 18) return { depth: 3, bfsDist: 6, maxCands: 16, randomness: 0.10 };
   if (remTiles > 10) return { depth: 3, bfsDist: 8, maxCands: 16, randomness: 0    };
   return                       { depth: 4, bfsDist: 8, maxCands: 12, randomness: 0    };
 }
@@ -924,42 +930,34 @@ function minimax(removed, ai, hum, aiTurn, depth, alpha, beta, params) {
   return best;
 }
 
-// Fast, non-search "reasonable" turn — used to inject randomness early game.
-// Picks among the top few moves by simple mobility/reach heuristic, then
-// picks among the top few removes by how much they hurt the opponent.
+// Fast, non-search "reasonable" turn — used to inject randomness in opening.
+// Picks a random move (filtering out suicides), then a random tile from the
+// FULL reachable pool. No "near-opponent" bias — that's the whole point.
 function pickReasonable(ai, hum, params) {
   const moves = getKingMoves(ai, game.removed, hum);
   if (moves.length === 0) return null;
-  const moveScores = moves.map(m => {
+
+  // Filter out moves that leave AI with 0 next-turn moves (immediate suicide)
+  const safeMoves = moves.filter(m => {
     const sR = ai.r, sC = ai.c;
     ai.r = m.r; ai.c = m.c;
-    const myMob   = getKingMoves(ai, game.removed, hum).length;
-    const myReach = bfsReachCount(ai, game.removed, hum);
-    const humMob  = getKingMoves(hum, game.removed, ai).length;
+    const mob = getKingMoves(ai, game.removed, hum).length;
     ai.r = sR; ai.c = sC;
-    return { m, s: myMob * 2 + myReach - humMob };
+    return mob > 0;
   });
-  moveScores.sort((a, b) => b.s - a.s);
-  const topMoves = moveScores.slice(0, Math.min(3, moveScores.length));
-  const movePick = topMoves[Math.floor(Math.random() * topMoves.length)].m;
+  const pool = safeMoves.length ? safeMoves : moves;
+  const movePick = pool[Math.floor(Math.random() * pool.length)];
 
+  // Get ALL reachable removable tiles, then pick uniformly at random.
+  // Pass huge bfsDist so we cover the entire connected component.
   const sR = ai.r, sC = ai.c;
   ai.r = movePick.r; ai.c = movePick.c;
-  const rems = bfsCandidates(game.removed, ai, hum, params.bfsDist, params.maxCands);
-  const remScores = rems.map(rm => {
-    game.removed[rm.r][rm.c] = true;
-    const humMob   = getKingMoves(hum, game.removed, ai).length;
-    const humReach = bfsReachCount(hum, game.removed, ai);
-    game.removed[rm.r][rm.c] = false;
-    return { rm, s: -(humMob * 3 + humReach) };
-  });
-  remScores.sort((a, b) => b.s - a.s);
+  const allRems = bfsCandidates(game.removed, ai, hum, 99, 9999);
   ai.r = sR; ai.c = sC;
 
   let remPick = null;
-  if (remScores.length) {
-    const topRems = remScores.slice(0, Math.min(3, remScores.length));
-    remPick = topRems[Math.floor(Math.random() * topRems.length)].rm;
+  if (allRems.length) {
+    remPick = allRems[Math.floor(Math.random() * allRems.length)];
   } else {
     for (let r = 0; r < ROWS && !remPick; r++) {
       for (let c = 0; c < COLS && !remPick; c++) {
@@ -1012,11 +1010,17 @@ function aiChooseTurn() {
     ai.r = sR; ai.c = sC;
   }
 
+  if (!bestMove) {
+    // bfsCandidates was empty for every top-level move (rare endgame edge).
+    // Pick any legal move so the AI doesn't forfeit.
+    bestMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+  }
   if (!bestRem) {
     for (let r = 0; r < ROWS && !bestRem; r++) {
       for (let c = 0; c < COLS && !bestRem; c++) {
         if (!game.removed[r][c] && !isStart(r, c) &&
-            !(r === ai.r && c === ai.c) && !(r === hum.r && c === hum.c)) {
+            !(r === bestMove.r && c === bestMove.c) &&
+            !(r === game.p1.r && c === game.p1.c)) {
           bestRem = { r, c };
         }
       }
@@ -1219,11 +1223,26 @@ function triggerAITurn() {
   aiThinking = true;
   render();
   setTimeout(() => {
-    const decision = aiChooseTurn();
+    let decision = aiChooseTurn();
     aiThinking = false;
     if (!decision || !decision.move) {
-      endGame(1);
-      return;
+      // Sanity check: don't declare loss unless AI truly has zero legal moves
+      const verify = getKingMoves(game.p2, game.removed, game.p1);
+      if (verify.length === 0) {
+        endGame(1);
+        return;
+      }
+      // Decision logic glitched but moves exist — play a safe random fallback
+      const mv = verify[Math.floor(Math.random() * verify.length)];
+      let rm = null;
+      for (let r = 0; r < ROWS && !rm; r++) {
+        for (let c = 0; c < COLS && !rm; c++) {
+          if (!game.removed[r][c] && !isStart(r, c) &&
+              !(r === mv.r && c === mv.c) &&
+              !(r === game.p1.r && c === game.p1.c)) rm = { r, c };
+        }
+      }
+      decision = { move: mv, remove: rm };
     }
     // animate move
     game.p2.r = decision.move.r;
@@ -1362,6 +1381,7 @@ function goToMenu() {
 
 function endGame(winner) {
   game.over = true;
+  stopTimer();
   if (winner === 1) scores.p1++; else scores.p2++;
   document.getElementById('s1-wins').textContent = scores.p1;
   document.getElementById('s2-wins').textContent = scores.p2;

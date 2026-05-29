@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet" />
 <style>
 :root {
+  --screen-pad: clamp(8px, 2.2vmin, 18px);
   --bg:        #0b0e16;
   --bg-2:      #131826;
   --panel:     #161c2c;
@@ -60,7 +61,8 @@ body::before {
 .screen {
   display: none;
   min-height: 100vh;
-  padding: 18px;
+  min-height: 100dvh;
+  padding: var(--screen-pad);
   position: relative;
   z-index: 1;
 }
@@ -186,7 +188,12 @@ body::before {
 .btn-primary:active { transform: scale(0.985); }
 
 /* ===== GAME SCREEN ===== */
-.game { gap: 12px; max-width: 720px; margin: 0 auto; width: 100%; }
+.game {
+  gap: clamp(8px, 1.8vmin, 12px);
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+}
 
 .top-bar {
   width: 100%;
@@ -290,14 +297,16 @@ body::before {
   display: flex;
   justify-content: center;
   perspective: 1200px;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .board-frame {
-  width: 100%;
-  max-width: min(100%, calc((100vh - 320px) * 6 / 8));
+  width: min(100%, clamp(180px, min(calc(100vw - (2 * var(--screen-pad))), calc((100dvh - 238px) * 0.75)), 720px));
+  max-width: 100%;
   background: var(--slate);
   border-radius: 10px;
-  padding: 8px;
+  padding: clamp(4px, 1.4vmin, 8px);
   box-shadow:
     0 20px 60px rgba(0,0,0,0.5),
     0 0 0 1px var(--slate-2),
@@ -315,7 +324,7 @@ body::before {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(8, 1fr);
-  gap: 3px;
+  gap: clamp(1px, 0.55vmin, 3px);
   position: relative;
   overflow: hidden;
 }
@@ -422,7 +431,7 @@ body::before {
 .controls {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 10px;
   background: var(--panel);
@@ -465,7 +474,7 @@ body::before {
 .switch.on { background: var(--accent); border-color: var(--accent); }
 .switch.on::after { left: 20px; background: white; }
 
-.btn-group { display: flex; gap: 8px; }
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 .btn {
   background: var(--bg-2);
   border: 1px solid var(--border);
@@ -609,9 +618,41 @@ body::before {
   .modal h2 { font-size: 30px; }
 }
 
-@media (max-height: 720px) {
-  .board-frame { max-width: min(100%, calc((100vh - 240px) * 6 / 8)); }
+
+@media (max-width: 420px) {
+  .top-bar { align-items: stretch; }
+  .scores { width: 100%; flex: 1 1 100%; justify-content: center; }
+  .timer { margin: 0 auto; }
+  .controls {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 8px;
+  }
+  .controls .toggle-row,
+  .controls .btn-group,
+  .controls .ctrl-spacer {
+    grid-column: 1;
+    justify-self: center;
+  }
+  .controls .ctrl-spacer { display: none; }
 }
+
+@media (max-height: 620px) {
+  .game { gap: 6px; }
+  .top-bar, .phase, .controls { padding-top: 6px; padding-bottom: 6px; }
+  .phase { font-size: 12px; }
+  .score-box { padding-top: 5px; padding-bottom: 5px; }
+  .board-frame { width: min(100%, clamp(150px, min(calc(100vw - (2 * var(--screen-pad))), calc((100dvh - 190px) * 0.75)), 720px)); }
+}
+
+@media (pointer: coarse) {
+  .tile.can-remove::before { opacity: 0.65; }
+  .btn, .seg button { min-height: 40px; }
+  .switch { min-width: 44px; min-height: 26px; }
+  .switch::after { top: 4px; }
+  .switch.on::after { left: 24px; }
+}
+
 </style>
 </head>
 <body>
@@ -708,7 +749,7 @@ body::before {
    ========================================================= */
 
 const ROWS = 8, COLS = 6;
-const P1_START = { r: 0, c: 2 };
+const P1_START = { r: 0, c: 3 };
 const P2_START = { r: 7, c: 2 };
 
 // ---------- App state ----------
@@ -793,38 +834,56 @@ function countRemainingRemovableTiles() {
   return n;
 }
 
-// Phase-aware difficulty parameters. Branching ≈ ~8 king moves × maxCands.
-// Very-early-game has high randomness — board is open, all moves are roughly
-// equivalent, and full search just defaults to "remove tile next to human"
-// every time because mobility weight dominates. Random play is more natural.
+// Difficulty tuning: one search ply = AI/human moves, then removes one tile.
+// Easy is intentionally weak and noisy. Medium searches decently but still
+// makes imperfect choices. Hard searches much wider/deeper and considers the
+// whole board for removals instead of mostly local tiles.
 function getAIParams(diff, remTiles) {
   if (diff === 'easy') {
-    if (remTiles > 40) return { depth: 1, bfsDist: 6, maxCands: 14, randomness: 1.00 };
-    if (remTiles > 32) return { depth: 1, bfsDist: 5, maxCands: 12, randomness: 0.70 };
-    if (remTiles > 18) return { depth: 1, bfsDist: 5, maxCands: 10, randomness: 0.50 };
-    return                       { depth: 2, bfsDist: 6, maxCands: 10, randomness: 0.30 };
+    if (remTiles > 38) return { depth: 1, bfsDist: 3, maxCands: 6,  randomness: 0.95, slop: 0.75, fullBoardRemove: false };
+    if (remTiles > 26) return { depth: 1, bfsDist: 3, maxCands: 7,  randomness: 0.80, slop: 0.65, fullBoardRemove: false };
+    if (remTiles > 14) return { depth: 1, bfsDist: 4, maxCands: 8,  randomness: 0.60, slop: 0.50, fullBoardRemove: false };
+    return                       { depth: 2, bfsDist: 4, maxCands: 8,  randomness: 0.40, slop: 0.40, fullBoardRemove: false };
   }
+
   if (diff === 'medium') {
-    if (remTiles > 40) return { depth: 2, bfsDist: 6, maxCands: 14, randomness: 1.00 };
-    if (remTiles > 32) return { depth: 2, bfsDist: 5, maxCands: 12, randomness: 0.55 };
-    if (remTiles > 18) return { depth: 2, bfsDist: 5, maxCands: 14, randomness: 0.15 };
-    return                       { depth: 3, bfsDist: 8, maxCands: 14, randomness: 0    };
+    if (remTiles > 38) return { depth: 2, bfsDist: 6, maxCands: 12, randomness: 0.85, slop: 0.35, fullBoardRemove: false };
+    if (remTiles > 28) return { depth: 2, bfsDist: 7, maxCands: 14, randomness: 0.45, slop: 0.25, fullBoardRemove: false };
+    if (remTiles > 16) return { depth: 3, bfsDist: 8, maxCands: 18, randomness: 0.18, slop: 0.15, fullBoardRemove: false };
+    return                       { depth: 4, bfsDist: 99, maxCands: 24, randomness: 0.06, slop: 0.08, fullBoardRemove: true  };
   }
-  // hard
-  if (remTiles > 40) return { depth: 2, bfsDist: 6, maxCands: 14, randomness: 1.00 };
-  if (remTiles > 32) return { depth: 2, bfsDist: 5, maxCands: 14, randomness: 0.45 };
-  if (remTiles > 18) return { depth: 3, bfsDist: 6, maxCands: 16, randomness: 0.10 };
-  if (remTiles > 10) return { depth: 3, bfsDist: 8, maxCands: 16, randomness: 0    };
-  return                       { depth: 4, bfsDist: 8, maxCands: 12, randomness: 0    };
+
+  // Hard: no intentional mistakes, deeper search, and full-board removal search.
+  // The candidate cap is widened as the board shrinks so hard can see traps,
+  // bridges, far-away cuts, and endgame forced wins much earlier.
+  if (remTiles > 40) return { depth: 3, bfsDist: 99, maxCands: 24,   randomness: 0.02, slop: 0.00, fullBoardRemove: true };
+  if (remTiles > 30) return { depth: 4, bfsDist: 99, maxCands: 24,   randomness: 0.00, slop: 0.00, fullBoardRemove: true };
+  if (remTiles > 22) return { depth: 4, bfsDist: 99, maxCands: 36,   randomness: 0.00, slop: 0.00, fullBoardRemove: true };
+  if (remTiles > 14) return { depth: 5, bfsDist: 99, maxCands: 9999, randomness: 0.00, slop: 0.00, fullBoardRemove: true };
+  if (remTiles > 7)  return { depth: 6, bfsDist: 99, maxCands: 9999, randomness: 0.00, slop: 0.00, fullBoardRemove: true };
+  return                       { depth: 8, bfsDist: 99, maxCands: 9999, randomness: 0.00, slop: 0.00, fullBoardRemove: true };
 }
 
-// BFS through unremoved squares from opponent. Returns a STRATIFIED sample of
-// candidates across distance bands — so near, mid, and far tiles all get
-// represented in the minimax search (not just the closest N).
-function bfsCandidates(removed, ai, hum, maxDist, maxCount) {
+function legalRemovalTiles(removed, a, b) {
+  const out = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (removed[r][c]) continue;
+      if (isStart(r, c)) continue;
+      if (r === a.r && c === a.c) continue;
+      if (r === b.r && c === b.c) continue;
+      out.push({ r, c });
+    }
+  }
+  return out;
+}
+
+// BFS through unremoved squares from the victim. For limited modes, this keeps
+// search fast. For hard mode, this is widened to full-board removal search.
+function bfsCandidates(removed, remover, victim, maxDist, maxCount) {
   const dist = Array.from({ length: ROWS }, () => Array(COLS).fill(-1));
-  dist[hum.r][hum.c] = 0;
-  const q = [[hum.r, hum.c]];
+  dist[victim.r][victim.c] = 0;
+  const q = [[victim.r, victim.c]];
   let head = 0;
   while (head < q.length) {
     const [r0, c0] = q[head++];
@@ -835,7 +894,7 @@ function bfsCandidates(removed, ai, hum, maxDist, maxCount) {
         if (!dr && !dc) continue;
         const r = r0 + dr, c = c0 + dc;
         if (!inBounds(r, c) || removed[r][c]) continue;
-        if (r === ai.r && c === ai.c) continue;
+        if (r === remover.r && c === remover.c) continue;
         if (dist[r][c] !== -1) continue;
         dist[r][c] = d + 1;
         q.push([r, c]);
@@ -843,8 +902,7 @@ function bfsCandidates(removed, ai, hum, maxDist, maxCount) {
     }
   }
 
-  // Bucket reachable removable tiles by distance band
-  const bands = []; // bands[d] = array of tiles at distance d+1
+  const bands = [];
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       if (dist[r][c] <= 0) continue;
@@ -856,8 +914,6 @@ function bfsCandidates(removed, ai, hum, maxDist, maxCount) {
     }
   }
 
-  // Round-robin across bands so far tiles aren't truncated out.
-  // This gives the search a diverse view of the opponent's reachable region.
   const result = [];
   const usedBands = bands.filter(Boolean);
   if (usedBands.length === 0) return [];
@@ -877,20 +933,123 @@ function bfsCandidates(removed, ai, hum, maxDist, maxCount) {
   return result;
 }
 
+function distTo(a, b) {
+  return Math.max(Math.abs(a.r - b.r), Math.abs(a.c - b.c));
+}
+
+// Scores how much a removal hurts the victim while preserving the remover's space.
+function scoreRemovalForPlayer(removed, remover, victim, rm) {
+  const beforeVictimMoves = getKingMoves(victim, removed, remover).length;
+  const beforeVictimReach = bfsReachCount(victim, removed, remover);
+  const beforeSelfReach = bfsReachCount(remover, removed, victim);
+
+  removed[rm.r][rm.c] = true;
+  const afterVictimMoves = getKingMoves(victim, removed, remover).length;
+  const afterVictimReach = bfsReachCount(victim, removed, remover);
+  const afterSelfReach = bfsReachCount(remover, removed, victim);
+  removed[rm.r][rm.c] = false;
+
+  if (afterVictimMoves === 0) return 100000;
+
+  const mobilityHit = (beforeVictimMoves - afterVictimMoves) * 55;
+  const reachHit = (beforeVictimReach - afterVictimReach) * 7;
+  const selfDamage = Math.max(0, beforeSelfReach - afterSelfReach) * -4;
+  const nearVictim = Math.max(0, 6 - distTo(rm, victim)) * 3;
+  const bridgeCut = afterVictimReach <= Math.max(5, beforeVictimReach * 0.55) ? 35 : 0;
+  const edgeTrap = (rm.r === 0 || rm.r === ROWS - 1 || rm.c === 0 || rm.c === COLS - 1) ? 3 : 0;
+
+  return mobilityHit + reachHit + selfDamage + nearVictim + bridgeCut + edgeTrap;
+}
+
+function getRemovalCandidates(removed, remover, victim, params) {
+  let pool;
+  if (params.fullBoardRemove) {
+    pool = legalRemovalTiles(removed, remover, victim);
+  } else {
+    pool = bfsCandidates(removed, remover, victim, params.bfsDist, params.maxCands * 2);
+    const seen = new Set(pool.map(x => x.r + ',' + x.c));
+    for (const t of legalRemovalTiles(removed, remover, victim)) {
+      if (pool.length >= params.maxCands * 2) break;
+      const k = t.r + ',' + t.c;
+      if (!seen.has(k)) pool.push(t);
+    }
+  }
+
+  return pool
+    .map(t => ({ ...t, _score: scoreRemovalForPlayer(removed, remover, victim, t) }))
+    .sort((a, b) => b._score - a._score)
+    .slice(0, params.maxCands || 9999);
+}
+
+function isEdgeTile(p) {
+  return p.r === 0 || p.r === ROWS - 1 || p.c === 0 || p.c === COLS - 1;
+}
+
+function localLiberties(pos, removed, other) {
+  return getKingMoves(pos, removed, other).length;
+}
+
+function reachableEdges(pos, removed, other) {
+  const seen = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+  seen[pos.r][pos.c] = true;
+  const stack = [pos];
+  let edges = 0;
+  while (stack.length) {
+    const p = stack.pop();
+    if (isEdgeTile(p)) edges++;
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        if (!dr && !dc) continue;
+        const r = p.r + dr, c = p.c + dc;
+        if (!inBounds(r, c) || seen[r][c] || removed[r][c]) continue;
+        if (r === other.r && c === other.c) continue;
+        seen[r][c] = true;
+        stack.push({ r, c });
+      }
+    }
+  }
+  return edges;
+}
+
 function evalBoard(removed, ai, hum) {
-  const aiMoves = getKingMoves(ai, removed, hum).length;
-  const humMoves = getKingMoves(hum, removed, ai).length;
+  const aiMoves = localLiberties(ai, removed, hum);
+  const humMoves = localLiberties(hum, removed, ai);
   if (humMoves === 0) return 100000;
   if (aiMoves === 0) return -100000;
+
   const aiReach = bfsReachCount(ai, removed, hum);
   const humReach = bfsReachCount(hum, removed, ai);
-  // Bonus when opponent's reach collapses (cornering pays off non-linearly)
-  const trapBonus    = humReach < 6 ? (10 - humReach) * 6 : 0;
-  const trappedPenalty = aiReach < 6 ? -(10 - aiReach) * 6 : 0;
-  return (aiMoves - humMoves) * 3 + (aiReach - humReach) * 2 + trapBonus + trappedPenalty;
+  const aiEdges = reachableEdges(ai, removed, hum);
+  const humEdges = reachableEdges(hum, removed, ai);
+
+  const mobility = (aiMoves - humMoves) * 20;
+  const territory = (aiReach - humReach) * 5;
+  const escapeEdges = (aiEdges - humEdges) * 2.5;
+
+  // Nonlinear trap pressure: hard heavily values collapsing the human's region.
+  const humTrap = humReach <= 10 ? (11 - humReach) * (11 - humReach) * 5 : 0;
+  const aiTrapPenalty = aiReach <= 10 ? -(11 - aiReach) * (11 - aiReach) * 6 : 0;
+  const humMobTrap = humMoves <= 3 ? (4 - humMoves) * 45 : 0;
+  const aiMobTrapPenalty = aiMoves <= 3 ? -(4 - aiMoves) * 55 : 0;
+
+  const distance = distTo(ai, hum);
+  const spacing = distance <= 1 ? -10 : Math.min(distance, 5) * 2;
+
+  return mobility + territory + escapeEdges + humTrap + aiTrapPenalty + humMobTrap + aiMobTrapPenalty + spacing;
+}
+
+function stateKey(removed, ai, hum, aiTurn, depth) {
+  let bits = '';
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) bits += removed[r][c] ? '1' : '0';
+  }
+  return bits + '|' + ai.r + ',' + ai.c + '|' + hum.r + ',' + hum.c + '|' + (aiTurn ? 1 : 0) + '|' + depth;
 }
 
 function minimax(removed, ai, hum, aiTurn, depth, alpha, beta, params) {
+  const key = stateKey(removed, ai, hum, aiTurn, depth);
+  if (params.tt && params.tt.has(key)) return params.tt.get(key);
+
   const mover = aiTurn ? ai : hum;
   const other = aiTurn ? hum : ai;
   const moves = getKingMoves(mover, removed, other);
@@ -898,9 +1057,9 @@ function minimax(removed, ai, hum, aiTurn, depth, alpha, beta, params) {
   if (depth === 0) return evalBoard(removed, ai, hum);
 
   moves.sort((a, b) => {
-    const da = Math.max(Math.abs(a.r - other.r), Math.abs(a.c - other.c));
-    const db = Math.max(Math.abs(b.r - other.r), Math.abs(b.c - other.c));
-    return aiTurn ? db - da : da - db; // AI wants distance, human wants proximity
+    const aScore = getKingMoves(a, removed, other).length + bfsReachCount(a, removed, other) * 0.1 - distTo(a, other) * 0.05;
+    const bScore = getKingMoves(b, removed, other).length + bfsReachCount(b, removed, other) * 0.1 - distTo(b, other) * 0.05;
+    return aiTurn ? bScore - aScore : aScore - bScore;
   });
 
   let best = aiTurn ? -Infinity : Infinity;
@@ -908,7 +1067,11 @@ function minimax(removed, ai, hum, aiTurn, depth, alpha, beta, params) {
     const sR = mover.r, sC = mover.c;
     mover.r = mv.r; mover.c = mv.c;
 
-    const rems = bfsCandidates(removed, ai, hum, params.bfsDist, params.maxCands);
+    const rems = getRemovalCandidates(removed, mover, other, params);
+    if (rems.length === 0) {
+      const v = evalBoard(removed, ai, hum);
+      best = aiTurn ? Math.max(best, v) : Math.min(best, v);
+    }
 
     for (const rm of rems) {
       removed[rm.r][rm.c] = true;
@@ -927,17 +1090,16 @@ function minimax(removed, ai, hum, aiTurn, depth, alpha, beta, params) {
     mover.r = sR; mover.c = sC;
     if (beta <= alpha) break;
   }
+
+  if (params.tt) params.tt.set(key, best);
   return best;
 }
 
-// Fast, non-search "reasonable" turn — used to inject randomness in opening.
-// Picks a random move (filtering out suicides), then a random tile from the
-// FULL reachable pool. No "near-opponent" bias — that's the whole point.
+// Weak/random move for easy mode and opening imperfection.
 function pickReasonable(ai, hum, params) {
   const moves = getKingMoves(ai, game.removed, hum);
   if (moves.length === 0) return null;
 
-  // Filter out moves that leave AI with 0 next-turn moves (immediate suicide)
   const safeMoves = moves.filter(m => {
     const sR = ai.r, sC = ai.c;
     ai.r = m.r; ai.c = m.c;
@@ -948,26 +1110,38 @@ function pickReasonable(ai, hum, params) {
   const pool = safeMoves.length ? safeMoves : moves;
   const movePick = pool[Math.floor(Math.random() * pool.length)];
 
-  // Get ALL reachable removable tiles, then pick uniformly at random.
-  // Pass huge bfsDist so we cover the entire connected component.
   const sR = ai.r, sC = ai.c;
   ai.r = movePick.r; ai.c = movePick.c;
-  const allRems = bfsCandidates(game.removed, ai, hum, 99, 9999);
+  const allRems = legalRemovalTiles(game.removed, ai, hum);
   ai.r = sR; ai.c = sC;
 
   let remPick = null;
   if (allRems.length) {
-    remPick = allRems[Math.floor(Math.random() * allRems.length)];
-  } else {
-    for (let r = 0; r < ROWS && !remPick; r++) {
-      for (let c = 0; c < COLS && !remPick; c++) {
-        if (!game.removed[r][c] && !isStart(r, c) &&
-            !(r === movePick.r && c === movePick.c) &&
-            !(r === hum.r && c === hum.c)) remPick = { r, c };
-      }
+    if (Math.random() < 0.55) {
+      remPick = allRems[Math.floor(Math.random() * allRems.length)];
+    } else {
+      allRems.sort((a, b) => scoreRemovalForPlayer(game.removed, ai, hum, b) - scoreRemovalForPlayer(game.removed, ai, hum, a));
+      remPick = allRems[Math.floor(Math.random() * Math.min(6, allRems.length))];
     }
   }
   return { move: movePick, remove: remPick };
+}
+
+function chooseWithSlop(scored, slop) {
+  if (!scored.length) return null;
+  scored.sort((a, b) => b.val - a.val);
+  if (!slop) return scored[0];
+
+  const topN = Math.min(scored.length, 4);
+  let best = null;
+  let bestNoisy = -Infinity;
+  for (let i = 0; i < topN; i++) {
+    const noise = (Math.random() - 0.5) * slop * 120;
+    const penalty = i * slop * 10;
+    const noisy = scored[i].val + noise - penalty;
+    if (noisy > bestNoisy) { bestNoisy = noisy; best = scored[i]; }
+  }
+  return best || scored[0];
 }
 
 function aiChooseTurn() {
@@ -977,56 +1151,56 @@ function aiChooseTurn() {
 
   const remTiles = countRemainingRemovableTiles();
   const params = getAIParams(difficulty, remTiles);
+  params.tt = new Map();
 
-  // Early-game randomness: skip full search occasionally, play a "good enough" move
   if (Math.random() < params.randomness) {
     const r = pickReasonable(ai, hum, params);
     if (r && r.move) return r;
   }
 
-  // Full minimax search at top level
-  let bestMove = null, bestRem = null, bestVal = -Infinity;
-  let alpha = -Infinity, beta = Infinity;
+  const scored = [];
 
   const moves = allMoves.slice().sort((a, b) => {
-    const da = Math.max(Math.abs(a.r - hum.r), Math.abs(a.c - hum.c));
-    const db = Math.max(Math.abs(b.r - hum.r), Math.abs(b.c - hum.c));
-    return db - da;
+    const aScore = getKingMoves(a, game.removed, hum).length + bfsReachCount(a, game.removed, hum) * 0.1;
+    const bScore = getKingMoves(b, game.removed, hum).length + bfsReachCount(b, game.removed, hum) * 0.1;
+    return bScore - aScore;
   });
 
   for (const mv of moves) {
     const sR = ai.r, sC = ai.c;
     ai.r = mv.r; ai.c = mv.c;
-    const rems = bfsCandidates(game.removed, ai, hum, params.bfsDist, params.maxCands);
+    const rems = getRemovalCandidates(game.removed, ai, hum, params);
 
     for (const rm of rems) {
       game.removed[rm.r][rm.c] = true;
-      const v = minimax(game.removed, ai, hum, false, params.depth - 1, alpha, beta, params);
+      const immediateWin = getKingMoves(hum, game.removed, ai).length === 0;
+      const v = immediateWin
+        ? 200000
+        : minimax(game.removed, ai, hum, false, params.depth - 1, -Infinity, Infinity, params);
       game.removed[rm.r][rm.c] = false;
 
-      if (v > bestVal) { bestVal = v; bestMove = mv; bestRem = rm; }
-      if (v > alpha) alpha = v;
+      scored.push({ val: v, move: { r: mv.r, c: mv.c }, remove: { r: rm.r, c: rm.c } });
+      if (difficulty === 'hard' && immediateWin) {
+        ai.r = sR; ai.c = sC;
+        return { move: { r: mv.r, c: mv.c }, remove: { r: rm.r, c: rm.c } };
+      }
     }
     ai.r = sR; ai.c = sC;
   }
 
-  if (!bestMove) {
-    // bfsCandidates was empty for every top-level move (rare endgame edge).
-    // Pick any legal move so the AI doesn't forfeit.
-    bestMove = allMoves[Math.floor(Math.random() * allMoves.length)];
-  }
-  if (!bestRem) {
-    for (let r = 0; r < ROWS && !bestRem; r++) {
-      for (let c = 0; c < COLS && !bestRem; c++) {
-        if (!game.removed[r][c] && !isStart(r, c) &&
-            !(r === bestMove.r && c === bestMove.c) &&
-            !(r === game.p1.r && c === game.p1.c)) {
-          bestRem = { r, c };
-        }
-      }
+  const chosen = chooseWithSlop(scored, params.slop);
+  if (chosen) return { move: chosen.move, remove: chosen.remove };
+
+  const fallbackMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+  let fallbackRemove = null;
+  for (let r = 0; r < ROWS && !fallbackRemove; r++) {
+    for (let c = 0; c < COLS && !fallbackRemove; c++) {
+      if (!game.removed[r][c] && !isStart(r, c) &&
+          !(r === fallbackMove.r && c === fallbackMove.c) &&
+          !(r === game.p1.r && c === game.p1.c)) fallbackRemove = { r, c };
     }
   }
-  return { move: bestMove, remove: bestRem };
+  return { move: fallbackMove, remove: fallbackRemove };
 }
 
 /* =========================================================
@@ -1222,6 +1396,7 @@ function checkLossForCurrent() {
 function triggerAITurn() {
   aiThinking = true;
   render();
+  const thinkDelay = difficulty === 'hard' ? 520 : (difficulty === 'medium' ? 340 : 180);
   setTimeout(() => {
     let decision = aiChooseTurn();
     aiThinking = false;
@@ -1256,7 +1431,7 @@ function triggerAITurn() {
       render();
       checkLossForCurrent();
     }, 520);
-  }, 280);
+  }, thinkDelay);
 }
 
 /* ---------- Drag and drop on pawns ----------
@@ -1330,12 +1505,15 @@ function attachPawnHandlers(pawn) {
   }
 
   pawn.addEventListener('pointerup', finishDrag);
-  pawn.addEventListener('pointercancel', (e) => {
+  function cancelDrag() {
     if (!dragging) return;
     dragging = false;
     if (ghost) { ghost.remove(); ghost = null; }
     pawn.style.opacity = '';
-  });
+  }
+
+  pawn.addEventListener('pointercancel', cancelDrag);
+  pawn.addEventListener('lostpointercapture', cancelDrag);
 }
 
 /* =========================================================

@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Bitcoin</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23f7931a'/%3E%3Ctext x='50' y='74' font-size='70' text-anchor='middle' fill='%23160f04' font-family='Arial,sans-serif' font-weight='bold'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,7 +13,7 @@
     --bg:#000000; --panel:#0a0908; --line:#191613; --line2:#2a241c;
     --ink:#f4efe7; --mute:#8a8174; --faint:#544e44;
     --btc:#f7931a;
-    --c-sec:#f7931a; --c-health:#3fd0c9; --c-adopt:#ffd166; --c-val:#8c8276; --c-macro:#b48ead;
+    --c-sec:#f7931a; --c-health:#3fd0c9; --c-adopt:#ff8a00; --c-val:#8c8276; --c-macro:#b48ead;
     --pos:#5ec77a; --neg:#e5564b; --r:15px;
     --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
     --disp:"Space Grotesk",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
@@ -172,7 +173,7 @@ function dur(sec){if(sec==null||sec<0)return"—";sec=Math.floor(sec);const d=Ma
 async function getJSON(url,ms=12000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);
   try{const r=await fetch(url,{signal:c.signal,headers:{accept:"application/json"}});if(!r.ok)throw new Error(r.status);return await r.json()}finally{clearTimeout(t)}}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const PROXIES=[u=>u,u=>"https://corsproxy.io/?url="+encodeURIComponent(u),u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u)];
+const PROXIES=[u=>u,u=>"https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(u),u=>"https://corsproxy.io/?url="+encodeURIComponent(u),u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u)];
 async function getText(url,ms=15000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);
   try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error(r.status);return await r.text()}finally{clearTimeout(t)}}
 async function proxied(url,ms=15000){let e;for(const p of PROXIES){try{return await getJSON(p(url),ms)}catch(x){e=x}}throw e}
@@ -187,8 +188,8 @@ function sliceDays(s,days){if(!s||!s.length)return[];if(days==null)return s;cons
 const vals=s=>s.map(p=>p.v);
 
 Chart.defaults.font.family="IBM Plex Mono, monospace";Chart.defaults.color="#544e44";
-const C={btc:"#f7931a",sec:"#f7931a",health:"#3fd0c9",adopt:"#ffd166",val:"#8c8276",ink:"#f4efe7",line:"#191613",mute:"#544e44"};
-const GOLD="#e3b23c";
+const C={btc:"#f7931a",sec:"#f7931a",health:"#3fd0c9",adopt:"#ff8a00",val:"#8c8276",ink:"#f4efe7",line:"#191613",mute:"#544e44"};
+const GOLD="#f7931a";
 const MACRO="#b48ead";
 function grad(ctx,area,col){if(!area)return col+"22";const g=ctx.createLinearGradient(0,area.top,0,area.bottom);g.addColorStop(0,col+"44");g.addColorStop(1,col+"00");return g}
 function spark(cv,data,col){return new Chart(cv,{type:"line",data:{labels:data.map((_,i)=>i),
@@ -314,7 +315,7 @@ function rRelval(){const b=body("relval");if(!b.dataset.i){b.dataset.i=1;b.inner
   const rows=BENCH.map(([k,d])=>({k,pct:S.mcap/d*100})).sort((a,b)=>b.pct-a.pct);
   $("#rv-g").innerHTML=rows.map(({k,pct})=>`<div class="rvrow"><div class="rvtop"><span>% of ${k}</span><b class="num">${pct<1?pct.toFixed(2):pct.toFixed(1)}%</b></div><div class="rvbar"><i style="width:${Math.min(100,pct)}%"></i></div></div>`).join("")}
 function rBtcGold(){const b=body("btcgold");if(!b)return;if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="bg-v">—</div><div class="csub" id="bg-s">gold oz per ₿</div><div class="spark"><canvas id="bg-c"></canvas></div>`}
-  const gold=S.goldHist?.[S.goldHist.length-1]?.v,btc=S.price?.usd??S.priceHist?.[S.priceHist.length-1]?.v;
+  const gold=S.goldSpot??S.goldHist?.[S.goldHist.length-1]?.v,btc=S.price?.usd??S.priceHist?.[S.priceHist.length-1]?.v;
   if(gold&&btc){const r=btc/gold;$("#bg-v").textContent=r.toFixed(1)+" oz";
     if(S.btcGold?.length){const first=sliceDays(S.btcGold,365)[0]?.v;if(first){const chg=(r/first-1)*100;
       $("#bg-s").innerHTML=`<span class="chip ${chg>=0?'up':'down'}">${chg>=0?'+':''}${chg.toFixed(0)}% / yr</span><span style="color:var(--faint)">oz per ₿</span>`}}}
@@ -345,7 +346,8 @@ let netOK=true,lastErr=0;
 function flag(ok){const d=$("#h-dot");if(ok){netOK=true;d.className="dot"}else{lastErr=now();netOK=false;d.className="dot warn"}}
 async function pullPrice(){try{const d=await getJSON("https://api.coinbase.com/v2/prices/BTC-USD/spot");S.price={usd:+d.data.amount};if(S.priceDisplay==null)S.priceDisplay=S.price.usd;setStale("price",false);flag(true);S.lastUpdate=now()}
   catch(e){try{const m=await getJSON("https://mempool.space/api/v1/prices");S.price={usd:m.USD};if(S.priceDisplay==null)S.priceDisplay=m.USD;flag(true)}catch(e2){setStale("price",true);flag(false)}}
-  rPrice();rPower();rRelval()}
+  try{const g=await getJSON("https://api.coinbase.com/v2/prices/PAXG-USD/spot");S.goldSpot=+g.data.amount}catch(e){}
+  rPrice();rPower();rRelval();rBtcGold()}
 async function pullNetwork(){await Promise.allSettled([
   getJSON("https://mempool.space/api/blocks/tip/height").then(h=>{S.tip=+h;setStale("blocks",false)}).catch(()=>setStale("blocks",true)),
   getJSON("https://mempool.space/api/v1/blocks").then(b=>{S.recentBlocks=b;if(b[0])S.lastBlockMs=b[0].timestamp*1000}).catch(()=>{}),
@@ -378,7 +380,8 @@ async function pullGold(){try{const d=await cg("https://api.coingecko.com/api/v3
   S.goldHist=d.prices.map(p=>({t:p[0],v:p[1]}));computeBtcGold()}catch(e){}}
 async function pullM2(){try{const txt=await proxiedText("https://fred.stlouisfed.org/graph/fredgraph.csv?id=M2SL");
   const s=parseCsv(txt,1e9);if(s.length){S.m2Series=s;setStale("m2",false);rM2()}else setStale("m2",true)}catch(e){setStale("m2",true)}}
-async function refreshAll(){await Promise.allSettled([pullNetwork(),pullMarket(),pullHashrate(),pullChain(),pullNodes(),pullGold(),pullPriceHistory(),pullLNhistory()]);S.lastUpdate=now();flag(true)}
+async function refreshAll(){await Promise.allSettled([pullNetwork(),pullHashrate(),pullChain(),pullNodes(),pullLNhistory()]);S.lastUpdate=now();flag(true)}
+async function refreshCG(){await pullPriceHistory();await sleep(1500);await pullMarket();await sleep(1500);await pullGold()}
 async function pullDebt(){
   try{const d=await getJSON("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?fields=record_date,tot_pub_debt_out_amt&sort=-record_date&page[size]=9000",20000);
     const rows=(d.data||[]).map(r=>({t:Date.parse(r.record_date),v:+r.tot_pub_debt_out_amt})).filter(r=>!isNaN(r.t)&&!isNaN(r.v)).sort((a,b)=>a.t-b.t);
@@ -537,11 +540,11 @@ function closeFocus(){$("#focus").classList.remove("on");focusId=null;if(focusCh
 $("#ftr").innerHTML=`<a href="https://mempool.space" target="_blank" rel="noopener">mempool.space</a> · Coinbase · <a href="https://coingecko.com" target="_blank" rel="noopener">CoinGecko</a> · blockchain.info · <a href="https://bitnodes.io" target="_blank" rel="noopener">bitnodes</a> · gold via PAX Gold · M2 via <a href="https://fred.stlouisfed.org" target="_blank" rel="noopener">FRED</a> · debt via <a href="https://fiscaldata.treasury.gov" target="_blank" rel="noopener">US Treasury</a> · power-law after Santostasi · benchmarks approximate · omitted (no free data): non-zero balances, realized cap, SOPR, HODL waves, exchange flows.`;
 
 renderAll();applyVis();
-pullPrice();pullNetwork();pullHashrate();pullChain();pullLNhistory();pullNodes();pullM2();pullDebt();
-(async()=>{await pullPriceHistory();await sleep(1500);await pullMarket();await sleep(1500);await pullGold()})();
+pullPrice();refreshAll();refreshCG();pullM2();pullDebt();
 setInterval(tick,1000);
 setInterval(pullPrice,10000);
 setInterval(refreshAll,60000);
+setInterval(refreshCG,3e5);
 setInterval(pullM2,9e5);setInterval(pullDebt,9e5);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){pullPrice();refreshAll()}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){pullPrice();pullNetwork()}});

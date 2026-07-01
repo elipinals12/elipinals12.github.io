@@ -9,35 +9,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#000000;
-    --panel:#0a0908; --panel2:#0e0c0a;
-    --line:#191613; --line2:#2a241c;
+    --bg:#000000; --panel:#0a0908; --line:#191613; --line2:#2a241c;
     --ink:#f4efe7; --mute:#8a8174; --faint:#544e44;
     --btc:#f7931a;
-    /* category colors */
-    --c-sec:#f7931a;     /* security */
-    --c-health:#3fd0c9;  /* health   */
-    --c-adopt:#ffd166;   /* adoption */
-    --c-val:#8c8276;     /* valuation*/
-    --pos:#5ec77a; --neg:#e5564b;
-    --r:15px;
+    --c-sec:#f7931a; --c-health:#3fd0c9; --c-adopt:#ffd166; --c-val:#8c8276; --c-macro:#b48ead;
+    --pos:#5ec77a; --neg:#e5564b; --r:15px;
     --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
     --disp:"Space Grotesk",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
-  body{
-    background:
-      radial-gradient(1100px 600px at 100% -15%, rgba(247,147,26,.07), transparent 60%),
-      var(--bg);
-    color:var(--ink); font-family:var(--disp); -webkit-font-smoothing:antialiased;
-    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  }
+  body{background:radial-gradient(1100px 600px at 100% -15%, rgba(247,147,26,.07), transparent 60%),var(--bg);
+    color:var(--ink);font-family:var(--disp);-webkit-font-smoothing:antialiased;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
   .num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.3px}
 
-  /* header */
-  header{position:sticky;top:0;z-index:40;background:rgba(0,0,0,.78);backdrop-filter:blur(16px);
-    border-bottom:1px solid var(--line)}
+  header{position:sticky;top:0;z-index:40;background:rgba(0,0,0,.78);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
   .hwrap{max-width:1520px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
   .brand{display:flex;align-items:center;gap:10px;margin-right:auto}
   .logo{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
@@ -46,15 +33,17 @@
   .stat-pill{display:flex;flex-direction:column;gap:1px;padding:5px 12px;border-left:1px solid var(--line)}
   .stat-pill .k{font-size:9px;color:var(--faint);text-transform:uppercase;letter-spacing:1.2px}
   .stat-pill .v{font-size:14px;font-weight:600}
-  .legend{display:flex;gap:13px;flex-wrap:wrap;margin-left:auto}
-  .lg{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--mute);text-transform:uppercase;letter-spacing:.8px}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+  .lg{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--mute);text-transform:uppercase;letter-spacing:.8px;
+    background:none;border:1px solid var(--line);border-radius:20px;padding:4px 11px;cursor:pointer;font-family:var(--disp);transition:.15s}
+  .lg:hover{border-color:var(--line2);color:var(--ink)}
+  .lg.off{opacity:.4}.lg.off i{background:var(--faint)!important}
   .lg i{width:7px;height:7px;border-radius:50%;display:inline-block}
   .live{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--mute);text-transform:uppercase;letter-spacing:1px}
   .dot{width:7px;height:7px;border-radius:50%;background:var(--pos);animation:pp 2.4s infinite}
-  .dot.warn{background:var(--btc)} .dot.err{background:var(--neg);animation:none}
+  .dot.warn{background:var(--btc)}.dot.err{background:var(--neg);animation:none}
   @keyframes pp{0%{box-shadow:0 0 0 0 rgba(94,199,122,.45)}70%{box-shadow:0 0 0 7px rgba(94,199,122,0)}100%{box-shadow:0 0 0 0 transparent}}
 
-  /* grid */
   main{max-width:1520px;margin:0 auto;padding:16px 20px 8px}
   .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
   .card{grid-column:span 4;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
@@ -71,6 +60,7 @@
   .csub{font-size:11.5px;color:var(--faint);display:flex;gap:9px;flex-wrap:wrap;align-items:center}
   .chip{font-size:11px;font-weight:600;font-family:var(--mono)}
   .chip.up{color:var(--pos)}.chip.down{color:var(--neg)}
+  .persat{font-size:10px;color:var(--faint);margin-top:3px}
   .spark{margin-top:auto;width:100%;height:54px;position:relative;padding-top:8px}
   .card.tall .spark{flex:1;min-height:190px}
   canvas{display:block}
@@ -78,32 +68,36 @@
   .s{display:flex;flex-direction:column}
   .s .k{font-size:9px;color:var(--faint);text-transform:uppercase;letter-spacing:.7px}
   .s .v{font-size:15px;font-weight:600}
-  .blist{margin-top:8px;display:flex;flex-direction:column;gap:0}
-  .blk{display:flex;justify-content:space-between;font-size:11.5px;color:var(--faint);
-    border-top:1px solid var(--line);padding:5px 0}
+  .blist{margin-top:8px;display:flex;flex-direction:column}
+  .blk{display:flex;justify-content:space-between;font-size:11.5px;color:var(--faint);border-top:1px solid var(--line);padding:5px 0}
   .blk b{color:var(--ink);font-weight:600}.blk span:last-child{color:var(--mute)}
   .fees{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px}
   .fee{border:1px solid var(--line);border-radius:10px;padding:8px 10px}
   .fee .k{font-size:9px;color:var(--faint);text-transform:uppercase;letter-spacing:.6px}
   .fee .v{font-size:17px;font-weight:600}.fee .v small{font-size:10px;color:var(--mute);font-family:var(--disp)}
+  .rv{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+  .rvrow{display:flex;flex-direction:column;gap:4px}
+  .rvtop{display:flex;justify-content:space-between;font-size:12px;color:var(--mute)}
+  .rvtop b{color:var(--ink);font-weight:600}
+  .rvbar{height:4px;background:var(--line);border-radius:3px;overflow:hidden}
+  .rvbar i{display:block;height:100%;background:linear-gradient(90deg,var(--btc),#ffc06b);border-radius:3px;transition:width .4s}
   .stale{position:absolute;top:13px;right:14px;width:6px;height:6px;border-radius:50%;background:var(--neg);display:none}
   .card.is-stale .stale{display:block}
   .grip{position:absolute;bottom:11px;right:13px;color:var(--faint);font-size:11px;letter-spacing:1px;cursor:grab;opacity:0;transition:.15s}
   .card:hover .grip{opacity:.6}
 
-  /* focus */
-  #focus{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.9);backdrop-filter:blur(6px);
-    display:none;align-items:stretch;justify-content:center;padding:18px}
+  #focus{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.9);backdrop-filter:blur(6px);display:none;align-items:stretch;justify-content:center;padding:18px}
   #focus.on{display:flex}
-  .fpanel{width:min(1080px,100%);background:var(--panel);border:1px solid var(--line2);border-radius:18px;
-    padding:22px;display:flex;flex-direction:column}
+  .fpanel{width:min(1080px,100%);background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:22px;display:flex;flex-direction:column}
   .fhead{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
   .fhead h2{margin:0;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cat);font-weight:600}
   .fbig{font-size:44px;font-weight:600;line-height:1;margin:9px 0 2px}
-  .fclose{background:transparent;border:1px solid var(--line2);color:var(--mute);border-radius:9px;
-    padding:8px 13px;cursor:pointer;font-family:var(--mono);font-size:12px}
+  .fclose{background:transparent;border:1px solid var(--line2);color:var(--mute);border-radius:9px;padding:8px 13px;cursor:pointer;font-family:var(--mono);font-size:12px}
   .fclose:hover{border-color:var(--btc);color:var(--ink)}
   .fbody{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;margin-top:12px}
+  .frange{display:flex;gap:6px}
+  .frange button{background:transparent;border:1px solid var(--line2);color:var(--mute);border-radius:8px;padding:5px 13px;font-size:11px;cursor:pointer;font-family:var(--mono)}
+  .frange button.on{border-color:var(--btc);color:var(--btc)}.frange button:hover{color:var(--ink)}
   .fchart{position:relative;flex:1;min-height:330px}
   .fnote{font-size:11.5px;color:var(--mute);line-height:1.5}
 
@@ -111,239 +105,236 @@
   a{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line2)}a:hover{color:var(--btc)}
 
   @media(max-width:1080px){.card{grid-column:span 6}.card.span8{grid-column:span 12}.card.span6{grid-column:span 6}}
-  @media(max-width:660px){
-    main{padding:12px}.grid{gap:10px}.card,.card.span6,.card.span8{grid-column:span 12}
-    .cmain{font-size:27px}.fbig{font-size:33px}.legend{display:none}
-    .hwrap{gap:8px;padding:11px 15px}.stat-pill{padding:5px 8px}
-  }
+  @media(max-width:660px){main{padding:12px}.grid{gap:10px}.card,.card.span6,.card.span8{grid-column:span 12}
+    .cmain{font-size:27px}.fbig{font-size:33px}.legend{margin-left:0;width:100%}.hwrap{gap:8px;padding:11px 15px}.stat-pill{padding:5px 8px}}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header>
-  <div class="hwrap">
-    <div class="brand"><div class="logo">₿</div><h1>BITCOIN</h1></div>
-    <div class="stat-pill"><span class="k">Block</span><span class="v num" style="color:var(--c-health)" id="h-block">—</span></div>
-    <div class="stat-pill"><span class="k">Last</span><span class="v num" id="h-since">—</span></div>
-    <div class="stat-pill"><span class="k">Hashrate</span><span class="v num" style="color:var(--c-sec)" id="h-hash">—</span></div>
-    <div class="stat-pill"><span class="k">Price</span><span class="v num" style="color:var(--btc)" id="h-price">—</span></div>
-    <div class="legend">
-      <span class="lg"><i style="background:var(--c-sec)"></i>security</span>
-      <span class="lg"><i style="background:var(--c-health)"></i>health</span>
-      <span class="lg"><i style="background:var(--c-adopt)"></i>adoption</span>
-      <span class="lg"><i style="background:var(--c-val)"></i>valuation</span>
-    </div>
-    <div class="live"><span class="dot" id="h-dot"></span><span id="h-status">live</span></div>
+<header><div class="hwrap">
+  <div class="brand"><div class="logo">₿</div><h1>BITCOIN</h1></div>
+  <div class="stat-pill"><span class="k">Block</span><span class="v num" style="color:var(--c-health)" id="h-block">—</span></div>
+  <div class="stat-pill"><span class="k">Last</span><span class="v num" id="h-since">—</span></div>
+  <div class="stat-pill"><span class="k">Hashrate</span><span class="v num" style="color:var(--c-sec)" id="h-hash">—</span></div>
+  <div class="stat-pill" id="pill-mcap"><span class="k">Market cap</span><span class="v num" style="color:var(--c-val)" id="h-mcap">—</span></div>
+  <div class="stat-pill" id="pill-price" style="display:none"><span class="k">Price</span><span class="v num" style="color:var(--btc)" id="h-price">—</span></div>
+  <div class="legend" id="legend">
+    <button class="lg" data-cat="sec"><i style="background:var(--c-sec)"></i>security</button>
+    <button class="lg" data-cat="health"><i style="background:var(--c-health)"></i>health</button>
+    <button class="lg" data-cat="adopt"><i style="background:var(--c-adopt)"></i>adoption</button>
+    <button class="lg" data-cat="val"><i style="background:var(--c-val)"></i>valuation</button>
+    <button class="lg" data-cat="macro"><i style="background:var(--c-macro)"></i>macro</button>
+    <button class="lg off" data-card="price"><i style="background:var(--btc)"></i>price</button>
   </div>
-</header>
+  <div class="live"><span class="dot" id="h-dot"></span><span id="h-status">live</span></div>
+</div></header>
 
 <main><div class="grid" id="grid"></div></main>
 <footer id="ftr"></footer>
 
 <div id="focus"><div class="fpanel">
-  <div class="fhead">
-    <div><h2 id="f-title">—</h2><div class="fbig num" id="f-big">—</div><div class="csub" id="f-sub"></div></div>
-    <button class="fclose" id="f-close">esc</button>
-  </div>
-  <div class="fbody"><div class="fchart"><canvas id="f-canvas"></canvas></div><div class="fnote" id="f-note"></div></div>
+  <div class="fhead"><div><h2 id="f-title">—</h2><div class="fbig num" id="f-big">—</div><div class="csub" id="f-sub"></div></div>
+    <button class="fclose" id="f-close">esc</button></div>
+  <div class="fbody"><div class="frange" id="f-range"></div><div class="fchart"><canvas id="f-canvas"></canvas></div><div class="fnote" id="f-note"></div></div>
 </div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <script>
 "use strict";
+/* ---- editable benchmarks (approx, slow-moving) ---- */
+const BENCH=[["Gold",27e12],["Global wealth",470e12],["US M2",22e12],["S&P 500",52e12]];
+
 const $=s=>document.querySelector(s);
 const GENESIS=Date.UTC(2009,0,3), now=()=>Date.now();
-const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
-  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
-function fmtUSD(n,d){if(n==null||isNaN(n))return"—";
-  return"$"+Number(n).toLocaleString("en-US",{maximumFractionDigits:d??0,minimumFractionDigits:d??0});}
+function fmtUSD(n,d){if(n==null||isNaN(n))return"—";return"$"+Number(n).toLocaleString("en-US",{maximumFractionDigits:d??0,minimumFractionDigits:d??0})}
 function compact(n,p){if(n==null||isNaN(n))return"—";const a=Math.abs(n);
   if(a>=1e12)return(n/1e12).toFixed(p??2)+"T";if(a>=1e9)return(n/1e9).toFixed(p??2)+"B";
   if(a>=1e6)return(n/1e6).toFixed(p??2)+"M";if(a>=1e3)return(n/1e3).toFixed(p??1)+"K";
-  return(+n).toLocaleString("en-US",{maximumFractionDigits:p??0});}
-function fmtHash(h){if(h==null||isNaN(h))return"—";const u=["H","KH","MH","GH","TH","PH","EH","ZH"];
-  let i=0,v=h;while(v>=1000&&i<u.length-1){v/=1000;i++}return v.toFixed(2)+" "+u[i]+"/s";}
+  return(+n).toLocaleString("en-US",{maximumFractionDigits:p??0})}
+function fmtHash(h){if(h==null||isNaN(h))return"—";const u=["H","KH","MH","GH","TH","PH","EH","ZH"];let i=0,v=h;
+  while(v>=1000&&i<u.length-1){v/=1000;i++}return v.toFixed(2)+" "+u[i]+"/s"}
 function timeAgo(ms){if(ms==null)return"—";const s=Math.max(0,Math.floor((now()-ms)/1000));
-  if(s<60)return s+"s";const m=Math.floor(s/60);if(m<60)return m+"m "+(s%60)+"s";
-  const h=Math.floor(m/60);return h+"h "+(m%60)+"m";}
-function dur(sec){if(sec==null||sec<0)return"—";sec=Math.floor(sec);const d=Math.floor(sec/86400),
-  h=Math.floor(sec%86400/3600),m=Math.floor(sec%3600/60);
-  if(d>0)return d+"d "+h+"h";if(h>0)return h+"h "+m+"m";return m+"m "+(sec%60)+"s";}
-
+  if(s<60)return s+"s";const m=Math.floor(s/60);if(m<60)return m+"m "+(s%60)+"s";const h=Math.floor(m/60);return h+"h "+(m%60)+"m"}
+function dur(sec){if(sec==null||sec<0)return"—";sec=Math.floor(sec);const d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),m=Math.floor(sec%3600/60);
+  if(d>0)return d+"d "+h+"h";if(h>0)return h+"h "+m+"m";return m+"m "+(sec%60)+"s"}
 async function getJSON(url,ms=12000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);
-  try{const r=await fetch(url,{signal:c.signal,headers:{accept:"application/json"}});
-    if(!r.ok)throw new Error(r.status);return await r.json()}finally{clearTimeout(t)}}
+  try{const r=await fetch(url,{signal:c.signal,headers:{accept:"application/json"}});if(!r.ok)throw new Error(r.status);return await r.json()}finally{clearTimeout(t)}}
+async function proxied(url,ms=15000){try{return await getJSON(url,ms)}
+  catch(e){return await getJSON("https://api.allorigins.win/raw?url="+encodeURIComponent(url),ms)}}
+async function getText(url,ms=15000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);
+  try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error(r.status);return await r.text()}finally{clearTimeout(t)}}
+async function proxiedText(url,ms=15000){try{return await getText(url,ms)}catch(e){return await getText("https://api.allorigins.win/raw?url="+encodeURIComponent(url),ms)}}
+function parseCsv(text,scale){const out=[],lines=text.trim().split(/\r?\n/);
+  for(let i=1;i<lines.length;i++){const parts=lines[i].split(",");if(parts.length<2)continue;
+    const t=Date.parse(parts[0]),n=parseFloat(parts[1]);if(isNaN(t)||isNaN(n))continue;out.push({t,v:n*scale})}return out}
+
+/* series stored as {t,v}; slice by days */
+function sliceDays(s,days){if(!s||!s.length)return[];if(days==null)return s;const cut=now()-days*86400000;const r=s.filter(p=>p.t>=cut);return r.length>1?r:s.slice(-2)}
+const vals=s=>s.map(p=>p.v);
 
 Chart.defaults.font.family="IBM Plex Mono, monospace";Chart.defaults.color="#544e44";
-const C={btc:"#f7931a",sec:"#f7931a",health:"#3fd0c9",adopt:"#ffd166",val:"#8c8276",
-  ink:"#f4efe7",line:"#191613",mute:"#544e44"};
-function grad(ctx,area,col){if(!area)return col+"22";const g=ctx.createLinearGradient(0,area.top,0,area.bottom);
-  g.addColorStop(0,col+"44");g.addColorStop(1,col+"00");return g}
-function spark(cv,data,col){return new Chart(cv,{type:"line",
-  data:{labels:data.map((_,i)=>i),datasets:[{data,borderColor:col,borderWidth:2,pointRadius:0,tension:.35,
-    fill:true,backgroundColor:ctx=>grad(ctx.chart.ctx,ctx.chart.chartArea,col)}]},
-  options:{responsive:true,maintainAspectRatio:false,animation:false,
-    plugins:{legend:{display:false},tooltip:{enabled:false}},
-    scales:{x:{display:false},y:{display:false,grace:"8%"}}}});}
+const C={btc:"#f7931a",sec:"#f7931a",health:"#3fd0c9",adopt:"#ffd166",val:"#8c8276",ink:"#f4efe7",line:"#191613",mute:"#544e44"};
+const GOLD="#e3b23c";
+const MACRO="#b48ead";
+function grad(ctx,area,col){if(!area)return col+"22";const g=ctx.createLinearGradient(0,area.top,0,area.bottom);g.addColorStop(0,col+"44");g.addColorStop(1,col+"00");return g}
+function spark(cv,data,col){return new Chart(cv,{type:"line",data:{labels:data.map((_,i)=>i),
+  datasets:[{data,borderColor:col,borderWidth:2,pointRadius:0,tension:.35,fill:true,backgroundColor:ctx=>grad(ctx.chart.ctx,ctx.chart.chartArea,col)}]},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{enabled:false}},
+    scales:{x:{display:false},y:{display:false,grace:"8%"}}}})}
+function upsertSpark(id,data,col){const cv=$("#"+id);if(!cv)return;if(charts[id]){charts[id].data.datasets[0].data=data;charts[id].data.labels=data.map((_,i)=>i);charts[id].update("none")}else charts[id]=spark(cv,data,col)}
+function upsert(cv,key,cfg){if(charts[key]){charts[key].data=cfg.data;charts[key].options=cfg.options;charts[key].update("none")}else charts[key]=new Chart(cv,cfg)}
 
 const S={},charts={};
-const CATS={sec:{l:"security",c:"var(--c-sec)"},health:{l:"health",c:"var(--c-health)"},
-  adopt:{l:"adoption",c:"var(--c-adopt)"},val:{l:"valuation",c:"var(--c-val)"}};
+const CATS={sec:{l:"security",c:"var(--c-sec)"},health:{l:"health",c:"var(--c-health)"},adopt:{l:"adoption",c:"var(--c-adopt)"},val:{l:"valuation",c:"var(--c-val)"},macro:{l:"macro",c:"var(--c-macro)"}};
 const METRICS=[
-  {id:"power",  t:"Power Law",   cat:"val",   span:"span8", tall:true},
-  {id:"hash",   t:"Hash Rate",   cat:"sec"},
-  {id:"diff",   t:"Difficulty",  cat:"sec"},
-  {id:"blocks", t:"Blocks",      cat:"health"},
-  {id:"mempool",t:"Mempool",     cat:"health"},
-  {id:"fees",   t:"Fees",        cat:"health"},
-  {id:"tx",     t:"Transactions",cat:"adopt"},
-  {id:"addr",   t:"Addresses",   cat:"adopt"},
-  {id:"ln",     t:"Lightning",   cat:"adopt"},
-  {id:"nodes",  t:"Nodes",       cat:"adopt"},
-  {id:"mcap",   t:"Market Cap",  cat:"val"},
-  {id:"price",  t:"Price",       cat:"val"},
+  {id:"power",  t:"Power Law",     cat:"val",   span:"span8", tall:true},
+  {id:"hash",   t:"Hash Rate",     cat:"sec"},
+  {id:"diff",   t:"Difficulty",    cat:"sec"},
+  {id:"blocks", t:"Blocks",        cat:"health"},
+  {id:"mempool",t:"Mempool",       cat:"health"},
+  {id:"fees",   t:"Fees",          cat:"health"},
+  {id:"tx",     t:"Transactions",  cat:"adopt"},
+  {id:"addr",   t:"Addresses",     cat:"adopt"},
+  {id:"ln",     t:"Lightning",     cat:"adopt"},
+  {id:"nodes",  t:"Nodes",         cat:"adopt"},
+  {id:"mcap",   t:"Market Cap",    cat:"val"},
+  {id:"relval", t:"Relative Value",cat:"val"},
+  {id:"btcgold",t:"Bitcoin in Gold",cat:"val"},
+  {id:"m2",     t:"M2 Money Supply",cat:"macro"},
+  {id:"debt",   t:"US Public Debt", cat:"macro"},
+  {id:"price",  t:"Price",         cat:"val"},
 ];
 
 const grid=$("#grid");
 let ordered=METRICS.slice();const ord=ls.get("btc-order");
 if(ord)ordered.sort((a,b)=>{const i=ord.indexOf(a.id),j=ord.indexOf(b.id);return(i<0?99:i)-(j<0?99:j)});
 for(const m of ordered){const c=document.createElement("div");
-  c.className="card"+(m.span?" "+m.span:"")+(m.tall?" tall":"");
-  c.dataset.id=m.id;c.style.setProperty("--cat",CATS[m.cat].c);
-  c.innerHTML=`<span class="stale"></span>
-    <div class="chead"><span class="ctitle">${m.t}</span><span class="ctag">${CATS[m.cat].l}</span></div>
-    <div class="cbody" id="b-${m.id}"></div><span class="grip">⠿</span>`;
-  c.addEventListener("click",e=>{if(e.target.closest(".grip"))return;openFocus(m.id)});
-  grid.appendChild(c);}
-new Sortable(grid,{animation:150,handle:".grip",ghostClass:"sortable-ghost",chosenClass:"sortable-chosen",
-  onEnd(){ls.set("btc-order",[...grid.children].map(c=>c.dataset.id))}});
+  c.className="card"+(m.span?" "+m.span:"")+(m.tall?" tall":"");c.dataset.id=m.id;c.style.setProperty("--cat",CATS[m.cat].c);
+  c.innerHTML=`<span class="stale"></span><div class="chead"><span class="ctitle">${m.t}</span><span class="ctag">${CATS[m.cat].l}</span></div><div class="cbody" id="b-${m.id}"></div><span class="grip">⠿</span>`;
+  c.addEventListener("click",e=>{if(e.target.closest(".grip"))return;openFocus(m.id)});grid.appendChild(c)}
+new Sortable(grid,{animation:150,handle:".grip",ghostClass:"sortable-ghost",chosenClass:"sortable-chosen",onEnd(){ls.set("btc-order",[...grid.children].map(c=>c.dataset.id))}});
 
-const body=id=>$("#b-"+id), card=id=>grid.querySelector(`.card[data-id="${id}"]`);
+const body=id=>$("#b-"+id),card=id=>grid.querySelector(`.card[data-id="${id}"]`);
 function setStale(id,b){const c=card(id);if(c)c.classList.toggle("is-stale",!!b)}
-function upsertSpark(id,data,col){const cv=$("#"+id);if(!cv)return;
-  if(charts[id]){charts[id].data.datasets[0].data=data;charts[id].update("none")}else charts[id]=spark(cv,data,col)}
-function upsert(cv,key,cfg){if(charts[key]){charts[key].data=cfg.data;charts[key].options=cfg.options;charts[key].update("none")}
-  else charts[key]=new Chart(cv,cfg)}
 
-/* power law */
+/* ---- category + card visibility (price hidden by default) ---- */
+const DEF_HID_CARDS=["price"];
+let hidCats=new Set(ls.get("btc-hidcats")||[]);
+let hidCards=new Set(ls.get("btc-hidcards")||DEF_HID_CARDS);
+function applyVis(){
+  for(const m of METRICS){const c=card(m.id);if(!c)continue;c.style.display=(!hidCats.has(m.cat)&&!hidCards.has(m.id))?"":"none"}
+  const valShown=!hidCats.has("val"),showPrice=valShown&&!hidCards.has("price"),pp=$("#pill-price"),pm=$("#pill-mcap");
+  if(pp)pp.style.display=showPrice?"":"none";
+  if(pm)pm.style.display=(valShown&&!showPrice)?"":"none";
+  document.querySelectorAll(".lg").forEach(b=>{const cat=b.dataset.cat,cd=b.dataset.card;
+    if(cat)b.classList.toggle("off",hidCats.has(cat));if(cd)b.classList.toggle("off",hidCards.has(cd))})}
+document.querySelectorAll(".lg").forEach(b=>b.addEventListener("click",()=>{
+  const cat=b.dataset.cat,cd=b.dataset.card;
+  if(cat){hidCats.has(cat)?hidCats.delete(cat):hidCats.add(cat);ls.set("btc-hidcats",[...hidCats])}
+  if(cd){hidCards.has(cd)?hidCards.delete(cd):hidCards.add(cd);ls.set("btc-hidcards",[...hidCards])}
+  applyVis()}));
+
+/* ---- power law ---- */
 function plModel(d){return Math.pow(10,5.82*Math.log10(d)-17.01)}
 function daysSince(ts){return Math.max(1,(ts-GENESIS)/86400000)}
-function drawPowerChart(cv,key,big){const hist=S.history;if(!hist||!hist.length)return;
-  const minD=daysSince(hist[0].x),maxD=daysSince(now())*1.25,model=[],sup=[],res=[];
-  for(let lg=Math.log10(minD);lg<=Math.log10(maxD);lg+=0.04){const dd=Math.pow(10,lg),f=plModel(dd);
-    model.push({x:dd,y:f});sup.push({x:dd,y:f*Math.pow(10,-0.3)});res.push({x:dd,y:f*Math.pow(10,0.3)})}
-  const actual=hist.map(p=>({x:daysSince(p.x),y:p.y}));
-  const ds=[{label:"resistance",data:res,borderColor:C.btc+"3a",borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
-    {label:"fair value",data:model,borderColor:C.btc,borderWidth:2,pointRadius:0,fill:"+1",
-      backgroundColor:ctx=>grad(ctx.chart.ctx,ctx.chart.chartArea,C.btc)},
-    {label:"support",data:sup,borderColor:C.btc+"3a",borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
-    {label:"price",data:actual,borderColor:C.ink,borderWidth:big?2:1.4,pointRadius:0,fill:false}];
+function drawPowerChart(cv,key,big){const hist=S.priceHist;if(!hist||!hist.length)return;
+  const model=[],sup=[],res=[];
+  for(const p of hist){const d=daysSince(p.t),f=plModel(d);model.push({x:d,y:f});sup.push({x:d,y:f*0.501});res.push({x:d,y:f*1.995})}
+  const lastD=daysSince(hist[hist.length-1].t);
+  for(let k=1;k<=18;k++){const d=lastD+k*30,f=plModel(d);model.push({x:d,y:f});sup.push({x:d,y:f*0.501});res.push({x:d,y:f*1.995})}
+  const actual=hist.map(p=>({x:daysSince(p.t),y:p.v}));
+  const ds=[
+    {label:"resistance",data:res,borderColor:C.btc+"66",borderWidth:1,borderDash:[5,4],pointRadius:0,fill:"+2",backgroundColor:"rgba(247,147,26,.06)"},
+    {label:"fair value",data:model,borderColor:C.btc,borderWidth:2,pointRadius:0,fill:false},
+    {label:"support",data:sup,borderColor:C.btc+"66",borderWidth:1,borderDash:[5,4],pointRadius:0,fill:false},
+    {label:"price",data:actual,borderColor:C.ink,borderWidth:big?2:1.6,pointRadius:0,fill:false}];
   upsert(cv,key,{type:"line",data:{datasets:ds},options:{responsive:true,maintainAspectRatio:false,animation:false,
     plugins:{legend:{display:big,labels:{boxWidth:9,font:{size:10}}},
-      tooltip:{enabled:big,callbacks:{title:i=>"day "+Math.round(i[0].parsed.x).toLocaleString(),
-        label:i=>i.dataset.label+": "+fmtUSD(i.parsed.y)}}},
+      tooltip:{enabled:big,callbacks:{title:i=>"day "+Math.round(i[0].parsed.x).toLocaleString(),label:i=>i.dataset.label+": "+fmtUSD(i.parsed.y)}}},
     scales:{x:{type:"logarithmic",grid:{color:C.line},ticks:{color:C.mute,maxTicksLimit:6}},
-      y:{type:"logarithmic",grid:{color:C.line},
-        ticks:{color:C.mute,callback:v=>{const l=Math.log10(v);return l===Math.round(l)?"$"+compact(v,0):""}}}}}});}
+      y:{type:"logarithmic",grid:{color:C.line},ticks:{color:C.mute,callback:v=>{const l=Math.log10(v);return l===Math.round(l)?"$"+compact(v,0):""}}}}}})}
 
-/* renderers — minimal copy */
-function rPower(){const b=body("power");if(!b.dataset.i){b.dataset.i=1;
-  b.innerHTML=`<div class="csub" id="pl-s"></div><div class="spark"><canvas id="pl-c"></canvas></div>`}
-  const hist=S.history;if(!hist||!hist.length)return;
-  const px=S.price?.usd??hist.at(-1).y,d=daysSince(now()),fair=plModel(d),dev=(px/fair-1)*100;
-  $("#pl-s").innerHTML=`<span class="num" style="color:var(--ink)">${fmtUSD(px)}</span>
-    <span style="color:var(--btc)">fair ${fmtUSD(fair)}</span>
-    <span class="chip ${dev>=0?'up':'down'}">${dev>=0?'+':''}${dev.toFixed(0)}%</span>`;
-  drawPowerChart($("#pl-c"),"power",false);}
-function rHash(){const b=body("hash");if(!b.dataset.i){b.dataset.i=1;
-  b.innerHTML=`<div class="cmain num" id="hash-v">—</div><div class="csub" id="hash-s"></div>
-    <div class="spark"><canvas id="hash-c"></canvas></div>`}
+/* ---- renderers (card sparklines default to last 30 days) ---- */
+function rPower(){const b=body("power");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="csub" id="pl-s"></div><div class="spark"><canvas id="pl-c"></canvas></div>`}
+  const hist=S.priceHist;if(!hist||!hist.length)return;
+  const px=S.price?.usd??hist[hist.length-1].v,d=daysSince(now()),fair=plModel(d),dev=(px/fair-1)*100;
+  $("#pl-s").innerHTML=`<span class="num" style="color:var(--ink)">${fmtUSD(px)}</span><span style="color:var(--btc)">fair ${fmtUSD(fair)}</span><span class="chip ${dev>=0?'up':'down'}">${dev>=0?'+':''}${dev.toFixed(0)}%</span>`;
+  drawPowerChart($("#pl-c"),"power",false)}
+function rHash(){const b=body("hash");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="hash-v">—</div><div class="csub" id="hash-s"></div><div class="spark"><canvas id="hash-c"></canvas></div>`}
   $("#hash-v").textContent=fmtHash(S.hashCurrent);
-  if(S.hashSeries?.length){const chg=(S.hashCurrent/S.hashSeries[0].avgHashrate-1)*100;
+  if(S.hashSeries?.length){const yr=sliceDays(S.hashSeries,365),first=yr[0]?.v??S.hashSeries[0].v,chg=(S.hashCurrent/first-1)*100;
     $("#hash-s").innerHTML=`<span class="chip ${chg>=0?'up':'down'}">${chg>=0?'+':''}${chg.toFixed(0)}% / yr</span>`;
-    upsertSpark("hash-c",S.hashSeries.map(p=>p.avgHashrate),C.sec)}}
-function rDiff(){const b=body("diff");if(!b.dataset.i){b.dataset.i=1;
-  b.innerHTML=`<div class="cmain num" id="diff-v">—</div>
-    <div class="srow"><div class="s"><span class="k">Next</span><span class="v num" id="diff-chg">—</span></div>
-    <div class="s"><span class="k">Retarget</span><span class="v num" id="diff-eta">—</span></div></div>
-    <div class="spark"><canvas id="diff-c"></canvas></div>`}
+    upsertSpark("hash-c",vals(sliceDays(S.hashSeries,30)),C.sec)}}
+function rDiff(){const b=body("diff");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="diff-v">—</div><div class="srow"><div class="s"><span class="k">Next</span><span class="v num" id="diff-chg">—</span></div><div class="s"><span class="k">Retarget</span><span class="v num" id="diff-eta">—</span></div></div><div class="spark"><canvas id="diff-c"></canvas></div>`}
   if(S.difficulty!=null)$("#diff-v").textContent=compact(S.difficulty,2);
-  const a=S.diffAdj;if(a){const el=$("#diff-chg");el.textContent=(a.difficultyChange>=0?"+":"")+a.difficultyChange.toFixed(2)+"%";
-    el.className="v num chip "+(a.difficultyChange>=0?"up":"down");
-    const eta=a.estimatedRetargetDate?Math.floor((a.estimatedRetargetDate-now())/1000):a.remainingTime/1000;
-    $("#diff-eta").textContent=dur(eta)}
-  if(S.diffSeries?.length)upsertSpark("diff-c",S.diffSeries.map(p=>p.difficulty),C.sec)}
-function rBlocks(){const b=body("blocks");if(!b.dataset.i){b.dataset.i=1;
-  b.innerHTML=`<div class="cmain num" id="blk-v">—</div><div class="csub" id="blk-s"></div>
-    <div class="blist" id="blk-list"></div>`}
+  const a=S.diffAdj;if(a){const el=$("#diff-chg");el.textContent=(a.difficultyChange>=0?"+":"")+a.difficultyChange.toFixed(2)+"%";el.className="v num chip "+(a.difficultyChange>=0?"up":"down");
+    const eta=a.estimatedRetargetDate?Math.floor((a.estimatedRetargetDate-now())/1000):a.remainingTime/1000;$("#diff-eta").textContent=dur(eta)}
+  if(S.diffSeries?.length)upsertSpark("diff-c",vals(sliceDays(S.diffSeries,30)),C.sec)}
+function rBlocks(){const b=body("blocks");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="blk-v">—</div><div class="csub" id="blk-s"></div><div class="blist" id="blk-list"></div>`}
   if(S.tip!=null)$("#blk-v").textContent="#"+S.tip.toLocaleString();
   $("#blk-s").innerHTML=`<span id="blk-since">—</span>`;
-  if(S.recentBlocks?.length)$("#blk-list").innerHTML=S.recentBlocks.slice(0,3).map(x=>
-    `<div class="blk"><b>#${x.height.toLocaleString()}</b><span>${compact(x.tx_count||0,0)} tx</span>
-     <span>${timeAgo(x.timestamp*1000)}</span></div>`).join("")}
-function rMempool(){const b=body("mempool");if(!b.dataset.i){b.dataset.i=1;
-  b.innerHTML=`<div class="cmain num" id="mp-v">—</div><div class="csub">unconfirmed tx</div>
-    <div class="srow"><div class="s"><span class="k">Size</span><span class="v num" id="mp-vs">—</span></div>
-    <div class="s"><span class="k">Fees</span><span class="v num" id="mp-fee">—</span></div>
-    <div class="s"><span class="k">Clear</span><span class="v num" id="mp-blk">—</span></div></div>`}
-  const m=S.mp;if(!m)return;$("#mp-v").textContent=compact(m.count,0);
-  $("#mp-vs").textContent=(m.vsize/1e6).toFixed(1)+" vMB";
-  $("#mp-fee").textContent=(m.total_fee/1e8).toFixed(2)+"₿";
-  $("#mp-blk").textContent=Math.ceil(m.vsize/1e6)+" blk"}
+  if(S.recentBlocks?.length)$("#blk-list").innerHTML=S.recentBlocks.slice(0,3).map(x=>`<div class="blk"><b>#${x.height.toLocaleString()}</b><span>${compact(x.tx_count||0,0)} tx</span><span>${timeAgo(x.timestamp*1000)}</span></div>`).join("")}
+function rMempool(){const b=body("mempool");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="mp-v">—</div><div class="csub">unconfirmed tx</div><div class="srow"><div class="s"><span class="k">Size</span><span class="v num" id="mp-vs">—</span></div><div class="s"><span class="k">Fees</span><span class="v num" id="mp-fee">—</span></div><div class="s"><span class="k">Clear</span><span class="v num" id="mp-blk">—</span></div></div>`}
+  const m=S.mp;if(!m)return;$("#mp-v").textContent=compact(m.count,0);$("#mp-vs").textContent=(m.vsize/1e6).toFixed(1)+" vMB";$("#mp-fee").textContent=(m.total_fee/1e8).toFixed(2)+"₿";$("#mp-blk").textContent=Math.ceil(m.vsize/1e6)+" blk"}
 function rFees(){const b=body("fees");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="fees" id="fee-g"></div>`}
-  const f=S.fees;if(!f)return;
-  $("#fee-g").innerHTML=[["Priority",f.fastestFee],["30 min",f.halfHourFee],["1 hour",f.hourFee],["Economy",f.economyFee]]
-    .map(([k,v])=>`<div class="fee"><div class="k">${k}</div><div class="v num">${v} <small>sat/vB</small></div></div>`).join("")}
-function rTx(){const b=body("tx");if(!b.dataset.i){b.dataset.i=1;
-  b.innerHTML=`<div class="cmain num" id="tx-v">—</div><div class="csub">per day</div>
-    <div class="spark"><canvas id="tx-c"></canvas></div>`}
-  if(S.txSeries?.length){$("#tx-v").textContent=compact(S.txSeries.at(-1),0);upsertSpark("tx-c",S.txSeries,C.adopt)}}
-function rAddr(){const b=body("addr");if(!b.dataset.i){b.dataset.i=1;
-  b.innerHTML=`<div class="cmain num" id="ad-v">—</div><div class="csub">active / day</div>
-    <div class="spark"><canvas id="ad-c"></canvas></div>`}
-  if(S.addrSeries?.length){$("#ad-v").textContent=compact(S.addrSeries.at(-1),0);upsertSpark("ad-c",S.addrSeries,C.adopt)}}
-function rLN(){const b=body("ln");if(!b.dataset.i){b.dataset.i=1;
-  b.innerHTML=`<div class="cmain num" id="ln-v">—</div><div class="csub">capacity</div>
-    <div class="srow"><div class="s"><span class="k">Channels</span><span class="v num" id="ln-ch">—</span></div>
-    <div class="s"><span class="k">Nodes</span><span class="v num" id="ln-nd">—</span></div></div>
-    <div class="spark"><canvas id="ln-c"></canvas></div>`}
-  const l=S.ln;if(!l)return;$("#ln-v").textContent=(l.total_capacity/1e8).toFixed(0)+" ₿";
-  $("#ln-ch").textContent=compact(l.channel_count,0);
+  const f=S.fees;if(!f)return;$("#fee-g").innerHTML=[["Priority",f.fastestFee],["30 min",f.halfHourFee],["1 hour",f.hourFee],["Economy",f.economyFee]].map(([k,v])=>`<div class="fee"><div class="k">${k}</div><div class="v num">${v} <small>sat/vB</small></div></div>`).join("")}
+function rTx(){const b=body("tx");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="tx-v">—</div><div class="csub">per day</div><div class="spark"><canvas id="tx-c"></canvas></div>`}
+  if(S.txSeries?.length){$("#tx-v").textContent=compact(S.txSeries[S.txSeries.length-1].v,0);upsertSpark("tx-c",vals(sliceDays(S.txSeries,30)),C.adopt)}}
+function rAddr(){const b=body("addr");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="ad-v">—</div><div class="csub">active / day</div><div class="spark"><canvas id="ad-c"></canvas></div>`}
+  if(S.addrSeries?.length){$("#ad-v").textContent=compact(S.addrSeries[S.addrSeries.length-1].v,0);upsertSpark("ad-c",vals(sliceDays(S.addrSeries,30)),C.adopt)}}
+function rLN(){const b=body("ln");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="ln-v">—</div><div class="csub">capacity</div><div class="srow"><div class="s"><span class="k">Channels</span><span class="v num" id="ln-ch">—</span></div><div class="s"><span class="k">Nodes</span><span class="v num" id="ln-nd">—</span></div></div><div class="spark"><canvas id="ln-c"></canvas></div>`}
+  const l=S.ln;if(!l)return;$("#ln-v").textContent=(l.total_capacity/1e8).toFixed(0)+" ₿";$("#ln-ch").textContent=compact(l.channel_count,0);
   $("#ln-nd").textContent=compact((l.clearnet_nodes||0)+(l.tor_nodes||0)+(l.clearnet_tor_nodes||0)+(l.unannounced_nodes||0),0);
-  if(S.lnSeries?.length)upsertSpark("ln-c",S.lnSeries.map(p=>p/1e8),C.adopt)}
-function rNodes(){const b=body("nodes");if(!b.dataset.i){b.dataset.i=1;
-  b.innerHTML=`<div class="cmain num" id="nd-v">—</div><div class="csub" id="nd-s">reachable full nodes</div>`}
-  if(S.nodes!=null){$("#nd-v").textContent=compact(S.nodes,0);$("#nd-s").textContent="reachable full nodes"}
-  else if(S.nodesErr){$("#nd-s").innerHTML=`<span style="color:var(--neg)">blocked by CORS — host to enable</span>`}}
-function rMcap(){const b=body("mcap");if(!b.dataset.i){b.dataset.i=1;
-  b.innerHTML=`<div class="cmain num" id="mc-v">—</div><div class="csub">total value</div>
-    <div class="srow"><div class="s"><span class="k">Vol 24h</span><span class="v num" id="mc-vol">—</span></div>
-    <div class="s"><span class="k">vs ATH</span><span class="v num" id="mc-ath">—</span></div></div>`}
+  if(S.lnSeries?.length)upsertSpark("ln-c",vals(sliceDays(S.lnSeries,30)).map(v=>v/1e8),C.adopt)}
+function rNodes(){const b=body("nodes");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="nd-v">—</div><div class="csub" id="nd-s">reachable full nodes</div><div class="spark"><canvas id="nd-c"></canvas></div>`}
+  if(S.nodes!=null){$("#nd-v").textContent=compact(S.nodes,0);$("#nd-s").textContent="reachable full nodes";
+    if(S.nodeSeries?.length)upsertSpark("nd-c",vals(sliceDays(S.nodeSeries,30)),C.adopt)}
+  else if(S.nodesErr){$("#nd-s").innerHTML=`<span style="color:var(--faint)">temporarily unavailable</span>`}}
+function rMcap(){const b=body("mcap");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="mc-v">—</div><div class="csub" id="mc-s">total value</div><div class="srow"><div class="s"><span class="k">Vol 24h</span><span class="v num" id="mc-vol">—</span></div><div class="s"><span class="k">vs ATH</span><span class="v num" id="mc-ath">—</span></div></div><div class="spark"><canvas id="mc-c"></canvas></div>`}
   if(S.mcap!=null)$("#mc-v").textContent="$"+compact(S.mcap,2);
   if(S.vol!=null)$("#mc-vol").textContent="$"+compact(S.vol,1);
-  if(S.athPct!=null){const el=$("#mc-ath");el.textContent=S.athPct.toFixed(0)+"%";el.className="v num chip "+(S.athPct>=0?"up":"down")}}
-function rPrice(){const b=body("price");if(!b.dataset.i){b.dataset.i=1;
-  b.innerHTML=`<div class="cmain num" id="pr-v">—</div><div class="csub" id="pr-s"></div>
-    <div class="spark"><canvas id="pr-c"></canvas></div>`}
+  if(S.athPct!=null){const el=$("#mc-ath");el.textContent=S.athPct.toFixed(0)+"%";el.className="v num chip "+(S.athPct>=0?"up":"down")}
+  if(S.mcapSeries?.length)upsertSpark("mc-c",vals(sliceDays(S.mcapSeries,30)),C.btc)}
+function rRelval(){const b=body("relval");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="rv" id="rv-g"></div>`}
+  if(S.mcap==null)return;
+  $("#rv-g").innerHTML=BENCH.map(([k,d])=>{const pct=S.mcap/d*100;
+    return `<div class="rvrow"><div class="rvtop"><span>% of ${k}</span><b class="num">${pct<1?pct.toFixed(2):pct.toFixed(1)}%</b></div><div class="rvbar"><i style="width:${Math.min(100,pct)}%"></i></div></div>`}).join("")}
+function rBtcGold(){const b=body("btcgold");if(!b)return;if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="bg-v">—</div><div class="csub" id="bg-s">gold oz per ₿</div><div class="spark"><canvas id="bg-c"></canvas></div>`}
+  const gold=S.goldHist?.[S.goldHist.length-1]?.v,btc=S.price?.usd??S.priceHist?.[S.priceHist.length-1]?.v;
+  if(gold&&btc){const r=btc/gold;$("#bg-v").textContent=r.toFixed(1)+" oz";
+    if(S.btcGold?.length){const first=sliceDays(S.btcGold,365)[0]?.v;if(first){const chg=(r/first-1)*100;
+      $("#bg-s").innerHTML=`<span class="chip ${chg>=0?'up':'down'}">${chg>=0?'+':''}${chg.toFixed(0)}% / yr</span><span style="color:var(--faint)">oz per ₿</span>`}}}
+  if(S.btcGold?.length)upsertSpark("bg-c",vals(sliceDays(S.btcGold,30)),GOLD)}
+function computeBtcGold(){if(!S.priceHist||!S.goldHist)return;
+  const byDay=new Map();for(const p of S.priceHist)byDay.set(Math.floor(p.t/864e5),p.v);
+  S.btcGold=S.goldHist.map(g=>{const bp=byDay.get(Math.floor(g.t/864e5));return bp?{t:g.t,v:bp/g.v}:null}).filter(Boolean);rBtcGold()}
+function rM2(){const b=body("m2");if(!b)return;if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="m2-v">—</div><div class="csub" id="m2-s">US money supply</div><div class="spark"><canvas id="m2-c"></canvas></div>`}
+  if(S.m2Series?.length){const cur=S.m2Series[S.m2Series.length-1].v;$("#m2-v").textContent="$"+compact(cur,2);
+    const first=sliceDays(S.m2Series,365)[0]?.v;if(first){const chg=(cur/first-1)*100;$("#m2-s").innerHTML=`<span class="chip ${chg>=0?'up':'down'}">${chg>=0?'+':''}${chg.toFixed(1)}% / yr</span><span style="color:var(--faint)">US M2</span>`}
+    upsertSpark("m2-c",vals(S.m2Series),MACRO)}}
+function rDebt(){const b=body("debt");if(!b)return;if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="dbt-v">—</div><div class="csub" id="dbt-s">US public debt</div><div class="spark"><canvas id="dbt-c"></canvas></div>`}
+  const cur=S.debtNow?.v??S.debtSeries?.[S.debtSeries.length-1]?.v;
+  if(cur){$("#dbt-v").textContent="$"+compact(cur,2);
+    if(S.debtSeries?.length){const first=sliceDays(S.debtSeries,365)[0]?.v;if(first){const chg=(cur/first-1)*100;$("#dbt-s").innerHTML=`<span class="chip ${chg>=0?'up':'down'}">${chg>=0?'+':''}${chg.toFixed(1)}% / yr</span><span style="color:var(--faint)">federal</span>`}
+      upsertSpark("dbt-c",vals(S.debtSeries),MACRO)}}}
+function rPrice(){const b=body("price");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="pr-v">—</div><div class="csub" id="pr-s"></div><div class="persat num" id="pr-sat"></div><div class="spark"><canvas id="pr-c"></canvas></div>`}
   if(S.priceDisplay!=null)$("#pr-v").textContent=fmtUSD(S.priceDisplay,0);
   if(S.chg24!=null)$("#pr-s").innerHTML=`<span class="chip ${S.chg24>=0?'up':'down'}">${S.chg24>=0?'+':''}${S.chg24.toFixed(2)}% · 24h</span>`;
-  if(S.history?.length)upsertSpark("pr-c",S.history.slice(-90).map(p=>p.y),C.btc)}
+  const px=S.price?.usd??S.priceDisplay;if(px)$("#pr-sat").textContent=`1 sat = $${(px/1e8).toFixed(6)}  ·  ${Math.round(1e8/px).toLocaleString()} sats / $1`;
+  if(S.priceHist?.length)upsertSpark("pr-c",vals(sliceDays(S.priceHist,30)),C.btc)}
 
-const RENDER={power:rPower,hash:rHash,diff:rDiff,blocks:rBlocks,mempool:rMempool,fees:rFees,
-  tx:rTx,addr:rAddr,ln:rLN,nodes:rNodes,mcap:rMcap,price:rPrice};
+const RENDER={power:rPower,hash:rHash,diff:rDiff,blocks:rBlocks,mempool:rMempool,fees:rFees,tx:rTx,addr:rAddr,ln:rLN,nodes:rNodes,mcap:rMcap,relval:rRelval,btcgold:rBtcGold,m2:rM2,debt:rDebt,price:rPrice};
 function renderAll(){for(const k in RENDER)try{RENDER[k]()}catch(e){}}
 
-/* fetch */
+/* ---- fetch ---- */
 let netOK=true,lastErr=0;
-function flag(ok){const d=$("#h-dot"),s=$("#h-status");
-  if(ok){netOK=true;d.className="dot";s.textContent="live"}else{lastErr=now();d.className="dot warn";s.textContent="sync"}}
-async function pullPrice(){try{const d=await getJSON("https://api.coinbase.com/v2/prices/BTC-USD/spot");
-    S.price={usd:+d.data.amount};if(S.priceDisplay==null)S.priceDisplay=S.price.usd;setStale("price",false);flag(true)}
-  catch(e){try{const m=await getJSON("https://mempool.space/api/v1/prices");S.price={usd:m.USD};
-    if(S.priceDisplay==null)S.priceDisplay=m.USD;flag(true)}catch(e2){setStale("price",true);flag(false)}}
-  rPrice();rPower()}
+function flag(ok){const d=$("#h-dot"),s=$("#h-status");if(ok){netOK=true;d.className="dot";s.textContent="live"}else{lastErr=now();d.className="dot warn";s.textContent="sync"}}
+async function pullPrice(){try{const d=await getJSON("https://api.coinbase.com/v2/prices/BTC-USD/spot");S.price={usd:+d.data.amount};if(S.priceDisplay==null)S.priceDisplay=S.price.usd;setStale("price",false);flag(true)}
+  catch(e){try{const m=await getJSON("https://mempool.space/api/v1/prices");S.price={usd:m.USD};if(S.priceDisplay==null)S.priceDisplay=m.USD;flag(true)}catch(e2){setStale("price",true);flag(false)}}
+  rPrice();rPower();rRelval()}
 async function pullNetwork(){await Promise.allSettled([
   getJSON("https://mempool.space/api/blocks/tip/height").then(h=>{S.tip=+h;setStale("blocks",false)}).catch(()=>setStale("blocks",true)),
   getJSON("https://mempool.space/api/v1/blocks").then(b=>{S.recentBlocks=b;if(b[0])S.lastBlockMs=b[0].timestamp*1000}).catch(()=>{}),
@@ -353,96 +344,104 @@ async function pullNetwork(){await Promise.allSettled([
   getJSON("https://mempool.space/api/v1/lightning/statistics/latest").then(d=>{S.ln=d.latest||d;setStale("ln",false)}).catch(()=>setStale("ln",true)),
 ]);rBlocks();rDiff();rFees();rMempool();rLN()}
 async function pullHashrate(){try{const d=await getJSON("https://mempool.space/api/v1/mining/hashrate/1y");
-  S.hashSeries=d.hashrates;S.diffSeries=d.difficulty;
-  S.hashCurrent=d.currentHashrate??d.hashrates?.at(-1)?.avgHashrate;
-  S.difficulty=d.currentDifficulty??d.difficulty?.at(-1)?.difficulty;setStale("hash",false);rHash();rDiff()}
-  catch(e){setStale("hash",true)}}
+  S.hashSeries=(d.hashrates||[]).map(x=>({t:x.timestamp*1000,v:x.avgHashrate}));
+  S.diffSeries=(d.difficulty||[]).map(x=>({t:x.timestamp*1000,v:x.difficulty}));
+  S.hashCurrent=d.currentHashrate??S.hashSeries[S.hashSeries.length-1]?.v;
+  S.difficulty=d.currentDifficulty??S.diffSeries[S.diffSeries.length-1]?.v;setStale("hash",false);rHash();rDiff()}catch(e){setStale("hash",true)}}
 async function pullPriceHistory(){try{const d=await getJSON("https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=max");
-  S.history=d.prices.map(p=>({x:p[0],y:p[1]}));rPower();rPrice()}
-  catch(e){if(!S.history){try{const m=await getJSON("https://mempool.space/api/v1/historical-price?currency=USD");
-    S.history=(m.prices||[]).map(p=>({x:p.time*1000,y:p.USD}));rPower();rPrice()}catch(e2){}}}}
+  S.priceHist=d.prices.map(p=>({t:p[0],v:p[1]}));S.mcapSeries=(d.market_caps||[]).map(p=>({t:p[0],v:p[1]}));rPower();rPrice();rMcap();computeBtcGold()}
+  catch(e){if(!S.priceHist){try{const m=await getJSON("https://mempool.space/api/v1/historical-price?currency=USD");S.priceHist=(m.prices||[]).map(p=>({t:p.time*1000,v:p.USD}));rPower();rPrice()}catch(e2){}}}}
 async function pullMarket(){try{const a=await getJSON("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin");
-  const c=a[0];S.mcap=c.market_cap;S.vol=c.total_volume;S.chg24=c.price_change_percentage_24h;
-  S.athPct=c.ath_change_percentage;if(c.current_price)S.price={usd:c.current_price};setStale("mcap",false);rMcap();rPrice()}
-  catch(e){setStale("mcap",true)}}
+  const c=a[0];S.mcap=c.market_cap;S.vol=c.total_volume;S.chg24=c.price_change_percentage_24h;S.athPct=c.ath_change_percentage;if(c.current_price)S.price={usd:c.current_price};
+  setStale("mcap",false);rMcap();rPrice();rRelval()}catch(e){setStale("mcap",true)}}
 async function pullChain(){const base="https://api.blockchain.info/charts/";
-  try{const tx=await getJSON(base+"n-transactions?timespan=1year&format=json&cors=true");
-    S.txSeries=tx.values.map(v=>v.y);setStale("tx",false);rTx()}catch(e){setStale("tx",true)}
-  try{const ad=await getJSON(base+"n-unique-addresses?timespan=1year&format=json&cors=true");
-    S.addrSeries=ad.values.map(v=>v.y);setStale("addr",false);rAddr()}catch(e){setStale("addr",true)}}
+  try{const tx=await getJSON(base+"n-transactions?timespan=1year&format=json&cors=true");S.txSeries=tx.values.map(o=>({t:o.x*1000,v:o.y}));setStale("tx",false);rTx()}catch(e){setStale("tx",true)}
+  try{const ad=await getJSON(base+"n-unique-addresses?timespan=1year&format=json&cors=true");S.addrSeries=ad.values.map(o=>({t:o.x*1000,v:o.y}));setStale("addr",false);rAddr()}catch(e){setStale("addr",true)}}
 async function pullLNhistory(){try{const d=await getJSON("https://mempool.space/api/v1/lightning/statistics/3y");
-  S.lnSeries=(d||[]).map(p=>p.total_capacity).filter(Boolean);rLN()}catch(e){}}
-async function pullNodes(){try{const d=await getJSON("https://bitnodes.io/api/v1/snapshots/latest/",9000);
-  S.nodes=d.total_nodes;S.nodesErr=false;setStale("nodes",false)}catch(e){S.nodesErr=true;setStale("nodes",true)}rNodes()}
+  S.lnSeries=(d||[]).map(o=>({t:(o.added||o.timestamp||0)*1000,v:o.total_capacity})).filter(o=>o.v);rLN()}catch(e){}}
+async function pullNodes(){try{const d=await proxied("https://bitnodes.io/api/v1/snapshots/?limit=100",15000);
+  const res=d.results||[];if(!res.length)throw new Error("empty");
+  S.nodes=res[0].total_nodes;S.nodeSeries=res.map(r=>({t:r.timestamp*1000,v:r.total_nodes})).reverse();S.nodesErr=false;setStale("nodes",false)}
+  catch(e){S.nodesErr=true;setStale("nodes",true)}rNodes()}
+async function pullGold(){try{const d=await getJSON("https://api.coingecko.com/api/v3/coins/pax-gold/market_chart?vs_currency=usd&days=max");
+  S.goldHist=d.prices.map(p=>({t:p[0],v:p[1]}));computeBtcGold()}catch(e){}}
+async function pullM2(){try{const txt=await proxiedText("https://fred.stlouisfed.org/graph/fredgraph.csv?id=M2SL");
+  const s=parseCsv(txt,1e9);if(s.length){S.m2Series=s;setStale("m2",false);rM2()}else setStale("m2",true)}catch(e){setStale("m2",true)}}
+async function pullDebt(){
+  try{const txt=await proxiedText("https://fred.stlouisfed.org/graph/fredgraph.csv?id=GFDEBTN");
+    const s=parseCsv(txt,1e6);if(s.length){S.debtSeries=s;setStale("debt",false)}}catch(e){setStale("debt",true)}
+  try{const d=await getJSON("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?fields=record_date,tot_pub_debt_out_amt&sort=-record_date&page[size]=1");
+    const r=d.data?.[0];if(r){S.debtNow={t:Date.parse(r.record_date),v:+r.tot_pub_debt_out_amt};
+      if(S.debtSeries&&(!S.debtSeries.length||S.debtNow.t>S.debtSeries[S.debtSeries.length-1].t))S.debtSeries.push(S.debtNow)}}catch(e){}
+  rDebt()}
 
-/* 1s heartbeat */
+/* ---- 1s heartbeat ---- */
 function tick(){
-  if(S.price&&S.priceDisplay!=null){const t=S.price.usd,diff=t-S.priceDisplay;S.priceDisplay+=diff*0.25;
-    if(Math.abs(diff)<0.5)S.priceDisplay=t;$("#h-price").textContent=fmtUSD(S.priceDisplay,0);rPrice()}
+  if(S.price&&S.priceDisplay!=null){const t=S.price.usd,diff=t-S.priceDisplay;S.priceDisplay+=diff*0.25;if(Math.abs(diff)<0.5)S.priceDisplay=t;$("#h-price").textContent=fmtUSD(S.priceDisplay,0);rPrice()}
   if(S.tip!=null)$("#h-block").textContent="#"+S.tip.toLocaleString();
+  if(S.mcap!=null)$("#h-mcap").textContent="$"+compact(S.mcap,2);
   if(S.hashCurrent!=null)$("#h-hash").textContent=fmtHash(S.hashCurrent);
   if(S.lastBlockMs){$("#h-since").textContent=timeAgo(S.lastBlockMs);const e=$("#blk-since");if(e)e.textContent=timeAgo(S.lastBlockMs)}
-  if(S.diffAdj){const a=S.diffAdj,eta=a.estimatedRetargetDate?Math.floor((a.estimatedRetargetDate-now())/1000):null;
-    const e=$("#diff-eta");if(e&&eta!=null)e.textContent=dur(eta)}
+  if(S.diffAdj){const a=S.diffAdj,eta=a.estimatedRetargetDate?Math.floor((a.estimatedRetargetDate-now())/1000):null,e=$("#diff-eta");if(e&&eta!=null)e.textContent=dur(eta)}
   if(S.recentBlocks&&!document.hidden)rBlocks();
   if(!netOK&&now()-lastErr>15000)flag(true)}
 
-/* focus */
-let focusId=null,focusChart=null;
-const FNOTE={power:"Realized price against the log-log adoption model. Orange band = model support → resistance.",
-  hash:"Total work securing the chain. Miner conviction and 51%-attack cost.",
-  diff:"Auto-retarget keeping blocks near ten minutes. Tracks hashrate with a lag.",
-  blocks:"Roughly ten minutes of settlement finality per block.",
-  mempool:"Unconfirmed demand for blockspace.",fees:"Cost per byte of blockspace, live.",
-  tx:"On-chain settlement cleared per day.",addr:"Unique addresses transacting per day.",
-  ln:"Layer-2 capacity, channels and nodes.",nodes:"Independent validators — decentralization.",
-  mcap:"Market dollar valuation and liquidity.",price:"The crowd's live dollar guess."};
-function openFocus(id){focusId=id;const m=METRICS.find(x=>x.id===id);
-  const fp=$(".fpanel");fp.style.setProperty("--cat",CATS[m.cat].c);
-  $("#f-title").textContent=m.t;$("#f-note").textContent=FNOTE[id]||"";
-  $("#focus").classList.add("on");renderFocus()}
-function renderFocus(){const id=focusId,big=$("#f-big"),sub=$("#f-sub");
-  if(focusChart){focusChart.destroy();focusChart=null}const cv=$("#f-canvas");
-  if(id==="power"){const d=daysSince(now()),fair=plModel(d),px=S.price?.usd;
-    big.textContent=px?fmtUSD(px):"—";
-    sub.innerHTML=`<span style="color:var(--btc)">fair ${fmtUSD(fair)}</span>
-      <span class="chip ${px>=fair?'up':'down'}">${px?((px/fair-1)*100).toFixed(0)+'%':''}</span>`;
+/* ---- focus + ranges ---- */
+let focusId=null,focusChart=null,focusRange=30;
+const RANGES=[["1W",7],["1M",30],["3M",90],["6M",180],["1Y",365],["5Y",1825],["All",null]];
+const RLABEL={7:"1 week",30:"1 month",90:"3 months",180:"6 months",365:"1 year",1825:"5 years"};
+const rangeLabel=r=>r==null?"all time":RLABEL[r]||r+" days";
+const FNOTE={power:"Realized price against the log-log adoption model (kept full-history — a one-month power law is meaningless). Orange channel = model support → resistance.",
+  hash:"Total work securing the chain. Miner conviction and 51%-attack cost.",diff:"Auto-retarget keeping blocks near ten minutes. Tracks hashrate with a lag.",
+  blocks:"Roughly ten minutes of settlement finality per block.",mempool:"Unconfirmed demand for blockspace.",fees:"Cost per byte of blockspace, live.",
+  tx:"On-chain settlement cleared per day.",addr:"Unique addresses transacting per day.",ln:"Layer-2 capacity, channels and nodes.",
+  nodes:"Independent validators — decentralization. History is short (recent snapshots only).",mcap:"Market dollar valuation and liquidity.",
+  relval:"Market cap measured against the assets it competes with. Benchmarks are approximate, slow-moving.",
+  btcgold:"One bitcoin priced in troy ounces of gold (via PAX Gold). Rising = bitcoin gaining on the oldest hard money.",
+  m2:"US M2 money supply — dollars in existence. The up-and-to-the-right curve bitcoin was built against.",
+  debt:"US federal debt outstanding (to the penny). The other side of the printer.",price:"The crowd's live dollar guess."};
+const M=()=>({hash:{s:S.hashSeries,col:C.sec,f:fmtHash},diff:{s:S.diffSeries,col:C.sec,f:v=>compact(v,2)},
+  tx:{s:S.txSeries,col:C.adopt,f:v=>compact(v,0)},addr:{s:S.addrSeries,col:C.adopt,f:v=>compact(v,0)},
+  ln:{s:S.lnSeries,col:C.adopt,f:v=>(v/1e8).toFixed(0)+" ₿",tf:v=>v/1e8},price:{s:S.priceHist,col:C.btc,f:v=>fmtUSD(v)},
+  mcap:{s:S.mcapSeries,col:C.btc,f:v=>"$"+compact(v,2)},nodes:{s:S.nodeSeries,col:C.adopt,f:v=>compact(v,0)},
+  btcgold:{s:S.btcGold,col:GOLD,f:v=>v.toFixed(1)+" oz"},
+  m2:{s:S.m2Series,col:MACRO,f:v=>"$"+compact(v,2)},debt:{s:S.debtSeries,col:MACRO,f:v=>"$"+compact(v,2)}});
+function buildRanges(){const el=$("#f-range");if(focusId==="power"||focusId==="relval"||!M()[focusId]){el.style.display="none";return}
+  el.style.display="flex";el.innerHTML=RANGES.map(([l,d])=>`<button data-d="${d===null?'all':d}">${l}</button>`).join("");
+  [...el.children].forEach(btn=>{const d=btn.dataset.d==="all"?null:+btn.dataset.d;if(d===focusRange)btn.classList.add("on");btn.onclick=()=>{focusRange=d;buildRanges();renderFocus()}})}
+function clearCanvas(cv){const c=cv.getContext("2d");c.clearRect(0,0,cv.width,cv.height)}
+function openFocus(id){focusId=id;focusRange=(id==="m2"||id==="debt")?1825:30;const m=METRICS.find(x=>x.id===id);
+  $(".fpanel").style.setProperty("--cat",CATS[m.cat].c);$("#f-title").textContent=m.t;$("#f-note").textContent=FNOTE[id]||"";
+  $("#focus").classList.add("on");buildRanges();renderFocus()}
+function renderFocus(){const id=focusId,big=$("#f-big"),sub=$("#f-sub"),cv=$("#f-canvas");
+  if(focusChart){focusChart.destroy();focusChart=null}
+  if(id==="power"){const d=daysSince(now()),fair=plModel(d),px=S.price?.usd;big.textContent=px?fmtUSD(px):"—";
+    sub.innerHTML=`<span style="color:var(--btc)">fair ${fmtUSD(fair)}</span><span class="chip ${px>=fair?'up':'down'}">${px?((px/fair-1)*100).toFixed(0)+'%':''}</span>`;
     drawPowerChart(cv,"focus",true);focusChart=charts.focus;charts.focus=null;return}
-  const map={hash:{v:fmtHash(S.hashCurrent),s:"yearly trend",d:S.hashSeries?.map(p=>p.avgHashrate),col:C.sec},
-    diff:{v:compact(S.difficulty,2),s:"history",d:S.diffSeries?.map(p=>p.difficulty),col:C.sec},
-    tx:{v:S.txSeries?compact(S.txSeries.at(-1),0):"—",s:"per day · 1y",d:S.txSeries,col:C.adopt},
-    addr:{v:S.addrSeries?compact(S.addrSeries.at(-1),0):"—",s:"active / day · 1y",d:S.addrSeries,col:C.adopt},
-    ln:{v:S.ln?(S.ln.total_capacity/1e8).toFixed(0)+" ₿":"—",s:"capacity history",d:S.lnSeries?.map(p=>p/1e8),col:C.adopt},
-    price:{v:S.priceDisplay!=null?fmtUSD(S.priceDisplay):"—",s:"full history",d:S.history?.map(p=>p.y),col:C.btc},
-    mcap:{v:S.mcap!=null?"$"+compact(S.mcap,2):"—",s:"market cap",d:S.history?.map(p=>p.y),col:C.btc},
-    blocks:{v:S.tip!=null?"#"+S.tip.toLocaleString():"—",s:"recent",d:null},
-    mempool:{v:S.mp?compact(S.mp.count,0):"—",s:"unconfirmed",d:null},
-    fees:{v:S.fees?S.fees.fastestFee+" sat/vB":"—",s:"priority now",d:null},
-    nodes:{v:S.nodes!=null?compact(S.nodes,0):"—",s:"reachable",d:null}}[id]||{v:"—",s:"",d:null};
-  big.textContent=map.v;sub.textContent=map.s;
-  if(map.d&&map.d.length){focusChart=new Chart(cv,{type:"line",data:{labels:map.d.map((_,i)=>i),
-    datasets:[{data:map.d,borderColor:map.col,borderWidth:2,pointRadius:0,tension:.3,fill:true,
-      backgroundColor:ctx=>grad(ctx.chart.ctx,ctx.chart.chartArea,map.col)}]},
-    options:{responsive:true,maintainAspectRatio:false,animation:false,
-      plugins:{legend:{display:false},tooltip:{mode:"index",intersect:false,callbacks:{title:()=>"",label:i=>compact(i.parsed.y,2)}}},
-      scales:{x:{display:false},y:{grid:{color:C.line},ticks:{color:C.mute,callback:v=>compact(v,0)}}}}})}
-  else{$("#f-canvas").getContext("2d").clearRect(0,0,cv.width,cv.height)}}
+  if(id==="relval"){big.textContent=S.mcap!=null?"$"+compact(S.mcap,2):"—";sub.textContent="market cap vs benchmarks";clearCanvas(cv);
+    $("#f-note").textContent=FNOTE.relval+"  "+(S.mcap!=null?BENCH.map(([k,d])=>`${k} ${(S.mcap/d*100).toFixed(2)}%`).join(" · "):"");return}
+  const m=M()[id];
+  if(m&&m.s&&m.s.length){const sliced=sliceDays(m.s,focusRange),data=sliced.map(p=>m.tf?m.tf(p.v):p.v),latest=m.s[m.s.length-1].v;
+    big.textContent=m.f(latest);sub.textContent=rangeLabel(focusRange);
+    focusChart=new Chart(cv,{type:"line",data:{labels:data.map((_,i)=>i),datasets:[{data,borderColor:m.col,borderWidth:2,pointRadius:0,tension:.3,fill:true,backgroundColor:ctx=>grad(ctx.chart.ctx,ctx.chart.chartArea,m.col)}]},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{mode:"index",intersect:false,callbacks:{title:()=>"",label:i=>compact(i.parsed.y,2)}}},
+        scales:{x:{display:false},y:{grid:{color:C.line},ticks:{color:C.mute,callback:v=>compact(v,0)}}}}})}
+  else{const snap={blocks:S.tip!=null?"#"+S.tip.toLocaleString():"—",mempool:S.mp?compact(S.mp.count,0):"—",fees:S.fees?S.fees.fastestFee+" sat/vB":"—"}[id]||"—";
+    big.textContent=snap;sub.textContent="live snapshot";clearCanvas(cv)}}
 $("#f-close").addEventListener("click",closeFocus);
 $("#focus").addEventListener("click",e=>{if(e.target.id==="focus")closeFocus()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeFocus()});
 function closeFocus(){$("#focus").classList.remove("on");focusId=null;if(focusChart){focusChart.destroy();focusChart=null}}
 
-$("#ftr").innerHTML=`<a href="https://mempool.space" target="_blank" rel="noopener">mempool.space</a> ·
-  Coinbase · <a href="https://coingecko.com" target="_blank" rel="noopener">CoinGecko</a> ·
-  blockchain.info · <a href="https://bitnodes.io" target="_blank" rel="noopener">bitnodes</a> ·
-  power-law after Santostasi · omitted (no free data): non-zero balances, realized cap, SOPR, HODL waves, exchange flows.`;
+$("#ftr").innerHTML=`<a href="https://mempool.space" target="_blank" rel="noopener">mempool.space</a> · Coinbase · <a href="https://coingecko.com" target="_blank" rel="noopener">CoinGecko</a> · blockchain.info · <a href="https://bitnodes.io" target="_blank" rel="noopener">bitnodes</a> · gold via PAX Gold · M2 via <a href="https://fred.stlouisfed.org" target="_blank" rel="noopener">FRED</a> · debt via <a href="https://fiscaldata.treasury.gov" target="_blank" rel="noopener">US Treasury</a> · power-law after Santostasi · benchmarks approximate · omitted (no free data): non-zero balances, realized cap, SOPR, HODL waves, exchange flows.`;
 
-renderAll();
-pullPrice();pullNetwork();pullHashrate();pullPriceHistory();pullMarket();pullChain();pullLNhistory();pullNodes();
+renderAll();applyVis();
+pullPrice();pullNetwork();pullHashrate();pullPriceHistory();pullMarket();pullChain();pullLNhistory();pullNodes();pullGold();pullM2();pullDebt();
 setInterval(tick,1000);
 setInterval(pullPrice,6000);setInterval(pullNetwork,25000);setInterval(pullHashrate,3e5);
 setInterval(pullMarket,6e4);setInterval(pullPriceHistory,9e5);setInterval(pullChain,12e5);
-setInterval(pullLNhistory,18e5);setInterval(pullNodes,6e5);
+setInterval(pullLNhistory,18e5);setInterval(pullNodes,6e5);setInterval(pullGold,9e5);
+setInterval(pullM2,36e5);setInterval(pullDebt,36e5);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){pullPrice();pullNetwork()}});
 </script>
 </body>

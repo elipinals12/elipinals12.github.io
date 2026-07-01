@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%238f7dff'/><stop offset='1' stop-color='%2343e8d8'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='%230d0e13'/><circle cx='16' cy='16' r='6.5' fill='url(%23g)'/><circle cx='16' cy='16' r='6.5' fill='none' stroke='%23ffffff' stroke-opacity='0.12'/></svg>" />
+<title>Latent · Local AI image generator</title>
+<style>
+  :root{
+    --bg:#08080b; --bg2:#0d0e13; --panel:#111219; --line:#1e2029;
+    --ink:#ecebe6; --mute:#8a8b95; --faint:#585a66;
+    --a1:#8f7dff; --a2:#43e8d8; --err:#ff6b6b;
+    --r:14px; --ease:cubic-bezier(.2,.7,.2,1);
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 700px at 78% -10%, rgba(143,125,255,.10), transparent 60%),
+      radial-gradient(900px 600px at 8% 108%, rgba(67,232,216,.07), transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;min-height:100dvh;letter-spacing:.1px;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+
+  header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .dot{width:11px;height:11px;border-radius:50%;
+    background:linear-gradient(135deg,var(--a1),var(--a2));
+    box-shadow:0 0 16px rgba(143,125,255,.6);animation:pulse 3.2s var(--ease) infinite}
+  @keyframes pulse{0%,100%{opacity:.7;transform:scale(.92)}50%{opacity:1;transform:scale(1.08)}}
+  .brand b{font-weight:600;font-size:15px;letter-spacing:.4px}
+  .brand span{color:var(--faint);font-size:12px;letter-spacing:1.4px;text-transform:uppercase}
+  .iconbtn{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);
+    background:var(--panel);color:var(--mute);cursor:pointer;display:grid;place-items:center;transition:.25s var(--ease)}
+  .iconbtn:hover{color:var(--ink);border-color:#2c2f3b;transform:translateY(-1px)}
+  .iconbtn svg{width:18px;height:18px}
+  .gear{transition:transform .5s var(--ease)}
+  .iconbtn:hover .gear{transform:rotate(60deg)}
+
+  main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:8px 20px 40px;width:100%}
+  .stage{width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:22px}
+
+  .frame{position:relative;width:100%;aspect-ratio:1/1;border-radius:var(--r);
+    border:1px solid var(--line);overflow:hidden;background:linear-gradient(180deg,var(--bg2),#090a0e);
+    display:grid;place-items:center;transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
+  .frame.busy{border-color:rgba(143,125,255,.35);box-shadow:0 0 60px -20px rgba(143,125,255,.5)}
+  .frame img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .6s var(--ease)}
+  .frame img.in{opacity:1}
+  #noise{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .4s;pointer-events:none;image-rendering:pixelated}
+  .frame.busy #noise{opacity:.5}
+
+  .empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--faint)}
+  .empty .g{width:46px;height:46px;margin:0 auto 14px;border-radius:13px;
+    background:linear-gradient(135deg,rgba(143,125,255,.18),rgba(67,232,216,.14));
+    border:1px solid var(--line);display:grid;place-items:center;color:var(--mute)}
+  .empty p{margin:0;font-size:13.5px;line-height:1.5}
+
+  .status{position:absolute;left:0;right:0;bottom:0;padding:14px 16px;
+    background:linear-gradient(0deg,rgba(8,8,11,.92),transparent);
+    display:flex;flex-direction:column;gap:8px;opacity:0;transition:.3s;pointer-events:none}
+  .frame.busy .status{opacity:1}
+  .status .row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mute)}
+  .bar{height:3px;border-radius:99px;background:#20222c;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--a1),var(--a2));transition:width .3s var(--ease)}
+  .bar.indet i{width:35%;animation:slide 1.1s var(--ease) infinite}
+  @keyframes slide{0%{transform:translateX(-120%)}100%{transform:translateX(400%)}}
+
+  .composer{width:100%;position:relative}
+  .composer textarea{width:100%;min-height:58px;max-height:180px;resize:none;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+    color:var(--ink);font:inherit;font-size:15px;line-height:1.5;padding:17px 58px 17px 18px;outline:none;transition:.25s var(--ease)}
+  .composer textarea::placeholder{color:var(--faint)}
+  .composer textarea:focus{border-color:#33364a;box-shadow:0 0 0 3px rgba(143,125,255,.12)}
+  .go{position:absolute;right:9px;bottom:9px;width:40px;height:40px;border:none;border-radius:10px;cursor:pointer;
+    display:grid;place-items:center;background:linear-gradient(135deg,var(--a1),var(--a2));color:#0a0a0e;transition:.2s var(--ease)}
+  .go:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .go:disabled{opacity:.4;cursor:default;transform:none;filter:none}
+  .go svg{width:19px;height:19px}
+
+  .tools{display:flex;gap:10px;width:100%;justify-content:center;min-height:20px}
+  .tools button{background:none;border:none;color:var(--mute);cursor:pointer;font:inherit;font-size:12.5px;
+    display:inline-flex;align-items:center;gap:6px;padding:6px 4px;transition:.2s;opacity:0;pointer-events:none}
+  .tools.show button{opacity:1;pointer-events:auto}
+  .tools button:hover{color:var(--ink)}
+  .tools svg{width:14px;height:14px}
+
+  .hint{font-size:11.5px;color:var(--faint);text-align:center;max-width:470px;line-height:1.6}
+  .hint b{color:var(--mute);font-weight:600}
+
+  .scrim{position:fixed;inset:0;background:rgba(4,4,6,.55);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:.3s;z-index:8}
+  .scrim.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100dvh;width:min(340px,90vw);z-index:9;
+    background:var(--panel);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .38s var(--ease);
+    display:flex;flex-direction:column;padding:22px;gap:4px;overflow-y:auto}
+  .drawer.open{transform:none}
+  .drawer h2{margin:0 0 2px;font-size:14px;font-weight:600;letter-spacing:.3px;display:flex;justify-content:space-between;align-items:center}
+  .drawer .sub{color:var(--faint);font-size:11.5px;margin:0 0 18px;line-height:1.5}
+  .field{margin-bottom:20px}
+  .field label{display:block;font-size:12px;color:var(--mute);margin-bottom:9px;letter-spacing:.2px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{flex:1;min-width:fit-content;padding:9px 8px;border-radius:9px;border:1px solid var(--line);
+    background:var(--bg2);color:var(--mute);cursor:pointer;font:inherit;font-size:12px;transition:.2s var(--ease)}
+  .seg button:hover{color:var(--ink)}
+  .seg button.on{border-color:transparent;color:#0a0a0e;background:linear-gradient(135deg,var(--a1),var(--a2));font-weight:600}
+  .fnote{font-size:11px;color:var(--faint);margin-top:8px;line-height:1.5}
+  .drawer .foot{margin-top:auto;font-size:11px;color:var(--faint);line-height:1.6;border-top:1px solid var(--line);padding-top:16px}
+  .close{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--bg2);color:var(--mute);cursor:pointer;display:grid;place-items:center}
+  .close:hover{color:var(--ink)}
+
+  .fatal{max-width:460px;text-align:center;color:var(--mute);font-size:13.5px;line-height:1.6}
+  .fatal b{color:var(--err)}
+
+  @media (max-width:480px){header{padding:16px}.go{width:38px;height:38px}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="dot"></div>
+      <div><b>Latent</b><br><span>runs on your device</span></div>
+    </div>
+    <button class="iconbtn" id="openSettings" aria-label="Settings">
+      <svg class="gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <div class="stage" id="stage">
+      <div class="frame" id="frame">
+        <canvas id="noise" width="64" height="64"></canvas>
+        <div class="empty" id="empty">
+          <div class="g"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.6"/><path d="m21 15-4.5-4.5L6 21"/></svg></div>
+          <p>Describe an image below.<br>First run downloads the model once, then works offline.</p>
+        </div>
+        <img id="out" alt="" />
+        <div class="status">
+          <div class="row"><span id="stLabel">Working…</span><span id="stPct" class="mono"></span></div>
+          <div class="bar" id="bar"><i></i></div>
+        </div>
+      </div>
+
+      <div class="composer">
+        <textarea id="prompt" rows="1" placeholder="a lighthouse at dusk, oil painting, warm light"></textarea>
+        <button class="go" id="go" aria-label="Generate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+
+      <div class="tools" id="tools">
+        <button id="dl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>Download</button>
+        <button id="again"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5"/></svg>Regenerate</button>
+      </div>
+
+      <p class="hint" id="hint">Fully local text-to-image. Needs a <b>WebGPU</b> browser (Chrome / Edge). Nothing you type or make leaves your machine.</p>
+    </div>
+  </main>
+
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer" aria-label="Settings">
+    <h2>Settings <button class="close" id="closeSettings" aria-label="Close">✕</button></h2>
+    <p class="sub">Switching model reloads it (a fresh download the first time).</p>
+
+    <div class="field">
+      <label>Model</label>
+      <div class="seg" id="segModel">
+        <button data-v="sd-turbo" class="on">SD-Turbo</button>
+        <button data-v="janus-pro-1b">Janus Pro 1B</button>
+      </div>
+      <div class="fnote">SD-Turbo: fast, sharp, 512×512 (recommended). Janus: experimental, needs more memory.</div>
+    </div>
+
+    <div class="field">
+      <label>Images per run</label>
+      <div class="seg" id="segCount">
+        <button data-v="1" class="on">1</button>
+        <button data-v="2">2</button>
+        <button data-v="3">3</button>
+        <button data-v="4">4</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Variation</label>
+      <div class="seg" id="segSample">
+        <button data-v="1" class="on">On · random</button>
+        <button data-v="0">Off · repeatable</button>
+      </div>
+      <div class="fnote">On gives a new result each time (SD-Turbo). Off reuses a fixed seed.</div>
+    </div>
+
+    <div class="foot">
+      Model files cache in your browser after the first download, so you can go offline. Clear this site's data to free space.
+    </div>
+  </aside>
+
+<script type="module">
+import { Txt2ImgWorkerClient } from "https://esm.sh/web-txt2img@0.3.1";
+
+const $ = s => document.querySelector(s);
+const frame=$("#frame"), out=$("#out"), empty=$("#empty"), tools=$("#tools"),
+      bar=$("#bar"), barI=bar.querySelector("i"), stLabel=$("#stLabel"), stPct=$("#stPct"),
+      promptEl=$("#prompt"), go=$("#go"), hint=$("#hint");
+
+const cfg={ model:"sd-turbo", count:1, sample:1 };
+let client=null, loadedModel=null, busy=false, results=[], shown=0, lastPrompt="";
+
+/* ---------- settings drawer ---------- */
+const drawer=$("#drawer"), scrim=$("#scrim");
+const openD=()=>{drawer.classList.add("open");scrim.classList.add("open")};
+const closeD=()=>{drawer.classList.remove("open");scrim.classList.remove("open")};
+$("#openSettings").onclick=openD; $("#closeSettings").onclick=closeD; scrim.onclick=closeD;
+
+function wireSeg(sel,key,cast=v=>v,onChange){
+  const box=$(sel);
+  box.addEventListener("click",e=>{
+    const b=e.target.closest("button"); if(!b||busy)return;
+    [...box.children].forEach(c=>c.classList.remove("on"));
+    b.classList.add("on"); cfg[key]=cast(b.dataset.v); if(onChange)onChange();
+  });
+}
+wireSeg("#segModel","model",v=>v,()=>preload());   // model change -> preload new
+wireSeg("#segCount","count",Number);
+wireSeg("#segSample","sample",Number);
+
+/* ---------- textarea ---------- */
+promptEl.addEventListener("input",()=>{promptEl.style.height="auto";promptEl.style.height=Math.min(promptEl.scrollHeight,180)+"px"});
+promptEl.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();generate()}});
+
+/* ---------- helpers ---------- */
+function setBusy(b){ busy=b; go.disabled=b; promptEl.disabled=b;
+  frame.classList.toggle("busy",b); if(b)startNoise(); else stopNoise(); }
+function indet(on){ bar.classList.toggle("indet",on); if(on)barI.style.width=""; }
+function showError(msg){
+  setBusy(false); indet(false); barI.style.width="0"; stLabel.textContent=""; stPct.textContent="";
+  const ff=/Firefox/.test(navigator.userAgent);
+  if(results.length===0){
+    empty.style.display="grid";
+    empty.querySelector("p").innerHTML =
+      (ff ? "This runs reliably only in <b>Chrome or Edge</b>. Firefox's WebGPU often fails."
+          : "Couldn't generate. Try <b>1 image</b>, close other tabs, or switch model in settings.")
+      + "<br><span style='color:var(--faint);font-size:11px'>"+String(msg||"")+"</span>";
+  }
+}
+
+/* ---------- model load (with progress) ---------- */
+async function ensureClient(){
+  if(client) return client;
+  client = Txt2ImgWorkerClient.createDefault();
+  const caps = await client.detect().catch(()=>({webgpu:!!navigator.gpu}));
+  if(!caps || !caps.webgpu){
+    frame.innerHTML='<div class="fatal"><b>WebGPU not available.</b><br>Open this in Chrome or Edge (desktop) to run locally.</div>';
+    go.disabled=true; promptEl.disabled=true;
+    throw new Error("no webgpu");
+  }
+  return client;
+}
+
+async function preload(){
+  try{
+    await ensureClient();
+    if(loadedModel===cfg.model) return;
+    if(!busy){ hint.textContent="Downloading "+cfg.model+"… (one time, then offline)"; }
+    if(loadedModel){ await client.unload().catch(()=>{}); loadedModel=null; }
+    const res = await client.load(cfg.model, {backendPreference:["webgpu"]}, onLoad);
+    if(!res || res.ok===false) throw new Error(res && (res.message||res.reason) || "load failed");
+    loadedModel=cfg.model;
+    if(!busy) hint.innerHTML="Model ready. Runs fully on your device, offline.";
+  }catch(err){ if(String(err.message)!=="no webgpu") showError(err.message); }
+}
+
+function onLoad(p){
+  const pct = (p && p.pct!=null) ? p.pct : null;
+  const dl = p && p.bytesDownloaded, tot = p && p.totalBytesExpected;
+  const mb = (dl!=null&&tot!=null) ? ` · ${(dl/1048576).toFixed(0)}/${(tot/1048576).toFixed(0)} MB` : "";
+  if(busy){
+    stLabel.textContent="Downloading model…";
+    if(pct!=null){ indet(false); barI.style.width=Math.max(4,pct)+"%"; } else indet(true);
+    stPct.textContent = (dl!=null&&tot!=null) ? `${(dl/1048576).toFixed(0)}/${(tot/1048576).toFixed(0)} MB` : "";
+  }else{
+    hint.innerHTML = pct!=null
+      ? `Downloading model… <b>${Math.round(pct)}%</b>${mb}. Cached after, then offline.`
+      : `Downloading model…${mb}`;
+  }
+}
+
+/* ---------- generate ---------- */
+async function runOnce(prompt, seed){
+  const { promise } = client.generate({ prompt, seed }, e=>{
+    stLabel.textContent="Generating…"; indet(true); stPct.textContent="";
+  }, { busyPolicy:"queue" });
+  const gen = await promise;
+  if(!gen || gen.ok===false) throw new Error(gen && (gen.message||gen.reason) || "generation failed");
+  return gen.blob;
+}
+
+async function generate(){
+  const p=promptEl.value.trim(); if(!p||busy) return;
+  lastPrompt=p; results=[]; shown=0;
+  empty.style.display="none"; out.classList.remove("in");
+  tools.classList.remove("show"); hint.textContent="";
+  setBusy(true);
+  try{
+    await ensureClient();
+    if(loadedModel!==cfg.model){
+      stLabel.textContent="Loading model…"; indet(true); stPct.textContent="";
+      await preload();                       // downloads if needed
+    }else{
+      stLabel.textContent="Generating…"; indet(true);
+    }
+    for(let i=0;i<cfg.count;i++){
+      if(cfg.count>1){ stLabel.textContent=`Generating ${i+1} of ${cfg.count}…`; indet(true); }
+      const seed = cfg.sample ? Math.floor(Math.random()*1e9) : (1234+i);
+      const blob = await runOnce(p, seed);
+      results.push(URL.createObjectURL(blob));
+      showResult(results.length-1);
+    }
+    setBusy(false); indet(false); barI.style.width="0"; tools.classList.add("show");
+    if(results.length<=1) hint.textContent="Runs on your device, offline.";
+  }catch(err){ showError(err.message); }
+}
+
+function showResult(i){ shown=i; out.onload=()=>out.classList.add("in"); out.classList.remove("in"); out.src=results[i]; updateNav(); }
+function updateNav(){
+  if(results.length>1){ frame.style.cursor="pointer";
+    frame.onclick=()=>{ if(busy)return; showResult((shown+1)%results.length); };
+    hint.innerHTML=`Tap the image to see all <b>${results.length}</b> results.`;
+  }
+}
+
+$("#dl").onclick=()=>{ if(!results[shown])return; const a=document.createElement("a");
+  a.href=results[shown]; a.download=(lastPrompt.slice(0,40).replace(/[^\w]+/g,"_")||"image")+".png"; a.click(); };
+$("#again").onclick=()=>{ promptEl.value=lastPrompt; generate(); };
+go.onclick=generate;
+
+/* ---------- prefetch on load ---------- */
+if(navigator.gpu){
+  const chromium=/Chrome|Chromium|Edg\//.test(navigator.userAgent);
+  hint.textContent = chromium ? "Starting model download…"
+    : "Works best in Chrome or Edge. Other browsers may fail. Starting download…";
+  preload();
+}else{
+  frame.innerHTML='<div class="fatal"><b>WebGPU not available.</b><br>Open this in Chrome or Edge (desktop) to run the model locally. Safari and Firefox may not support it.</div>';
+  go.disabled=true; promptEl.disabled=true;
+}
+
+/* ---------- ambient noise ---------- */
+const nz=$("#noise"), nctx=nz.getContext("2d"); let nzId=null;
+function startNoise(){ if(nzId)return; const img=nctx.createImageData(64,64);
+  (function tick(){ const d=img.data;
+    for(let i=0;i<d.length;i+=4){const v=Math.random()*255;d[i]=v*.6;d[i+1]=v*.55;d[i+2]=v;d[i+3]=255;}
+    nctx.putImageData(img,0,0); nzId=requestAnimationFrame(()=>setTimeout(tick,80)); })();
+}
+function stopNoise(){ if(nzId){cancelAnimationFrame(nzId);nzId=null;} }
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Bitcoin</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23f7931a'/%3E%3Ctext x='50' y='74' font-size='70' text-anchor='middle' fill='%23160f04' font-family='Arial,sans-serif' font-weight='bold'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23f7931a'/%3E%3Ctext x='50' y='74' font-size='72' text-anchor='middle' fill='%23000000' font-family='Arial,sans-serif' font-weight='bold'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -28,9 +28,8 @@
   header{position:sticky;top:0;z-index:40;background:rgba(0,0,0,.78);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
   .hwrap{max-width:1520px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
   .brand{display:flex;align-items:center;gap:10px;margin-right:auto}
-  .logo{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
-    background:radial-gradient(circle at 30% 25%,#ffc06b,var(--btc));color:#160f04;font-weight:700;font-size:18px}
-  .brand h1{font-size:14px;margin:0;font-weight:600;letter-spacing:.3px}
+  .brand h1{margin:0}
+  .wordmark{font-size:21px;font-weight:700;color:var(--btc);letter-spacing:1.5px;line-height:1}
   .stat-pill{display:flex;flex-direction:column;gap:1px;padding:5px 12px;border-left:1px solid var(--line)}
   .stat-pill .k{font-size:9px;color:var(--faint);text-transform:uppercase;letter-spacing:1.2px}
   .stat-pill .v{font-size:14px;font-weight:600}
@@ -122,19 +121,19 @@
 </head>
 <body>
 <header><div class="hwrap">
-  <div class="brand"><div class="logo">₿</div><h1>BITCOIN</h1></div>
+  <div class="brand"><h1 class="wordmark">₿ITCOIN</h1></div>
   <div class="stat-pill"><span class="k">Block</span><span class="v num" style="color:var(--c-health)" id="h-block">—</span></div>
   <div class="stat-pill"><span class="k">Last block</span><span class="v num" id="h-since">—</span></div>
   <div class="stat-pill"><span class="k">Hashrate</span><span class="v num" style="color:var(--c-sec)" id="h-hash">—</span></div>
   <div class="stat-pill" id="pill-mcap"><span class="k">Market cap</span><span class="v num" style="color:var(--c-val)" id="h-mcap">—</span></div>
-  <div class="stat-pill" id="pill-price" style="display:none"><span class="k">Price</span><span class="v num" style="color:var(--btc)" id="h-price">—</span></div>
+  <div class="stat-pill" id="pill-price"><span class="k">Price</span><span class="v num" style="color:var(--btc)" id="h-price">—</span></div>
   <div class="legend" id="legend">
     <button class="lg" data-cat="sec"><i style="background:var(--c-sec)"></i>security</button>
     <button class="lg" data-cat="health"><i style="background:var(--c-health)"></i>health</button>
     <button class="lg" data-cat="adopt"><i style="background:var(--c-adopt)"></i>adoption</button>
     <button class="lg" data-cat="val"><i style="background:var(--c-val)"></i>valuation</button>
     <button class="lg" data-cat="macro"><i style="background:var(--c-macro)"></i>macro</button>
-    <button class="lg off" data-card="price"><i style="background:var(--btc)"></i>price</button>
+    <button class="lg" data-card="price"><i style="background:var(--btc)"></i>price</button>
   </div>
   <div class="live"><span class="dot" id="h-dot"></span><span id="h-status">live</span></div>
 </div></header>
@@ -154,6 +153,7 @@
 "use strict";
 /* ---- editable benchmarks (approx, slow-moving) ---- */
 const BENCH=[["Gold",27e12],["Global wealth",470e12],["US M2",22e12],["S&P 500",52e12]];
+const BTC_SUPPLY=19.92e6;
 
 const $=s=>document.querySelector(s);
 const GENESIS=Date.UTC(2009,0,3), now=()=>Date.now();
@@ -217,6 +217,8 @@ const METRICS=[
   {id:"btcgold",t:"Bitcoin in Gold",cat:"val"},
   {id:"m2",     t:"M2 Money Supply",cat:"macro"},
   {id:"debt",   t:"US Public Debt", cat:"macro"},
+  {id:"gold",   t:"Gold",           cat:"macro"},
+  {id:"sp500",  t:"S&P 500",        cat:"macro"},
   {id:"price",  t:"Price",         cat:"val"},
 ];
 
@@ -233,14 +235,11 @@ const body=id=>$("#b-"+id),card=id=>grid.querySelector(`.card[data-id="${id}"]`)
 function setStale(id,b){const c=card(id);if(c)c.classList.toggle("is-stale",!!b)}
 
 /* ---- category + card visibility (price hidden by default) ---- */
-const DEF_HID_CARDS=["price"];
+const DEF_HID_CARDS=[];
 let hidCats=new Set(ls.get("btc-hidcats")||[]);
 let hidCards=new Set(ls.get("btc-hidcards")||DEF_HID_CARDS);
 function applyVis(){
   for(const m of METRICS){const c=card(m.id);if(!c)continue;c.style.display=(!hidCats.has(m.cat)&&!hidCards.has(m.id))?"":"none"}
-  const valShown=!hidCats.has("val"),showPrice=valShown&&!hidCards.has("price"),pp=$("#pill-price"),pm=$("#pill-mcap");
-  if(pp)pp.style.display=showPrice?"":"none";
-  if(pm)pm.style.display=(valShown&&!showPrice)?"":"none";
   document.querySelectorAll(".lg").forEach(b=>{const cat=b.dataset.cat,cd=b.dataset.card;
     if(cat)b.classList.toggle("off",hidCats.has(cat));if(cd)b.classList.toggle("off",hidCards.has(cd))})}
 document.querySelectorAll(".lg").forEach(b=>b.addEventListener("click",()=>{
@@ -310,19 +309,22 @@ function rMcap(){const b=body("mcap");if(!b.dataset.i){b.dataset.i=1;b.innerHTML
   if(S.vol!=null)$("#mc-vol").textContent="$"+compact(S.vol,1);
   if(S.athPct!=null){const el=$("#mc-ath");el.textContent=S.athPct.toFixed(0)+"%";el.className="v num chip "+(S.athPct>=0?"up":"down")}
   if(S.mcapSeries?.length)upsertSpark("mc-c",vals(sliceDays(S.mcapSeries,30)),C.btc)}
-function rRelval(){const b=body("relval");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="rv" id="rv-g"></div>`}
+function rRelval(){const b=body("relval");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="csub" style="margin-bottom:9px">market cap vs other assets</div><div class="rv" id="rv-g"></div>`}
   if(S.mcap==null)return;
   const rows=BENCH.map(([k,d])=>({k,pct:S.mcap/d*100})).sort((a,b)=>b.pct-a.pct);
   $("#rv-g").innerHTML=rows.map(({k,pct})=>`<div class="rvrow"><div class="rvtop"><span>% of ${k}</span><b class="num">${pct<1?pct.toFixed(2):pct.toFixed(1)}%</b></div><div class="rvbar"><i style="width:${Math.min(100,pct)}%"></i></div></div>`).join("")}
+function rGold(){const b=body("gold");if(!b)return;if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="gold-v">—</div><div class="csub">USD / oz</div><div class="spark"><canvas id="gold-c"></canvas></div>`}
+  const cur=S.goldSpot??S.goldHist?.[S.goldHist.length-1]?.v;if(cur)$("#gold-v").textContent="$"+compact(cur,0);
+  if(S.goldHist?.length)upsertSpark("gold-c",vals(sliceDays(S.goldHist,30)),GOLD)}
+function rSP(){const b=body("sp500");if(!b)return;if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="sp-v">—</div><div class="csub">index level</div><div class="spark"><canvas id="sp-c"></canvas></div>`}
+  if(S.spSeries?.length){$("#sp-v").textContent=S.spSeries[S.spSeries.length-1].v.toLocaleString(undefined,{maximumFractionDigits:0});
+    upsertSpark("sp-c",vals(sliceDays(S.spSeries,30)),MACRO)}}
 function rBtcGold(){const b=body("btcgold");if(!b)return;if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="bg-v">—</div><div class="csub" id="bg-s">gold oz per ₿</div><div class="spark"><canvas id="bg-c"></canvas></div>`}
   const gold=S.goldSpot??S.goldHist?.[S.goldHist.length-1]?.v,btc=S.price?.usd??S.priceHist?.[S.priceHist.length-1]?.v;
   if(gold&&btc){const r=btc/gold;$("#bg-v").textContent=r.toFixed(1)+" oz";
     if(S.btcGold?.length){const first=sliceDays(S.btcGold,365)[0]?.v;if(first){const chg=(r/first-1)*100;
       $("#bg-s").innerHTML=`<span class="chip ${chg>=0?'up':'down'}">${chg>=0?'+':''}${chg.toFixed(0)}% / yr</span><span style="color:var(--faint)">oz per ₿</span>`}}}
   if(S.btcGold?.length)upsertSpark("bg-c",vals(sliceDays(S.btcGold,30)),GOLD)}
-function computeBtcGold(){if(!S.priceHist||!S.goldHist)return;
-  const byDay=new Map();for(const p of S.priceHist)byDay.set(Math.floor(p.t/864e5),p.v);
-  S.btcGold=S.goldHist.map(g=>{const bp=byDay.get(Math.floor(g.t/864e5));return bp?{t:g.t,v:bp/g.v}:null}).filter(Boolean);rBtcGold()}
 function rM2(){const b=body("m2");if(!b)return;if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="m2-v">—</div><div class="csub" id="m2-s">US money supply</div><div class="spark"><canvas id="m2-c"></canvas></div>`}
   if(S.m2Series?.length){const cur=S.m2Series[S.m2Series.length-1].v;$("#m2-v").textContent="$"+compact(cur,2);
     const first=sliceDays(S.m2Series,365)[0]?.v;if(first){const chg=(cur/first-1)*100;$("#m2-s").innerHTML=`<span class="chip ${chg>=0?'up':'down'}">${chg>=0?'+':''}${chg.toFixed(1)}% / yr</span><span style="color:var(--faint)">US M2</span>`}
@@ -338,7 +340,7 @@ function rPrice(){const b=body("price");if(!b.dataset.i){b.dataset.i=1;b.innerHT
   const px=S.price?.usd??S.priceDisplay;if(px)$("#pr-sat").textContent=`1 sat = $${(px/1e8).toFixed(6)}  ·  ${Math.round(1e8/px).toLocaleString()} sats / $1`;
   if(S.priceHist?.length)upsertSpark("pr-c",vals(sliceDays(S.priceHist,30)),C.btc)}
 
-const RENDER={power:rPower,hash:rHash,diff:rDiff,blocks:rBlocks,mempool:rMempool,fees:rFees,tx:rTx,addr:rAddr,ln:rLN,nodes:rNodes,mcap:rMcap,relval:rRelval,btcgold:rBtcGold,m2:rM2,debt:rDebt,price:rPrice};
+const RENDER={power:rPower,hash:rHash,diff:rDiff,blocks:rBlocks,mempool:rMempool,fees:rFees,tx:rTx,addr:rAddr,ln:rLN,nodes:rNodes,mcap:rMcap,relval:rRelval,btcgold:rBtcGold,m2:rM2,debt:rDebt,gold:rGold,sp500:rSP,price:rPrice};
 function renderAll(){for(const k in RENDER)try{RENDER[k]()}catch(e){}}
 
 /* ---- fetch ---- */
@@ -347,7 +349,8 @@ function flag(ok){const d=$("#h-dot");if(ok){netOK=true;d.className="dot"}else{l
 async function pullPrice(){try{const d=await getJSON("https://api.coinbase.com/v2/prices/BTC-USD/spot");S.price={usd:+d.data.amount};if(S.priceDisplay==null)S.priceDisplay=S.price.usd;setStale("price",false);flag(true);S.lastUpdate=now()}
   catch(e){try{const m=await getJSON("https://mempool.space/api/v1/prices");S.price={usd:m.USD};if(S.priceDisplay==null)S.priceDisplay=m.USD;flag(true)}catch(e2){setStale("price",true);flag(false)}}
   try{const g=await getJSON("https://api.coinbase.com/v2/prices/PAXG-USD/spot");S.goldSpot=+g.data.amount}catch(e){}
-  rPrice();rPower();rRelval();rBtcGold()}
+  if(S.price?.usd)S.mcap=S.price.usd*BTC_SUPPLY;
+  rPrice();rPower();rRelval();rBtcGold();rMcap()}
 async function pullNetwork(){await Promise.allSettled([
   getJSON("https://mempool.space/api/blocks/tip/height").then(h=>{S.tip=+h;setStale("blocks",false)}).catch(()=>setStale("blocks",true)),
   getJSON("https://mempool.space/api/v1/blocks").then(b=>{S.recentBlocks=b;if(b[0])S.lastBlockMs=b[0].timestamp*1000}).catch(()=>{}),
@@ -362,11 +365,11 @@ async function pullHashrate(){try{const d=await getJSON("https://mempool.space/a
   S.hashCurrent=d.currentHashrate??S.hashSeries[S.hashSeries.length-1]?.v;
   S.difficulty=d.currentDifficulty??S.diffSeries[S.diffSeries.length-1]?.v;setStale("hash",false);rHash();rDiff()}catch(e){setStale("hash",true)}}
 async function pullPriceHistory(){try{const d=await cg("https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=max");
-  S.priceHist=d.prices.map(p=>({t:p[0],v:p[1]}));S.mcapSeries=(d.market_caps||[]).map(p=>({t:p[0],v:p[1]}));rPower();rPrice();rMcap();computeBtcGold()}
+  S.priceHist=d.prices.map(p=>({t:p[0],v:p[1]}));S.mcapSeries=(d.market_caps||[]).map(p=>({t:p[0],v:p[1]}));rPower();rPrice()}
   catch(e){if(!S.priceHist){try{const m=await getJSON("https://mempool.space/api/v1/historical-price?currency=USD");S.priceHist=(m.prices||[]).map(p=>({t:p.time*1000,v:p.USD}));rPower();rPrice()}catch(e2){}}}}
 async function pullMarket(){try{const a=await cg("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin");
-  const c=a[0];S.mcap=c.market_cap;S.vol=c.total_volume;S.chg24=c.price_change_percentage_24h;S.athPct=c.ath_change_percentage;if(c.current_price)S.price={usd:c.current_price};
-  setStale("mcap",false);rMcap();rPrice();rRelval()}catch(e){setStale("mcap",true)}}
+  const c=a[0];S.vol=c.total_volume;S.chg24=c.price_change_percentage_24h;S.athPct=c.ath_change_percentage;if(c.current_price)S.price={usd:c.current_price};
+  setStale("mcap",false);rMcap();rPrice();rRelval()}catch(e){}}
 async function pullChain(){const base="https://api.blockchain.info/charts/";
   try{const tx=await getJSON(base+"n-transactions?timespan=1year&format=json&cors=true");S.txSeries=tx.values.map(o=>({t:o.x*1000,v:o.y}));setStale("tx",false);rTx()}catch(e){setStale("tx",true)}
   try{const ad=await getJSON(base+"n-unique-addresses?timespan=1year&format=json&cors=true");S.addrSeries=ad.values.map(o=>({t:o.x*1000,v:o.y}));setStale("addr",false);rAddr()}catch(e){setStale("addr",true)}}
@@ -376,12 +379,25 @@ async function pullNodes(){try{const d=await proxied("https://bitnodes.io/api/v1
   const res=d.results||[];if(!res.length)throw new Error("empty");
   S.nodes=res[0].total_nodes;S.nodeSeries=res.map(r=>({t:r.timestamp*1000,v:r.total_nodes})).reverse();S.nodesErr=false;setStale("nodes",false)}
   catch(e){S.nodesErr=true;setStale("nodes",true)}rNodes()}
-async function pullGold(){try{const d=await cg("https://api.coingecko.com/api/v3/coins/pax-gold/market_chart?vs_currency=usd&days=max");
-  S.goldHist=d.prices.map(p=>({t:p[0],v:p[1]}));computeBtcGold()}catch(e){}}
+function parseCsvCol(text,col,scale){const out=[],lines=text.trim().split(/\r?\n/);
+  for(let i=1;i<lines.length;i++){const p=lines[i].split(",");if(p.length<=col)continue;const t=Date.parse(p[0]),n=parseFloat(p[col]);if(isNaN(t)||isNaN(n))continue;out.push({t,v:n*(scale||1)})}return out}
+async function cbCandles(product,chunks){let all=[],end=new Date();
+  for(let c=0;c<(chunks||1);c++){const start=new Date(end.getTime()-300*864e5);
+    try{const d=await getJSON(`https://api.exchange.coinbase.com/products/${product}/candles?granularity=86400&start=${start.toISOString()}&end=${end.toISOString()}`);
+      all=d.map(r=>({t:r[0]*1000,v:r[4]})).concat(all)}catch(e){}
+    end=new Date(start.getTime()-864e5);await sleep(250)}
+  all.sort((a,b)=>a.t-b.t);const seen=new Set(),out=[];for(const p of all){const k=Math.floor(p.t/864e5);if(!seen.has(k)){seen.add(k);out.push(p)}}return out}
+async function pullMarketData(){
+  const [gold,btc]=await Promise.all([cbCandles("PAXG-USD",3),cbCandles("BTC-USD",3)]);
+  if(gold.length){S.goldHist=gold;rGold()}
+  if(gold.length&&btc.length){const m=new Map();for(const p of btc)m.set(Math.floor(p.t/864e5),p.v);
+    S.btcGold=gold.map(g=>{const b=m.get(Math.floor(g.t/864e5));return b?{t:g.t,v:b/g.v}:null}).filter(Boolean);rBtcGold()}}
+async function pullSP(){try{const txt=await proxiedText("https://stooq.com/q/d/l/?s=^spx&i=d");
+  const s=parseCsvCol(txt,4);if(s.length){S.spSeries=s;setStale("sp500",false);rSP()}else setStale("sp500",true)}catch(e){setStale("sp500",true)}}
 async function pullM2(){try{const txt=await proxiedText("https://fred.stlouisfed.org/graph/fredgraph.csv?id=M2SL");
   const s=parseCsv(txt,1e9);if(s.length){S.m2Series=s;setStale("m2",false);rM2()}else setStale("m2",true)}catch(e){setStale("m2",true)}}
 async function refreshAll(){await Promise.allSettled([pullNetwork(),pullHashrate(),pullChain(),pullNodes(),pullLNhistory()]);S.lastUpdate=now();flag(true)}
-async function refreshCG(){await pullPriceHistory();await sleep(1500);await pullMarket();await sleep(1500);await pullGold()}
+async function refreshCG(){await pullPriceHistory();await sleep(1500);await pullMarket();await sleep(800);await pullMarketData()}
 async function pullDebt(){
   try{const d=await getJSON("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?fields=record_date,tot_pub_debt_out_amt&sort=-record_date&page[size]=9000",20000);
     const rows=(d.data||[]).map(r=>({t:Date.parse(r.record_date),v:+r.tot_pub_debt_out_amt})).filter(r=>!isNaN(r.t)&&!isNaN(r.v)).sort((a,b)=>a.t-b.t);
@@ -479,6 +495,14 @@ const INFO={
     "Shown to the penny; the line trends relentlessly upward.",
     "<b>Why it matters:</b> big, rising debt often pushes governments to create more money (see M2) to manage it — which erodes the dollar.",
     "Many people buy Bitcoin as a hedge against exactly this."],
+  gold:["<b>What it is:</b> the price of one ounce of gold in US dollars.",
+    "Gold has been humanity's store of value for thousands of years — the original \"hard money.\"",
+    "<b>Why it's here:</b> Bitcoin is often called \"digital gold,\" so gold is its main benchmark.",
+    "Compare this with the Bitcoin-in-Gold card to see which is winning over time."],
+  sp500:["<b>What it is:</b> an index tracking the 500 largest US public companies — the standard gauge of the US stock market.",
+    "The number is the index \"level,\" not dollars; what matters is how it moves over time.",
+    "<b>Why it's here:</b> stocks are where most people park savings, so Bitcoin competes with them for capital.",
+    "Rising together can signal loose money; watch how Bitcoin performs relative to it."],
   price:["<b>What it is:</b> what one bitcoin costs in dollars at this moment.",
     "It's set by buyers and sellers on exchanges, second to second.",
     "\"1 sat = ...\" shows the value of a satoshi, the smallest unit (1 bitcoin = 100 million sats).",
@@ -495,18 +519,21 @@ const FNOTE={power:"Realized price against the log-log adoption model (kept full
   relval:"Market cap measured against the assets it competes with. Benchmarks are approximate, slow-moving.",
   btcgold:"One bitcoin priced in troy ounces of gold (via PAX Gold). Rising = bitcoin gaining on the oldest hard money.",
   m2:"US M2 money supply — dollars in existence. The up-and-to-the-right curve bitcoin was built against.",
-  debt:"US federal debt outstanding (to the penny). The other side of the printer.",price:"The crowd's live dollar guess."};
+  debt:"US federal debt outstanding (to the penny). The other side of the printer.",
+  gold:"The price of one troy ounce of gold in dollars — Bitcoin's oldest rival as hard money.",
+  sp500:"The S&P 500 index level — a gauge of the US stock market Bitcoin competes with for capital.",price:"The crowd's live dollar guess."};
 const M=()=>({hash:{s:S.hashSeries,col:C.sec,f:fmtHash},diff:{s:S.diffSeries,col:C.sec,f:v=>compact(v,2)},
   tx:{s:S.txSeries,col:C.adopt,f:v=>compact(v,0)},addr:{s:S.addrSeries,col:C.adopt,f:v=>compact(v,0)},
   ln:{s:S.lnSeries,col:C.adopt,f:v=>(v/1e8).toFixed(0)+" ₿",tf:v=>v/1e8},price:{s:S.priceHist,col:C.btc,f:v=>fmtUSD(v)},
   mcap:{s:S.mcapSeries,col:C.btc,f:v=>"$"+compact(v,2)},nodes:{s:S.nodeSeries,col:C.adopt,f:v=>compact(v,0)},
   btcgold:{s:S.btcGold,col:GOLD,f:v=>v.toFixed(1)+" oz"},
-  m2:{s:S.m2Series,col:MACRO,f:v=>"$"+compact(v,2)},debt:{s:S.debtSeries,col:MACRO,f:v=>"$"+compact(v,2)}});
+  m2:{s:S.m2Series,col:MACRO,f:v=>"$"+compact(v,2)},debt:{s:S.debtSeries,col:MACRO,f:v=>"$"+compact(v,2)},
+  gold:{s:S.goldHist,col:GOLD,f:v=>"$"+compact(v,0)},sp500:{s:S.spSeries,col:MACRO,f:v=>Math.round(v).toLocaleString()}});
 function buildRanges(){const el=$("#f-range");if(focusId==="power"||focusId==="relval"||!M()[focusId]){el.style.display="none";return}
   el.style.display="flex";el.innerHTML=RANGES.map(([l,d])=>`<button data-d="${d===null?'all':d}">${l}</button>`).join("");
   [...el.children].forEach(btn=>{const d=btn.dataset.d==="all"?null:+btn.dataset.d;if(d===focusRange)btn.classList.add("on");btn.onclick=()=>{focusRange=d;buildRanges();renderFocus()}})}
 function clearCanvas(cv){const c=cv.getContext("2d");c.clearRect(0,0,cv.width,cv.height)}
-function openFocus(id){focusId=id;focusRange=(id==="m2"||id==="debt")?1825:30;infoOpen=false;
+function openFocus(id){focusId=id;focusRange=(id==="m2"||id==="debt")?1825:(id==="gold"||id==="sp500")?365:30;infoOpen=false;
   $("#f-info").classList.remove("on");$("#f-infopanel").style.display="none";$(".fchart").style.display="";$("#f-note").style.display="";
   const m=METRICS.find(x=>x.id===id);
   $(".fpanel").style.setProperty("--cat",CATS[m.cat].c);$("#f-title").textContent=m.t;$("#f-note").textContent=FNOTE[id]||"";
@@ -537,15 +564,15 @@ $("#focus").addEventListener("click",e=>{if(e.target.id==="focus")closeFocus()})
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeFocus()});
 function closeFocus(){$("#focus").classList.remove("on");focusId=null;if(focusChart){focusChart.destroy();focusChart=null}}
 
-$("#ftr").innerHTML=`<a href="https://mempool.space" target="_blank" rel="noopener">mempool.space</a> · Coinbase · <a href="https://coingecko.com" target="_blank" rel="noopener">CoinGecko</a> · blockchain.info · <a href="https://bitnodes.io" target="_blank" rel="noopener">bitnodes</a> · gold via PAX Gold · M2 via <a href="https://fred.stlouisfed.org" target="_blank" rel="noopener">FRED</a> · debt via <a href="https://fiscaldata.treasury.gov" target="_blank" rel="noopener">US Treasury</a> · power-law after Santostasi · benchmarks approximate · omitted (no free data): non-zero balances, realized cap, SOPR, HODL waves, exchange flows.`;
+$("#ftr").innerHTML=`<a href="https://mempool.space" target="_blank" rel="noopener">mempool.space</a> · Coinbase · <a href="https://coingecko.com" target="_blank" rel="noopener">CoinGecko</a> · blockchain.info · <a href="https://bitnodes.io" target="_blank" rel="noopener">bitnodes</a> · gold &amp; BTC/gold via Coinbase · M2 via <a href="https://fred.stlouisfed.org" target="_blank" rel="noopener">FRED</a> · debt via <a href="https://fiscaldata.treasury.gov" target="_blank" rel="noopener">US Treasury</a> · S&amp;P via Stooq · power-law after Santostasi · benchmarks approximate · omitted (no free data): non-zero balances, realized cap, SOPR, HODL waves, exchange flows.`;
 
 renderAll();applyVis();
-pullPrice();refreshAll();refreshCG();pullM2();pullDebt();
+pullPrice();refreshAll();refreshCG();pullM2();pullDebt();pullSP();
 setInterval(tick,1000);
 setInterval(pullPrice,10000);
 setInterval(refreshAll,60000);
 setInterval(refreshCG,3e5);
-setInterval(pullM2,9e5);setInterval(pullDebt,9e5);
+setInterval(pullM2,9e5);setInterval(pullDebt,9e5);setInterval(pullSP,9e5);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){pullPrice();refreshAll()}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){pullPrice();pullNetwork()}});
 </script>

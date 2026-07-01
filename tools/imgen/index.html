@@ -165,15 +165,26 @@
   <div class="scrim" id="scrim"></div>
   <aside class="drawer" id="drawer" aria-label="Settings">
     <h2>Settings <button class="close" id="closeSettings" aria-label="Close">✕</button></h2>
-    <p class="sub">Switching model reloads it (a fresh download the first time).</p>
+    <p class="sub">Tune quality vs. speed. Switching model or precision reloads it.</p>
 
     <div class="field">
       <label>Model</label>
       <div class="seg" id="segModel">
-        <button data-v="sd-turbo" class="on">SD-Turbo</button>
-        <button data-v="janus-pro-1b">Janus Pro 1B</button>
+        <button data-v="onnx-community/Janus-Pro-1B-ONNX" class="on">Janus Pro 1B</button>
+        <button data-v="onnx-community/Janus-1.3B-ONNX">Janus 1.3B</button>
       </div>
-      <div class="fnote">SD-Turbo: fast, sharp, 512×512 (recommended). Janus: experimental, needs more memory.</div>
+      <div class="fnote">Both generate 384×384. Pro is newer and usually cleaner.</div>
+    </div>
+
+    <div class="field">
+      <label>Precision</label>
+      <div class="seg" id="segDtype">
+        <button data-v="q4" class="on">q4 · light</button>
+        <button data-v="q4f16">q4f16</button>
+        <button data-v="q8">q8</button>
+        <button data-v="fp16">fp16 · best</button>
+      </div>
+      <div class="fnote">Lower = smaller download, less memory. Higher = sharper. Drop to q4 if it crashes.</div>
     </div>
 
     <div class="field">
@@ -190,9 +201,9 @@
       <label>Variation</label>
       <div class="seg" id="segSample">
         <button data-v="1" class="on">On · random</button>
-        <button data-v="0">Off · repeatable</button>
+        <button data-v="0">Off · steady</button>
       </div>
-      <div class="fnote">On gives a new result each time (SD-Turbo). Off reuses a fixed seed.</div>
+      <div class="fnote">On gives a different result each time. Off is more literal.</div>
     </div>
 
     <div class="foot">
@@ -201,15 +212,19 @@
   </aside>
 
 <script type="module">
-import { Txt2ImgWorkerClient } from "https://esm.sh/web-txt2img@0.3.1";
-
 const $ = s => document.querySelector(s);
 const frame=$("#frame"), out=$("#out"), empty=$("#empty"), tools=$("#tools"),
       bar=$("#bar"), barI=bar.querySelector("i"), stLabel=$("#stLabel"), stPct=$("#stPct"),
       promptEl=$("#prompt"), go=$("#go"), hint=$("#hint");
 
-const cfg={ model:"sd-turbo", count:1, sample:1 };
-let client=null, loadedModel=null, busy=false, results=[], shown=0, lastPrompt="";
+const cfg={ model:"onnx-community/Janus-Pro-1B-ONNX", dtype:"q4", count:1, sample:1 };
+let loadedKey=null, worker=null, busy=false, results=[], shown=0, lastPrompt="";
+
+/* ---------- WebGPU gate ---------- */
+if(!navigator.gpu){
+  frame.innerHTML='<div class="fatal"><b>WebGPU not available.</b><br>Open this in Chrome or Edge (desktop). Firefox and Safari usually can\'t run it.</div>';
+  go.disabled=true; promptEl.disabled=true;
+}
 
 /* ---------- settings drawer ---------- */
 const drawer=$("#drawer"), scrim=$("#scrim");
@@ -217,113 +232,138 @@ const openD=()=>{drawer.classList.add("open");scrim.classList.add("open")};
 const closeD=()=>{drawer.classList.remove("open");scrim.classList.remove("open")};
 $("#openSettings").onclick=openD; $("#closeSettings").onclick=closeD; scrim.onclick=closeD;
 
-function wireSeg(sel,key,cast=v=>v,onChange){
+function wireSeg(sel,key,cast=v=>v){
   const box=$(sel);
   box.addEventListener("click",e=>{
     const b=e.target.closest("button"); if(!b||busy)return;
     [...box.children].forEach(c=>c.classList.remove("on"));
-    b.classList.add("on"); cfg[key]=cast(b.dataset.v); if(onChange)onChange();
+    b.classList.add("on"); cfg[key]=cast(b.dataset.v);
   });
 }
-wireSeg("#segModel","model",v=>v,()=>preload());   // model change -> preload new
-wireSeg("#segCount","count",Number);
-wireSeg("#segSample","sample",Number);
+wireSeg("#segModel","model"); wireSeg("#segDtype","dtype");
+wireSeg("#segCount","count",Number); wireSeg("#segSample","sample",Number);
 
 /* ---------- textarea ---------- */
 promptEl.addEventListener("input",()=>{promptEl.style.height="auto";promptEl.style.height=Math.min(promptEl.scrollHeight,180)+"px"});
 promptEl.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();generate()}});
 
-/* ---------- helpers ---------- */
-function setBusy(b){ busy=b; go.disabled=b; promptEl.disabled=b;
+/* ---------- worker: created from a same-origin blob, imports the model lib from CDN ---------- */
+function makeWorker(){
+  const src=`
+  import { AutoProcessor, MultiModalityCausalLM, env } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3";
+  env.backends.onnx.wasm.numThreads = 1;
+  let processor=null, model=null, key=null, f16=null;
+  const roleFor = id => id.includes("Pro") ? "<|User|>" : "User";
+
+  async function detectF16(){
+    if(f16!==null) return f16;
+    try{ const a=await navigator.gpu.requestAdapter(); f16=!!(a&&a.features.has("shader-f16")); }
+    catch{ f16=false; }
+    self.postMessage({type:"caps",f16});
+    return f16;
+  }
+  function dtypes(lm){
+    // lean config (matches the known-good webml demo): small fp16 heads + quantized LM
+    return {prepare_inputs_embeds:"fp32",language_model:lm,lm_head:"fp16",gen_head:"fp16",gen_img_embeds:"fp16",image_decode:"fp32"};
+  }
+  const device={prepare_inputs_embeds:"wasm",language_model:"webgpu",lm_head:"webgpu",gen_head:"webgpu",gen_img_embeds:"webgpu",image_decode:"webgpu"};
+
+  async function load(model_id,dtype){
+    const k=model_id+"|"+dtype; if(k===key) return;
+    await detectF16();
+    const files={};
+    const cb=p=>{ if(p.status==="progress"&&p.file){files[p.file]={loaded:p.loaded||0,total:p.total||0};
+      let l=0,t=0; for(const f in files){l+=files[f].loaded;t+=files[f].total}
+      self.postMessage({type:"progress",pct:t?l/t:0,mb:(l/1048576).toFixed(0),tot:(t/1048576).toFixed(0)}); } };
+    processor = await AutoProcessor.from_pretrained(model_id,{progress_callback:cb});
+    model = await MultiModalityCausalLM.from_pretrained(model_id,{dtype:dtypes(dtype),device,progress_callback:cb});
+    key=k; self.postMessage({type:"ready",key:k});
+  }
+
+  async function handle(m){
+    if(m.type==="preload"){ await load(m.model,m.dtype); return; }
+    if(m.type==="run"){
+      await load(m.model,m.dtype);
+      const conv=[{role:roleFor(m.model),content:m.prompt}];
+      const inputs=await processor(conv,{chat_template:"text_to_image"});
+      const n=processor.num_image_tokens;
+      for(let i=0;i<m.count;i++){
+        self.postMessage({type:"gen",i,total:m.count});
+        const outs=await model.generate_images({...inputs,min_new_tokens:n,max_new_tokens:n,do_sample:!!m.sample});
+        const blob=await outs[0].toBlob();
+        self.postMessage({type:"image",blob,i,total:m.count});
+      }
+      self.postMessage({type:"done"});
+    }
+  }
+
+  let chain=Promise.resolve();
+  self.onmessage=e=>{ chain=chain.then(()=>handle(e.data))
+    .catch(err=>self.postMessage({type:"error",message:String(err&&err.message||err)})); };
+  `;
+  const w=new Worker(URL.createObjectURL(new Blob([src],{type:"application/javascript"})),{type:"module"});
+  w.onmessage=onWorker;
+  return w;
+}
+
+/* ---------- flow ---------- */
+function setBusy(b){ busy=b; go.disabled=b||!navigator.gpu; promptEl.disabled=b;
   frame.classList.toggle("busy",b); if(b)startNoise(); else stopNoise(); }
 function indet(on){ bar.classList.toggle("indet",on); if(on)barI.style.width=""; }
-function showError(msg){
-  setBusy(false); indet(false); barI.style.width="0"; stLabel.textContent=""; stPct.textContent="";
-  const ff=/Firefox/.test(navigator.userAgent);
-  if(results.length===0){
-    empty.style.display="grid";
-    empty.querySelector("p").innerHTML =
-      (ff ? "This runs reliably only in <b>Chrome or Edge</b>. Firefox's WebGPU often fails."
-          : "Couldn't generate. Try <b>1 image</b>, close other tabs, or switch model in settings.")
-      + "<br><span style='color:var(--faint);font-size:11px'>"+String(msg||"")+"</span>";
-  }
-}
 
-/* ---------- model load (with progress) ---------- */
-async function ensureClient(){
-  if(client) return client;
-  client = Txt2ImgWorkerClient.createDefault();
-  const caps = await client.detect().catch(()=>({webgpu:!!navigator.gpu}));
-  if(!caps || !caps.webgpu){
-    frame.innerHTML='<div class="fatal"><b>WebGPU not available.</b><br>Open this in Chrome or Edge (desktop) to run locally.</div>';
-    go.disabled=true; promptEl.disabled=true;
-    throw new Error("no webgpu");
-  }
-  return client;
-}
-
-async function preload(){
-  try{
-    await ensureClient();
-    if(loadedModel===cfg.model) return;
-    if(!busy){ hint.textContent="Downloading "+cfg.model+"… (one time, then offline)"; }
-    if(loadedModel){ await client.unload().catch(()=>{}); loadedModel=null; }
-    const res = await client.load(cfg.model, {backendPreference:["webgpu"]}, onLoad);
-    if(!res || res.ok===false) throw new Error(res && (res.message||res.reason) || "load failed");
-    loadedModel=cfg.model;
-    if(!busy) hint.innerHTML="Model ready. Runs fully on your device, offline.";
-  }catch(err){ if(String(err.message)!=="no webgpu") showError(err.message); }
-}
-
-function onLoad(p){
-  const pct = (p && p.pct!=null) ? p.pct : null;
-  const dl = p && p.bytesDownloaded, tot = p && p.totalBytesExpected;
-  const mb = (dl!=null&&tot!=null) ? ` · ${(dl/1048576).toFixed(0)}/${(tot/1048576).toFixed(0)} MB` : "";
-  if(busy){
-    stLabel.textContent="Downloading model…";
-    if(pct!=null){ indet(false); barI.style.width=Math.max(4,pct)+"%"; } else indet(true);
-    stPct.textContent = (dl!=null&&tot!=null) ? `${(dl/1048576).toFixed(0)}/${(tot/1048576).toFixed(0)} MB` : "";
-  }else{
-    hint.innerHTML = pct!=null
-      ? `Downloading model… <b>${Math.round(pct)}%</b>${mb}. Cached after, then offline.`
-      : `Downloading model…${mb}`;
-  }
-}
-
-/* ---------- generate ---------- */
-async function runOnce(prompt, seed){
-  const { promise } = client.generate({ prompt, seed }, e=>{
-    stLabel.textContent="Generating…"; indet(true); stPct.textContent="";
-  }, { busyPolicy:"queue" });
-  const gen = await promise;
-  if(!gen || gen.ok===false) throw new Error(gen && (gen.message||gen.reason) || "generation failed");
-  return gen.blob;
-}
-
-async function generate(){
+function generate(){
   const p=promptEl.value.trim(); if(!p||busy) return;
   lastPrompt=p; results=[]; shown=0;
   empty.style.display="none"; out.classList.remove("in");
   tools.classList.remove("show"); hint.textContent="";
   setBusy(true);
-  try{
-    await ensureClient();
-    if(loadedModel!==cfg.model){
-      stLabel.textContent="Loading model…"; indet(true); stPct.textContent="";
-      await preload();                       // downloads if needed
-    }else{
-      stLabel.textContent="Generating…"; indet(true);
+  const need = (cfg.model+"|"+cfg.dtype)!==loadedKey;
+  stLabel.textContent = need ? "Downloading model…" : "Preparing…";
+  stPct.textContent=""; indet(!need); if(!need) barI.style.width="8%";
+  if(!worker) worker=makeWorker();
+  worker.postMessage({type:"run",model:cfg.model,dtype:cfg.dtype,prompt:p,count:cfg.count,sample:cfg.sample});
+}
+
+function onWorker(e){
+  const m=e.data;
+  if(m.type==="progress"){
+    if(busy){ stLabel.textContent="Downloading model…"; indet(false);
+      barI.style.width=Math.max(4,m.pct*100).toFixed(0)+"%"; stPct.textContent=`${m.mb} / ${m.tot} MB`; }
+    else{ hint.innerHTML=`Downloading model… <b>${Math.round(m.pct*100)}%</b> · ${m.mb}/${m.tot} MB. Cached after, then offline.`; }
+  }
+  else if(m.type==="ready"){
+    loadedKey=m.key;
+    if(busy){ stLabel.textContent="Generating…"; stPct.textContent=""; indet(true); }
+    else{ hint.innerHTML="Model ready. Runs fully on your device, offline."; }
+  }
+  else if(m.type==="caps"){
+    if(!m.f16 && !busy){
+      const ff=/Firefox/.test(navigator.userAgent);
+      hint.innerHTML = ff
+        ? "You're on <b>Firefox</b>, which can't run this reliably. Use <b>Chrome or Edge</b>."
+        : "Your GPU/browser reports no fp16 support, so it may crash. Chrome/Edge on a modern GPU works best.";
     }
-    for(let i=0;i<cfg.count;i++){
-      if(cfg.count>1){ stLabel.textContent=`Generating ${i+1} of ${cfg.count}…`; indet(true); }
-      const seed = cfg.sample ? Math.floor(Math.random()*1e9) : (1234+i);
-      const blob = await runOnce(p, seed);
-      results.push(URL.createObjectURL(blob));
-      showResult(results.length-1);
-    }
+  }
+  else if(m.type==="gen"){ stLabel.textContent = m.total>1?`Generating ${m.i+1} of ${m.total}…`:"Generating…"; indet(true); stPct.textContent=""; }
+  else if(m.type==="image"){ results.push(URL.createObjectURL(m.blob)); showResult(results.length-1); }
+  else if(m.type==="done"){
     setBusy(false); indet(false); barI.style.width="0"; tools.classList.add("show");
     if(results.length<=1) hint.textContent="Runs on your device, offline.";
-  }catch(err){ showError(err.message); }
+  }
+  else if(m.type==="error"){
+    setBusy(false); indet(false); barI.style.width="0"; stLabel.textContent=""; stPct.textContent="";
+    if(results.length===0){
+      const raw=String(m.message||""); const ff=/Firefox/.test(navigator.userAgent);
+      const crash=/^\d+$/.test(raw.trim())||/Aborted|out of memory|OOM|memory access|RuntimeError/i.test(raw);
+      empty.style.display="grid";
+      empty.querySelector("p").innerHTML = crash
+        ? (ff ? "The model crashed. <b>Firefox can't run this reliably</b> — use Chrome or Edge."
+              : "Ran out of GPU memory or hit a limit. Try <b>q4</b> precision, <b>1 image</b>, close tabs, or use Chrome/Edge.")
+          + "<br><span style='color:var(--faint);font-size:11px'>"+raw+"</span>"
+        : "Couldn't generate that. Try again or lower precision."
+          + "<br><span style='color:var(--faint);font-size:11px'>"+raw+"</span>";
+    }
+  }
 }
 
 function showResult(i){ shown=i; out.onload=()=>out.classList.add("in"); out.classList.remove("in"); out.src=results[i]; updateNav(); }
@@ -339,15 +379,13 @@ $("#dl").onclick=()=>{ if(!results[shown])return; const a=document.createElement
 $("#again").onclick=()=>{ promptEl.value=lastPrompt; generate(); };
 go.onclick=generate;
 
-/* ---------- prefetch on load ---------- */
+/* ---------- prefetch on load (downloads while you type) ---------- */
 if(navigator.gpu){
   const chromium=/Chrome|Chromium|Edg\//.test(navigator.userAgent);
-  hint.textContent = chromium ? "Starting model download…"
+  worker=makeWorker();
+  worker.postMessage({type:"preload",model:cfg.model,dtype:cfg.dtype});
+  hint.textContent = chromium ? "Downloading model… (one time, then works offline)"
     : "Works best in Chrome or Edge. Other browsers may fail. Starting download…";
-  preload();
-}else{
-  frame.innerHTML='<div class="fatal"><b>WebGPU not available.</b><br>Open this in Chrome or Edge (desktop) to run the model locally. Safari and Firefox may not support it.</div>';
-  go.disabled=true; promptEl.disabled=true;
 }
 
 /* ---------- ambient noise ---------- */

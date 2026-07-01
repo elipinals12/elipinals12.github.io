@@ -94,6 +94,15 @@
   .fbig{font-size:44px;font-weight:600;line-height:1;margin:9px 0 2px}
   .fclose{background:transparent;border:1px solid var(--line2);color:var(--mute);border-radius:9px;padding:8px 13px;cursor:pointer;font-family:var(--mono);font-size:12px}
   .fclose:hover{border-color:var(--btc);color:var(--ink)}
+  .fctrl{display:flex;gap:8px}
+  .finfo{width:34px;height:34px;border-radius:50%;background:transparent;border:1px solid var(--line2);color:var(--mute);cursor:pointer;font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:17px;font-weight:700;line-height:1}
+  .finfo:hover,.finfo.on{border-color:var(--btc);color:var(--btc)}
+  .finfopanel{flex:1;min-height:0;overflow:auto;padding-right:6px}
+  .finfopanel .grp{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:1.4px;margin:0 0 12px}
+  .finfopanel ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px}
+  .finfopanel li{font-size:13.5px;line-height:1.55;color:var(--ink)}
+  .finfopanel li::marker{color:var(--btc)}
+  .finfopanel li b{color:var(--btc);font-weight:600}
   .fbody{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;margin-top:12px}
   .frange{display:flex;gap:6px}
   .frange button{background:transparent;border:1px solid var(--line2);color:var(--mute);border-radius:8px;padding:5px 13px;font-size:11px;cursor:pointer;font-family:var(--mono)}
@@ -114,7 +123,7 @@
 <header><div class="hwrap">
   <div class="brand"><div class="logo">₿</div><h1>BITCOIN</h1></div>
   <div class="stat-pill"><span class="k">Block</span><span class="v num" style="color:var(--c-health)" id="h-block">—</span></div>
-  <div class="stat-pill"><span class="k">Last</span><span class="v num" id="h-since">—</span></div>
+  <div class="stat-pill"><span class="k">Last block</span><span class="v num" id="h-since">—</span></div>
   <div class="stat-pill"><span class="k">Hashrate</span><span class="v num" style="color:var(--c-sec)" id="h-hash">—</span></div>
   <div class="stat-pill" id="pill-mcap"><span class="k">Market cap</span><span class="v num" style="color:var(--c-val)" id="h-mcap">—</span></div>
   <div class="stat-pill" id="pill-price" style="display:none"><span class="k">Price</span><span class="v num" style="color:var(--btc)" id="h-price">—</span></div>
@@ -134,8 +143,8 @@
 
 <div id="focus"><div class="fpanel">
   <div class="fhead"><div><h2 id="f-title">—</h2><div class="fbig num" id="f-big">—</div><div class="csub" id="f-sub"></div></div>
-    <button class="fclose" id="f-close">esc</button></div>
-  <div class="fbody"><div class="frange" id="f-range"></div><div class="fchart"><canvas id="f-canvas"></canvas></div><div class="fnote" id="f-note"></div></div>
+    <div class="fctrl"><button class="finfo" id="f-info" title="What is this?">i</button><button class="fclose" id="f-close">esc</button></div></div>
+  <div class="fbody"><div class="frange" id="f-range"></div><div class="fchart"><canvas id="f-canvas"></canvas></div><div class="fnote" id="f-note"></div><div class="finfopanel" id="f-infopanel" style="display:none"></div></div>
 </div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -162,11 +171,13 @@ function dur(sec){if(sec==null||sec<0)return"—";sec=Math.floor(sec);const d=Ma
   if(d>0)return d+"d "+h+"h";if(h>0)return h+"h "+m+"m";return m+"m "+(sec%60)+"s"}
 async function getJSON(url,ms=12000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);
   try{const r=await fetch(url,{signal:c.signal,headers:{accept:"application/json"}});if(!r.ok)throw new Error(r.status);return await r.json()}finally{clearTimeout(t)}}
-async function proxied(url,ms=15000){try{return await getJSON(url,ms)}
-  catch(e){return await getJSON("https://api.allorigins.win/raw?url="+encodeURIComponent(url),ms)}}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const PROXIES=[u=>u,u=>"https://corsproxy.io/?url="+encodeURIComponent(u),u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u)];
 async function getText(url,ms=15000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);
   try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error(r.status);return await r.text()}finally{clearTimeout(t)}}
-async function proxiedText(url,ms=15000){try{return await getText(url,ms)}catch(e){return await getText("https://api.allorigins.win/raw?url="+encodeURIComponent(url),ms)}}
+async function proxied(url,ms=15000){let e;for(const p of PROXIES){try{return await getJSON(p(url),ms)}catch(x){e=x}}throw e}
+async function proxiedText(url,ms=15000){let e;for(const p of PROXIES){try{return await getText(p(url),ms)}catch(x){e=x}}throw e}
+async function cg(url,ms=12000){try{return await getJSON(url,ms)}catch(e){await sleep(1600);return await getJSON(url,ms)}}
 function parseCsv(text,scale){const out=[],lines=text.trim().split(/\r?\n/);
   for(let i=1;i<lines.length;i++){const parts=lines[i].split(",");if(parts.length<2)continue;
     const t=Date.parse(parts[0]),n=parseFloat(parts[1]);if(isNaN(t)||isNaN(n))continue;out.push({t,v:n*scale})}return out}
@@ -300,8 +311,8 @@ function rMcap(){const b=body("mcap");if(!b.dataset.i){b.dataset.i=1;b.innerHTML
   if(S.mcapSeries?.length)upsertSpark("mc-c",vals(sliceDays(S.mcapSeries,30)),C.btc)}
 function rRelval(){const b=body("relval");if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="rv" id="rv-g"></div>`}
   if(S.mcap==null)return;
-  $("#rv-g").innerHTML=BENCH.map(([k,d])=>{const pct=S.mcap/d*100;
-    return `<div class="rvrow"><div class="rvtop"><span>% of ${k}</span><b class="num">${pct<1?pct.toFixed(2):pct.toFixed(1)}%</b></div><div class="rvbar"><i style="width:${Math.min(100,pct)}%"></i></div></div>`}).join("")}
+  const rows=BENCH.map(([k,d])=>({k,pct:S.mcap/d*100})).sort((a,b)=>b.pct-a.pct);
+  $("#rv-g").innerHTML=rows.map(({k,pct})=>`<div class="rvrow"><div class="rvtop"><span>% of ${k}</span><b class="num">${pct<1?pct.toFixed(2):pct.toFixed(1)}%</b></div><div class="rvbar"><i style="width:${Math.min(100,pct)}%"></i></div></div>`).join("")}
 function rBtcGold(){const b=body("btcgold");if(!b)return;if(!b.dataset.i){b.dataset.i=1;b.innerHTML=`<div class="cmain num" id="bg-v">—</div><div class="csub" id="bg-s">gold oz per ₿</div><div class="spark"><canvas id="bg-c"></canvas></div>`}
   const gold=S.goldHist?.[S.goldHist.length-1]?.v,btc=S.price?.usd??S.priceHist?.[S.priceHist.length-1]?.v;
   if(gold&&btc){const r=btc/gold;$("#bg-v").textContent=r.toFixed(1)+" oz";
@@ -331,8 +342,8 @@ function renderAll(){for(const k in RENDER)try{RENDER[k]()}catch(e){}}
 
 /* ---- fetch ---- */
 let netOK=true,lastErr=0;
-function flag(ok){const d=$("#h-dot"),s=$("#h-status");if(ok){netOK=true;d.className="dot";s.textContent="live"}else{lastErr=now();d.className="dot warn";s.textContent="sync"}}
-async function pullPrice(){try{const d=await getJSON("https://api.coinbase.com/v2/prices/BTC-USD/spot");S.price={usd:+d.data.amount};if(S.priceDisplay==null)S.priceDisplay=S.price.usd;setStale("price",false);flag(true)}
+function flag(ok){const d=$("#h-dot");if(ok){netOK=true;d.className="dot"}else{lastErr=now();netOK=false;d.className="dot warn"}}
+async function pullPrice(){try{const d=await getJSON("https://api.coinbase.com/v2/prices/BTC-USD/spot");S.price={usd:+d.data.amount};if(S.priceDisplay==null)S.priceDisplay=S.price.usd;setStale("price",false);flag(true);S.lastUpdate=now()}
   catch(e){try{const m=await getJSON("https://mempool.space/api/v1/prices");S.price={usd:m.USD};if(S.priceDisplay==null)S.priceDisplay=m.USD;flag(true)}catch(e2){setStale("price",true);flag(false)}}
   rPrice();rPower();rRelval()}
 async function pullNetwork(){await Promise.allSettled([
@@ -348,10 +359,10 @@ async function pullHashrate(){try{const d=await getJSON("https://mempool.space/a
   S.diffSeries=(d.difficulty||[]).map(x=>({t:x.timestamp*1000,v:x.difficulty}));
   S.hashCurrent=d.currentHashrate??S.hashSeries[S.hashSeries.length-1]?.v;
   S.difficulty=d.currentDifficulty??S.diffSeries[S.diffSeries.length-1]?.v;setStale("hash",false);rHash();rDiff()}catch(e){setStale("hash",true)}}
-async function pullPriceHistory(){try{const d=await getJSON("https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=max");
+async function pullPriceHistory(){try{const d=await cg("https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=max");
   S.priceHist=d.prices.map(p=>({t:p[0],v:p[1]}));S.mcapSeries=(d.market_caps||[]).map(p=>({t:p[0],v:p[1]}));rPower();rPrice();rMcap();computeBtcGold()}
   catch(e){if(!S.priceHist){try{const m=await getJSON("https://mempool.space/api/v1/historical-price?currency=USD");S.priceHist=(m.prices||[]).map(p=>({t:p.time*1000,v:p.USD}));rPower();rPrice()}catch(e2){}}}}
-async function pullMarket(){try{const a=await getJSON("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin");
+async function pullMarket(){try{const a=await cg("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin");
   const c=a[0];S.mcap=c.market_cap;S.vol=c.total_volume;S.chg24=c.price_change_percentage_24h;S.athPct=c.ath_change_percentage;if(c.current_price)S.price={usd:c.current_price};
   setStale("mcap",false);rMcap();rPrice();rRelval()}catch(e){setStale("mcap",true)}}
 async function pullChain(){const base="https://api.blockchain.info/charts/";
@@ -363,16 +374,19 @@ async function pullNodes(){try{const d=await proxied("https://bitnodes.io/api/v1
   const res=d.results||[];if(!res.length)throw new Error("empty");
   S.nodes=res[0].total_nodes;S.nodeSeries=res.map(r=>({t:r.timestamp*1000,v:r.total_nodes})).reverse();S.nodesErr=false;setStale("nodes",false)}
   catch(e){S.nodesErr=true;setStale("nodes",true)}rNodes()}
-async function pullGold(){try{const d=await getJSON("https://api.coingecko.com/api/v3/coins/pax-gold/market_chart?vs_currency=usd&days=max");
+async function pullGold(){try{const d=await cg("https://api.coingecko.com/api/v3/coins/pax-gold/market_chart?vs_currency=usd&days=max");
   S.goldHist=d.prices.map(p=>({t:p[0],v:p[1]}));computeBtcGold()}catch(e){}}
 async function pullM2(){try{const txt=await proxiedText("https://fred.stlouisfed.org/graph/fredgraph.csv?id=M2SL");
   const s=parseCsv(txt,1e9);if(s.length){S.m2Series=s;setStale("m2",false);rM2()}else setStale("m2",true)}catch(e){setStale("m2",true)}}
+async function refreshAll(){await Promise.allSettled([pullNetwork(),pullMarket(),pullHashrate(),pullChain(),pullNodes(),pullGold(),pullPriceHistory(),pullLNhistory()]);S.lastUpdate=now();flag(true)}
 async function pullDebt(){
-  try{const txt=await proxiedText("https://fred.stlouisfed.org/graph/fredgraph.csv?id=GFDEBTN");
-    const s=parseCsv(txt,1e6);if(s.length){S.debtSeries=s;setStale("debt",false)}}catch(e){setStale("debt",true)}
-  try{const d=await getJSON("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?fields=record_date,tot_pub_debt_out_amt&sort=-record_date&page[size]=1");
-    const r=d.data?.[0];if(r){S.debtNow={t:Date.parse(r.record_date),v:+r.tot_pub_debt_out_amt};
-      if(S.debtSeries&&(!S.debtSeries.length||S.debtNow.t>S.debtSeries[S.debtSeries.length-1].t))S.debtSeries.push(S.debtNow)}}catch(e){}
+  try{const d=await getJSON("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?fields=record_date,tot_pub_debt_out_amt&sort=-record_date&page[size]=9000",20000);
+    const rows=(d.data||[]).map(r=>({t:Date.parse(r.record_date),v:+r.tot_pub_debt_out_amt})).filter(r=>!isNaN(r.t)&&!isNaN(r.v)).sort((a,b)=>a.t-b.t);
+    if(rows.length){S.debtNow=rows[rows.length-1];
+      const monthly=[];let key=null;for(const r of rows){const k=new Date(r.t).getUTCFullYear()*12+new Date(r.t).getUTCMonth();if(k!==key){monthly.push(r);key=k}}
+      if(monthly[monthly.length-1]!==rows[rows.length-1])monthly.push(rows[rows.length-1]);
+      S.debtSeries=monthly;setStale("debt",false)}}
+  catch(e){setStale("debt",true)}
   rDebt()}
 
 /* ---- 1s heartbeat ---- */
@@ -384,12 +398,91 @@ function tick(){
   if(S.lastBlockMs){$("#h-since").textContent=timeAgo(S.lastBlockMs);const e=$("#blk-since");if(e)e.textContent=timeAgo(S.lastBlockMs)}
   if(S.diffAdj){const a=S.diffAdj,eta=a.estimatedRetargetDate?Math.floor((a.estimatedRetargetDate-now())/1000):null,e=$("#diff-eta");if(e&&eta!=null)e.textContent=dur(eta)}
   if(S.recentBlocks&&!document.hidden)rBlocks();
-  if(!netOK&&now()-lastErr>15000)flag(true)}
+  const st=$("#h-status");if(!netOK)st.textContent="reconnecting";else if(S.lastUpdate){const s=Math.round((now()-S.lastUpdate)/1000);st.textContent="updated "+(s<60?s+"s":Math.floor(s/60)+"m")+" ago"}
+  if(!netOK&&now()-lastErr>20000)flag(true)}
 
 /* ---- focus + ranges ---- */
-let focusId=null,focusChart=null,focusRange=30;
-const RANGES=[["1W",7],["1M",30],["3M",90],["6M",180],["1Y",365],["5Y",1825],["All",null]];
-const RLABEL={7:"1 week",30:"1 month",90:"3 months",180:"6 months",365:"1 year",1825:"5 years"};
+let focusId=null,focusChart=null,focusRange=30,infoOpen=false;
+const INFO={
+  power:["<b>What it is:</b> a pattern showing Bitcoin's price has grown along a surprisingly steady curve ever since it launched in 2009.",
+    "Plot price and age on special \"log\" scales and Bitcoin's whole history roughly forms a straight line — that line is its <b>fair value</b>.",
+    "The orange band is a channel: price tends to travel between the lower edge (support) and upper edge (resistance).",
+    "The white line is the actual price over time.",
+    "<b>Why it matters:</b> instead of guessing if Bitcoin is \"expensive,\" you can see whether it sits above or below its long-term trend.",
+    "It's a historical pattern, not a promise — the future could break it."],
+  hash:["<b>What it is:</b> the total computing power all the world's miners aim at Bitcoin every second.",
+    "Mining = computers making trillions of guesses to earn the right to add the next block of transactions.",
+    "The number (e.g. \"600 EH/s\") counts those guesses per second. EH/s means quintillions of hashes per second.",
+    "<b>Why it matters:</b> more hash power = more energy and hardware defending the network, so attacking or rewriting it becomes hugely expensive.",
+    "Rising hash rate signals miners are confident and committed."],
+  diff:["<b>What it is:</b> an automatic dial that sets how hard it is to mine a block.",
+    "Bitcoin aims for one new block roughly every 10 minutes. If miners speed up, difficulty rises to hold that pace; if they leave, it drops.",
+    "It readjusts every 2,016 blocks — about every two weeks.",
+    "\"Next\" estimates the coming adjustment; \"retarget\" counts down to it.",
+    "<b>Why it matters:</b> it's Bitcoin regulating itself, keeping a steady heartbeat no matter how much mining power comes or goes."],
+  blocks:["<b>What it is:</b> Bitcoin's ledger is a chain of \"blocks,\" each a bundle of confirmed transactions.",
+    "A new block is added about every 10 minutes; the # is how many exist so far.",
+    "Once your payment is in a block it's confirmed and extremely hard to reverse.",
+    "The list shows the newest blocks, how many transactions each holds, and how long ago it landed.",
+    "<b>Why it matters:</b> steady blocks mean the network is alive and settling payments reliably."],
+  mempool:["<b>What it is:</b> the \"waiting room\" for transactions that were sent but aren't in a block yet.",
+    "The number is how many are waiting right now.",
+    "\"Size\" is how much block space they'd fill; \"clear\" estimates how many blocks to process them all.",
+    "<b>Why it matters:</b> a full mempool means high demand for block space (and higher fees); an empty one means it's cheap and quiet."],
+  fees:["<b>What it is:</b> a small payment you attach to a transaction to reward miners for including it.",
+    "Measured in <b>sat/vB</b> — satoshis per virtual byte. A satoshi (\"sat\") is the smallest unit of a bitcoin.",
+    "Pay more and you confirm faster; pay less and you wait longer.",
+    "The tiers show the going rate for priority vs. economy speed right now.",
+    "<b>Why it matters:</b> fees are how Bitcoin keeps paying miners as the new-coin reward shrinks over time — a sign of a self-sustaining economy."],
+  tx:["<b>What it is:</b> how many payments the network confirmed directly on the blockchain each day.",
+    "Each one is a real transfer of value settled by Bitcoin itself.",
+    "<b>Why it matters:</b> more transactions = more people actually using Bitcoin, not just holding it.",
+    "Note: lots of activity now happens off-chain (see Lightning), so this undercounts the true total."],
+  addr:["<b>What it is:</b> an \"address\" is like an account number where bitcoin can be sent or received.",
+    "This counts how many unique addresses were active (sent or received) each day.",
+    "<b>Why it matters:</b> a rough gauge of how many participants use the network day to day.",
+    "One person can control many addresses, so treat it as a measure of activity, not head-count."],
+  ln:["<b>What it is:</b> a faster, cheaper layer built on top of Bitcoin for instant, tiny payments.",
+    "Think of the main chain as settling big bank transfers, and Lightning as tapping a card for coffee.",
+    "\"Capacity\" is how much bitcoin is locked in Lightning channels, ready to move.",
+    "Channels and nodes are the connections and computers that route those payments.",
+    "<b>Why it matters:</b> it shows Bitcoin scaling for everyday spending, not just long-term saving."],
+  nodes:["<b>What it is:</b> independent computers running Bitcoin's software and checking every rule themselves.",
+    "They each store the full ledger and reject anything invalid — no trust in anyone required.",
+    "The number is how many are publicly reachable right now.",
+    "<b>Why it matters:</b> the more nodes, spread worldwide, the harder Bitcoin is to censor, control, or change. This is what \"decentralized\" really means."],
+  mcap:["<b>What it is:</b> the total dollar value of every bitcoin in existence (price × number of coins).",
+    "It lets you size Bitcoin against companies, gold, or other assets.",
+    "\"Volume 24h\" is how many dollars traded in the last day; \"vs ATH\" is the distance from its all-time-high value.",
+    "<b>Why it matters:</b> it shows scale — but it's still built on price, which is just the market's current opinion."],
+  relval:["<b>What it is:</b> Bitcoin's total value compared to the big things it competes with as money.",
+    "<b>Gold</b> — the classic store of value for thousands of years.",
+    "<b>Global wealth</b> — everything everyone on Earth owns, combined.",
+    "<b>M2</b> — the total US dollars in circulation and bank accounts.",
+    "<b>S&amp;P 500</b> — the combined value of America's 500 largest public companies.",
+    "<b>Why it matters:</b> it shows Bitcoin's room to grow. \"5% of gold\" means it could grow 20× just to match gold."],
+  btcgold:["<b>What it is:</b> the price of one bitcoin measured in ounces of gold instead of dollars.",
+    "Example: \"40 oz\" means one bitcoin buys 40 ounces of gold.",
+    "Why measure this way: dollars lose value over time, so comparing to gold (hard money) shows real purchasing power.",
+    "Rising = Bitcoin is beating gold; falling = gold is winning.",
+    "<b>Why it matters:</b> a hard-money-vs-hard-money scoreboard that ignores fiat noise."],
+  m2:["<b>What it is:</b> a measure of how many US dollars exist — cash, checking, savings and similar.",
+    "When more dollars are created, this number climbs.",
+    "The curve almost always rises — that's \"money printing,\" or debasement.",
+    "<b>Why it matters:</b> more dollars chasing the same goods makes each dollar worth less. Bitcoin's supply is capped at 21 million, so it can't be inflated this way.",
+    "This is the backdrop that makes a truly scarce asset appealing."],
+  debt:["<b>What it is:</b> the total amount the US federal government owes.",
+    "It grows whenever the government spends more than it collects in taxes.",
+    "Shown to the penny; the line trends relentlessly upward.",
+    "<b>Why it matters:</b> big, rising debt often pushes governments to create more money (see M2) to manage it — which erodes the dollar.",
+    "Many people buy Bitcoin as a hedge against exactly this."],
+  price:["<b>What it is:</b> what one bitcoin costs in dollars at this moment.",
+    "It's set by buyers and sellers on exchanges, second to second.",
+    "\"1 sat = ...\" shows the value of a satoshi, the smallest unit (1 bitcoin = 100 million sats).",
+    "<b>Why it's hidden by default:</b> price is just today's crowd opinion — it swings on emotion and says little about the network's real health.",
+    "The other cards measure actual strength; price is the noisy scoreboard."]};
+const RANGES=[["1M",30],["3M",90],["6M",180],["1Y",365],["5Y",1825],["All",null]];
+const RLABEL={30:"1 month",90:"3 months",180:"6 months",365:"1 year",1825:"5 years"};
 const rangeLabel=r=>r==null?"all time":RLABEL[r]||r+" days";
 const FNOTE={power:"Realized price against the log-log adoption model (kept full-history — a one-month power law is meaningless). Orange channel = model support → resistance.",
   hash:"Total work securing the chain. Miner conviction and 51%-attack cost.",diff:"Auto-retarget keeping blocks near ten minutes. Tracks hashrate with a lag.",
@@ -410,7 +503,9 @@ function buildRanges(){const el=$("#f-range");if(focusId==="power"||focusId==="r
   el.style.display="flex";el.innerHTML=RANGES.map(([l,d])=>`<button data-d="${d===null?'all':d}">${l}</button>`).join("");
   [...el.children].forEach(btn=>{const d=btn.dataset.d==="all"?null:+btn.dataset.d;if(d===focusRange)btn.classList.add("on");btn.onclick=()=>{focusRange=d;buildRanges();renderFocus()}})}
 function clearCanvas(cv){const c=cv.getContext("2d");c.clearRect(0,0,cv.width,cv.height)}
-function openFocus(id){focusId=id;focusRange=(id==="m2"||id==="debt")?1825:30;const m=METRICS.find(x=>x.id===id);
+function openFocus(id){focusId=id;focusRange=(id==="m2"||id==="debt")?1825:30;infoOpen=false;
+  $("#f-info").classList.remove("on");$("#f-infopanel").style.display="none";$(".fchart").style.display="";$("#f-note").style.display="";
+  const m=METRICS.find(x=>x.id===id);
   $(".fpanel").style.setProperty("--cat",CATS[m.cat].c);$("#f-title").textContent=m.t;$("#f-note").textContent=FNOTE[id]||"";
   $("#focus").classList.add("on");buildRanges();renderFocus()}
 function renderFocus(){const id=focusId,big=$("#f-big"),sub=$("#f-sub"),cv=$("#f-canvas");
@@ -428,6 +523,12 @@ function renderFocus(){const id=focusId,big=$("#f-big"),sub=$("#f-sub"),cv=$("#f
         scales:{x:{display:false},y:{grid:{color:C.line},ticks:{color:C.mute,callback:v=>compact(v,0)}}}}})}
   else{const snap={blocks:S.tip!=null?"#"+S.tip.toLocaleString():"—",mempool:S.mp?compact(S.mp.count,0):"—",fees:S.fees?S.fees.fastestFee+" sat/vB":"—"}[id]||"—";
     big.textContent=snap;sub.textContent="live snapshot";clearCanvas(cv)}}
+function toggleInfo(){infoOpen=!infoOpen;$("#f-info").classList.toggle("on",infoOpen);
+  const ch=$(".fchart"),nt=$("#f-note"),ip=$("#f-infopanel"),rg=$("#f-range");
+  if(infoOpen){rg.style.display="none";ch.style.display="none";nt.style.display="none";ip.style.display="block";
+    ip.innerHTML=`<div class="grp">${$("#f-title").textContent} — plain-English explainer</div><ul>${(INFO[focusId]||["No explainer yet."]).map(b=>`<li>${b}</li>`).join("")}</ul>`}
+  else{ch.style.display="";nt.style.display="";ip.style.display="none";buildRanges()}}
+$("#f-info").addEventListener("click",toggleInfo);
 $("#f-close").addEventListener("click",closeFocus);
 $("#focus").addEventListener("click",e=>{if(e.target.id==="focus")closeFocus()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeFocus()});
@@ -436,12 +537,13 @@ function closeFocus(){$("#focus").classList.remove("on");focusId=null;if(focusCh
 $("#ftr").innerHTML=`<a href="https://mempool.space" target="_blank" rel="noopener">mempool.space</a> · Coinbase · <a href="https://coingecko.com" target="_blank" rel="noopener">CoinGecko</a> · blockchain.info · <a href="https://bitnodes.io" target="_blank" rel="noopener">bitnodes</a> · gold via PAX Gold · M2 via <a href="https://fred.stlouisfed.org" target="_blank" rel="noopener">FRED</a> · debt via <a href="https://fiscaldata.treasury.gov" target="_blank" rel="noopener">US Treasury</a> · power-law after Santostasi · benchmarks approximate · omitted (no free data): non-zero balances, realized cap, SOPR, HODL waves, exchange flows.`;
 
 renderAll();applyVis();
-pullPrice();pullNetwork();pullHashrate();pullPriceHistory();pullMarket();pullChain();pullLNhistory();pullNodes();pullGold();pullM2();pullDebt();
+pullPrice();pullNetwork();pullHashrate();pullChain();pullLNhistory();pullNodes();pullM2();pullDebt();
+(async()=>{await pullPriceHistory();await sleep(1500);await pullMarket();await sleep(1500);await pullGold()})();
 setInterval(tick,1000);
-setInterval(pullPrice,6000);setInterval(pullNetwork,25000);setInterval(pullHashrate,3e5);
-setInterval(pullMarket,6e4);setInterval(pullPriceHistory,9e5);setInterval(pullChain,12e5);
-setInterval(pullLNhistory,18e5);setInterval(pullNodes,6e5);setInterval(pullGold,9e5);
-setInterval(pullM2,36e5);setInterval(pullDebt,36e5);
+setInterval(pullPrice,10000);
+setInterval(refreshAll,60000);
+setInterval(pullM2,9e5);setInterval(pullDebt,9e5);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){pullPrice();refreshAll()}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){pullPrice();pullNetwork()}});
 </script>
 </body>

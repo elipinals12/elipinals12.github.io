@@ -121,7 +121,7 @@
 </head>
 <body>
 <header><div class="hwrap">
-  <div class="brand"><h1 class="wordmark">₿ITCOIN</h1></div>
+  <div class="brand"><h1 class="wordmark">₿itcoin Dashboard</h1></div>
   <div class="stat-pill"><span class="k">Block</span><span class="v num" style="color:var(--c-health)" id="h-block">—</span></div>
   <div class="stat-pill"><span class="k">Last block</span><span class="v num" id="h-since">—</span></div>
   <div class="stat-pill"><span class="k">Hashrate</span><span class="v num" style="color:var(--c-sec)" id="h-hash">—</span></div>
@@ -173,11 +173,18 @@ function dur(sec){if(sec==null||sec<0)return"—";sec=Math.floor(sec);const d=Ma
 async function getJSON(url,ms=12000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);
   try{const r=await fetch(url,{signal:c.signal,headers:{accept:"application/json"}});if(!r.ok)throw new Error(r.status);return await r.json()}finally{clearTimeout(t)}}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const PROXIES=[u=>u,u=>"https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(u),u=>"https://corsproxy.io/?url="+encodeURIComponent(u),u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u)];
 async function getText(url,ms=15000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);
   try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error(r.status);return await r.text()}finally{clearTimeout(t)}}
-async function proxied(url,ms=15000){let e;for(const p of PROXIES){try{return await getJSON(p(url),ms)}catch(x){e=x}}throw e}
-async function proxiedText(url,ms=15000){let e;for(const p of PROXIES){try{return await getText(p(url),ms)}catch(x){e=x}}throw e}
+const TEXT_PROXIES=[
+  u=>({u,x:t=>t}),
+  u=>({u:"https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(u),x:t=>t}),
+  u=>({u:"https://api.allorigins.win/raw?url="+encodeURIComponent(u),x:t=>t}),
+  u=>({u:"https://api.allorigins.win/get?url="+encodeURIComponent(u),x:t=>JSON.parse(t).contents}),
+  u=>({u:"https://corsproxy.io/?url="+encodeURIComponent(u),x:t=>t}),
+  u=>({u:"https://thingproxy.freeboard.io/fetch/"+u,x:t=>t})];
+async function proxiedText(url,ms=15000){let e;for(const mk of TEXT_PROXIES){const o=mk(url);
+  try{const raw=await getText(o.u,ms);const out=o.x(raw);if(out&&out.length>10)return out}catch(x){e=x}}throw e||new Error("proxy fail")}
+async function proxied(url,ms=15000){return JSON.parse(await proxiedText(url,ms))}
 async function cg(url,ms=12000){try{return await getJSON(url,ms)}catch(e){await sleep(1600);return await getJSON(url,ms)}}
 function parseCsv(text,scale){const out=[],lines=text.trim().split(/\r?\n/);
   for(let i=1;i<lines.length;i++){const parts=lines[i].split(",");if(parts.length<2)continue;
@@ -350,7 +357,7 @@ async function pullPrice(){try{const d=await getJSON("https://api.coinbase.com/v
   catch(e){try{const m=await getJSON("https://mempool.space/api/v1/prices");S.price={usd:m.USD};if(S.priceDisplay==null)S.priceDisplay=m.USD;flag(true)}catch(e2){setStale("price",true);flag(false)}}
   try{const g=await getJSON("https://api.coinbase.com/v2/prices/PAXG-USD/spot");S.goldSpot=+g.data.amount}catch(e){}
   if(S.price?.usd)S.mcap=S.price.usd*BTC_SUPPLY;
-  rPrice();rPower();rRelval();rBtcGold();rMcap()}
+  rPrice();rPower();rRelval();rBtcGold();rMcap();rGold()}
 async function pullNetwork(){await Promise.allSettled([
   getJSON("https://mempool.space/api/blocks/tip/height").then(h=>{S.tip=+h;setStale("blocks",false)}).catch(()=>setStale("blocks",true)),
   getJSON("https://mempool.space/api/v1/blocks").then(b=>{S.recentBlocks=b;if(b[0])S.lastBlockMs=b[0].timestamp*1000}).catch(()=>{}),
@@ -392,8 +399,12 @@ async function pullMarketData(){
   if(gold.length){S.goldHist=gold;rGold()}
   if(gold.length&&btc.length){const m=new Map();for(const p of btc)m.set(Math.floor(p.t/864e5),p.v);
     S.btcGold=gold.map(g=>{const b=m.get(Math.floor(g.t/864e5));return b?{t:g.t,v:b/g.v}:null}).filter(Boolean);rBtcGold()}}
-async function pullSP(){try{const txt=await proxiedText("https://stooq.com/q/d/l/?s=^spx&i=d");
-  const s=parseCsvCol(txt,4);if(s.length){S.spSeries=s;setStale("sp500",false);rSP()}else setStale("sp500",true)}catch(e){setStale("sp500",true)}}
+async function pullSP(){
+  try{const txt=await proxiedText("https://stooq.com/q/d/l/?s=^spx&i=d");const s=parseCsvCol(txt,4);
+    if(s.length>5){S.spSeries=s;setStale("sp500",false);rSP();return}}catch(e){}
+  try{const txt=await proxiedText("https://fred.stlouisfed.org/graph/fredgraph.csv?id=SP500");const s=parseCsv(txt,1);
+    if(s.length>5){S.spSeries=s;setStale("sp500",false);rSP();return}}catch(e){}
+  setStale("sp500",true)}
 async function pullM2(){try{const txt=await proxiedText("https://fred.stlouisfed.org/graph/fredgraph.csv?id=M2SL");
   const s=parseCsv(txt,1e9);if(s.length){S.m2Series=s;setStale("m2",false);rM2()}else setStale("m2",true)}catch(e){setStale("m2",true)}}
 async function refreshAll(){await Promise.allSettled([pullNetwork(),pullHashrate(),pullChain(),pullNodes(),pullLNhistory()]);S.lastUpdate=now();flag(true)}

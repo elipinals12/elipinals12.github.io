@@ -1,51 +1,114 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Minimal Bodyweight Regimen v1</title>
 <style>
-  @page{size:Letter;margin:12mm 15mm 6mm 15mm;}
-  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  body{font-family:'Helvetica Neue',Arial,sans-serif;color:#000;font-size:9pt;margin:0;padding:0;}
-  @media screen{body{max-width:8.5in;margin:0 auto;padding:12mm 15mm;box-sizing:border-box;}}
-  h1{font-size:18pt;font-weight:800;margin:0 0 1pt 0;letter-spacing:-.3pt;}
-  .ver{font-size:9pt;font-weight:700;color:#888;vertical-align:super;margin-left:2pt;letter-spacing:0;}
-  .sub{font-size:8.5pt;color:#000;margin:0 0 5pt 0;line-height:1.2;}
-  .legend{font-size:7.5pt;margin:0 0 5pt 0;}
-  .legend .sq{display:inline-block;width:9px;height:9px;margin:0 3px 0 0;vertical-align:middle;}
-  .legend .lab{margin-right:10px;vertical-align:middle;font-weight:700;}
-  .hdr{background:#000;color:#fff;font-size:10pt;font-weight:800;letter-spacing:2px;padding:3px 8px;margin:6pt 0 3pt 0;}
-
+  /* ===== shared: structure, colors, weights (no sizing) ===== */
+  *{box-sizing:border-box;}
+  body{font-family:'Helvetica Neue',Arial,sans-serif;color:#000;margin:0;}
+  h1{font-weight:800;letter-spacing:-.3pt;}
+  .ver{font-weight:700;color:#888;vertical-align:super;}
+  .inputform{float:right;font-weight:600;color:#245e82;text-decoration:underline;}
+  .legend .sq{display:inline-block;vertical-align:middle;}
+  .legend .lab{vertical-align:middle;font-weight:700;}
+  .hdr{background:#000;color:#fff;font-weight:800;letter-spacing:2px;}
   table.routine{width:100%;border-collapse:collapse;}
-  table.routine td{vertical-align:middle;border-top:1px solid #d8d8d8;padding:2pt 0;}
-  .num{font-size:13pt;font-weight:800;text-align:center;width:22px;}
-  .dcell{width:170px;padding-right:6pt;}
-  .dtitle{font-size:11pt;font-weight:800;line-height:1.02;}
-  .dblurb{font-style:italic;font-size:7pt;color:#222;line-height:1.05;white-space:nowrap;}
-  .flow{font-size:9pt;line-height:1.15;}
-  .wday{font-size:8pt;font-weight:700;text-align:right;width:60px;}
+  table.routine td{vertical-align:middle;border-top:1px solid #d8d8d8;}
+  .num{font-weight:800;text-align:center;}
+  .dtitle{font-weight:800;line-height:1.02;}
+  .dblurb{font-style:italic;color:#222;line-height:1.08;}
+  .wday{font-weight:700;text-align:right;}
   tr.restrow td{border-top:2.5px solid #1a1a1a;border-bottom:2.5px solid #1a1a1a;background:#f4f4f4;}
-
   .c-push{color:#c0374a}.c-pull{color:#245e82}.c-posture{color:#6f54b3}
   .c-core{color:#c47a0a}.c-legs{color:#238a50}.c-run{color:#444}.arw{color:#aaa}
   .lvl{color:#5c3714}
-  .rules{font-size:8pt;margin:5pt 0 0 0;line-height:1.25;text-align:center;}
+  .rules{text-align:center;}
   .rules .d{color:#bbb;}
-
   table.ex{width:100%;border-collapse:collapse;}
-  table.ex>tbody>tr>td{width:50%;vertical-align:top;}
-  td.colL{padding-right:12px;} td.colR{padding-left:12px;}
-  .grp{font-size:9.5pt;font-weight:800;letter-spacing:.3px;margin-top:7px;margin-bottom:2px;}
-  .colL>.grp:first-child,.colR>.grp:first-child{margin-top:0;}
+  table.ex>tbody>tr>td{vertical-align:top;}
+  .grp{font-weight:800;}
   .grp.push{color:#c0374a}.grp.pull{color:#245e82}.grp.posture{color:#6f54b3}
   .grp.core{color:#c47a0a}.grp.legs{color:#238a50}.grp.run{color:#444}
-  .ex{padding-left:0;margin-bottom:1.8pt;}
-  .exname{font-size:6.8pt;font-weight:800;line-height:1.18;}
-  .exmus{font-style:italic;font-size:5.3999999999999995pt;color:#333;}
-  .exday{float:right;font-size:6.5pt;font-weight:700;color:#000;letter-spacing:.3px;margin-left:4px;}
-  .exhow,.excue,.exgrad{font-size:5.6pt;line-height:1.14;margin-top:0;}
+  .exname{font-weight:800;line-height:1.18;}
+  .exmus{font-style:italic;color:#333;}
+  .exday{float:right;font-weight:700;color:#000;letter-spacing:.3px;margin-left:4px;}
+
+  /* ===== PRINT: fixed pt sizing, tuned to one Letter page ===== */
+  @page{size:Letter;margin:12mm 15mm 6mm 15mm;}
+  @media print{
+    html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    body{font-size:9pt;padding:0;}
+    h1{font-size:18pt;margin:0 0 1pt 0;}
+    .ver{font-size:9pt;margin-left:2pt;letter-spacing:0;}
+    .inputform{font-size:8pt;margin-top:6pt;}
+    .sub{font-size:8.5pt;color:#000;line-height:1.2;margin:0 0 5pt 0;}
+    .legend{font-size:7.5pt;margin:0 0 5pt 0;}
+    .legend .sq{width:9px;height:9px;margin:0 3px 0 0;}
+    .legend .lab{margin-right:10px;}
+    .hdr{font-size:10pt;padding:3px 8px;margin:6pt 0 3pt 0;}
+    table.routine td{padding:2pt 0;}
+    .num{font-size:13pt;width:22px;}
+    .dcell{width:170px;padding-right:6pt;}
+    .dtitle{font-size:11pt;}
+    .dblurb{font-size:7pt;white-space:nowrap;}
+    .flow{font-size:9pt;line-height:1.15;}
+    .wday{font-size:8pt;width:60px;}
+    .rules{font-size:8pt;margin:5pt 0 0 0;line-height:1.25;}
+    table.ex>tbody>tr>td{width:50%;}
+    td.colL{padding-right:12px;} td.colR{padding-left:12px;}
+    .grp{font-size:9.5pt;letter-spacing:.3px;margin-top:7px;margin-bottom:2px;}
+    .colL>.grp:first-child,.colR>.grp:first-child{margin-top:0;}
+    .ex{padding-left:0;margin-bottom:1.8pt;}
+    .exname{font-size:6.8pt;}
+    .exmus{font-size:5.4pt;}
+    .exhow,.excue,.exgrad{font-size:5.6pt;line-height:1.14;margin-top:0;}
+    .exday{font-size:6.5pt;}
+  }
+
+  /* ===== SCREEN: fluid full-width, text scales with viewport ===== */
+  @media screen{
+    :root{--u:clamp(10px,1.02vw,26px);}
+    body{font-size:var(--u);padding:2.2vw 2.6vw;background:#fff;}
+    h1{font-size:calc(var(--u)*2.7);margin:0 0 .2em 0;}
+    .ver{font-size:calc(var(--u)*1.1);margin-left:.15em;letter-spacing:0;}
+    .inputform{font-size:calc(var(--u)*1.05);margin-top:calc(var(--u)*0.95);}
+    .sub{font-size:calc(var(--u)*1.15);line-height:1.25;margin:0 0 .5em 0;}
+    .legend{font-size:calc(var(--u)*1.0);margin:0 0 .6em 0;}
+    .legend .sq{width:calc(var(--u)*0.9);height:calc(var(--u)*0.9);margin:0 .3em 0 0;}
+    .legend .lab{margin-right:.9em;}
+    .hdr{font-size:calc(var(--u)*1.5);padding:.3em .7em;margin:.75em 0 .4em 0;}
+    table.routine td{padding:.35em 0;}
+    .num{font-size:calc(var(--u)*1.95);width:calc(var(--u)*2.3);}
+    .dcell{width:23%;padding-right:.6em;}
+    .dtitle{font-size:calc(var(--u)*1.6);}
+    .dblurb{font-size:calc(var(--u)*0.95);white-space:normal;}
+    .flow{font-size:calc(var(--u)*1.35);line-height:1.3;}
+    .wday{font-size:calc(var(--u)*1.05);width:calc(var(--u)*5);}
+    .rules{font-size:calc(var(--u)*1.05);margin:.6em 0 0 0;line-height:1.3;}
+    table.ex>tbody>tr>td{width:50%;}
+    td.colL{padding-right:calc(var(--u)*1.3);}
+    td.colR{padding-left:calc(var(--u)*1.3);}
+    .grp{font-size:calc(var(--u)*1.55);letter-spacing:.5px;margin:.9em 0 .25em 0;}
+    .colL>.grp:first-child,.colR>.grp:first-child{margin-top:.2em;}
+    .ex{margin-bottom:.55em;}
+    .exname{font-size:calc(var(--u)*1.2);}
+    .exmus{font-size:calc(var(--u)*0.98);}
+    .exhow,.excue,.exgrad{font-size:var(--u);line-height:1.3;}
+    .exday{font-size:calc(var(--u)*1.1);}
+  }
+  /* ===== MOBILE: single-column exercises, larger base ===== */
+  @media screen and (max-width:640px){
+    :root{--u:clamp(12px,3.4vw,24px);}
+    table.ex,table.ex>tbody,table.ex>tbody>tr{display:block;}
+    table.ex>tbody>tr>td.colL,table.ex>tbody>tr>td.colR{display:block;width:100%;padding:0;}
+    .dcell{width:auto;}
+    .num{width:auto;padding-right:.3em;}
+    .wday{width:auto;}
+  }
 </style></head>
 <body>
 
-<h1>Minimal Bodyweight Regimen<span class="ver">v1</span></h1>
+<h1><a class="inputform" href="https://docs.google.com/forms/d/e/1FAIpQLSceCu3HRe6SDDlCWKpenfuZlGNZC2O_MenaYMtdIbY2xRsouw/viewform?usp=dialog" target="_blank" rel="noopener">input form</a>Minimal Bodyweight Regimen<span class="ver">v1</span></h1>
 <div class="sub">No equipment (pull-up bar, walls, stairs, chairs, sofa, floor). Hits every major muscle (all heads) about twice a week, with posture work baked in.</div>
 <div class="legend">
   <span><span class="sq" style="background:#d1495b"></span><span class="lab">PUSH</span></span>

@@ -1,21 +1,242 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workout Plan</title>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-    }
-    embed {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
-</head>
+<html lang="en"><head><meta charset="utf-8">
+<title>Minimal Bodyweight Regimen v1</title>
+<style>
+  @page{size:Letter;margin:12mm 15mm 6mm 15mm;}
+  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  body{font-family:'Helvetica Neue',Arial,sans-serif;color:#000;font-size:9pt;margin:0;padding:0;}
+  @media screen{body{max-width:8.5in;margin:0 auto;padding:12mm 15mm;box-sizing:border-box;}}
+  h1{font-size:18pt;font-weight:800;margin:0 0 1pt 0;letter-spacing:-.3pt;}
+  .ver{font-size:9pt;font-weight:700;color:#888;vertical-align:super;margin-left:2pt;letter-spacing:0;}
+  .sub{font-size:8.5pt;color:#000;margin:0 0 5pt 0;line-height:1.2;}
+  .legend{font-size:7.5pt;margin:0 0 5pt 0;}
+  .legend .sq{display:inline-block;width:9px;height:9px;margin:0 3px 0 0;vertical-align:middle;}
+  .legend .lab{margin-right:10px;vertical-align:middle;font-weight:700;}
+  .hdr{background:#000;color:#fff;font-size:10pt;font-weight:800;letter-spacing:2px;padding:3px 8px;margin:6pt 0 3pt 0;}
+
+  table.routine{width:100%;border-collapse:collapse;}
+  table.routine td{vertical-align:middle;border-top:1px solid #d8d8d8;padding:2pt 0;}
+  .num{font-size:13pt;font-weight:800;text-align:center;width:22px;}
+  .dcell{width:170px;padding-right:6pt;}
+  .dtitle{font-size:11pt;font-weight:800;line-height:1.02;}
+  .dblurb{font-style:italic;font-size:7pt;color:#222;line-height:1.05;white-space:nowrap;}
+  .flow{font-size:9pt;line-height:1.15;}
+  .wday{font-size:8pt;font-weight:700;text-align:right;width:60px;}
+  tr.restrow td{border-top:2.5px solid #1a1a1a;border-bottom:2.5px solid #1a1a1a;background:#f4f4f4;}
+
+  .c-push{color:#c0374a}.c-pull{color:#245e82}.c-posture{color:#6f54b3}
+  .c-core{color:#c47a0a}.c-legs{color:#238a50}.c-run{color:#444}.arw{color:#aaa}
+  .lvl{color:#4d2c0e}
+  .rules{font-size:8pt;margin:5pt 0 0 0;line-height:1.25;text-align:center;}
+  .rules .d{color:#bbb;}
+
+  table.ex{width:100%;border-collapse:collapse;}
+  table.ex>tbody>tr>td{width:50%;vertical-align:top;}
+  td.colL{padding-right:12px;} td.colR{padding-left:12px;}
+  .grp{font-size:9.5pt;font-weight:800;letter-spacing:.3px;margin-top:7px;margin-bottom:2px;}
+  .colL>.grp:first-child,.colR>.grp:first-child{margin-top:0;}
+  .grp.push{color:#c0374a}.grp.pull{color:#245e82}.grp.posture{color:#6f54b3}
+  .grp.core{color:#c47a0a}.grp.legs{color:#238a50}.grp.run{color:#444}
+  .ex{padding-left:0;margin-bottom:1.8pt;}
+  .exname{font-size:6.8pt;font-weight:800;line-height:1.18;}
+  .exmus{font-style:italic;font-size:5.3999999999999995pt;color:#333;}
+  .exday{float:right;font-size:6.5pt;font-weight:700;color:#000;letter-spacing:.3px;margin-left:4px;}
+  .exhow,.excue,.exgrad{font-size:5.6pt;line-height:1.14;margin-top:0;}
+</style></head>
 <body>
-  <embed src="./workoutPlan.pdf" type="application/pdf">
-</body>
-</html>
+
+<h1>Minimal Bodyweight Regimen<span class="ver">v1</span></h1>
+<div class="sub">No equipment (pull-up bar, walls, stairs, chairs, sofa, floor). Hits every major muscle (all heads) about twice a week, with posture work baked in.</div>
+<div class="legend">
+  <span><span class="sq" style="background:#d1495b"></span><span class="lab">PUSH</span></span>
+  <span><span class="sq" style="background:#2a6f97"></span><span class="lab">PULL</span></span>
+  <span><span class="sq" style="background:#8367c7"></span><span class="lab">POSTURE</span></span>
+  <span><span class="sq" style="background:#e08e0b"></span><span class="lab">CORE</span></span>
+  <span><span class="sq" style="background:#2a9d5c"></span><span class="lab">LEGS</span></span>
+  <span><span class="sq" style="background:#555"></span><span class="lab">RUNNING</span></span>
+</div>
+
+<div class="hdr">ROUTINE</div>
+<table class="routine">
+  <tr>
+    <td class="num">1</td>
+    <td class="dcell"><div class="dtitle">TITAN</div><div class="dblurb">Press heads, triceps, lower leg.</div></td>
+    <td class="flow"><span class="c-push">Pike push-ups</span><span class="arw"> &rarr; </span><span class="c-push">Decline push-ups</span><span class="arw"> &rarr; </span><span class="c-push">Push-ups</span><span class="arw"> &rarr; </span><span class="c-push">Bench dips</span><span class="arw"> &rarr; </span><span class="c-push">Lateral raises</span><span class="arw"> &rarr; </span><span class="c-legs">Calf raises</span><span class="arw"> &rarr; </span><span class="c-legs">Tibialis raises</span><span class="arw"> &rarr; </span><span class="c-run">Short run</span></td>
+    <td class="wday">Monday</td>
+  </tr>
+  <tr>
+    <td class="num">2</td>
+    <td class="dcell"><div class="dtitle">IRONCLAD</div><div class="dblurb">Back, biceps, posture, neck.</div></td>
+    <td class="flow"><span class="c-pull">Pull-ups</span><span class="arw"> &rarr; </span><span class="c-pull">Inverted rows</span><span class="arw"> &rarr; </span><span class="c-posture">Prone Y-T-W raises</span><span class="arw"> &rarr; </span><span class="c-posture">Superman</span><span class="arw"> &rarr; </span><span class="c-core">Hanging knee raises</span><span class="arw"> &rarr; </span><span class="c-core">Side plank</span><span class="arw"> &rarr; </span><span class="c-posture">Neck work</span></td>
+    <td class="wday">Tuesday</td>
+  </tr>
+  <tr>
+    <td class="num">3</td>
+    <td class="dcell"><div class="dtitle">ODYSSEY</div><div class="dblurb">Easy long run, aerobic base.</div></td>
+    <td class="flow"><span class="c-run">Long run</span></td>
+    <td class="wday">Wednesday</td>
+  </tr>
+  <tr>
+    <td class="num">4</td>
+    <td class="dcell"><div class="dtitle">COLOSSUS</div><div class="dblurb">Legs head to toe + neck.</div></td>
+    <td class="flow"><span class="c-legs">Split squats</span><span class="arw"> &rarr; </span><span class="c-legs">Single-leg glute bridge</span><span class="arw"> &rarr; </span><span class="c-legs">Nordic hamstring curl</span><span class="arw"> &rarr; </span><span class="c-legs">Copenhagen plank</span><span class="arw"> &rarr; </span><span class="c-legs">Calf raises</span><span class="arw"> &rarr; </span><span class="c-legs">Tibialis raises</span><span class="arw"> &rarr; </span><span class="c-posture">Superman</span><span class="arw"> &rarr; </span><span class="c-posture">Neck work</span></td>
+    <td class="wday">Thursday</td>
+  </tr>
+  <tr class="restrow">
+    <td class="num">5</td>
+    <td class="dcell"><div class="dtitle">SUMMIT</div><div class="dblurb">Full-body peak + hill run.</div></td>
+    <td class="flow"><span class="c-pull">Chin-ups</span><span class="arw"> &rarr; </span><span class="c-push">Decline push-ups</span><span class="arw"> &rarr; </span><span class="c-push">Lateral raises</span><span class="arw"> &rarr; </span><span class="c-pull">Inverted rows</span><span class="arw"> &rarr; </span><span class="c-legs">Split squats</span><span class="arw"> &rarr; </span><span class="c-legs">Single-leg glute bridge</span><span class="arw"> &rarr; </span><span class="c-core">Hanging knee raises</span><span class="arw"> &rarr; </span><span class="c-run">Hill run</span></td>
+    <td class="wday">Saturday</td>
+  </tr>
+</table>
+<div class="rules">Stop ~2 reps before failure<span class="d"> &middot; </span>run after lifting, never before<span class="d"> &middot; </span>work both sides evenly<span class="d"> &middot; </span>rest hard around SUMMIT<span class="d"> &middot; </span>level up a lift only once it feels easy</div>
+
+<div class="hdr">EXERCISES</div>
+<table class="ex"><tr>
+<td class="colL">
+
+  <div class="grp push">PUSH</div>
+  <div class="ex push">
+    <div class="exname c-push"><span class="exday">1</span>Pike push-ups <span class="exmus">Shoulders (front deltoids), triceps (long head), upper trapezius</span></div>
+    <div class="exhow">From a push-up, walk your feet in until your hips pike up into an upside-down V. Bend your elbows to lower your head toward the floor between your hands, then press back to straight arms.</div>
+    <div class="excue"><b>Cue:</b> hips high, let the shoulders press.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x12.</div>
+  </div>
+  <div class="ex push">
+    <div class="exname c-push"><span class="exday">1, 5</span>Decline push-ups <span class="exmus">Upper chest (clavicular head), front deltoids, triceps</span></div>
+    <div class="exhow">Feet up on a chair, hands slightly wider than your shoulders, body in a straight downhill line. Lower your chest to an inch off the floor, then press up. Higher feet works the upper chest more.</div>
+    <div class="excue"><b>Cue:</b> one straight line, chest to the floor.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x15.</div>
+  </div>
+  <div class="ex push">
+    <div class="exname c-push"><span class="exday">1</span>Push-ups <span class="exmus">Chest (sternal head), front deltoids, triceps, serratus anterior</span></div>
+    <div class="exhow">Hands slightly wider than your shoulders under your upper chest, body in one line. Lower over about two seconds until your chest nearly touches, then press straight up.</div>
+    <div class="excue"><b>Cue:</b> push the floor away, stay tight.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x20.</div>
+  </div>
+  <div class="ex push">
+    <div class="exname c-push"><span class="exday">1</span>Bench dips <span class="exmus">Lower chest, triceps</span></div>
+    <div class="exhow">Hands on a chair edge beside your hips, butt off the front, legs out in front. Bend your elbows straight back to about 90 degrees, then press back up to straight arms.</div>
+    <div class="excue"><b>Cue:</b> shoulders down, no shrug.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x12.</div>
+  </div>
+  <div class="ex push">
+    <div class="exname c-push"><span class="exday">1, 5</span>Lateral raises (against a doorframe) <span class="exmus">Side deltoids</span></div>
+    <div class="exhow">Grip a doorframe low with a straight arm, feet at its base. Lean your body out to the side, then pull yourself upright by driving through the side of your shoulder. Switch sides.</div>
+    <div class="excue"><b>Cue:</b> fall out, pull back from the shoulder.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x12 per side.</div>
+  </div>
+
+  <div class="grp pull">PULL</div>
+  <div class="ex pull">
+    <div class="exname c-pull"><span class="exday">2, 5</span>Pull-ups &amp; chin-ups <span class="exmus">Lats, biceps, grip (a chin-up grip works the biceps more)</span></div>
+    <div class="exhow">Hang from the bar at full stretch, palms away for pull-ups or toward you for chin-ups. Pull your chin over the bar, then lower all the way to a dead hang.</div>
+    <div class="excue"><b>Cue:</b> chest to bar, no swing.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x10.</div>
+  </div>
+  <div class="ex pull">
+    <div class="exname c-pull"><span class="exday">2, 5</span>Inverted rows <span class="exmus">Upper back, rhomboids, rear deltoids, biceps</span></div>
+    <div class="exhow">Hang under a low bar or table edge, body straight and heels down. Pull your chest to the edge with your elbows wide, then lower under control. More horizontal is harder.</div>
+    <div class="excue"><b>Cue:</b> pinch the shoulder blades.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x15.</div>
+  </div>
+
+  <div class="grp posture">POSTURE</div>
+  <div class="ex posture">
+    <div class="exname c-posture"><span class="exday">2</span>Prone Y-T-W raises <span class="exmus">Mid and lower trapezius, rhomboids, rear deltoids</span></div>
+    <div class="exhow">Face down, arms overhead, thumbs up. Lift the arms into a Y, then a T, then a W (elbows to your ribs), starting each lift from the shoulder blades.</div>
+    <div class="excue"><b>Cue:</b> lift from the blades, not the neck.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x10 each shape.</div>
+  </div>
+  <div class="ex posture">
+    <div class="exname c-posture"><span class="exday">2, 4</span>Superman <span class="exmus">Lower back (erector spinae), glutes</span></div>
+    <div class="exhow">Face down, arms out front. Lift your chest, arms, and legs a few inches, reaching long; squeeze, then lower slowly. Keep looking at the floor.</div>
+    <div class="excue"><b>Cue:</b> reach long, don't crunch.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x12.</div>
+  </div>
+  <div class="ex posture">
+    <div class="exname c-posture"><span class="exday">2, 4</span>Neck tucks &amp; extensions <span class="exmus">Deep neck flexors and neck extensors</span></div>
+    <div class="exhow">Tuck: glide your chin straight back into a double chin, hold, release. Extend: hands behind your head, gently press your head back into them. Alternate both directions.</div>
+    <div class="excue"><b>Cue:</b> slow and gentle, never force.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x10 each way.</div>
+  </div>
+
+</td>
+<td class="colR">
+
+  <div class="grp core">CORE</div>
+  <div class="ex core">
+    <div class="exname c-core"><span class="exday">2, 5</span>Hanging knee raises <span class="exmus">Abs, hip flexors, grip</span></div>
+    <div class="exhow">Hang with your shoulders pulled down. Raise your knees, then curl your pelvis up toward your ribs at the top. Lower slowly, no swinging.</div>
+    <div class="excue"><b>Cue:</b> curl the hips, don't swing.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x15.</div>
+  </div>
+  <div class="ex core">
+    <div class="exname c-core"><span class="exday">2</span>Side plank (held for time) <span class="exmus">Obliques, deep core, side glutes</span></div>
+    <div class="exhow">Elbow under your shoulder, feet stacked. Lift your hips into one straight line from head to heels and hold, top hip stacked over the bottom.</div>
+    <div class="excue"><b>Cue:</b> hips high, don't sag.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x45s per side.</div>
+  </div>
+
+  <div class="grp legs">LEGS</div>
+  <div class="ex legs">
+    <div class="exname c-legs"><span class="exday">4, 5</span>Split squats <span class="exmus">Quads, glutes</span></div>
+    <div class="exhow">Long staggered stance. Lower straight down until your back knee nearly touches, then drive up through your front foot, front knee over your toes.</div>
+    <div class="excue"><b>Cue:</b> straight down, drive the front foot.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x15 per leg.</div>
+  </div>
+  <div class="ex legs">
+    <div class="exname c-legs"><span class="exday">4, 5</span>Single-leg glute bridge <span class="exmus">Glutes, hamstrings</span></div>
+    <div class="exhow">On your back, one foot planted close, other leg lifted. Drive your hips to full lockout through the planted heel, ribs down, then lower slowly.</div>
+    <div class="excue"><b>Cue:</b> all glute, no low back.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x15 per leg.</div>
+  </div>
+  <div class="ex legs">
+    <div class="exname c-legs"><span class="exday">4</span>Nordic hamstring curl <span class="exmus">Hamstrings (the knee-bending action)</span></div>
+    <div class="exhow">Kneel with your heels anchored under a sofa, body straight from knees to head. Lower your torso as slowly as you can, then push off your hands back up.</div>
+    <div class="excue"><b>Cue:</b> fight the fall, go slow.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x6.</div>
+  </div>
+  <div class="ex legs">
+    <div class="exname c-legs"><span class="exday">4</span>Copenhagen plank <span class="exmus">Adductors (inner thigh), obliques</span></div>
+    <div class="exhow">Side plank with your top inner thigh resting on a chair. Press it down and lift your hips straight, then raise the bottom leg to meet it. Easier: tuck the bottom leg under you.</div>
+    <div class="excue"><b>Cue:</b> crush the surface, hips up.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x20s per side.</div>
+  </div>
+  <div class="ex legs">
+    <div class="exname c-legs"><span class="exday">1, 4</span>Calf raises (on a stair) <span class="exmus">Calves (gastrocnemius and soleus)</span></div>
+    <div class="exhow">Balls of your feet on a stair, heels hanging off. Drop your heels for a full stretch, then press up to full tiptoe. Do one set knees-bent for the soleus.</div>
+    <div class="excue"><b>Cue:</b> full stretch, full squeeze.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x20.</div>
+  </div>
+  <div class="ex legs">
+    <div class="exname c-legs"><span class="exday">1, 4</span>Tibialis raises (against a wall) <span class="exmus">Shin (tibialis anterior)</span></div>
+    <div class="exhow">Back against a wall, heels a foot out. Keeping your heels down, lift your toes up toward your shins as high as you can, then lower slowly.</div>
+    <div class="excue"><b>Cue:</b> feel the shin burn.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3x20.</div>
+  </div>
+
+  <div class="grp run">RUNNING</div>
+  <div class="ex run">
+    <div class="exname c-run"><span class="exday">1</span>Short run <span class="exmus">Legs, plus heart and lungs</span></div>
+    <div class="exhow">Easy, conversational pace, about 1.5 miles, run after your lifting.</div>
+    <div class="excue"><b>Cue:</b> light, quick, tall.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 1.5 mi under ~14 min.</div>
+  </div>
+  <div class="ex run">
+    <div class="exname c-run"><span class="exday">3</span>Long run <span class="exmus">Aerobic base</span></div>
+    <div class="exhow">Slow, steady 3 miles, clearly slower than your short run, finishing relaxed. The easy pace is what builds the aerobic base.</div>
+    <div class="excue"><b>Cue:</b> easy enough to nose-breathe.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 3 mi under ~30 min.</div>
+  </div>
+  <div class="ex run">
+    <div class="exname c-run"><span class="exday">5</span>Hill run <span class="exmus">Leg power, plus aerobic</span></div>
+    <div class="exhow">Hilly route of about 1.5 miles. Short quick steps and a slight lean on the climbs; jog or walk the descents to recover.</div>
+    <div class="excue"><b>Cue:</b> push the ground away.</div>
+    <div class="exgrad"><span class="lvl"><b>lvl 1.</b></span> <b>Graduate:</b> 1.5 mi hills under ~16 min.</div>
+  </div>
+
+</td>
+</tr></table>
+
+</body></html>

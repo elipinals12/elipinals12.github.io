@@ -5,10 +5,10 @@
 // maybe have something to sense if the browser is slowing down, then remove dots 
 //      maybe the dots shouldnt even fall if ^ works. 
 
-let desc = "! ! ! GEORGIA IS FREE ! ! !";
+let desc = "! ! ! bday ! ! !";
 let hyear = 2026;
-let hmonth = 3; // 0-11?
-let hday = 10;
+let hmonth = 9; // 0-11?
+let hday = 13;
 let hhour = 2; // 1-24
 
 let redHeight = 140;

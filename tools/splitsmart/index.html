@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SplitSmart</title>
+<link rel="icon" href="../../ref/Disc_Plain_blue_dark.png">
+<style>
+:root{
+  --bg:#111; --bg2:#1a1a1a; --bg3:#1e1e1e; --border:#2a2a2a; --border2:#232323; --border3:#1c1c1c;
+  --text:#e8e8e8; --text2:#ccc; --text3:#aaa; --text4:#888; --text5:#666; --text6:#555;
+  --accent:#4a90e2; --accent-hover:#3a80d2; --pos:#4cd071; --neg:#e25c5c; --overlay:rgba(0,0,0,.85);
+}
+[data-theme="light"]{
+  --bg:#f4f5f7; --bg2:#ffffff; --bg3:#f0f1f4; --border:#e2e4e9; --border2:#e8e9ed; --border3:#eceef1;
+  --text:#1c1e21; --text2:#3a3d42; --text3:#5b5f66; --text4:#767a82; --text5:#8a8e96; --text6:#a2a6ad;
+  --accent:#3d7dd6; --accent-hover:#2f6bc0; --pos:#1f9d55; --neg:#d64545; --overlay:rgba(20,20,25,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);transition:background .2s,color .2s}
+button,input,select{font-family:inherit}
+input[type=text],input[type=number]{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-size:.95rem;outline:none}
+input[type=text]:focus,input[type=number]:focus{border-color:var(--text5)}
+button{cursor:pointer;transition:.15s}
+a{color:inherit}
+
+.app{display:flex;flex-direction:column;height:100%;height:100dvh}
+[hidden]{display:none!important}
+
+/* ---- Join/Create screen ---- */
+.gate{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+.gate-box{width:min(94vw,420px);background:var(--bg2);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.gate-box h1{font-size:1.4rem;text-align:center;margin-bottom:4px}
+.gate-box .sub{text-align:center;color:var(--text4);font-size:.82rem;margin-top:-10px;margin-bottom:6px}
+.field label{display:block;font-size:.75rem;color:var(--text4);margin-bottom:6px;letter-spacing:.3px}
+.field input{width:100%}
+.paychecks{display:flex;flex-wrap:wrap;gap:8px}
+.paychecks label{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:999px;padding:6px 12px;font-size:.8rem;color:var(--text3);cursor:pointer}
+.paychecks input{accent-color:var(--accent)}
+.tabs{display:flex;gap:8px;background:var(--bg3);border-radius:10px;padding:4px}
+.tabs button{flex:1;background:none;border:none;color:var(--text4);padding:9px;border-radius:8px;font-size:.85rem}
+.tabs button.active{background:var(--border2);color:var(--text)}
+.code-input{letter-spacing:.5px;font-weight:600;text-align:center;font-size:.88rem}
+.primary-btn{background:var(--accent);border:none;color:#fff;padding:12px;border-radius:10px;font-size:.95rem;font-weight:600}
+.primary-btn:hover{background:var(--accent-hover)}
+.primary-btn:disabled{opacity:.4;cursor:default}
+.err{color:var(--neg);font-size:.8rem;text-align:center;min-height:1em}
+
+/* ---- Main app ---- */
+.topbar{display:flex;align-items:center;gap:10px;padding:12px 16px;flex-shrink:0;border-bottom:1px solid var(--border3);flex-wrap:wrap}
+.topbar .code-pill{background:var(--bg3);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:.74rem;color:var(--text3);letter-spacing:.3px;font-weight:600;max-width:100%;overflow-wrap:anywhere}
+.topbar .me{font-size:.85rem;color:var(--text2);margin-left:auto;display:flex;align-items:center;gap:7px}
+.topbar .leave{background:none;border:none;color:var(--text5);font-size:.78rem;text-decoration:underline}
+.theme-toggle{background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:32px;height:32px;border-radius:999px;font-size:.95rem;display:flex;align-items:center;justify-content:center}
+.theme-toggle:hover{border-color:var(--text5)}
+.theme-toggle.gate-toggle{position:fixed;top:16px;right:16px;z-index:20}
+
+.main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:20px;max-width:1100px;width:100%;margin:0 auto}
+
+.balances h2,.feed h2{font-size:.85rem;color:var(--text4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.balgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.balcard{background:var(--bg2);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:4px;border:1px solid var(--border2);border-left:3px solid var(--mc,var(--accent))}
+.balcard .who{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.dot{width:26px;height:26px;border-radius:50%;background:var(--mc,var(--accent));color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;text-shadow:0 1px 1px rgba(0,0,0,.15)}
+.balcard .name{font-weight:600;font-size:.95rem}
+.balcard .pay{font-size:.72rem;color:var(--text5);margin-left:34px}
+.balcard .amt{font-size:1.05rem;font-weight:700;margin-top:4px}
+.balcard .amt.pos{color:var(--pos)}
+.balcard .amt.neg{color:var(--neg)}
+.balcard .amt.zero{color:var(--text5);font-weight:500;font-size:.85rem}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions button{flex:1;min-width:150px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:12px;border-radius:12px;font-size:.9rem;font-weight:600}
+.actions button:hover{border-color:var(--text5)}
+
+.feed-list{display:flex;flex-direction:column;gap:2px}
+.feed-item{display:flex;gap:10px;align-items:center;padding:8px 4px;border-bottom:1px solid var(--border3);font-size:.85rem}
+.feed-item .dot{width:18px;height:18px;font-size:0}
+.feed-item .ts{color:var(--text6);font-size:.68rem;white-space:nowrap;flex-shrink:0;min-width:70px}
+.feed-item .desc{color:var(--text2)}
+.feed-item .desc b{color:var(--text)}
+
+/* ---- Modal ---- */
+.overlay{display:none;position:fixed;inset:0;background:var(--overlay);z-index:10;justify-content:center;align-items:center;padding:20px;overflow-y:auto;backdrop-filter:blur(3px)}
+.overlay.open{display:flex}
+.modal{background:var(--bg2);border-radius:20px;padding:24px;width:min(94vw,440px);display:flex;flex-direction:column;gap:14px;max-height:90vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.2)}
+.modal h3{font-size:1.1rem}
+.modal .close{position:absolute}
+.modal-close{align-self:flex-end;background:none;border:none;color:var(--text5);font-size:1.4rem;line-height:1;margin:-10px -6px -10px 0}
+.split-list{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto}
+.split-row{display:flex;align-items:center;gap:10px;background:var(--bg3);border-radius:8px;padding:8px 10px}
+.split-row input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
+.split-row .sname{flex:1;font-size:.88rem;display:flex;align-items:center;gap:8px}
+.modal select{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-size:.9rem}
+.modal .row2{display:flex;gap:10px}
+.modal .row2>*{flex:1}
+.hint{font-size:.75rem;color:var(--text5)}
+.empty{color:var(--text6);font-size:.85rem;padding:20px 0;text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+  <button class="theme-toggle gate-toggle" id="themeToggleGate" title="Toggle theme">◐</button>
+
+  <!-- Join / Create gate -->
+  <div class="gate" id="gate">
+    <div class="gate-box">
+      <h1>SplitSmart</h1>
+      <div class="sub">a splitwise replacement with no emails</div>
+      <div class="tabs">
+        <button id="tabJoin" class="active">Join party</button>
+        <button id="tabCreate">New party</button>
+      </div>
+
+      <div class="field" id="codeField">
+        <label>Party code</label>
+        <input type="text" id="codeInput" class="code-input" placeholder="coral-marble-quiver-basin">
+      </div>
+
+      <div class="field">
+        <label>Your name</label>
+        <input type="text" id="nameInput" placeholder="e.g. Alex">
+      </div>
+
+      <div class="field">
+        <label>Preferred payment (optional)</label>
+        <div class="paychecks" id="paychecks">
+          <label><input type="checkbox" value="Venmo"> Venmo</label>
+          <label><input type="checkbox" value="Zelle"> Zelle</label>
+          <label><input type="checkbox" value="Cash"> Cash</label>
+          <label><input type="checkbox" value="CashApp"> CashApp</label>
+          <label><input type="checkbox" value="Bitcoin"> Bitcoin</label>
+        </div>
+      </div>
+
+      <div class="err" id="gateErr"></div>
+      <button class="primary-btn" id="gateSubmit">Join party</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div id="mainScreen" hidden style="display:flex;flex-direction:column;height:100%">
+    <div class="topbar">
+      <span class="code-pill" id="partyCodePill"></span>
+      <span class="me">You: <b id="meName"></b></span>
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">◐</button>
+      <button class="leave" id="leaveBtn">leave</button>
+    </div>
+
+    <div class="main">
+      <div class="balances">
+        <h2>Balances</h2>
+        <div class="balgrid" id="balGrid"></div>
+      </div>
+
+      <div class="actions">
+        <button id="openPaymentBtn">＋ Add payment</button>
+        <button id="openSettleBtn">✓ Record settlement</button>
+      </div>
+
+      <div class="feed">
+        <h2>Ledger</h2>
+        <div class="feed-list" id="feedList"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Payment modal -->
+<div class="overlay" id="paymentOverlay">
+  <div class="modal">
+    <button class="modal-close" data-close="paymentOverlay">✕</button>
+    <h3>Add payment</h3>
+    <div class="field"><label>What for</label><input type="text" id="payNote" placeholder="e.g. Dinner"></div>
+    <div class="field"><label>Amount ($)</label><input type="number" id="payAmount" step="0.01" min="0" placeholder="0.00"></div>
+    <div class="field"><label>Who paid</label><select id="payPayer"></select></div>
+    <div class="field">
+      <label>Split among</label>
+      <div class="split-list" id="paySplitList"></div>
+    </div>
+    <div class="err" id="payErr"></div>
+    <button class="primary-btn" id="paySubmit">Add to ledger</button>
+  </div>
+</div>
+
+<!-- Settlement modal -->
+<div class="overlay" id="settleOverlay">
+  <div class="modal">
+    <button class="modal-close" data-close="settleOverlay">✕</button>
+    <h3>Record settlement</h3>
+    <div class="hint">For a payment made outside the app (Venmo, cash, etc). This just updates the ledger.</div>
+    <div class="row2">
+      <div class="field"><label>From</label><select id="settleFrom"></select></div>
+      <div class="field"><label>To</label><select id="settleTo"></select></div>
+    </div>
+    <div class="field"><label>Amount ($)</label><input type="number" id="settleAmount" step="0.01" min="0" placeholder="0.00"></div>
+    <div class="field"><label>Note (optional)</label><input type="text" id="settleNote" placeholder=""></div>
+    <div class="err" id="settleErr"></div>
+    <button class="primary-btn" id="settleSubmit">Add to ledger</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

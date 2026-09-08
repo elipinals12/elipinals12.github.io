@@ -641,14 +641,20 @@ function closeColorPop() {
 document.addEventListener('click', closeColorPop);
 
 /* ===== MODAL ===== */
+function nextCounterName() {
+  return `Counter ${counters.length}`;
+}
+
 function openModal() {
   modalHue = Math.random() * 360;
   modalSat = 70 + Math.random() * 30;
   modalLight = 60;
-  document.getElementById('nameInput').value = '';
+  const nameInput = document.getElementById('nameInput');
+  nameInput.value = '';
+  nameInput.placeholder = nextCounterName();
   document.getElementById('modalLightness').value = modalLight;
   document.getElementById('modalOverlay').classList.add('open');
-  setTimeout(() => { initModalPicker(); document.getElementById('nameInput').focus(); }, 60);
+  setTimeout(() => { initModalPicker(); nameInput.focus(); }, 60);
 }
 
 function closeModal() {
@@ -656,7 +662,8 @@ function closeModal() {
 }
 
 function createCounter() {
-  const name = document.getElementById('nameInput').value.trim() || 'Counter';
+  const nameInput = document.getElementById('nameInput');
+  const name = nameInput.value.trim() || nameInput.placeholder || nextCounterName();
   const color = hsl2hex(modalHue, modalSat, modalLight);
   counters.push({ id: uid(), name, value: 0, color });
   persist();

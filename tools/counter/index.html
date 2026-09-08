@@ -17,26 +17,19 @@ button{font-family:inherit}
 .topbar button:hover{background:#252525;border-color:#444}
 .topbar button.active{background:#252525;border-color:#555;color:#fff}
 .page{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px}
+.page:has(#overviewGrid){overflow:hidden;display:flex}
 
 /* Grid */
-.grid{display:flex;flex-wrap:wrap;justify-content:center;align-content:start;gap:16px;width:100%;max-width:1200px;margin:0 auto}
-.card{background:#1a1a1a;border-radius:16px;padding:24px 16px;text-align:center;border:2px solid transparent;cursor:pointer;transition:border-color .2s;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px}
+.grid{display:grid;gap:16px;width:100%;height:100%}
+.card{container-type:size;background:#1a1a1a;border-radius:16px;padding:6% 4%;text-align:center;border:2px solid transparent;cursor:pointer;transition:border-color .2s;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%}
 .card .sparkle{position:absolute;inset:0;opacity:0;transition:opacity .5s;pointer-events:none}
 .card.flash .sparkle{opacity:1;transition:opacity 0s}
-.card .name-edit{font-size:1rem;letter-spacing:1.5px;margin-bottom:10px;opacity:.7;background:none;border:none;color:inherit;text-align:center;width:100%;cursor:text;outline:none;padding:2px 4px;border-radius:4px;font-family:inherit}
+.card .name-edit{font-size:clamp(.8rem,8cqh,1.6rem);letter-spacing:1.5px;margin-bottom:3cqh;opacity:.7;background:none;border:none;color:inherit;text-align:center;width:100%;cursor:text;outline:none;padding:2px 4px;border-radius:4px;font-family:inherit}
 .card .name-edit:focus{background:#222;opacity:1}
-.card .count{font-size:3.2rem;font-weight:800;margin-bottom:16px;pointer-events:none}
-.card .btns{display:flex;gap:8px;justify-content:center}
-.card .btns button{width:54px;height:46px;border-radius:10px;border:none;font-size:1.3rem;font-weight:700;cursor:pointer;transition:.15s;color:#fff}
+.card .count{font-size:clamp(2rem,32cqh,14rem);font-weight:800;margin-bottom:4cqh;pointer-events:none;line-height:1}
+.card .btns{display:flex;gap:2cqw;justify-content:center}
+.card .btns button{width:clamp(40px,16cqh,90px);height:clamp(34px,13cqh,74px);border-radius:10px;border:none;font-size:clamp(1rem,7cqh,2rem);font-weight:700;cursor:pointer;transition:.15s;color:#fff}
 .card .btns button:active{transform:scale(.93)}
-
-.grid .card{width:calc(50% - 8px);max-width:340px}
-@media(min-width:700px){.grid .card{width:calc(33.333% - 11px)}}
-@media(min-width:1000px){.grid .card{width:calc(25% - 12px)}}
-.grid[data-count="1"] .card{width:min(90vw,500px);min-height:260px}
-.grid[data-count="1"] .card .count{font-size:5rem}
-.grid[data-count="2"] .card{width:min(45vw,400px);min-height:220px}
-.grid[data-count="2"] .card .count{font-size:4rem}
 
 /* Detail */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:10;justify-content:center;align-items:center;padding:20px}
@@ -119,6 +112,8 @@ button{font-family:inherit}
 .manage-val:focus{background:#222}
 .manage-del{background:none;border:none;color:#444;font-size:1.2rem;cursor:pointer;padding:4px 8px;transition:.2s;flex-shrink:0}
 .manage-del:hover{color:#f66}
+.clear-all{display:block;margin:20px auto 0;background:none;border:1px solid #2a2a2a;color:#666;padding:8px 24px;border-radius:10px;cursor:pointer;font-size:.78rem;text-transform:uppercase;letter-spacing:1px;transition:.2s}
+.clear-all:hover{border-color:#a33;color:#f66}
 
 .empty-msg{text-align:center;opacity:.2;margin-top:60px;font-size:.95rem}
 

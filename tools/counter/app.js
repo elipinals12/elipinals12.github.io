@@ -1,5 +1,23 @@
 /* ===== STATE ===== */
-let counters = [{ id: uid(), name: 'Counter', value: 0, color: '#6366f1' }];
+const STORE_KEY = 'counterAppData_v1';
+function defaultCounters() {
+  return [{ id: uid(), name: 'Counter 0', value: 0, color: '#6366f1' }];
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data) || !data.length) return null;
+    if (!data.every(c => c && typeof c.id === 'string' && typeof c.name === 'string' && typeof c.value === 'number' && typeof c.color === 'string')) return null;
+    return data;
+  } catch { return null; }
+}
+function persist() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(counters)); } catch {}
+}
+
+let counters = loadState() || defaultCounters();
 let activeId = null;
 let currentPage = 'overview';
 let modalHue = 250, modalSat = 80, modalLight = 60;
@@ -164,9 +182,28 @@ function render() {
 }
 
 /* ===== OVERVIEW ===== */
+const CARD_ASPECT = 1.3; // target width:height ratio for a fully-fit card
+let gridResizeBound = false;
+
+function layoutGrid(gridEl, n) {
+  if (!gridEl || !n) return;
+  const w = gridEl.clientWidth, h = gridEl.clientHeight;
+  if (!w || !h) return;
+  let bestCols = 1, bestScale = 0;
+  for (let cols = 1; cols <= n; cols++) {
+    const rows = Math.ceil(n / cols);
+    const cellW = w / cols, cellH = h / rows;
+    const scale = Math.min(cellW / CARD_ASPECT, cellH);
+    if (scale > bestScale) { bestScale = scale; bestCols = cols; }
+  }
+  const bestRows = Math.ceil(n / bestCols);
+  gridEl.style.gridTemplateColumns = `repeat(${bestCols}, 1fr)`;
+  gridEl.style.gridTemplateRows = `repeat(${bestRows}, 1fr)`;
+}
+
 function renderOverview(el) {
   if (!counters.length) { el.innerHTML = '<div class="empty-msg">No counters yet</div>'; return; }
-  let h = `<div class="grid" data-count="${Math.min(counters.length, 3)}">`;
+  let h = `<div class="grid" id="overviewGrid">`;
   counters.forEach(c => {
     h += `<div class="card" style="border-color:${c.color}22" data-id="${c.id}">
       <div class="sparkle"></div>
@@ -191,7 +228,7 @@ function renderOverview(el) {
     nameInput.addEventListener('focus', e => e.stopPropagation());
     nameInput.addEventListener('blur', () => {
       const c = find(id);
-      if (c) c.name = nameInput.value.trim() || 'Counter';
+      if (c) { c.name = nameInput.value.trim() || 'Counter'; persist(); }
     });
 
     // +/- buttons
@@ -202,6 +239,7 @@ function renderOverview(el) {
         const d = +btn.dataset.d;
         if (ct) {
           ct.value += d;
+          persist();
           colorFlash(card, '.sparkle', ct.color);
           card.querySelector('.count').textContent = ct.value;
         }
@@ -214,6 +252,15 @@ function renderOverview(el) {
       openDetail(id);
     });
   });
+
+  const gridEl = document.getElementById('overviewGrid');
+  layoutGrid(gridEl, counters.length);
+  if (!gridResizeBound) {
+    gridResizeBound = true;
+    window.addEventListener('resize', () => {
+      if (currentPage === 'overview') layoutGrid(document.getElementById('overviewGrid'), counters.length);
+    });
+  }
 }
 
 /* ===== DETAIL ===== */
@@ -244,7 +291,7 @@ function renderDetail() {
 
 function renameDetail(val) {
   const c = find(activeId);
-  if (c) c.name = val.trim() || 'Counter';
+  if (c) { c.name = val.trim() || 'Counter'; persist(); }
 }
 
 function setDetailVal(val) {
@@ -252,6 +299,7 @@ function setDetailVal(val) {
   if (c) {
     const n = parseInt(val);
     c.value = isNaN(n) ? 0 : n;
+    persist();
     renderDetail();
   }
 }
@@ -260,6 +308,7 @@ function adjFlash(d) {
   const c = find(activeId);
   if (!c) return;
   c.value += d;
+  persist();
   renderDetail();
   const card = document.getElementById('detailCard');
   const splash = document.getElementById('detailSplash');
@@ -272,12 +321,21 @@ function adjFlash(d) {
 
 function resetCurrent() {
   const c = find(activeId);
-  if (c) { c.value = 0; renderDetail(); }
+  if (c) { c.value = 0; persist(); renderDetail(); }
 }
 
 function deleteCurrent() {
   counters = counters.filter(c => c.id !== activeId);
+  persist();
   closeDetail();
+}
+
+function clearAll() {
+  if (!confirm('Delete all counters and start over?')) return;
+  counters = defaultCounters();
+  persist();
+  activeId = null;
+  render();
 }
 
 /* ===== PIE CHART ===== */
@@ -350,7 +408,7 @@ function renderManage(el) {
       <button class="manage-del" data-id="${c.id}">×</button>
     </div>`;
   });
-  h += '</div>';
+  h += '</div><button class="clear-all" onclick="clearAll()">Clear All</button>';
   el.innerHTML = h;
 
   // Wire manage events
@@ -358,7 +416,7 @@ function renderManage(el) {
     input.addEventListener('click', e => e.stopPropagation());
     input.addEventListener('blur', () => {
       const c = find(input.dataset.id);
-      if (c) c.name = input.value.trim() || 'Counter';
+      if (c) { c.name = input.value.trim() || 'Counter'; persist(); }
     });
   });
 
@@ -370,6 +428,7 @@ function renderManage(el) {
         const n = parseInt(input.value);
         c.value = isNaN(n) ? 0 : n;
         input.value = c.value;
+        persist();
       }
     });
     input.addEventListener('keydown', e => {
@@ -388,6 +447,7 @@ function renderManage(el) {
     btn.addEventListener('click', e => {
       e.stopPropagation();
       counters = counters.filter(c => c.id !== btn.dataset.id);
+      persist();
       render();
     });
   });
@@ -444,6 +504,7 @@ function initManageDrag() {
         if (targetIdx !== dragIdx) {
           const moved = counters.splice(dragIdx, 1)[0];
           counters.splice(targetIdx, 0, moved);
+          persist();
         }
         render();
       };
@@ -516,7 +577,7 @@ function openColorPop(e, id) {
     hexInput.value = hex;
     slider.style.background = `linear-gradient(to right, ${hsl2hex(popHue, popSat, 30)}, ${hsl2hex(popHue, popSat, 75)})`;
     const ct = find(popTargetId);
-    if (ct) { ct.color = hex; refreshManageColors(); }
+    if (ct) { ct.color = hex; persist(); refreshManageColors(); }
   }
 
   const pp = setupPicker(wrap, canvas, thumb, () => +slider.value, (h, s, hex) => {
@@ -598,6 +659,7 @@ function createCounter() {
   const name = document.getElementById('nameInput').value.trim() || 'Counter';
   const color = hsl2hex(modalHue, modalSat, modalLight);
   counters.push({ id: uid(), name, value: 0, color });
+  persist();
   closeModal();
   switchPage('overview');
 }

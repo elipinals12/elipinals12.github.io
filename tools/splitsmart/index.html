@@ -11,11 +11,6 @@
   --text:#e8e8e8; --text2:#ccc; --text3:#aaa; --text4:#888; --text5:#666; --text6:#555;
   --accent:#4a90e2; --accent-hover:#3a80d2; --pos:#4cd071; --neg:#e25c5c; --overlay:rgba(0,0,0,.85);
 }
-[data-theme="light"]{
-  --bg:#f4f5f7; --bg2:#ffffff; --bg3:#f0f1f4; --border:#e2e4e9; --border2:#e8e9ed; --border3:#eceef1;
-  --text:#1c1e21; --text2:#3a3d42; --text3:#5b5f66; --text4:#767a82; --text5:#8a8e96; --text6:#a2a6ad;
-  --accent:#3d7dd6; --accent-hover:#2f6bc0; --pos:#1f9d55; --neg:#d64545; --overlay:rgba(20,20,25,.5);
-}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);transition:background .2s,color .2s}
@@ -52,10 +47,6 @@ a{color:inherit}
 .topbar .code-pill{background:var(--bg3);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:.74rem;color:var(--text3);letter-spacing:.3px;font-weight:600;max-width:100%;overflow-wrap:anywhere}
 .topbar .me{font-size:.85rem;color:var(--text2);margin-left:auto;display:flex;align-items:center;gap:7px}
 .topbar .leave{background:none;border:none;color:var(--text5);font-size:.78rem;text-decoration:underline}
-.theme-toggle{background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:32px;height:32px;border-radius:999px;font-size:.95rem;display:flex;align-items:center;justify-content:center}
-.theme-toggle:hover{border-color:var(--text5)}
-.theme-toggle.gate-toggle{position:fixed;top:16px;right:16px;z-index:20}
-
 .main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:20px;max-width:1100px;width:100%;margin:0 auto}
 
 .balances h2,.feed h2{font-size:.85rem;color:var(--text4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
@@ -101,8 +92,6 @@ a{color:inherit}
 </head>
 <body>
 <div class="app">
-  <button class="theme-toggle gate-toggle" id="themeToggleGate" title="Toggle theme">◐</button>
-
   <!-- Join / Create gate -->
   <div class="gate" id="gate">
     <div class="gate-box">
@@ -144,7 +133,6 @@ a{color:inherit}
     <div class="topbar">
       <span class="code-pill" id="partyCodePill"></span>
       <span class="me">You: <b id="meName"></b></span>
-      <button class="theme-toggle" id="themeToggle" title="Toggle theme">◐</button>
       <button class="leave" id="leaveBtn">leave</button>
     </div>
 

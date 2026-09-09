@@ -15,21 +15,6 @@ const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) 
 function uid() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
 function fmt(n) { return (Math.round(n * 100) / 100).toFixed(2); }
 
-// ====== THEME ======
-function applyTheme(t) {
-  document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('splitsmart_theme', t);
-  const icon = t === 'light' ? '☀' : '◐';
-  document.querySelectorAll('.theme-toggle').forEach(b => b.textContent = icon);
-}
-function initTheme() {
-  applyTheme(localStorage.getItem('splitsmart_theme') || 'dark'); // default dark
-}
-document.querySelectorAll('.theme-toggle').forEach(b => {
-  b.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
-});
-initTheme();
-
 // ====== MEMBER COLORS ======
 // Soft, randomized-but-bounded hue so colors are never too dark or too bright,
 // and are consistent for everyone since the hue is stored with the join event.

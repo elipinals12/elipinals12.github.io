@@ -1,28 +1,52 @@
 /* ===== STATE ===== */
-const STORE_KEY = 'counterAppData_v1';
-function defaultCounters() {
-  return [{ id: uid(), name: 'Counter 0', value: 0, color: '#6366f1' }];
+const STORE_KEY = 'counterAppData_v2';
+const OLD_STORE_KEY = 'counterAppData_v1';
+function defaultState() {
+  const g = { id: uid(), name: 'default', color: '#6366f1' };
+  return { groups: [g], activeGroupId: g.id, counters: [{ id: uid(), name: 'counter 0', value: 0, color: '#6366f1', groupId: g.id }] };
 }
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (!raw) return null;
-    const data = JSON.parse(raw);
-    if (!Array.isArray(data) || !data.length) return null;
-    if (!data.every(c => c && typeof c.id === 'string' && typeof c.name === 'string' && typeof c.value === 'number' && typeof c.color === 'string')) return null;
-    return data;
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data && Array.isArray(data.groups) && data.groups.length && Array.isArray(data.counters) && typeof data.activeGroupId === 'string') {
+        return data;
+      }
+    }
+    // migrate from old ungrouped format
+    const oldRaw = localStorage.getItem(OLD_STORE_KEY);
+    if (oldRaw) {
+      const old = JSON.parse(oldRaw);
+      if (Array.isArray(old) && old.length && old.every(c => c && typeof c.id === 'string' && typeof c.name === 'string' && typeof c.value === 'number' && typeof c.color === 'string')) {
+        const g = { id: uid(), name: 'default', color: '#6366f1' };
+        return { groups: [g], activeGroupId: g.id, counters: old.map(c => ({ ...c, groupId: g.id })) };
+      }
+    }
+    return null;
   } catch { return null; }
 }
 function persist() {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(counters)); } catch {}
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({ groups, activeGroupId, counters })); } catch {}
 }
 
-let counters = loadState() || defaultCounters();
+const _state = loadState() || defaultState();
+let groups = _state.groups;
+let activeGroupId = _state.activeGroupId;
+let counters = _state.counters;
 let activeId = null;
 let currentPage = 'overview';
 let modalHue = 250, modalSat = 80, modalLight = 60;
-let colorPopEl = null, popTargetId = null;
+let modalMode = 'counter';
+let colorPopEl = null, popTargetId = null, popKind = 'counter';
 let popHue = 0, popSat = 80, popLight = 55;
+
+function activeCounters() {
+  return counters.filter(c => c.groupId === activeGroupId);
+}
+function findGroup(id) {
+  return groups.find(g => g.id === id);
+}
 
 /* ===== UTILS ===== */
 function uid() {
@@ -202,9 +226,10 @@ function layoutGrid(gridEl, n) {
 }
 
 function renderOverview(el) {
-  if (!counters.length) { el.innerHTML = '<div class="empty-msg">No counters yet</div>'; return; }
+  const list = activeCounters();
+  if (!list.length) { el.innerHTML = '<div class="empty-msg">No counters yet</div>'; return; }
   let h = `<div class="grid" id="overviewGrid">`;
-  counters.forEach(c => {
+  list.forEach(c => {
     h += `<div class="card" style="border-color:${c.color}22" data-id="${c.id}">
       <div class="sparkle"></div>
       <input class="name-edit" style="color:${c.color}" value="${esc(c.name)}" maxlength="24">
@@ -228,7 +253,7 @@ function renderOverview(el) {
     nameInput.addEventListener('focus', e => e.stopPropagation());
     nameInput.addEventListener('blur', () => {
       const c = find(id);
-      if (c) { c.name = nameInput.value.trim() || 'Counter'; persist(); }
+      if (c) { c.name = nameInput.value.trim() || 'counter'; persist(); }
     });
 
     // +/- buttons
@@ -254,11 +279,11 @@ function renderOverview(el) {
   });
 
   const gridEl = document.getElementById('overviewGrid');
-  layoutGrid(gridEl, counters.length);
+  layoutGrid(gridEl, list.length);
   if (!gridResizeBound) {
     gridResizeBound = true;
     window.addEventListener('resize', () => {
-      if (currentPage === 'overview') layoutGrid(document.getElementById('overviewGrid'), counters.length);
+      if (currentPage === 'overview') layoutGrid(document.getElementById('overviewGrid'), activeCounters().length);
     });
   }
 }
@@ -291,7 +316,7 @@ function renderDetail() {
 
 function renameDetail(val) {
   const c = find(activeId);
-  if (c) { c.name = val.trim() || 'Counter'; persist(); }
+  if (c) { c.name = val.trim() || 'counter'; persist(); }
 }
 
 function setDetailVal(val) {
@@ -331,8 +356,9 @@ function deleteCurrent() {
 }
 
 function clearAll() {
-  if (!confirm('Delete all counters and start over?')) return;
-  counters = defaultCounters();
+  if (!confirm('Delete all counters and groups and start over?')) return;
+  const s = defaultState();
+  groups = s.groups; activeGroupId = s.activeGroupId; counters = s.counters;
   persist();
   activeId = null;
   render();
@@ -340,7 +366,7 @@ function clearAll() {
 
 /* ===== PIE CHART ===== */
 function renderChart(el) {
-  const valid = counters.filter(c => c.value > 0);
+  const valid = activeCounters().filter(c => c.value > 0);
   if (!valid.length) {
     el.innerHTML = '<div class="chart-page"><div class="chart-empty">Need at least one counter above 0</div></div>';
     return;
@@ -376,8 +402,9 @@ function renderChart(el) {
 
 /* ===== RANKING ===== */
 function renderRanking(el) {
-  if (!counters.length) { el.innerHTML = '<div class="empty-msg">No counters</div>'; return; }
-  const sorted = [...counters].sort((a, b) => b.value - a.value);
+  const list = activeCounters();
+  if (!list.length) { el.innerHTML = '<div class="empty-msg">No counters</div>'; return; }
+  const sorted = [...list].sort((a, b) => b.value - a.value);
   const max = Math.max(...sorted.map(c => Math.abs(c.value)), 1);
   let h = '<div class="ranking-page">';
   sorted.forEach((c, i) => {
@@ -395,11 +422,53 @@ function renderRanking(el) {
   el.innerHTML = h;
 }
 
+/* ===== GROUPS (manage page only) ===== */
+function renderGroupTabs() {
+  let h = '<div class="group-tabs" id="groupTabs">';
+  groups.forEach(g => {
+    h += `<div class="group-tab${g.id === activeGroupId ? ' active' : ''}" data-id="${g.id}">
+      <span class="group-dot" style="background:${g.color}" data-id="${g.id}"></span>
+      <input class="group-name" value="${esc(g.name)}" maxlength="18" data-id="${g.id}">
+    </div>`;
+  });
+  h += '<button class="group-add" id="groupAddBtn" title="New group">+</button></div>';
+  return h;
+}
+
+function wireGroupTabs() {
+  document.querySelectorAll('.group-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const id = tab.dataset.id;
+      if (id !== activeGroupId) { activeGroupId = id; persist(); render(); }
+    });
+  });
+  document.querySelectorAll('.group-dot').forEach(dot => {
+    dot.addEventListener('click', e => { e.stopPropagation(); openColorPop(e, dot.dataset.id, 'group'); });
+  });
+  document.querySelectorAll('.group-name').forEach(input => {
+    input.addEventListener('click', e => e.stopPropagation());
+    input.addEventListener('blur', () => {
+      const g = findGroup(input.dataset.id);
+      if (g) { g.name = input.value.trim() || 'group'; persist(); }
+    });
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); });
+  });
+  const addBtn = document.getElementById('groupAddBtn');
+  if (addBtn) addBtn.addEventListener('click', e => { e.stopPropagation(); openModal('group'); });
+}
+
 /* ===== MANAGE ===== */
 function renderManage(el) {
-  if (!counters.length) { el.innerHTML = '<div class="empty-msg">No counters</div>'; return; }
-  let h = '<div class="manage-page" id="manageList">';
-  counters.forEach((c, i) => {
+  const list = activeCounters();
+  let h = renderGroupTabs();
+  if (!list.length) {
+    h += '<div class="empty-msg">No counters</div>';
+    el.innerHTML = h;
+    wireGroupTabs();
+    return;
+  }
+  h += '<div class="manage-page" id="manageList">';
+  list.forEach((c, i) => {
     h += `<div class="manage-item" data-id="${c.id}" data-idx="${i}">
       <div class="manage-grip" data-idx="${i}">⠿</div>
       <div class="manage-swatch" style="background:${c.color}" data-id="${c.id}"></div>
@@ -416,7 +485,7 @@ function renderManage(el) {
     input.addEventListener('click', e => e.stopPropagation());
     input.addEventListener('blur', () => {
       const c = find(input.dataset.id);
-      if (c) { c.name = input.value.trim() || 'Counter'; persist(); }
+      if (c) { c.name = input.value.trim() || 'counter'; persist(); }
     });
   });
 
@@ -439,7 +508,7 @@ function renderManage(el) {
   el.querySelectorAll('.manage-swatch').forEach(swatch => {
     swatch.addEventListener('click', e => {
       e.stopPropagation();
-      openColorPop(e, swatch.dataset.id);
+      openColorPop(e, swatch.dataset.id, 'counter');
     });
   });
 
@@ -452,6 +521,7 @@ function renderManage(el) {
     });
   });
 
+  wireGroupTabs();
   initManageDrag();
 }
 
@@ -502,8 +572,11 @@ function initManageDrag() {
           if (el.classList.contains('drag-over-bot')) targetIdx = i < dragIdx ? i + 1 : i;
         });
         if (targetIdx !== dragIdx) {
-          const moved = counters.splice(dragIdx, 1)[0];
-          counters.splice(targetIdx, 0, moved);
+          const groupItems = activeCounters();
+          const moved = groupItems.splice(dragIdx, 1)[0];
+          groupItems.splice(targetIdx, 0, moved);
+          let qi = 0;
+          counters = counters.map(c => c.groupId === activeGroupId ? groupItems[qi++] : c);
           persist();
         }
         render();
@@ -540,12 +613,13 @@ function isValidHex(v) {
 }
 
 /* ===== MANAGE COLOR POP ===== */
-function openColorPop(e, id) {
+function openColorPop(e, id, kind = 'counter') {
   e.stopPropagation();
   closeColorPop();
   popTargetId = id;
+  popKind = kind;
 
-  const ct = find(id);
+  const ct = kind === 'counter' ? find(id) : findGroup(id);
   const startHSL = ct ? hex2hsl(ct.color) : { h: 0, s: 80, l: 55 };
   popHue = startHSL.h; popSat = startHSL.s; popLight = Math.max(30, Math.min(75, startHSL.l));
 
@@ -576,8 +650,13 @@ function openColorPop(e, id) {
     swatchEl.style.background = hex;
     hexInput.value = hex;
     slider.style.background = `linear-gradient(to right, ${hsl2hex(popHue, popSat, 30)}, ${hsl2hex(popHue, popSat, 75)})`;
-    const ct = find(popTargetId);
-    if (ct) { ct.color = hex; persist(); refreshManageColors(); }
+    if (popKind === 'counter') {
+      const ct = find(popTargetId);
+      if (ct) { ct.color = hex; persist(); refreshManageColors(); }
+    } else {
+      const g = findGroup(popTargetId);
+      if (g) { g.color = hex; persist(); refreshGroupTabColor(popTargetId, hex); }
+    }
   }
 
   const pp = setupPicker(wrap, canvas, thumb, () => +slider.value, (h, s, hex) => {
@@ -621,6 +700,11 @@ function openColorPop(e, id) {
   }
 }
 
+function refreshGroupTabColor(id, hex) {
+  const dot = document.querySelector(`.group-dot[data-id="${id}"]`);
+  if (dot) dot.style.background = hex;
+}
+
 function refreshManageColors() {
   // Update swatches and value colors without full re-render (preserves focus)
   document.querySelectorAll('.manage-item').forEach(item => {
@@ -642,16 +726,20 @@ document.addEventListener('click', closeColorPop);
 
 /* ===== MODAL ===== */
 function nextCounterName() {
-  return `Counter ${counters.length}`;
+  return `counter ${activeCounters().length}`;
+}
+function nextGroupName() {
+  return `group ${groups.length}`;
 }
 
-function openModal() {
+function openModal(mode = 'counter') {
+  modalMode = mode;
   modalHue = Math.random() * 360;
   modalSat = 70 + Math.random() * 30;
   modalLight = 60;
   const nameInput = document.getElementById('nameInput');
   nameInput.value = '';
-  nameInput.placeholder = nextCounterName();
+  nameInput.placeholder = mode === 'group' ? nextGroupName() : nextCounterName();
   document.getElementById('modalLightness').value = modalLight;
   document.getElementById('modalOverlay').classList.add('open');
   setTimeout(() => { initModalPicker(); nameInput.focus(); }, 60);
@@ -663,12 +751,22 @@ function closeModal() {
 
 function createCounter() {
   const nameInput = document.getElementById('nameInput');
-  const name = nameInput.value.trim() || nameInput.placeholder || nextCounterName();
   const color = hsl2hex(modalHue, modalSat, modalLight);
-  counters.push({ id: uid(), name, value: 0, color });
-  persist();
-  closeModal();
-  switchPage('overview');
+  if (modalMode === 'group') {
+    const name = nameInput.value.trim() || nameInput.placeholder || nextGroupName();
+    const g = { id: uid(), name, color };
+    groups.push(g);
+    activeGroupId = g.id;
+    persist();
+    closeModal();
+    switchPage('manage');
+  } else {
+    const name = nameInput.value.trim() || nameInput.placeholder || nextCounterName();
+    counters.push({ id: uid(), name, value: 0, color, groupId: activeGroupId });
+    persist();
+    closeModal();
+    switchPage('overview');
+  }
 }
 
 /* ===== INIT ===== */

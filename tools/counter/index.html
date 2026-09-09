@@ -96,6 +96,19 @@ button{font-family:inherit}
 .rank-bar{height:12px;border-radius:6px;transition:width .4s;min-width:4px}
 .rank-val{font-size:1.4rem;font-weight:700;flex-shrink:0;min-width:40px;text-align:right}
 
+/* Group tabs */
+.group-tabs{display:flex;flex-wrap:wrap;gap:8px;max-width:500px;margin:0 auto 16px;align-items:center}
+.group-tab{display:flex;align-items:center;gap:6px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px;padding:5px 10px 5px 8px;cursor:pointer;transition:.2s}
+.group-tab:hover{border-color:#444}
+.group-tab.active{border-color:#666;background:#222}
+.group-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;border:2px solid transparent}
+.group-dot:hover{border-color:#fff;transform:scale(1.1)}
+.group-name{background:none;border:none;color:#ccc;font-size:.78rem;outline:none;padding:2px 4px;border-radius:5px;font-family:inherit;width:64px;cursor:pointer}
+.group-tab.active .group-name{color:#fff}
+.group-name:focus{background:#2a2a2a;cursor:text}
+.group-add{background:#1a1a1a;border:1px solid #2a2a2a;color:#888;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.95rem;line-height:1;transition:.2s}
+.group-add:hover{border-color:#555;color:#fff}
+
 /* Manage */
 .manage-page{max-width:500px;margin:0 auto;width:100%}
 .manage-item{display:flex;align-items:center;gap:10px;background:#1a1a1a;border-radius:14px;padding:14px 12px;margin-bottom:10px}

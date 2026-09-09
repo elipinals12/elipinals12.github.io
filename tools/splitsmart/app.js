@@ -249,7 +249,16 @@ function renderBalances() {
     who.appendChild(el('div', 'name', members[id].name));
     card.appendChild(who);
     const payEl = el('div', 'pay');
-    payEl.innerHTML = paymentLines(members[id].payment).map(escapeHtml).join('<br>');
+    for (const p of (members[id].payment || [])) {
+      const isStr = typeof p === 'string';
+      const label = isStr ? p : (p.detail ? `${p.method}: ${p.detail}` : p.method);
+      const copyVal = isStr ? p : (p.detail || p.method);
+      const line = el('div', 'pay-line', label + ' ');
+      line.appendChild(el('span', 'pay-copy-icon', '⧉'));
+      line.title = 'tap to copy';
+      line.onclick = async () => { if (await copyText(copyVal)) flashButton(line, 'copied!'); };
+      payEl.appendChild(line);
+    }
     card.appendChild(payEl);
     // find edge between me and this person in simplified txns
     let amt = 0;
@@ -281,7 +290,7 @@ function renderFeed() {
   if (!sorted.length) { list.appendChild(el('div', 'empty', 'No activity yet.')); return; }
   for (const ev of sorted) {
     const item = el('div', 'feed-item');
-    const actorId = ev.type === 'join' ? ev.data.id : ev.type === 'payment' ? ev.data.payerId : ev.data.fromId;
+    const actorId = actorIdOf(ev);
     const dot = el('div', 'dot');
     dot.style.background = memberColor(actorId);
     const ts = el('div', 'ts', formatTs(ev.ts));
@@ -295,15 +304,16 @@ function renderFeed() {
 }
 
 function nameOf(id) { return (members[id] && members[id].name) || 'someone'; }
-
-// payment entries may be plain strings (old events) or {method, detail} objects
-function paymentLines(payment) {
-  if (!payment || !payment.length) return [];
-  return payment.map(p => (typeof p === 'string') ? p : (p.detail ? `${p.method}: ${p.detail}` : p.method));
+function actorIdOf(ev) {
+  if (ev.type === 'join' || ev.type === 'leave') return ev.data.id;
+  if (ev.type === 'payment') return ev.data.payerId;
+  if (ev.type === 'settle') return ev.data.fromId;
+  return null;
 }
 
 function describeEvent(ev) {
   if (ev.type === 'join') return `<b>${escapeHtml(ev.data.name)}</b> joined the party`;
+  if (ev.type === 'leave') return `<b>${escapeHtml(ev.data.name || nameOf(ev.data.id))}</b> left the party`;
   if (ev.type === 'payment') {
     const who = ev.data.splitAmong.map(nameOf).join(', ');
     return `<b>${escapeHtml(nameOf(ev.data.payerId))}</b> paid $${fmt(ev.data.amount)}${ev.data.note ? ' for ' + escapeHtml(ev.data.note) : ''} — split with ${escapeHtml(who)}`;
@@ -390,6 +400,8 @@ $('#settleSubmit').onclick = async () => {
 };
 
 $('#leaveBtn').onclick = async () => {
+  const name = (members[myId] && members[myId].name) || '';
+  try { await apiPost({ action: 'append', code: partyCode, event: { type: 'leave', data: { id: myId, name } } }); } catch (e) { /* best effort */ }
   removeParty(partyCode);
   const next = getActiveParty();
   if (next) { await switchToParty(next.code); } else { partyCode = null; myId = null; showGate(); }

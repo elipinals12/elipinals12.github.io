@@ -53,21 +53,28 @@ async function apiPost(body) {
   return res.json();
 }
 
-// ====== LOCAL STORAGE ======
-function saveIdentity() {
-  localStorage.setItem('splitsmart_party', partyCode);
-  localStorage.setItem('splitsmart_myid_' + partyCode, myId);
+// ====== LOCAL STORAGE (multi-party) ======
+// splitsmart_parties: [{code, id}, ...] every party this device has joined/created.
+// splitsmart_active: the code currently in view.
+function loadPartyList() {
+  try { return JSON.parse(localStorage.getItem('splitsmart_parties') || '[]'); } catch (e) { return []; }
 }
-function loadIdentity() {
-  const code = localStorage.getItem('splitsmart_party');
-  if (!code) return null;
-  const id = localStorage.getItem('splitsmart_myid_' + code);
-  if (!id) return null;
-  return { code, id };
+function savePartyList(list) { localStorage.setItem('splitsmart_parties', JSON.stringify(list)); }
+function upsertParty(code, id) {
+  const list = loadPartyList();
+  const i = list.findIndex(p => p.code === code);
+  if (i >= 0) list[i].id = id; else list.push({ code, id });
+  savePartyList(list);
+  localStorage.setItem('splitsmart_active', code);
 }
-function clearIdentity() {
-  if (partyCode) localStorage.removeItem('splitsmart_myid_' + partyCode);
-  localStorage.removeItem('splitsmart_party');
+function removeParty(code) {
+  savePartyList(loadPartyList().filter(p => p.code !== code));
+  if (localStorage.getItem('splitsmart_active') === code) localStorage.removeItem('splitsmart_active');
+}
+function getActiveParty() {
+  const list = loadPartyList();
+  const active = localStorage.getItem('splitsmart_active');
+  return list.find(p => p.code === active) || list[0] || null;
 }
 
 // ====== GATE (join/create) ======
@@ -90,8 +97,8 @@ $('#gateSubmit').onclick = async () => {
       if (r.error) throw new Error(r.error);
       code = r.code;
     } else {
-      code = $('#codeInput').value.trim().toLowerCase().replace(/\s+/g, '-');
-      if (!/^[a-z]+(-[a-z]+){3}$/.test(code)) { errBox.textContent = 'Enter the 4-word code, e.g. coral-marble-quiver-basin.'; $('#gateSubmit').disabled = false; return; }
+      code = $('#codeInput').value.trim().toLowerCase().replace(/[^a-z]/g, '');
+      if (!/^[a-z]{6,}$/.test(code)) { errBox.textContent = 'Enter the 3-word code, e.g. coralmarblequiver.'; $('#gateSubmit').disabled = false; return; }
       const r = await apiGet({ action: 'exists', code });
       if (!r.exists) { errBox.textContent = 'No party with that code.'; $('#gateSubmit').disabled = false; return; }
     }
@@ -100,7 +107,7 @@ $('#gateSubmit').onclick = async () => {
     const color = randomMemberColor();
     const r2 = await apiPost({ action: 'append', code: partyCode, event: { type: 'join', data: { id: myId, name, payment, color } } });
     if (r2.error) throw new Error(r2.error);
-    saveIdentity();
+    upsertParty(partyCode, myId);
     await enterParty();
   } catch (e) {
     errBox.textContent = 'Something went wrong: ' + e.message;
@@ -112,10 +119,29 @@ $('#gateSubmit').onclick = async () => {
 async function enterParty() {
   $('#gate').hidden = true;
   $('#mainScreen').hidden = false;
-  $('#partyCodePill').textContent = partyCode;
+  $('#partyNameBtn').textContent = partyCode;
+  $('#partyMenu').hidden = true;
   await refresh();
   if (pollTimer) clearInterval(pollTimer);
   pollTimer = setInterval(refresh, 8000);
+}
+
+function showGate() {
+  if (pollTimer) clearInterval(pollTimer);
+  $('#mainScreen').hidden = true;
+  $('#gate').hidden = false;
+  $('#gateErr').textContent = '';
+  $('#nameInput').value = '';
+  $('#codeInput').value = '';
+}
+
+async function switchToParty(code) {
+  const entry = loadPartyList().find(p => p.code === code);
+  if (!entry) return;
+  partyCode = entry.code;
+  myId = entry.id;
+  localStorage.setItem('splitsmart_active', partyCode);
+  await enterParty();
 }
 
 async function refresh() {
@@ -334,10 +360,62 @@ $('#settleSubmit').onclick = async () => {
   $('#settleSubmit').disabled = false;
 };
 
-$('#leaveBtn').onclick = () => {
-  clearIdentity();
-  if (pollTimer) clearInterval(pollTimer);
-  location.reload();
+$('#leaveBtn').onclick = async () => {
+  removeParty(partyCode);
+  const next = getActiveParty();
+  if (next) { await switchToParty(next.code); } else { partyCode = null; myId = null; showGate(); }
+};
+
+// ====== PARTY SWITCHER MENU ======
+function renderPartyMenu() {
+  const menu = $('#partyMenu');
+  menu.innerHTML = '';
+  for (const p of loadPartyList()) {
+    const item = el('button', 'party-menu-item' + (p.code === partyCode ? ' active' : ''), p.code);
+    item.onclick = () => { menu.hidden = true; if (p.code !== partyCode) switchToParty(p.code); };
+    menu.appendChild(item);
+  }
+  const addItem = el('button', 'party-menu-item add', '+ Join or create another');
+  addItem.onclick = () => { menu.hidden = true; showGate(); };
+  menu.appendChild(addItem);
+}
+$('#switchBtn').onclick = (e) => {
+  e.stopPropagation();
+  const menu = $('#partyMenu');
+  if (menu.hidden) { renderPartyMenu(); menu.hidden = false; } else menu.hidden = true;
+};
+document.addEventListener('click', (e) => {
+  const menu = $('#partyMenu');
+  if (!menu.hidden && !menu.contains(e.target) && e.target !== $('#switchBtn')) menu.hidden = true;
+});
+
+// ====== COPY CODE / SHARE LINK ======
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      return true;
+    } catch (e2) { return false; }
+  }
+}
+function flashButton(btn, text) {
+  const orig = btn.textContent;
+  btn.textContent = text;
+  setTimeout(() => { btn.textContent = orig; }, 1200);
+}
+$('#partyNameBtn').onclick = async () => {
+  const btn = $('#partyNameBtn');
+  if (await copyText(partyCode)) flashButton(btn, 'copied!');
+};
+$('#shareBtn').onclick = async () => {
+  const url = location.origin + location.pathname + '?code=' + partyCode;
+  if (navigator.share) {
+    try { await navigator.share({ title: 'SplitSmart', text: `Join our SplitSmart ledger: ${partyCode}`, url }); } catch (e) { /* user cancelled */ }
+  } else if (await copyText(url)) {
+    flashButton($('#shareBtn'), '✓');
+  }
 };
 
 // ====== INIT ======
@@ -345,10 +423,25 @@ $('#leaveBtn').onclick = () => {
   if (API_URL.includes('PASTE_YOUR')) {
     $('#gateErr').textContent = 'Set API_URL in app.js first (see apps-script.gs).';
   }
-  const saved = loadIdentity();
-  if (saved) {
-    partyCode = saved.code;
-    myId = saved.id;
-    try { await enterParty(); } catch (e) { clearIdentity(); location.reload(); }
+  const urlCode = new URLSearchParams(location.search).get('code');
+  const cleanUrlCode = urlCode ? urlCode.trim().toLowerCase().replace(/[^a-z]/g, '') : null;
+
+  if (cleanUrlCode) {
+    const existing = loadPartyList().find(p => p.code === cleanUrlCode);
+    if (existing) {
+      history.replaceState(null, '', location.pathname);
+      try { await switchToParty(existing.code); } catch (e) { removeParty(existing.code); location.reload(); }
+      return;
+    }
   }
+
+  const active = !cleanUrlCode && getActiveParty();
+  if (active) {
+    partyCode = active.code;
+    myId = active.id;
+    try { await enterParty(); } catch (e) { removeParty(partyCode); location.reload(); }
+    return;
+  }
+
+  if (cleanUrlCode) $('#codeInput').value = cleanUrlCode; // land on join tab, prefilled
 })();

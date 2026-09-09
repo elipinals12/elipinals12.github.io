@@ -16,11 +16,17 @@ SETUP:
 6. Re-deploy (Deploy -> Manage deployments -> edit -> New version -> Deploy) any
    time you change this file — saving alone does not update the live URL.
 
-Each "party" is one sheet tab named by a human-readable 4-word code (e.g.
-"coral-marble-quiver-basin"), drawn from the "wordsource" sheet. Row 1 of a
-party sheet shows the code in large text; row 2 is the column header; data
-starts row 3. Rows are an append-only event log: [type, timestamp, jsonData].
-Client rebuilds all state from this log.
+Each "party" is one sheet tab named by a human-readable 3-word code, mushed
+together with no separators (e.g. "coralmarblequiver"), drawn from the
+"wordsource" sheet. That code IS the ledger's name — it's row 1 of the party
+sheet in large text; row 2 is the column header; data starts row 3. Rows are
+an append-only event log: [type, timestamp, jsonData]. Client rebuilds all
+state from this log.
+
+IMPORTANT: saving this file in the Apps Script editor does NOT update the
+live Web App — you must redeploy (Deploy -> Manage deployments -> edit ->
+New version -> Deploy) every time you change it, or the URL keeps serving
+old behavior (e.g. old-format codes).
 */
 
 function doGet(e) {
@@ -108,11 +114,11 @@ function getWordList() {
 function generateWordCode() {
   var words = getWordList();
   var picked = [], used = {};
-  while (picked.length < 4) {
+  while (picked.length < 3) {
     var w = words[Math.floor(Math.random() * words.length)];
     if (!used[w]) { used[w] = true; picked.push(w); }
   }
-  return picked.join('-');
+  return picked.join(''); // mushed together, no separators
 }
 
 // ====== party sheets ======

@@ -44,9 +44,19 @@ a{color:inherit}
 
 /* ---- Main app ---- */
 .topbar{display:flex;align-items:center;gap:10px;padding:12px 16px;flex-shrink:0;border-bottom:1px solid var(--border3);flex-wrap:wrap}
-.topbar .code-pill{background:var(--bg3);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:.74rem;color:var(--text3);letter-spacing:.3px;font-weight:600;max-width:100%;overflow-wrap:anywhere}
 .topbar .me{font-size:.85rem;color:var(--text2);margin-left:auto;display:flex;align-items:center;gap:7px}
 .topbar .leave{background:none;border:none;color:var(--text5);font-size:.78rem;text-decoration:underline}
+.party-switch{position:relative;display:flex;align-items:center;gap:6px}
+.party-name{background:none;border:none;color:var(--text);font-size:1.1rem;font-weight:700;letter-spacing:.2px;padding:4px 2px;border-radius:6px;max-width:60vw;overflow-wrap:anywhere;text-align:left}
+.party-name:hover{color:var(--accent)}
+.icon-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:999px;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.icon-btn:hover{border-color:var(--text5)}
+.copy-hint{font-size:.66rem;color:var(--text6)}
+.party-menu{position:absolute;top:100%;left:0;margin-top:6px;background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:2px;min-width:220px;z-index:15;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.party-menu-item{background:none;border:none;color:var(--text2);text-align:left;padding:8px 10px;border-radius:8px;font-size:.85rem;overflow-wrap:anywhere}
+.party-menu-item:hover{background:var(--bg3)}
+.party-menu-item.active{color:var(--accent);font-weight:600}
+.party-menu-item.add{color:var(--accent);border-top:1px solid var(--border3);margin-top:4px;padding-top:10px}
 .main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:20px;max-width:1100px;width:100%;margin:0 auto}
 
 .balances h2,.feed h2{font-size:.85rem;color:var(--text4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
@@ -104,7 +114,7 @@ a{color:inherit}
 
       <div class="field" id="codeField">
         <label>Party code</label>
-        <input type="text" id="codeInput" class="code-input" placeholder="coral-marble-quiver-basin">
+        <input type="text" id="codeInput" class="code-input" placeholder="coralmarblequiver">
       </div>
 
       <div class="field">
@@ -131,7 +141,13 @@ a{color:inherit}
   <!-- Main -->
   <div id="mainScreen" hidden style="display:flex;flex-direction:column;height:100%">
     <div class="topbar">
-      <span class="code-pill" id="partyCodePill"></span>
+      <div class="party-switch">
+        <button class="party-name" id="partyNameBtn" title="Tap to copy code"></button>
+        <button class="icon-btn" id="shareBtn" title="Share invite link">⇪</button>
+        <button class="icon-btn" id="switchBtn" title="Switch or add party">▾</button>
+        <div class="party-menu" id="partyMenu" hidden></div>
+      </div>
+      <span class="copy-hint">tap name to copy code · ⇪ to share a link</span>
       <span class="me">You: <b id="meName"></b></span>
       <button class="leave" id="leaveBtn">leave</button>
     </div>

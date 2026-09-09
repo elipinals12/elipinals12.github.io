@@ -78,16 +78,34 @@ function getActiveParty() {
 }
 
 // ====== GATE (join/create) ======
-let gateMode = 'join';
-$('#tabJoin').onclick = () => { gateMode = 'join'; $('#tabJoin').classList.add('active'); $('#tabCreate').classList.remove('active'); $('#codeField').hidden = false; $('#gateSubmit').textContent = 'Join party'; };
-$('#tabCreate').onclick = () => { gateMode = 'create'; $('#tabCreate').classList.add('active'); $('#tabJoin').classList.remove('active'); $('#codeField').hidden = true; $('#gateSubmit').textContent = 'Create party'; };
+let gateMode = 'create';
+function setGateTab(mode) {
+  gateMode = mode;
+  $('#tabJoin').classList.toggle('active', mode === 'join');
+  $('#tabCreate').classList.toggle('active', mode === 'create');
+  $('#codeField').hidden = mode !== 'join';
+  $('#gateSubmit').textContent = mode === 'join' ? 'Join party' : 'Create party';
+}
+$('#tabJoin').onclick = () => setGateTab('join');
+$('#tabCreate').onclick = () => setGateTab('create');
+
+// show/hide the optional detail field per payment method as it's checked
+document.querySelectorAll('#paychecks input[type=checkbox]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const detail = document.querySelector(`.pay-detail[data-method="${cb.value}"]`);
+    if (detail) detail.hidden = !cb.checked;
+  });
+});
 
 $('#gateSubmit').onclick = async () => {
   const name = $('#nameInput').value.trim();
   const errBox = $('#gateErr');
   errBox.textContent = '';
   if (!name) { errBox.textContent = 'Enter your name.'; return; }
-  const payment = Array.from(document.querySelectorAll('#paychecks input:checked')).map(c => c.value);
+  const payment = Array.from(document.querySelectorAll('#paychecks input[type=checkbox]:checked')).map(c => {
+    const detailEl = document.querySelector(`.pay-detail[data-method="${c.value}"]`);
+    return { method: c.value, detail: detailEl ? detailEl.value.trim() : '' };
+  });
 
   $('#gateSubmit').disabled = true;
   try {
@@ -121,6 +139,7 @@ async function enterParty() {
   $('#mainScreen').hidden = false;
   $('#partyNameBtn').textContent = partyCode;
   $('#partyMenu').hidden = true;
+  document.title = 'SplitSmart · ' + partyCode;
   await refresh();
   if (pollTimer) clearInterval(pollTimer);
   pollTimer = setInterval(refresh, 8000);
@@ -133,6 +152,8 @@ function showGate() {
   $('#gateErr').textContent = '';
   $('#nameInput').value = '';
   $('#codeInput').value = '';
+  document.title = 'SplitSmart';
+  setGateTab('create');
 }
 
 async function switchToParty(code) {
@@ -227,7 +248,9 @@ function renderBalances() {
     who.appendChild(dot);
     who.appendChild(el('div', 'name', members[id].name));
     card.appendChild(who);
-    card.appendChild(el('div', 'pay', members[id].payment && members[id].payment.length ? members[id].payment.join(' · ') : ''));
+    const payEl = el('div', 'pay');
+    payEl.innerHTML = paymentLines(members[id].payment).map(escapeHtml).join('<br>');
+    card.appendChild(payEl);
     // find edge between me and this person in simplified txns
     let amt = 0;
     for (const t of txns) {
@@ -272,6 +295,12 @@ function renderFeed() {
 }
 
 function nameOf(id) { return (members[id] && members[id].name) || 'someone'; }
+
+// payment entries may be plain strings (old events) or {method, detail} objects
+function paymentLines(payment) {
+  if (!payment || !payment.length) return [];
+  return payment.map(p => (typeof p === 'string') ? p : (p.detail ? `${p.method}: ${p.detail}` : p.method));
+}
 
 function describeEvent(ev) {
   if (ev.type === 'join') return `<b>${escapeHtml(ev.data.name)}</b> joined the party`;
@@ -443,5 +472,5 @@ $('#shareBtn').onclick = async () => {
     return;
   }
 
-  if (cleanUrlCode) $('#codeInput').value = cleanUrlCode; // land on join tab, prefilled
+  if (cleanUrlCode) { setGateTab('join'); $('#codeInput').value = cleanUrlCode; } // share link -> land on join tab, prefilled
 })();

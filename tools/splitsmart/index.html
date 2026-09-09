@@ -37,6 +37,9 @@ a{color:inherit}
 .tabs button{flex:1;background:none;border:none;color:var(--text4);padding:9px;border-radius:8px;font-size:.85rem}
 .tabs button.active{background:var(--border2);color:var(--text)}
 .code-input{letter-spacing:.5px;font-weight:600;text-align:center;font-size:.88rem}
+.paychecks{display:flex;flex-direction:column;gap:8px}
+.pay-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pay-row .pay-detail{flex:1;min-width:140px;font-size:.8rem;padding:7px 10px}
 .primary-btn{background:var(--accent);border:none;color:#fff;padding:12px;border-radius:10px;font-size:.95rem;font-weight:600}
 .primary-btn:hover{background:var(--accent-hover)}
 .primary-btn:disabled{opacity:.4;cursor:default}
@@ -65,7 +68,7 @@ a{color:inherit}
 .balcard .who{display:flex;align-items:center;gap:8px;margin-bottom:2px}
 .dot{width:26px;height:26px;border-radius:50%;background:var(--mc,var(--accent));color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;text-shadow:0 1px 1px rgba(0,0,0,.15)}
 .balcard .name{font-weight:600;font-size:.95rem}
-.balcard .pay{font-size:.72rem;color:var(--text5);margin-left:34px}
+.balcard .pay{font-size:.72rem;color:var(--text5);margin-left:34px;line-height:1.6}
 .balcard .amt{font-size:1.05rem;font-weight:700;margin-top:4px}
 .balcard .amt.pos{color:var(--pos)}
 .balcard .amt.neg{color:var(--neg)}
@@ -112,7 +115,7 @@ a{color:inherit}
         <button id="tabCreate" class="active">New party</button>
       </div>
 
-      <div class="field" id="codeField">
+      <div class="field" id="codeField" hidden>
         <label>Party code</label>
         <input type="text" id="codeInput" class="code-input" placeholder="coralmarblequiver">
       </div>
@@ -125,16 +128,17 @@ a{color:inherit}
       <div class="field">
         <label>Preferred payment (optional)</label>
         <div class="paychecks" id="paychecks">
-          <label><input type="checkbox" value="Venmo"> Venmo</label>
-          <label><input type="checkbox" value="Zelle"> Zelle</label>
-          <label><input type="checkbox" value="Cash"> Cash</label>
-          <label><input type="checkbox" value="CashApp"> CashApp</label>
-          <label><input type="checkbox" value="Bitcoin"> Bitcoin</label>
+          <div class="pay-row"><label><input type="checkbox" value="Venmo"> Venmo</label><input type="text" class="pay-detail" data-method="Venmo" placeholder="username" hidden></div>
+          <div class="pay-row"><label><input type="checkbox" value="Zelle"> Zelle</label><input type="text" class="pay-detail" data-method="Zelle" placeholder="phone number" hidden></div>
+          <div class="pay-row"><label><input type="checkbox" value="Cash"> Cash</label><input type="text" class="pay-detail" data-method="Cash" placeholder="address (optional)" hidden></div>
+          <div class="pay-row"><label><input type="checkbox" value="CashApp"> CashApp</label><input type="text" class="pay-detail" data-method="CashApp" placeholder="$cashtag" hidden></div>
+          <div class="pay-row"><label><input type="checkbox" value="Bitcoin"> Bitcoin</label><input type="text" class="pay-detail" data-method="Bitcoin" placeholder="wallet address" hidden></div>
+          <div class="pay-row"><label><input type="checkbox" value="Check"> Check</label><input type="text" class="pay-detail" data-method="Check" placeholder="mailing address" hidden></div>
         </div>
       </div>
 
       <div class="err" id="gateErr"></div>
-      <button class="primary-btn" id="gateSubmit">Join party</button>
+      <button class="primary-btn" id="gateSubmit">Create party</button>
     </div>
   </div>
 

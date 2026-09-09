@@ -2,8 +2,8 @@
 const STORE_KEY = 'counterAppData_v2';
 const OLD_STORE_KEY = 'counterAppData_v1';
 function defaultState() {
-  const g = { id: uid(), name: 'group 0', color: '#6366f1' };
-  return { groups: [g], activeGroupId: g.id, counters: [{ id: uid(), name: 'counter 0', value: 0, color: '#6366f1', groupId: g.id }] };
+  const g = { id: uid(), name: 'group 0', color: randomColor() };
+  return { groups: [g], activeGroupId: g.id, counters: [{ id: uid(), name: 'counter 0', value: 0, color: randomColor(), groupId: g.id }] };
 }
 function loadState() {
   try {
@@ -19,7 +19,7 @@ function loadState() {
     if (oldRaw) {
       const old = JSON.parse(oldRaw);
       if (Array.isArray(old) && old.length && old.every(c => c && typeof c.id === 'string' && typeof c.name === 'string' && typeof c.value === 'number' && typeof c.color === 'string')) {
-        const g = { id: uid(), name: 'group 0', color: '#6366f1' };
+        const g = { id: uid(), name: 'group 0', color: randomColor() };
         return { groups: [g], activeGroupId: g.id, counters: old.map(c => ({ ...c, groupId: g.id })) };
       }
     }
@@ -76,6 +76,9 @@ function hsl2hex(h, s, l) {
   else { r = c; b = x; }
   const toH = v => Math.round((v + m) * 255).toString(16).padStart(2, '0');
   return '#' + toH(r) + toH(g) + toH(b);
+}
+function randomColor() {
+  return hsl2hex(Math.random() * 360, 70 + Math.random() * 30, 60);
 }
 
 function colorFlash(container, selector, color) {
@@ -757,6 +760,7 @@ function createCounter() {
     const g = { id: uid(), name, color };
     groups.push(g);
     activeGroupId = g.id;
+    counters.push({ id: uid(), name: 'counter 0', value: 0, color: randomColor(), groupId: g.id });
     persist();
     closeModal();
     switchPage('manage');

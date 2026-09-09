@@ -97,8 +97,8 @@ $('#gateSubmit').onclick = async () => {
       if (r.error) throw new Error(r.error);
       code = r.code;
     } else {
-      code = $('#codeInput').value.trim().toLowerCase().replace(/[^a-z]/g, '');
-      if (!/^[a-z]{6,}$/.test(code)) { errBox.textContent = 'Enter the 3-word code, e.g. coralmarblequiver.'; $('#gateSubmit').disabled = false; return; }
+      code = $('#codeInput').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!/^[a-z0-9]{4,}$/.test(code)) { errBox.textContent = 'Enter the 3-word code, e.g. coralmarblequiver.'; $('#gateSubmit').disabled = false; return; }
       const r = await apiGet({ action: 'exists', code });
       if (!r.exists) { errBox.textContent = 'No party with that code.'; $('#gateSubmit').disabled = false; return; }
     }
@@ -424,7 +424,7 @@ $('#shareBtn').onclick = async () => {
     $('#gateErr').textContent = 'Set API_URL in app.js first (see apps-script.gs).';
   }
   const urlCode = new URLSearchParams(location.search).get('code');
-  const cleanUrlCode = urlCode ? urlCode.trim().toLowerCase().replace(/[^a-z]/g, '') : null;
+  const cleanUrlCode = urlCode ? urlCode.trim().toLowerCase().replace(/[^a-z0-9]/g, '') : null;
 
   if (cleanUrlCode) {
     const existing = loadPartyList().find(p => p.code === cleanUrlCode);

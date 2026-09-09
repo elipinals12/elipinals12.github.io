@@ -6,9 +6,9 @@ SETUP:
 2. Extensions -> Apps Script. Delete any starter code, paste this whole file in.
 3. In the function dropdown (top toolbar) select "setupWordSource", click Run once.
    - This WIPES every existing sheet in the spreadsheet and rebuilds a single
-     "wordsource" sheet of 3000 unique, easy-to-remember words (fetched from
-     the EFF passphrase wordlist). It'll ask you to authorize (needs permission
-     to fetch a URL) — click through Advanced -> Go to project -> Allow.
+     "wordsource" sheet of the 5000 shortest, simplest unique words (fetched
+     from the EFF passphrase wordlist). It'll ask you to authorize (needs
+     permission to fetch a URL) — click through Advanced -> Go to project -> Allow.
 4. Deploy -> New deployment -> type "Web app".
    - Execute as: Me
    - Who has access: Anyone
@@ -83,23 +83,35 @@ function setupWordSource() {
     if (parts.length === 2 && /^[a-z]+$/.test(parts[1])) words.push(parts[1]);
   }
 
-  // shuffle (Fisher-Yates), then take the first 3000 — list has zero duplicates by construction
-  for (var i = words.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = words[i]; words[i] = words[j]; words[j] = tmp;
-  }
-  var chosen = words.slice(0, 3000);
+  // prefer shorter, simpler words: sort shortest-first (ties broken alphabetically)
+  words.sort(function (a, b) { return a.length - b.length || (a < b ? -1 : a > b ? 1 : 0); });
 
-  // repeat counter in col B, proving zero repeats (every value should read 1)
+  // de-dupe (list is already unique by construction, this is just a safety net)
+  // and keep the 5000 shortest unique words
+  var seen = {}, chosen = [];
+  for (var i = 0; i < words.length && chosen.length < 5000; i++) {
+    if (!seen[words[i]]) { seen[words[i]] = true; chosen.push(words[i]); }
+  }
+
+  // shuffle so party codes don't skew toward always picking from the very shortest words
+  for (var i = chosen.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = chosen[i]; chosen[i] = chosen[j]; chosen[j] = tmp;
+  }
+
+  wsSheet.getRange(1, 1).setValue('word').setFontWeight('bold');
+  wsSheet.setFrozenRows(1);
+  wsSheet.getRange(2, 1, chosen.length, 1).setValues(chosen.map(function (w) { return [w]; }));
+
+  // single summary box: count of words appearing more than once — should read 0
   var counts = {};
   chosen.forEach(function (w) { counts[w] = (counts[w] || 0) + 1; });
+  var dupes = 0;
+  for (var w in counts) if (counts[w] > 1) dupes++;
+  wsSheet.getRange(1, 3).setValue('duplicates:').setFontWeight('bold');
+  wsSheet.getRange(1, 4).setValue(dupes);
 
-  wsSheet.getRange(1, 1, 1, 2).setValues([['word', 'repeat_count']]).setFontWeight('bold');
-  wsSheet.setFrozenRows(1);
-  var rows = chosen.map(function (w) { return [w, counts[w]]; });
-  wsSheet.getRange(2, 1, rows.length, 2).setValues(rows);
-
-  return 'wordsource ready: ' + rows.length + ' words.';
+  return 'wordsource ready: ' + chosen.length + ' words, ' + dupes + ' duplicates.';
 }
 
 function getWordList() {

@@ -2,7 +2,7 @@
 const STORE_KEY = 'counterAppData_v2';
 const OLD_STORE_KEY = 'counterAppData_v1';
 function defaultState() {
-  const g = { id: uid(), name: 'default', color: '#6366f1' };
+  const g = { id: uid(), name: 'group 0', color: '#6366f1' };
   return { groups: [g], activeGroupId: g.id, counters: [{ id: uid(), name: 'counter 0', value: 0, color: '#6366f1', groupId: g.id }] };
 }
 function loadState() {
@@ -19,7 +19,7 @@ function loadState() {
     if (oldRaw) {
       const old = JSON.parse(oldRaw);
       if (Array.isArray(old) && old.length && old.every(c => c && typeof c.id === 'string' && typeof c.name === 'string' && typeof c.value === 'number' && typeof c.color === 'string')) {
-        const g = { id: uid(), name: 'default', color: '#6366f1' };
+        const g = { id: uid(), name: 'group 0', color: '#6366f1' };
         return { groups: [g], activeGroupId: g.id, counters: old.map(c => ({ ...c, groupId: g.id })) };
       }
     }

@@ -446,10 +446,19 @@ function wireGroupTabs() {
     });
   });
   document.querySelectorAll('.group-dot').forEach(dot => {
-    dot.addEventListener('click', e => { e.stopPropagation(); openColorPop(e, dot.dataset.id, 'group'); });
+    dot.addEventListener('click', e => {
+      if (dot.dataset.id !== activeGroupId) return; // let click through to switch group
+      e.stopPropagation();
+      openColorPop(e, dot.dataset.id, 'group');
+    });
   });
   document.querySelectorAll('.group-name').forEach(input => {
-    input.addEventListener('click', e => e.stopPropagation());
+    input.addEventListener('mousedown', e => {
+      if (input.dataset.id !== activeGroupId) e.preventDefault(); // switch first, edit on next click
+    });
+    input.addEventListener('click', e => {
+      if (input.dataset.id === activeGroupId) e.stopPropagation();
+    });
     input.addEventListener('blur', () => {
       const g = findGroup(input.dataset.id);
       if (g) { g.name = input.value.trim() || 'group'; persist(); }

@@ -12,6 +12,8 @@ if (typeof window === 'undefined') {
   });
   self.addEventListener("fetch", function (e) {
     if (e.request.cache === "only-if-cached" && e.request.mode !== "same-origin") return;
+    // local mod: leave cross-origin requests (model weights, cdn scripts) alone; re-wrapping big streamed bodies breaks Firefox ("Error in input stream")
+    if (new URL(e.request.url).origin !== self.location.origin) return;
     e.respondWith(
       fetch(e.request).then((r) => {
         if (r.status === 0) return r;

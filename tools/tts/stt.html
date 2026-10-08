@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<title>speech to text</title>
+<title>speechtext · stt</title>
 <script src="coi-serviceworker.js"></script>
 <link rel="stylesheet" href="shared.css">
 <style>
@@ -11,10 +11,10 @@
 .main{flex:1;min-height:0;display:flex;flex-direction:column;gap:.75rem}
 #out{flex:1;min-height:0;width:100%;background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r);color:var(--tx);font-family:inherit;font-size:max(16px,1.05rem);padding:1.1rem;resize:none;outline:none;line-height:1.7;transition:border-color .2s}
 #out::placeholder{color:var(--tx3)}#out:focus{border-color:var(--ac)}#out:read-only{opacity:.75}
-.ctl{flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:clamp(1rem,6vw,2.5rem)}
-.side{width:clamp(3.2rem,11vmin,4.5rem);display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--tx2);cursor:pointer;font-size:.62rem;padding:.4rem;border-radius:var(--rs);transition:all .15s}
-.side:hover{color:var(--tx);background:var(--s2)}.side:disabled{opacity:.3;pointer-events:none}.side svg{width:1.5rem;height:1.5rem}
-.side.ok{color:var(--grn)}
+.ctl{flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:clamp(.6rem,3vw,1.5rem)}
+.side{flex:1;max-width:11rem;min-height:clamp(3.4rem,10vmin,4.5rem);display:flex;align-items:center;justify-content:center;gap:.5rem;background:var(--s2);border:1px solid var(--bdr);color:var(--tx);cursor:pointer;font-size:1.05rem;font-weight:600;padding:.6rem 1rem;border-radius:var(--r);transition:all .15s}
+.side:hover{border-color:var(--ac)}.side:active{transform:scale(.97)}.side:disabled{opacity:.3;pointer-events:none}.side svg{width:1.6rem;height:1.6rem;flex-shrink:0}
+.side.ok{color:var(--grn);border-color:var(--grn)}
 .recwrap{display:flex;flex-direction:column;align-items:center;gap:.5rem}
 .rec{--sz:clamp(4.75rem,16vmin,7.5rem);--lvl:0;position:relative;width:var(--sz);height:var(--sz);border-radius:50%;border:none;background:var(--ac);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .15s,box-shadow .2s;box-shadow:0 6px 24px rgba(124,106,240,.35)}
 .rec:hover{background:var(--ac2)}.rec:active{transform:scale(.96)}
@@ -31,9 +31,9 @@
 @media(orientation:landscape) and (max-height:480px){
   .screen{max-width:52rem;padding-top:.6rem;padding-bottom:.6rem}
   .main{flex-direction:row}
-  .ctl{flex-wrap:wrap;width:8.5rem;gap:.2rem;align-content:center}
-  .recwrap{order:-1;width:100%}
-  .side{width:47%}.side span{display:none}
+  .ctl{flex-direction:column;width:10rem;gap:.5rem}
+  .recwrap{order:0}
+  .side{width:100%;max-width:none;min-height:2.6rem;order:1}
   .rec{--sz:clamp(3.6rem,20vh,5rem)}
 }
 </style>
@@ -57,9 +57,9 @@
     <div class="pbar-inner"><span id="mTxt">Loading speech model…</span><span class="pbar-pct" id="mPct">0%</span></div>
   </div>
   <div class="main">
-    <textarea id="out" placeholder="Press the mic and talk. Your words appear here." spellcheck="false"></textarea>
+    <textarea id="out" placeholder="Press the mic and talk. Words appear live as you speak." spellcheck="false"></textarea>
     <div class="ctl">
-      <button class="side" id="bClear" title="Clear" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg><span>clear</span></button>
+      <button class="side" id="bClear" title="Clear / reset" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg><span>Clear</span></button>
       <div class="recwrap">
         <button class="rec" id="rec" title="Record" aria-label="Start / stop recording">
           <svg class="micoi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
@@ -67,7 +67,7 @@
         </button>
         <div class="timer" id="timer">0:00</div>
       </div>
-      <button class="side" id="bCopy" title="Copy" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1"/></svg><span id="copyLbl">copy</span></button>
+      <button class="side" id="bCopy" title="Copy" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1"/></svg><span id="copyLbl">Copy</span></button>
     </div>
   </div>
   <div class="stat" id="stat">Ready</div>
@@ -108,7 +108,7 @@ function loadModel(key){
 try{
   worker=new Worker('stt-worker.js',{type:'module'});
 }catch(e){modelErr=e.message;setMP(0,'Failed: '+e.message);}
-let job=null; // {id,prefix,text,resolve}
+let job=null; // {id,gen,text,resolve}
 if(worker){
   newReady();
   worker.onerror=e=>{const m=e.message||'worker failed to start';modelErr=m;setMP(0,'Failed: '+m);setSt('Speech engine failed: '+m,'err');readyRes&&readyRes();fail()};
@@ -116,41 +116,43 @@ if(worker){
     const m=e.data;
     if(m.type==='progress')setMP(m.pct,m.text);
     else if(m.type==='ready'){ready=true;setMP(100,'Speech model ready ✓');setTimeout(()=>mBar.classList.add('done'),1400);readyRes();}
-    else if(m.type==='partial'&&job&&m.id===job.id){
-      if(m.text)job.text+=(job.text?' ':'')+m.text;
-      out.value=job.prefix+job.text;out.scrollTop=out.scrollHeight;sync();
-      setSt(m.total>1?`Transcribing… ${m.done}/${m.total}`:'Transcribing…');
-    }
-    else if(m.type==='done'&&job&&m.id===job.id){
-      const empty=!job.text,slow=(performance.now()-job.t0)/1000>25&&curModel!=='fast';job=null;busy(false);
-      setSt(empty?'No speech heard':slow?'Done ✓ · slow on this device, try the Fast model in settings':'Done ✓',empty?'':'on');
-    }
+    else if(m.type==='partial'&&job&&m.id===job.id){if(m.text)job.text+=(job.text?' ':'')+m.text}
+    else if(m.type==='done'&&job&&m.id===job.id){const j=job;job=null;j.resolve(j.text)}
     else if(m.type==='error'){
       console.error('stt worker:',m.message);
       if(m.where==='load'){
         if(curModel==='best'){ // gpu path failed → safe wasm model
           qSel.value='good';setSt('GPU model failed, using Balanced','err');loadModel('good');
         }else{modelErr=m.message;setMP(0,'Failed: '+m.message);readyRes();}
-      }else{fail();setSt('Transcription failed: '+m.message,'err');}
+      }else{setSt('Transcription failed: '+m.message,'err');fail()}
     }
   };
   loadModel(qSel.value);
-  qSel.addEventListener('change',()=>{store.set('stt.quality',qSel.value);showHint();if(!recording&&!job)loadModel(qSel.value);else qSel.value=curModel});
+  qSel.addEventListener('change',()=>{store.set('stt.quality',qSel.value);showHint();if(!recording)loadModel(qSel.value);else qSel.value=curModel});
 }
-function fail(){if(job){job=null;busy(false)}}
+function fail(){if(job){const j=job;job=null;j.resolve('')}}
+function runPass(audio){ // one whisper pass over a copy of audio → text
+  return new Promise(resolve=>{
+    job={id:++jobSeq,text:'',resolve};
+    worker.postMessage({type:'transcribe',id:job.id,audio,lang:langSel.value},[audio.buffer]);
+  });
+}
+let jobSeq=0;
 
 // ---- ui state ----
-let recording=false,working=false;
-function sync(){bCopy.disabled=!out.value.trim();bClear.disabled=!out.value.trim()||recording||working}
-function busy(b){working=b;rec.classList.toggle('busy',b);rec.disabled=b;out.readOnly=b;sync()}
+let recording=false,finishing=false;
+function sync(){bCopy.disabled=!out.value.trim();bClear.disabled=!out.value.trim()&&!recording}
 out.addEventListener('input',sync);
-bClear.addEventListener('click',()=>{out.value='';sync();setSt('Ready');out.focus()});
+bClear.addEventListener('click',()=>{ // full reset, also mid-recording
+  gen++;committed='';base='';seg=new Float32Array(0);
+  out.value='';sync();setSt(recording?'Listening…':'Ready',recording?'on':'');if(!recording)out.focus();
+});
 let copyT=null;
 bCopy.addEventListener('click',async()=>{
   const ok=await copyText(out.value);
-  bCopy.classList.toggle('ok',ok);copyLbl.textContent=ok?'copied':'failed';
+  bCopy.classList.toggle('ok',ok);copyLbl.textContent=ok?'Copied':'Failed';
   if(!ok){out.focus();out.select()}
-  clearTimeout(copyT);copyT=setTimeout(()=>{bCopy.classList.remove('ok');copyLbl.textContent='copy'},1600);
+  clearTimeout(copyT);copyT=setTimeout(()=>{bCopy.classList.remove('ok');copyLbl.textContent='Copy'},1600);
 });
 
 // ---- capture (raw PCM via AudioWorklet, ScriptProcessor fallback; resampled to 16 kHz mono) ----
@@ -168,17 +170,42 @@ class Resampler{ // streaming box-average downsampler
     return Float32Array.from(o);
   }
 }
-let ctx=null,stream=null,node=null,mute=null,src=null,rs=null,pcm=[],pcmLen=0,t0=0,tick=null;
+let ctx=null,stream=null,node=null,mute=null,src=null,rs=null,t0=0,tick=null;
+let seg=new Float32Array(0),committed='',base='',gen=0; // seg = audio not yet committed to text
 
 function onBlock(block){
   let e=0;for(let i=0;i<block.length;i+=4)e+=block[i]*block[i];
   rec.style.setProperty('--lvl',Math.min(1,Math.sqrt(e/(block.length/4))*6).toFixed(2));
-  const r=rs.process(block);pcm.push(r);pcmLen+=r.length;
+  const r=rs.process(block);
+  if(r.length){const n=new Float32Array(seg.length+r.length);n.set(seg);n.set(r,seg.length);seg=n}
+}
+const SR=16000,FORCE=22*SR;
+const rmsOf=(a,from,to)=>{let s=0;for(let i=from;i<to;i++)s+=a[i]*a[i];return Math.sqrt(s/Math.max(1,to-from))};
+function show(tent){
+  const body=(committed+(tent?(committed?' ':'')+tent:'')).trim();
+  out.value=(base&&body?base+'\n\n':base)+body;out.scrollTop=out.scrollHeight;sync();
+}
+// live loop: repeatedly transcribe the uncommitted audio; commit on a pause or when the window gets long
+async function liveLoop(){
+  let last=0;
+  while(recording){
+    if(seg.length<SR*.6||seg.length===last){await new Promise(r=>setTimeout(r,120));continue}
+    const g=gen,n=seg.length,snap=seg.slice(0,n);last=n;
+    const speech=rmsOf(snap,0,n)>0.004;
+    const text=speech?await runPass(snap):'';
+    if(g!==gen)continue; // cleared meanwhile
+    show(text);
+    const quiet=seg.length-n<SR*.2&&n>=SR*1.5&&rmsOf(seg,Math.max(0,n-SR*.8),n)<0.004; // paused after speech
+    if(text&&(quiet||n>=FORCE)||(!speech&&n>=SR*3)){committed=(committed+(text&&committed?' ':'')+text).trim();seg=seg.slice(n);last=0;show('')}
+    else if(!speech&&seg.length>SR*6)seg=seg.slice(seg.length-SR*2),last=0;
+  }
 }
 async function startRec(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setSt('Microphone needs https or localhost','err');return}
+  if(!ready){setSt('Waiting for speech model…');await readyPromise}
+  if(modelErr||!ready){setSt('Speech model failed to load','err');return}
   const AC=window.AudioContext||window.webkitAudioContext;
-  ctx=new AC();ctx.resume&&ctx.resume(); // create in the click gesture (Safari)
+  ctx=new AC();ctx.resume&&ctx.resume();
   try{
     stream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
   }catch(e){
@@ -186,12 +213,13 @@ async function startRec(){
     setSt(e.name==='NotAllowedError'?'Microphone blocked, allow it in the browser':e.name==='NotFoundError'?'No microphone found':'Mic error: '+e.message,'err');return;
   }
   if(ctx.state!=='running')await ctx.resume();
-  rs=new Resampler(ctx.sampleRate,16000);pcm=[];pcmLen=0;
+  rs=new Resampler(ctx.sampleRate,16000);seg=new Float32Array(0);committed='';gen++;
+  base=out.value.replace(/\s+$/,'');
   src=ctx.createMediaStreamSource(stream);
   mute=ctx.createGain();mute.gain.value=0;mute.connect(ctx.destination);
   let ok=false;
   if(ctx.audioWorklet){
-    try{ // addModule can hang on some browsers → time out and fall back
+    try{
       await Promise.race([ctx.audioWorklet.addModule('cap-worklet.js'),new Promise((_,rej)=>setTimeout(()=>rej(new Error('addModule timeout')),2500))]);
       node=new AudioWorkletNode(ctx,'cap',{numberOfInputs:1,numberOfOutputs:1,channelCount:1,channelCountMode:'explicit'});
       node.port.onmessage=e=>onBlock(e.data);ok=true;
@@ -202,35 +230,32 @@ async function startRec(){
     node.onaudioprocess=e=>onBlock(new Float32Array(e.inputBuffer.getChannelData(0)));ok=true;
   }
   src.connect(node);node.connect(mute);
-  recording=true;rec.classList.add('on');timer.classList.add('on');sync();
+  recording=true;out.readOnly=true;rec.classList.add('on');timer.classList.add('on');sync();
   t0=performance.now();timer.textContent='0:00';
   tick=setInterval(()=>{timer.textContent=fmt((performance.now()-t0)/1000)},250);
-  setSt('Recording…','on');
+  setSt('Listening… words appear live','on');
+  liveLoop();
 }
 async function stopRec(){
-  recording=false;clearInterval(tick);
+  recording=false;finishing=true;clearInterval(tick);
   rec.classList.remove('on');timer.classList.remove('on');rec.style.setProperty('--lvl',0);
   try{node.disconnect();src.disconnect();mute.disconnect()}catch(e){}
   if(node.port)node.port.onmessage=null;
   stream.getTracks().forEach(t=>t.stop());
   await ctx.close().catch(()=>{});ctx=null;
-  const audio=new Float32Array(pcmLen);let o=0;for(const c of pcm){audio.set(c,o);o+=c.length}
-  pcm=[];pcmLen=0;
-  if(audio.length<16000*.4){setSt('Too short, hold a little longer');sync();return}
-  transcribe(audio);
-}
-async function transcribe(audio){
-  busy(true);
-  if(!ready){setSt('Waiting for speech model…');await readyPromise}
-  if(modelErr||!ready){busy(false);setSt('Speech model failed to load','err');return}
-  const prefix=out.value.trim()?out.value.replace(/\s+$/,'')+'\n\n':'';
-  job={id:Date.now(),prefix,text:'',t0:performance.now()};
-  setSt('Transcribing…');
-  worker.postMessage({type:'transcribe',id:job.id,audio,lang:langSel.value},[audio.buffer]);
+  rec.disabled=true;rec.classList.add('busy');setSt('Finishing…');
+  while(job)await new Promise(r=>setTimeout(r,60)); // let the in-flight pass end
+  if(seg.length>=SR*.4&&rmsOf(seg,0,seg.length)>0.004){
+    const g=gen,t=await runPass(seg.slice(0));
+    if(g===gen){committed=(committed+(t&&committed?' ':'')+t).trim()}
+  }
+  seg=new Float32Array(0);show('');
+  rec.disabled=false;rec.classList.remove('busy');out.readOnly=false;finishing=false;sync();
+  setSt(out.value.trim()?'Done ✓':'No speech heard',out.value.trim()?'on':'');
 }
 let starting=false;
 rec.addEventListener('click',async()=>{
-  if(working||starting)return;
+  if(finishing||starting)return;
   if(recording)return stopRec();
   starting=true;try{await startRec()}finally{starting=false}
 });

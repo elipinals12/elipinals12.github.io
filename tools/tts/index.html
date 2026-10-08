@@ -14,7 +14,7 @@ body{display:block}
 .tile:hover::before,.tile:focus-visible::before,.tile:active::before{opacity:1}
 .tile:focus-visible{outline:2px solid var(--glow);outline-offset:-6px}
 .code{position:relative;font-size:clamp(4.5rem,24vmin,14rem);font-weight:700;letter-spacing:-.04em;line-height:1;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.arrow{position:relative;font-size:clamp(2rem,8vmin,4.5rem);line-height:1;transition:transform .25s}
+.arrow{position:relative;display:flex;align-items:center;gap:.5em;font-size:clamp(2rem,8vmin,4.5rem);line-height:1;color:var(--c2);transition:transform .25s}.arrow i{font-style:normal}
 .tile:hover .arrow,.tile:focus-visible .arrow{transform:translateX(.6rem)}
 .tts{--c1:#7c6af0;--c2:#c084fc;--glow:rgba(124,106,240,.22)}
 .stt{--c1:#34d399;--c2:#6af0a8;--glow:rgba(106,240,168,.18)}
@@ -26,11 +26,11 @@ body{display:block}
 <div class="pick">
   <a class="tile tts" href="tts.html" aria-label="text to speech">
     <span class="code">tts</span>
-    <span class="arrow" aria-hidden="true">➡️</span>
+    <span class="arrow" aria-hidden="true"><i>📝</i>→<i>🔊</i></span>
   </a>
   <a class="tile stt" href="stt.html" aria-label="speech to text">
     <span class="code">stt</span>
-    <span class="arrow" aria-hidden="true">➡️</span>
+    <span class="arrow" aria-hidden="true"><i>🎙️</i>→<i>📝</i></span>
   </a>
 </div>
 </body>

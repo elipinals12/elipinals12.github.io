@@ -4,60 +4,75 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex">
+	<meta name="color-scheme" content="dark">
 	<title>admin</title>
-	<link rel="stylesheet" href="../style.css">
 	<style>
-		body { color: #fff; font-family: sans-serif; padding: 20px; }
-		.box { max-width: 800px; margin: 40px auto; }
-		input, textarea, button { font: inherit; padding: 8px; border-radius: 6px; border: 1px solid #888; background: rgba(0,0,0,.35); color: #fff; }
-		button { cursor: pointer; background: rgba(255,255,255,.15); }
-		textarea { width: 100%; height: 55vh; resize: vertical; }
-		.row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; align-items: center; }
-		#msg { min-height: 1.4em; opacity: .85; }
-		.hide { display: none; }
-		details { margin-top: 16px; }
+		* { box-sizing: border-box; margin: 0; }
+		html, body { height: 100%; }
+		body { background: #0e0e11; color: #e6e6ea; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+		main { height: 100dvh; max-width: 760px; margin: 0 auto; padding: 24px 16px; display: flex; flex-direction: column; gap: 12px; }
+		h1 { font-size: 14px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #8a8a94; }
+		input, textarea, button { font: inherit; color: inherit; background: #17171c; border: 1px solid #2a2a33; border-radius: 8px; padding: 10px 12px; }
+		input:focus, textarea:focus, button:focus-visible { outline: none; border-color: #7c83ff; }
+		button { cursor: pointer; background: #23232b; }
+		button:hover { background: #2c2c36; }
+		button.primary { background: #5b63f0; border-color: #5b63f0; color: #fff; }
+		button.primary:hover { background: #6e75f5; }
+		.row { display: flex; gap: 8px; }
+		.row > input { flex: 1; min-width: 0; }
+		.hide { display: none !important; }
+		#msg { min-height: 1.5em; font-size: 14px; color: #8a8a94; }
+		#lock { margin: auto; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 12px; }
+		#lock h1 { text-align: center; }
+		#app { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+		textarea { flex: 1; min-height: 200px; width: 100%; resize: none; line-height: 1.6; }
+		details { font-size: 14px; color: #8a8a94; }
+		summary { cursor: pointer; padding: 4px 0; }
+		details .row, details p { margin-top: 8px; }
+		details[open] { max-height: 40vh; overflow-y: auto; }
+		.top { display: flex; justify-content: space-between; align-items: center; }
 	</style>
 </head>
 <body>
-<div class="box">
-	<h2>admin</h2>
-
+<main>
 	<div id="lock">
+		<h1>admin</h1>
 		<div class="row">
-			<input id="pw" type="password" placeholder="password" autofocus>
-			<button id="unlock">unlock</button>
+			<input id="pw" type="password" placeholder="password" autocomplete="current-password" autofocus>
+			<button id="unlock" class="primary">unlock</button>
 		</div>
 		<details>
 			<summary>forgot password</summary>
-			<p>Can't be recovered (data is encrypted with it). You can wipe the vault and start over with a new password:</p>
+			<p>Can't be recovered. You can wipe the vault and start over (all notes lost).</p>
 			<div class="row">
-				<input id="wipepw" type="password" placeholder="new password">
-				<button id="wipe">wipe &amp; reset</button>
+				<input id="wipepw" type="password" placeholder="new password" autocomplete="new-password">
+				<button id="wipe">wipe</button>
 			</div>
 		</details>
 	</div>
 
 	<div id="app" class="hide">
-		<textarea id="notes" placeholder="encrypted notes..."></textarea>
-		<div class="row">
-			<button id="save">save</button>
-			<button id="lockbtn">lock</button>
+		<div class="top">
+			<h1>notes</h1>
+			<div class="row">
+				<button id="save" class="primary">save</button>
+				<button id="lockbtn">lock</button>
+			</div>
 		</div>
+		<textarea id="notes" placeholder="encrypted notes..." spellcheck="false"></textarea>
 		<details>
 			<summary>settings</summary>
-			<p>GitHub token (fine-grained, this repo only, Contents: read/write). Stored encrypted in the vault, so you only paste it once.</p>
-			<div class="row">
-				<input id="token" type="password" placeholder="github_pat_..." size="40">
-			</div>
+			<p>GitHub token (fine-grained, this repo, Contents read/write). Stored encrypted in the vault.</p>
+			<div class="row"><input id="token" type="password" placeholder="github_pat_..." autocomplete="off"></div>
 			<p>Change password</p>
 			<div class="row">
-				<input id="newpw" type="password" placeholder="new password">
-				<button id="chpw">change password</button>
+				<input id="newpw" type="password" placeholder="new password" autocomplete="new-password">
+				<button id="chpw">change</button>
 			</div>
 		</details>
 	</div>
 	<p id="msg"></p>
-</div>
+</main>
 
 <script>
 const REPO = "elipinals12/elipinals12.github.io";

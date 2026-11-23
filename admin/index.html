@@ -26,10 +26,18 @@
 		#lock h1 { text-align: center; }
 		#app { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
 		textarea { flex: 1; min-height: 200px; width: 100%; resize: none; line-height: 1.6; }
-		details { font-size: 14px; color: #8a8a94; }
-		summary { cursor: pointer; padding: 4px 0; }
-		details .row, details p { margin-top: 8px; }
-		details[open] { max-height: 40vh; overflow-y: auto; }
+		.tools { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+		.tool { text-align: left; padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+		.tool b { font-weight: 600; }
+		.tool span { font-size: 14px; color: #8a8a94; }
+		.view { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+		.view.scroll { overflow-y: auto; }
+		ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; }
+		ol li::marker { color: #7c83ff; font-weight: 600; }
+		code { background: #17171c; border: 1px solid #2a2a33; border-radius: 4px; padding: 1px 6px; font-size: 14px; }
+		a { color: #9aa0ff; }
+		.warn { background: #2a2312; border: 1px solid #5c4a14; color: #f0d98a; border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+		h2 { font-size: 16px; font-weight: 600; }
 		.top { display: flex; justify-content: space-between; align-items: center; }
 	</style>
 </head>
@@ -41,35 +49,50 @@
 			<input id="pw" type="password" placeholder="password" autocomplete="current-password" autofocus>
 			<button id="unlock" class="primary">unlock</button>
 		</div>
-		<details>
-			<summary>forgot password</summary>
-			<p>Can't be recovered. You can wipe the vault and start over (all notes lost).</p>
-			<div class="row">
-				<input id="wipepw" type="password" placeholder="new password" autocomplete="new-password">
-				<button id="wipe">wipe</button>
-			</div>
-		</details>
 	</div>
 
 	<div id="app" class="hide">
-		<div class="top">
-			<h1>notes</h1>
-			<div class="row">
-				<button id="save" class="primary">save</button>
-				<button id="lockbtn">lock</button>
+		<div id="v-menu" class="view hide">
+			<div class="top"><h1>tools</h1><button id="lockbtn">lock</button></div>
+			<div class="tools">
+				<button class="tool" data-go="notes"><b>Notepad</b><span>encrypted notes</span></button>
+				<button class="tool" data-go="settings"><b>Settings</b><span>token &amp; password</span></button>
 			</div>
 		</div>
-		<textarea id="notes" placeholder="encrypted notes..." spellcheck="false"></textarea>
-		<details>
-			<summary>settings</summary>
-			<p>GitHub token (fine-grained, this repo, Contents read/write). Stored encrypted in the vault.</p>
-			<div class="row"><input id="token" type="password" placeholder="github_pat_..." autocomplete="off"></div>
-			<p>Change password</p>
+
+		<div id="v-notes" class="view hide">
+			<div class="top">
+				<button data-go="menu">&larr; tools</button>
+				<button id="save" class="primary">save</button>
+			</div>
+			<textarea id="notes" placeholder="encrypted notes..." spellcheck="false"></textarea>
+		</div>
+
+		<div id="v-settings" class="view scroll hide">
+			<div class="top"><button id="back" data-go="menu">&larr; tools</button><h1>settings</h1></div>
+			<div id="needtoken" class="warn hide">Setup required: you must add a GitHub token before you can save anything. Follow the steps below.</div>
+			<h2>GitHub token (required)</h2>
+			<p>The token lets this page save your encrypted notes to your repo. It's stored encrypted inside the vault, so you only do this once.</p>
+			<ol>
+				<li>Log in to GitHub as <code>elipinals12</code>, then open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>.</li>
+				<li><b>Token name:</b> type <code>admin notepad</code>.</li>
+				<li><b>Expiration:</b> pick the longest option. When it expires, repeat these steps.</li>
+				<li><b>Repository access:</b> choose <code>Only select repositories</code>, then pick <code>elipinals12.github.io</code>.</li>
+				<li><b>Permissions:</b> click <code>Add permissions</code> (or expand <code>Repository permissions</code>), find <code>Contents</code>, and set it to <code>Read and write</code>. Leave everything else alone.</li>
+				<li>Click <code>Generate token</code>, then <code>Generate token</code> again to confirm.</li>
+				<li>Copy the token (starts with <code>github_pat_</code>). GitHub shows it only once.</li>
+				<li>Paste it below and click <code>verify &amp; save</code>.</li>
+			</ol>
+			<div class="row">
+				<input id="token" type="password" placeholder="github_pat_..." autocomplete="off">
+				<button id="savetoken" class="primary">verify &amp; save</button>
+			</div>
+			<h2>Change password</h2>
 			<div class="row">
 				<input id="newpw" type="password" placeholder="new password" autocomplete="new-password">
 				<button id="chpw">change</button>
 			</div>
-		</details>
+		</div>
 	</div>
 	<p id="msg"></p>
 </main>
@@ -142,17 +165,28 @@ async function push(v, token, note) {
 	vault = v;
 }
 
-function show() {
+const views = ["menu", "notes", "settings"];
+function go(v) {
+	views.forEach(x => $("v-" + x).classList.toggle("hide", x !== v));
+	$("needtoken").classList.toggle("hide", !!(data && data.token));
+	$("token").value = data && data.token || "";
+	msg("");
+}
+function enter() {
 	$("lock").classList.add("hide"); $("app").classList.remove("hide");
-	$("notes").value = data.notes || ""; $("token").value = data.token || "";
-	$("pw").value = "";
+	$("notes").value = data.notes || ""; $("pw").value = "";
+	go(data.token ? "menu" : "settings");
 }
 function lock() {
 	pass = data = null;
 	$("notes").value = ""; $("token").value = "";
 	$("app").classList.add("hide"); $("lock").classList.remove("hide");
 }
-function collect() { data = { notes: $("notes").value, token: $("token").value.trim() }; }
+document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => {
+	if (data && !data.token && b.dataset.go !== "settings") return go("settings");
+	if (b.dataset.go === "menu" && data) data.notes = $("notes").value;
+	go(b.dataset.go);
+});
 
 $("unlock").onclick = async () => {
 	msg("unlocking...");
@@ -161,35 +195,38 @@ $("unlock").onclick = async () => {
 		if (!vault) return msg("no vault found");
 		const pw = $("pw").value;
 		data = await open(vault, pw); pass = pw;
-		show(); msg("");
+		enter();
 	} catch (e) { msg(e.message === "wrong password" ? "wrong password" : "error: " + e.message); }
 };
 $("pw").onkeydown = e => { if (e.key === "Enter") $("unlock").click(); };
-$("lockbtn").onclick = () => { lock(); msg(""); };
+$("lockbtn").onclick = lock;
 $("save").onclick = async () => {
 	msg("saving...");
-	try { collect(); await push(await seal(pass, data), data.token, "update vault"); msg("saved " + new Date().toLocaleTimeString()); }
+	try { data.notes = $("notes").value; await push(await seal(pass, data), data.token, "update vault"); msg("saved " + new Date().toLocaleTimeString()); }
 	catch (e) { msg("error: " + e.message); }
+};
+$("savetoken").onclick = async () => {
+	const t = $("token").value.trim();
+	if (!t) return msg("paste your token first");
+	msg("verifying...");
+	try {
+		const r = await fetch("https://api.github.com/repos/" + REPO, { headers: { Authorization: "Bearer " + t, Accept: "application/vnd.github+json" } });
+		if (!r.ok) return msg("token rejected (" + r.status + "). Re-check the steps.");
+		if (!(await r.json()).permissions?.push) return msg("token can't write. Set Contents to Read and write.");
+		const prev = data.token; data.token = t;
+		try { await push(await seal(pass, data), t, "set token"); }
+		catch (e) { data.token = prev; throw e; }
+		msg("token saved"); go("menu");
+	} catch (e) { msg("error: " + e.message); }
 };
 $("chpw").onclick = async () => {
 	const np = $("newpw").value;
+	if (!np) return;
+	if (!data.token) return msg("add a token first");
 	if (np.length < 8 && !confirm("short password, sure?")) return;
-	if (!np) return;
 	msg("changing...");
-	try { collect(); await push(await seal(np, data), data.token, "change password"); pass = np; $("newpw").value = ""; msg("password changed"); }
+	try { await push(await seal(np, data), data.token, "change password"); pass = np; $("newpw").value = ""; msg("password changed"); }
 	catch (e) { msg("error: " + e.message); }
-};
-$("wipe").onclick = async () => {
-	const np = $("wipepw").value;
-	if (!np) return;
-	const tok = prompt("GitHub token (needed to overwrite vault):");
-	if (!tok || !confirm("This permanently destroys all notes. Continue?")) return;
-	msg("wiping...");
-	try {
-		vault = await load();
-		await push(await seal(np, { notes: "", token: tok.trim() }), tok.trim(), "reset vault");
-		msg("vault reset"); $("wipepw").value = "";
-	} catch (e) { msg("error: " + e.message); }
 };
 </script>
 </body>

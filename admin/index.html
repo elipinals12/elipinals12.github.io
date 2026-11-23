@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="noindex">
+	<title>admin</title>
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		body { color: #fff; font-family: sans-serif; padding: 20px; }
+		.box { max-width: 800px; margin: 40px auto; }
+		input, textarea, button { font: inherit; padding: 8px; border-radius: 6px; border: 1px solid #888; background: rgba(0,0,0,.35); color: #fff; }
+		button { cursor: pointer; background: rgba(255,255,255,.15); }
+		textarea { width: 100%; height: 55vh; resize: vertical; }
+		.row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; align-items: center; }
+		#msg { min-height: 1.4em; opacity: .85; }
+		.hide { display: none; }
+		details { margin-top: 16px; }
+	</style>
+</head>
+<body>
+<div class="box">
+	<h2>admin</h2>
+
+	<div id="lock">
+		<div class="row">
+			<input id="pw" type="password" placeholder="password" autofocus>
+			<button id="unlock">unlock</button>
+		</div>
+		<details>
+			<summary>forgot password</summary>
+			<p>Can't be recovered (data is encrypted with it). You can wipe the vault and start over with a new password:</p>
+			<div class="row">
+				<input id="wipepw" type="password" placeholder="new password">
+				<button id="wipe">wipe &amp; reset</button>
+			</div>
+		</details>
+	</div>
+
+	<div id="app" class="hide">
+		<textarea id="notes" placeholder="encrypted notes..."></textarea>
+		<div class="row">
+			<button id="save">save</button>
+			<button id="lockbtn">lock</button>
+		</div>
+		<details>
+			<summary>settings</summary>
+			<p>GitHub token (fine-grained, this repo only, Contents: read/write). Stored encrypted in the vault, so you only paste it once.</p>
+			<div class="row">
+				<input id="token" type="password" placeholder="github_pat_..." size="40">
+			</div>
+			<p>Change password</p>
+			<div class="row">
+				<input id="newpw" type="password" placeholder="new password">
+				<button id="chpw">change password</button>
+			</div>
+		</details>
+	</div>
+	<p id="msg"></p>
+</div>
+
+<script>
+const REPO = "elipinals12/elipinals12.github.io";
+const PATH = "admin/vault.json";
+const API = `https://api.github.com/repos/${REPO}/contents/${PATH}`;
+const ITER = 600000;
+const $ = id => document.getElementById(id);
+const enc = new TextEncoder(), dec = new TextDecoder();
+const b64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
+const msg = t => $("msg").textContent = t || "";
+
+let vault = null, sha = null, pass = null, data = null;
+
+async function pbkdf2(pw, salt) {
+	const base = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveBits", "deriveKey"]);
+	return { base, salt };
+}
+async function key(pw, salt) {
+	const { base } = await pbkdf2(pw, salt);
+	return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: ITER, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+}
+async function hash(pw, salt) {
+	const { base } = await pbkdf2(pw, salt);
+	return hex(await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: ITER, hash: "SHA-256" }, base, 256));
+}
+async function seal(pw, obj) {
+	const salt = crypto.getRandomValues(new Uint8Array(16));
+	const hsalt = crypto.getRandomValues(new Uint8Array(16));
+	const iv = crypto.getRandomValues(new Uint8Array(12));
+	const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await key(pw, salt), enc.encode(JSON.stringify(obj)));
+	return { v: 1, salt: b64(salt), hsalt: b64(hsalt), hash: await hash(pw, hsalt), iv: b64(iv), ct: b64(ct) };
+}
+async function open(v, pw) {
+	if (await hash(pw, unb64(v.hsalt)) !== v.hash) throw new Error("wrong password");
+	const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(v.iv) }, await key(pw, unb64(v.salt)), unb64(v.ct));
+	return JSON.parse(dec.decode(pt));
+}
+
+// load freshest vault (API is uncached; fall back to the static file)
+async function load() {
+	try {
+		const r = await fetch(API + "?t=" + Date.now(), { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
+		if (r.ok) {
+			const j = await r.json();
+			sha = j.sha;
+			return JSON.parse(dec.decode(unb64(j.content.replace(/\n/g, ""))));
+		}
+	} catch (e) {}
+	const r = await fetch("vault.json?t=" + Date.now(), { cache: "no-store" });
+	if (!r.ok) return null;
+	sha = null;
+	return r.json();
+}
+
+async function push(v, token, note) {
+	if (!token) throw new Error("set a GitHub token in settings first");
+	const h = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" };
+	const cur = await fetch(API + "?t=" + Date.now(), { headers: h, cache: "no-store" });
+	const curSha = cur.ok ? (await cur.json()).sha : undefined;
+	if (sha && curSha && sha !== curSha) throw new Error("vault changed elsewhere, unlock again to reload");
+	const body = { message: note, content: btoa(JSON.stringify(v, null, 1)), sha: curSha };
+	const r = await fetch(API, { method: "PUT", headers: h, body: JSON.stringify(body) });
+	if (!r.ok) throw new Error("github: " + r.status + " " + (await r.text()).slice(0, 120));
+	sha = (await r.json()).content.sha;
+	vault = v;
+}
+
+function show() {
+	$("lock").classList.add("hide"); $("app").classList.remove("hide");
+	$("notes").value = data.notes || ""; $("token").value = data.token || "";
+	$("pw").value = "";
+}
+function lock() {
+	pass = data = null;
+	$("notes").value = ""; $("token").value = "";
+	$("app").classList.add("hide"); $("lock").classList.remove("hide");
+}
+function collect() { data = { notes: $("notes").value, token: $("token").value.trim() }; }
+
+$("unlock").onclick = async () => {
+	msg("unlocking...");
+	try {
+		vault = await load();
+		if (!vault) return msg("no vault found");
+		const pw = $("pw").value;
+		data = await open(vault, pw); pass = pw;
+		show(); msg("");
+	} catch (e) { msg(e.message === "wrong password" ? "wrong password" : "error: " + e.message); }
+};
+$("pw").onkeydown = e => { if (e.key === "Enter") $("unlock").click(); };
+$("lockbtn").onclick = () => { lock(); msg(""); };
+$("save").onclick = async () => {
+	msg("saving...");
+	try { collect(); await push(await seal(pass, data), data.token, "update vault"); msg("saved " + new Date().toLocaleTimeString()); }
+	catch (e) { msg("error: " + e.message); }
+};
+$("chpw").onclick = async () => {
+	const np = $("newpw").value;
+	if (np.length < 8 && !confirm("short password, sure?")) return;
+	if (!np) return;
+	msg("changing...");
+	try { collect(); await push(await seal(np, data), data.token, "change password"); pass = np; $("newpw").value = ""; msg("password changed"); }
+	catch (e) { msg("error: " + e.message); }
+};
+$("wipe").onclick = async () => {
+	const np = $("wipepw").value;
+	if (!np) return;
+	const tok = prompt("GitHub token (needed to overwrite vault):");
+	if (!tok || !confirm("This permanently destroys all notes. Continue?")) return;
+	msg("wiping...");
+	try {
+		vault = await load();
+		await push(await seal(np, { notes: "", token: tok.trim() }), tok.trim(), "reset vault");
+		msg("vault reset"); $("wipepw").value = "";
+	} catch (e) { msg("error: " + e.message); }
+};
+</script>
+</body>
+</html>

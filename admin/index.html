@@ -38,7 +38,16 @@
 		a { color: #9aa0ff; }
 		.warn { background: #2a2312; border: 1px solid #5c4a14; color: #f0d98a; border-radius: 8px; padding: 10px 12px; font-size: 14px; }
 		h2 { font-size: 16px; font-weight: 600; }
-		.top { display: flex; justify-content: space-between; align-items: center; }
+		.top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+		.top > input { flex: 1; min-width: 0; }
+		button:disabled { opacity: .5; cursor: default; }
+		.tool.pad { flex: none; min-width: 0; }
+		.tool.pad > * { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+		#padlist, #filelist, #usage { display: flex; flex-direction: column; gap: 8px; }
+		meter { width: 100%; height: 14px; }
+		small { color: #8a8a94; }
+		.file { display: flex; gap: 8px; align-items: center; }
+		.file > div { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-wrap: anywhere; }
 	</style>
 </head>
 <body>
@@ -55,17 +64,39 @@
 		<div id="v-menu" class="view hide">
 			<div class="top"><h1>tools</h1><button id="lockbtn">lock</button></div>
 			<div class="tools">
-				<button class="tool" data-go="notes"><b>Notepad</b><span>encrypted notes</span></button>
+				<button class="tool" data-go="pads"><b>Notepads</b><span>encrypted notes</span></button>
+				<button class="tool" data-go="files"><b>Files</b><span>encrypted storage</span></button>
 				<button class="tool" data-go="settings"><b>Settings</b><span>token &amp; password</span></button>
 			</div>
 		</div>
 
-		<div id="v-notes" class="view hide">
+		<div id="v-pads" class="view scroll hide">
+			<div class="top"><button data-go="menu">&larr; tools</button><h1>notepads</h1><button id="newpad" class="primary">+ new</button></div>
+			<div id="padlist"></div>
+		</div>
+
+		<div id="v-edit" class="view hide">
 			<div class="top">
-				<button data-go="menu">&larr; tools</button>
-				<button id="save" class="primary">save</button>
+				<button data-go="pads">&larr; notepads</button>
+				<input id="title" placeholder="untitled" autocomplete="off">
+				<button id="delpad">delete</button>
 			</div>
 			<textarea id="notes" placeholder="encrypted notes..." spellcheck="false"></textarea>
+		</div>
+
+		<div id="v-files" class="view scroll hide">
+			<div class="top"><button data-go="menu">&larr; tools</button><h1>files</h1><button id="upbtn" class="primary" disabled>upload</button></div>
+			<input id="upload" type="file" multiple class="hide">
+			<div id="usage"></div>
+			<div id="filesetup" class="warn hide">
+				One-time setup for file storage:
+				<ol>
+					<li><a href="https://github.com/new" target="_blank" rel="noopener">Create a repo</a> named <code>vault-files</code>, set it to <code>Private</code>, turn on <code>Add README</code>.</li>
+					<li>Open <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">your tokens</a>, click <code>admin notepad</code>, edit it, add <code>vault-files</code> under <code>Repository access</code> (keep the site repo too), save. Same token, no re-pasting.</li>
+					<li>Come back to this page.</li>
+				</ol>
+			</div>
+			<div id="filelist"></div>
 		</div>
 
 		<div id="v-settings" class="view scroll hide">
@@ -100,123 +131,399 @@
 <script>
 const REPO = "elipinals12/elipinals12.github.io";
 const PATH = "admin/vault.json";
-const API = `https://api.github.com/repos/${REPO}/contents/${PATH}`;
+const BRANCH = "vault"; // saves go here: Pages builds only master, so autosave never redeploys the site
+const GH = `https://api.github.com/repos/${REPO}`;
+const API = `${GH}/contents/${PATH}`;
 const ITER = 600000;
+const IDLE = 2000, GAP = 10000, RETRY = 30000; // autosave: wait after typing, min between commits, retry
+const FREE = 3, WAIT = 60000, LOCKKEY = "admin-lockout";
 const $ = id => document.getElementById(id);
 const enc = new TextEncoder(), dec = new TextDecoder();
-const b64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
+const b64 = b => { const u = new Uint8Array(b); let s = ""; for (let i = 0; i < u.length; i += 32768) s += String.fromCharCode(...u.subarray(i, i + 32768)); return btoa(s); };
 const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
 const msg = t => $("msg").textContent = t || "";
 
-let vault = null, sha = null, pass = null, data = null;
+let sha = null, ring = null, data = null, pad = null;
 
-async function pbkdf2(pw, salt) {
-	const base = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveBits", "deriveKey"]);
-	return { base, salt };
+// crypto: key derived once per unlock, fresh IV per save
+async function derive(pw, salt) {
+	const base = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveKey"]);
+	const key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: ITER, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+	return { salt, key };
 }
-async function key(pw, salt) {
-	const { base } = await pbkdf2(pw, salt);
-	return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: ITER, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
-}
-async function hash(pw, salt) {
-	const { base } = await pbkdf2(pw, salt);
-	return hex(await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: ITER, hash: "SHA-256" }, base, 256));
-}
-async function seal(pw, obj) {
-	const salt = crypto.getRandomValues(new Uint8Array(16));
-	const hsalt = crypto.getRandomValues(new Uint8Array(16));
+async function seal(r, obj) {
+	const pt = enc.encode(JSON.stringify(obj));
 	const iv = crypto.getRandomValues(new Uint8Array(12));
-	const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await key(pw, salt), enc.encode(JSON.stringify(obj)));
-	return { v: 1, salt: b64(salt), hsalt: b64(hsalt), hash: await hash(pw, hsalt), iv: b64(iv), ct: b64(ct) };
+	const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, r.key, pt);
+	return { v: 2, salt: b64(r.salt), iv: b64(iv), ct: b64(ct) };
 }
 async function open(v, pw) {
-	if (await hash(pw, unb64(v.hsalt)) !== v.hash) throw new Error("wrong password");
-	const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(v.iv) }, await key(pw, unb64(v.salt)), unb64(v.ct));
-	return JSON.parse(dec.decode(pt));
+	const r = await derive(pw, unb64(v.salt));
+	let pt;
+	try { pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(v.iv) }, r.key, unb64(v.ct)); }
+	catch (e) { throw new Error("wrong password"); }
+	return { ring: r, data: JSON.parse(dec.decode(pt)) };
 }
 
-// load freshest vault (API is uncached; fall back to the static file)
+// same id git/GitHub gives the file, used to detect edits made elsewhere
+async function blobSha(bytes) {
+	const head = enc.encode(`blob ${bytes.length}\0`);
+	const all = new Uint8Array(head.length + bytes.length);
+	all.set(head); all.set(bytes, head.length);
+	return hex(await crypto.subtle.digest("SHA-1", all));
+}
+
+// freshest vault: API, else raw CDN; master's copy only if the vault branch doesn't exist yet
 async function load() {
-	try {
-		const r = await fetch(API + "?t=" + Date.now(), { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
-		if (r.ok) {
-			const j = await r.json();
-			sha = j.sha;
-			return JSON.parse(dec.decode(unb64(j.content.replace(/\n/g, ""))));
-		}
-	} catch (e) {}
-	const r = await fetch("vault.json?t=" + Date.now(), { cache: "no-store" });
-	if (!r.ok) return null;
-	sha = null;
-	return r.json();
+	const t = "?ref=" + BRANCH + "&t=" + Date.now();
+	let r = await fetch(API + t, { headers: { Accept: "application/vnd.github.raw+json" }, cache: "no-store" }).catch(() => null);
+	if (!r || (!r.ok && r.status !== 404)) r = await fetch(`https://raw.githubusercontent.com/${REPO}/${BRANCH}/${PATH}${t}`, { cache: "no-store" });
+	if (r.status === 404) r = await fetch("vault.json" + t, { cache: "no-store" });
+	if (r.status === 404) return null;
+	if (!r.ok) throw new Error("load failed: " + r.status);
+	const bytes = new Uint8Array(await r.arrayBuffer());
+	sha = await blobSha(bytes);
+	return JSON.parse(dec.decode(bytes));
 }
 
 async function push(v, token, note) {
 	if (!token) throw new Error("set a GitHub token in settings first");
 	const h = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" };
-	const cur = await fetch(API + "?t=" + Date.now(), { headers: h, cache: "no-store" });
-	const curSha = cur.ok ? (await cur.json()).sha : undefined;
-	if (sha && curSha && sha !== curSha) throw new Error("vault changed elsewhere, unlock again to reload");
-	const body = { message: note, content: btoa(JSON.stringify(v, null, 1)), sha: curSha };
-	const r = await fetch(API, { method: "PUT", headers: h, body: JSON.stringify(body) });
+	const body = JSON.stringify({ message: note, content: btoa(JSON.stringify(v, null, 1)), sha, branch: BRANCH });
+	const put = () => fetch(API, { method: "PUT", headers: h, body });
+	let r = await put();
+	if (r.status === 404) { // first save: create the branch
+		const head = await fetch(GH + "/git/ref/heads/master", { headers: h, cache: "no-store" });
+		if (head.ok) {
+			await fetch(GH + "/git/refs", { method: "POST", headers: h, body: JSON.stringify({ ref: "refs/heads/" + BRANCH, sha: (await head.json()).object.sha }) });
+			r = await put();
+		}
+	}
+	if (r.status === 409) throw Object.assign(new Error("vault changed elsewhere. Copy unsaved text, then lock & unlock"), { conflict: true });
 	if (!r.ok) throw new Error("github: " + r.status + " " + (await r.text()).slice(0, 120));
 	sha = (await r.json()).content.sha;
-	vault = v;
 }
 
-const views = ["menu", "notes", "settings"];
+// saving: one commit at a time
+let queue = Promise.resolve(), dirty = false, pending = 0, timer = null, lastPush = 0;
+function commit(note, next = ring, token = data.token) {
+	pending++;
+	const p = queue.then(async () => {
+		const had = dirty; dirty = false;
+		try {
+			await push(await seal(next || ring, data), token, note);
+			if (next) ring = next;
+			lastPush = Date.now();
+		} catch (e) { dirty = dirty || had; throw e; }
+	}).finally(() => pending--);
+	queue = p.catch(() => {});
+	return p;
+}
+function schedule(ms) { clearTimeout(timer); timer = setTimeout(flush, ms); }
+function touch() { dirty = true; msg("unsaved..."); schedule(Math.max(IDLE, lastPush + GAP - Date.now())); }
+async function flush() {
+	clearTimeout(timer);
+	await queue;
+	if (!dirty || !data) return;
+	msg("saving...");
+	try {
+		await commit("update vault", null);
+		if (!dirty) msg("saved " + new Date().toLocaleTimeString());
+	} catch (e) {
+		msg("NOT saved: " + e.message);
+		if (!e.conflict) schedule(RETRY);
+	}
+}
+document.addEventListener("visibilitychange", () => { if (document.hidden) flush(); });
+window.addEventListener("online", flush);
+window.addEventListener("beforeunload", e => { if (dirty || pending || working) { flush(); e.preventDefault(); e.returnValue = ""; } });
+
+// files: AES-GCM chunks in a private repo; names, sizes and the file key live inside the vault.
+// The vault's index is the truth: each change rewrites the files repo as one parentless commit
+// matching it, so deleted data isn't held by history.
+const FILES = "https://api.github.com/repos/elipinals12/vault-files";
+const CHUNK = 20 * 1024 * 1024, MAXFILE = 500 * 1024 * 1024;
+const GB = 1024 ** 3, FILEBUDGET = 5 * GB, SITEBUDGET = GB; // GitHub guidance, not an account quota
+let working = false;
+
+async function gh(url, opts = {}) {
+	const r = await fetch(url, { cache: "no-store", ...opts, headers: { Authorization: "Bearer " + data.token, Accept: "application/vnd.github+json", ...opts.headers } });
+	if (!r.ok) throw Object.assign(new Error("github: " + r.status + " " + (await r.text()).slice(0, 120)), { status: r.status });
+	return r;
+}
+const api = async (path, body, method = body ? "POST" : "GET") => (await gh(FILES + path, { method, body: body && JSON.stringify(body) })).json();
+const usedBytes = () => data.files.reduce((a, f) => a + f.size, 0);
+const size = n => n >= GB ? (n / GB).toFixed(2) + " GB" : n >= 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.ceil(n / 1024) + " KB";
+
+const blobEntry = path => ({ path, mode: "100644", type: "blob" });
+const README = "encrypted file storage\n";
+
+async function repoInfo() {
+	const info = await api("");
+	if (!info.private) throw new Error("vault-files is public, make it private");
+	try { await api("/git/ref/heads/" + info.default_branch); }
+	catch (e) {
+		if (e.status !== 409 && e.status !== 404) throw e;
+		await api("/contents/README.md", { message: "init", content: btoa(README) }, "PUT"); // empty repo
+	}
+	return info;
+}
+// call only after the index saved cleanly (that's the check against edits from elsewhere)
+async function sync() {
+	const { default_branch: br } = await repoInfo();
+	const entries = data.files.flatMap(f => f.chunks.map((sha, i) => ({ ...blobEntry(`f/${f.id}.${i}`), sha })));
+	const tree = await api("/git/trees", { tree: [{ ...blobEntry("README.md"), content: README }, ...entries] });
+	const c = await api("/git/commits", { message: "update", tree: tree.sha, parents: [] });
+	await api("/git/refs/heads/" + br, { sha: c.sha, force: true }, "PATCH");
+}
+
+const fileKey = () => crypto.subtle.importKey("raw", unb64(data.fkey), "AES-GCM", false, ["encrypt", "decrypt"]);
+
+function meter(label, n, max) {
+	const el = document.createElement("div"), m = document.createElement("meter"), t = document.createElement("small");
+	m.max = max; m.high = max * .8; m.optimum = 0; m.value = Math.min(n, max);
+	t.textContent = `${label}: ${size(n)} / ${size(max)}`;
+	el.append(t, m);
+	return el;
+}
+async function refresh() {
+	listFiles();
+	$("upbtn").disabled = true;
+	$("filesetup").classList.add("hide");
+	$("usage").textContent = "checking storage...";
+	const rows = [];
+	try {
+		const site = await (await gh(GH)).json();
+		rows.push(meter("site repo", site.size * 1024, SITEBUDGET));
+	} catch (e) {}
+	try {
+		const info = await repoInfo(), used = usedBytes();
+		const note = document.createElement("small");
+		note.textContent = `hey buddy: ${size(Math.max(0, FILEBUDGET - used))} left. Soft limits from GitHub's guidance. GitHub counts ${size(info.size * 1024)} for vault-files (lags behind, especially after deletes).`;
+		rows.unshift(meter("your files", used, FILEBUDGET));
+		rows.push(note);
+		if (!working) $("upbtn").disabled = false;
+	} catch (e) {
+		if (e.status === 404 || e.status === 403) $("filesetup").classList.remove("hide");
+		else if (data) msg("error: " + e.message);
+	}
+	if (data) $("usage").replaceChildren(...rows);
+}
+function listFiles() {
+	const items = [...data.files].reverse().map(f => {
+		const el = document.createElement("div"), info = document.createElement("div");
+		const name = document.createElement("b"), meta = document.createElement("small");
+		const get = document.createElement("button"), del = document.createElement("button");
+		el.className = "file";
+		name.textContent = f.name;
+		meta.textContent = size(f.size) + " · " + new Date(f.added).toLocaleDateString();
+		get.textContent = "download"; del.textContent = "delete";
+		get.onclick = () => transfer(() => download(f));
+		del.onclick = () => confirm(`delete "${f.name}"?`) && transfer(() => remove(f));
+		info.append(name, meta); el.append(info, get, del);
+		return el;
+	});
+	$("filelist").replaceChildren(...items);
+	if (!items.length) $("filelist").textContent = "no files yet";
+}
+async function transfer(job) {
+	if (working) return msg("another transfer is running");
+	working = true; $("upbtn").disabled = true;
+	let done;
+	try { done = await job(); }
+	catch (e) { done = "error: " + e.message; }
+	working = false;
+	if (!$("v-files").classList.contains("hide")) await refresh();
+	msg(done);
+}
+async function saveIndex() {
+	dirty = true;
+	try { await commit("update vault", null); }
+	catch (e) {
+		if (!e.conflict) schedule(RETRY);
+		throw new Error("couldn't save the vault: " + e.message);
+	}
+}
+async function upload(files) {
+	for (const file of files) {
+		if (file.size > MAXFILE) throw new Error(`${file.name} is over ${size(MAXFILE)}`);
+		if (usedBytes() + file.size > FILEBUDGET) throw new Error(`${file.name} won't fit in your ${size(FILEBUDGET)}`);
+		data.fkey ||= b64(crypto.getRandomValues(new Uint8Array(32)));
+		await saveIndex(); // key is safely stored (and no conflict) before anything is encrypted with it
+		const key = await fileKey(), id = crypto.randomUUID(), chunks = [];
+		const n = Math.max(1, Math.ceil(file.size / CHUNK));
+		for (let i = 0; i < n; i++) {
+			msg(`uploading ${file.name} ${i + 1}/${n}...`);
+			const iv = crypto.getRandomValues(new Uint8Array(12));
+			const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv, additionalData: enc.encode(`${id}/${i}`) }, key, await file.slice(i * CHUNK, (i + 1) * CHUNK).arrayBuffer());
+			const blob = new Uint8Array(12 + ct.byteLength);
+			blob.set(iv); blob.set(new Uint8Array(ct), 12);
+			chunks.push((await api("/git/blobs", { content: b64(blob), encoding: "base64" })).sha);
+		}
+		const entry = { id, name: file.name, size: file.size, added: Date.now(), chunks };
+		data.files.push(entry);
+		try { await saveIndex(); await sync(); }
+		catch (e) { data.files = data.files.filter(f => f !== entry); touch(); throw e; }
+	}
+	return "uploaded";
+}
+async function download(f) {
+	const key = await fileKey(), parts = [];
+	for (let i = 0; i < f.chunks.length; i++) {
+		msg(`downloading ${f.name} ${i + 1}/${f.chunks.length}...`);
+		const r = await gh(`${FILES}/git/blobs/${f.chunks[i]}`, { headers: { Accept: "application/vnd.github.raw+json" } });
+		const b = new Uint8Array(await r.arrayBuffer());
+		parts.push(await crypto.subtle.decrypt({ name: "AES-GCM", iv: b.subarray(0, 12), additionalData: enc.encode(`${f.id}/${i}`) }, key, b.subarray(12)));
+	}
+	const a = document.createElement("a");
+	a.href = URL.createObjectURL(new Blob(parts, { type: "application/octet-stream" }));
+	a.download = f.name;
+	a.click();
+	setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+	return "downloaded";
+}
+async function remove(f) {
+	msg("deleting...");
+	const prev = data.files;
+	data.files = prev.filter(x => x !== f);
+	try { await saveIndex(); }
+	catch (e) { data.files = prev; throw e; }
+	await sync(); // if this fails, the next upload or delete cleans up
+	return "deleted";
+}
+$("upbtn").onclick = () => $("upload").click();
+$("upload").onchange = () => {
+	const files = [...$("upload").files];
+	$("upload").value = "";
+	if (files.length) transfer(() => upload(files));
+};
+
+// views
+const views = ["menu", "pads", "edit", "files", "settings"];
 function go(v) {
 	views.forEach(x => $("v-" + x).classList.toggle("hide", x !== v));
 	$("needtoken").classList.toggle("hide", !!(data && data.token));
 	$("token").value = data && data.token || "";
+	if (v === "pads") list();
 	msg("");
+	if (v === "files") refresh();
+}
+function list() {
+	const items = [...data.pads].sort((a, b) => b.updated - a.updated).map(p => {
+		const el = document.createElement("button");
+		el.className = "tool pad";
+		const t = document.createElement("b"), s = document.createElement("span");
+		t.textContent = p.title || "untitled";
+		s.textContent = new Date(p.updated).toLocaleDateString() + " · " + (p.text.trim().slice(0, 100) || "empty");
+		el.append(t, s);
+		el.onclick = () => edit(p);
+		return el;
+	});
+	$("padlist").replaceChildren(...items);
+	if (!items.length) $("padlist").textContent = "no notepads yet";
+}
+function edit(p) {
+	pad = p;
+	$("title").value = p.title; $("notes").value = p.text;
+	go("edit");
 }
 function enter() {
+	if (!data.pads) { // migrate the old single notepad
+		data.pads = data.notes ? [{ id: crypto.randomUUID(), title: "notes", text: data.notes, updated: Date.now() }] : [];
+		delete data.notes;
+	}
+	data.files ||= [];
 	$("lock").classList.add("hide"); $("app").classList.remove("hide");
-	$("notes").value = data.notes || ""; $("pw").value = "";
+	$("pw").value = "";
 	go(data.token ? "menu" : "settings");
 }
-function lock() {
-	pass = data = null;
-	$("notes").value = ""; $("token").value = "";
+async function lock() {
+	if (working) return msg("wait for the file transfer to finish");
+	await flush(); await queue;
+	if (dirty && !confirm("unsaved changes will be lost, lock anyway?")) return;
+	clearTimeout(timer);
+	ring = data = pad = sha = null; dirty = false;
+	["title", "notes", "token", "newpw"].forEach(i => $(i).value = "");
+	["padlist", "filelist", "usage"].forEach(i => $(i).replaceChildren());
 	$("app").classList.add("hide"); $("lock").classList.remove("hide");
+	msg("");
 }
 document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => {
 	if (data && !data.token && b.dataset.go !== "settings") return go("settings");
-	if (b.dataset.go === "menu" && data) data.notes = $("notes").value;
 	go(b.dataset.go);
+	flush();
 });
 
+$("newpad").onclick = () => {
+	const p = { id: crypto.randomUUID(), title: "", text: "", updated: Date.now() };
+	data.pads.push(p);
+	edit(p); touch(); $("title").focus();
+};
+$("title").oninput = $("notes").oninput = () => {
+	pad.title = $("title").value; pad.text = $("notes").value; pad.updated = Date.now();
+	touch();
+};
+$("delpad").onclick = () => {
+	if (!confirm(`delete "${pad.title || "untitled"}"?`)) return;
+	data.pads = data.pads.filter(p => p !== pad);
+	dirty = true; go("pads"); flush();
+};
+
+// lockout: 3rd wrong try waits 1 min, doubling after. Kept in localStorage (this browser only).
+let busy = false;
+function lockout() {
+	try { return JSON.parse(localStorage.getItem(LOCKKEY)) || { fails: 0, until: 0 }; }
+	catch (e) { return { fails: 0, until: 0 }; }
+}
+function setLockout(s) { try { s ? localStorage.setItem(LOCKKEY, JSON.stringify(s)) : localStorage.removeItem(LOCKKEY); } catch (e) {} }
+const left = () => Math.max(0, lockout().until - Date.now());
+let counting = false;
+function tick() {
+	const s = Math.ceil(left() / 1000);
+	$("unlock").disabled = busy || s > 0;
+	if (data || busy) return;
+	if (s > 0) {
+		const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60;
+		msg(`too many attempts, wait ${h ? h + "h " : ""}${h || m ? m + "m " : ""}${s % 60}s`);
+		counting = true;
+	} else if (counting) { counting = false; msg(""); }
+}
+setInterval(tick, 500); tick();
+
 $("unlock").onclick = async () => {
-	msg("unlocking...");
+	if (busy || left()) return tick();
+	const pw = $("pw").value;
+	if (!pw) return;
+	busy = true; tick(); msg("unlocking...");
 	try {
-		vault = await load();
+		const vault = await load();
 		if (!vault) return msg("no vault found");
-		const pw = $("pw").value;
-		data = await open(vault, pw); pass = pw;
+		if (left()) return msg(""); // another tab got locked out meanwhile
+		// count the try before checking it, so reloading mid-check can't dodge it
+		const fails = lockout().fails + 1;
+		setLockout({ fails, until: fails < FREE ? 0 : Date.now() + WAIT * 2 ** Math.min(fails - FREE, 20) });
+		const o = await open(vault, pw);
+		setLockout(null);
+		ring = o.ring; data = o.data;
 		enter();
 	} catch (e) { msg(e.message === "wrong password" ? "wrong password" : "error: " + e.message); }
+	finally { busy = false; tick(); }
 };
 $("pw").onkeydown = e => { if (e.key === "Enter") $("unlock").click(); };
 $("lockbtn").onclick = lock;
-$("save").onclick = async () => {
-	msg("saving...");
-	try { data.notes = $("notes").value; await push(await seal(pass, data), data.token, "update vault"); msg("saved " + new Date().toLocaleTimeString()); }
-	catch (e) { msg("error: " + e.message); }
-};
 $("savetoken").onclick = async () => {
 	const t = $("token").value.trim();
 	if (!t) return msg("paste your token first");
 	msg("verifying...");
 	try {
-		const r = await fetch("https://api.github.com/repos/" + REPO, { headers: { Authorization: "Bearer " + t, Accept: "application/vnd.github+json" } });
+		const r = await fetch(GH, { headers: { Authorization: "Bearer " + t, Accept: "application/vnd.github+json" } });
 		if (!r.ok) return msg("token rejected (" + r.status + "). Re-check the steps.");
 		if (!(await r.json()).permissions?.push) return msg("token can't write. Set Contents to Read and write.");
 		const prev = data.token; data.token = t;
-		try { await push(await seal(pass, data), t, "set token"); }
+		try { await commit("set token", null); }
 		catch (e) { data.token = prev; throw e; }
-		msg("token saved"); go("menu");
+		go("menu"); msg("token saved");
 	} catch (e) { msg("error: " + e.message); }
 };
 $("chpw").onclick = async () => {
@@ -225,7 +532,7 @@ $("chpw").onclick = async () => {
 	if (!data.token) return msg("add a token first");
 	if (np.length < 8 && !confirm("short password, sure?")) return;
 	msg("changing...");
-	try { await push(await seal(np, data), data.token, "change password"); pass = np; $("newpw").value = ""; msg("password changed"); }
+	try { await commit("change password", await derive(np, crypto.getRandomValues(new Uint8Array(16)))); $("newpw").value = ""; msg("password changed"); }
 	catch (e) { msg("error: " + e.message); }
 };
 </script>
